@@ -14,7 +14,14 @@ export function EffectMonjori(canvas, params = {}) {
         // Uniforms with customizable parameters
         uniforms = {
             time: { value: 1.0 },
-            animationSpeed: { value: params.animationSpeed || 0.618 }, 
+            animationSpeed: { value: params.animationSpeed || 0.618 },
+            colors: {
+                value: params.colors || [
+                    new THREE.Color(0xff0000), // Default red
+                    new THREE.Color(0x00ff00), // Default green
+                    new THREE.Color(0x0000ff), // Default blue
+                ],
+            },
         };
 
         // Shader material
@@ -30,6 +37,7 @@ export function EffectMonjori(canvas, params = {}) {
             fragmentShader: `
                 varying vec2 vUv;
                 uniform float time;
+                uniform vec3 colors[3];
 
                 void main() {
                     vec2 p = -1.0 + 2.0 * vUv;
@@ -56,7 +64,12 @@ export function EffectMonjori(canvas, params = {}) {
                     d = r / 350.0;
                     d += sin(d * d * 8.0) * 0.52;
                     f = (sin(a * g) + 1.0) / 2.0;
-                    gl_FragColor = vec4(vec3(f * i / 1.6, i / 2.0 + d / 13.0, i) * d * p.x + vec3(i / 1.3 + d / 8.0, i / 2.0 + d / 18.0, i) * d * (1.0 - p.x), 1.0);
+
+                    // Map to the provided colors
+                    vec3 col = mix(colors[0], colors[1], i);
+                    col = mix(col, colors[2], f);
+
+                    gl_FragColor = vec4(col * d, 1.0);
                 }
             `,
         });

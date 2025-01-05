@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import * as THREE from "three";
 import { EffectFuse } from "./components/EffectFuse";
 import { EffectMonjori } from "./components/EffectMonjori";
 import EffectPixelDistortion from "./components/EffectPixelDistortion";
@@ -36,6 +37,21 @@ const App = () => {
             }
         };
 
+        function convertColorsToRGBFormat(colors) {
+            return colors.map(color => {
+                const { r, g, b } = color; // THREE.Color 已经将颜色存储为 0-1 范围的浮点数
+                return { r, g, b };
+            });
+        }
+        
+        const threeColors = [
+            new THREE.Color(0x032820),
+            new THREE.Color(0x80A416),
+            new THREE.Color(0xAD9F3C),
+        ];
+
+        const rgbColors = convertColorsToRGBFormat(threeColors);
+
         if (currentEffect === "effectfuse") {
             canvas = createCanvas();
             const params = {
@@ -44,20 +60,16 @@ const App = () => {
                 particles: 10,
                 energy: 1.01,
                 scanlines: true,
-                colors: [
-                    { r: 1, g: 0, b: 0 },
-                    { r: 0, g: 1, b: 0 },
-                    { r: 0, g: 0, b: 1 },
-                    { r: 1, g: 1, b: 0 },
-                    { r: 0, g: 1, b: 1 },
-                    { r: 1, g: 0, b: 1 },
-                ],
+                colors: rgbColors,
             };
             effectInstance = new EffectFuse(canvas, params);
             effectInstance.start();
         } else if (currentEffect === "effectmonjori") {
             canvas = createCanvas();
-            const params = { animationSpeed: 0.618 };
+            const params = {
+                animationSpeed: 0.618,
+                colors: threeColors,
+            };
             effectInstance = new EffectMonjori(canvas, params);
         } else if (currentEffect === "effectlorenzattractor") {
             canvas = createCanvas();
