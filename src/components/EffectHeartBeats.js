@@ -128,53 +128,47 @@ export class ParticlePool {
     }
 }
 
-export class HeartEffect {
-    constructor(width = 180, height = 130, color = '#ea80b0') {
-        this.width = width;
-        this.height = height;
-        this.color = color;
+export default class EffectHeartBeats {
+    constructor(canvas, params = {}) {
+        this.canvas = canvas;
+        this.context = this.canvas.getContext("2d");
+        this.width = params.width || 180;
+        this.height = params.height || 130;
+        this.color = params.color || "#ea80b0";
         this.settings = {
             particles: {
-                length: 500, // maximum amount of particles
-                duration: 2, // particle duration in sec
-                velocity: 100, // particle velocity in pixels/sec
-                effect: -0.75, // play with this for a nice effect
-                size: 30, // particle size in pixels
+                length: params.particles?.length || 500, // maximum amount of particles
+                duration: params.particles?.duration || 2, // particle duration in sec
+                velocity: params.particles?.velocity || 100, // particle velocity in pixels/sec
+                effect: params.particles?.effect || -0.75, // play with this for a nice effect
+                size: params.particles?.size || 30, // particle size in pixels
             },
         };
         this.particles = new ParticlePool(this.settings);
         this.particleRate = this.settings.particles.length / this.settings.particles.duration;
         this.time = null;
-        this.canvas = null;
-        this.context = null;
         this.animationFrameId = null;
+
+        // Resize event handling
         this.boundOnResize = this.onResize.bind(this);
+        window.addEventListener("resize", this.boundOnResize);
+
+        this.initializeCanvas();
+        this.image = this.createHeartImage();
     }
 
-    createHeartCanvas() {
-        this.canvas = document.createElement('canvas');
-        this.canvas.id = 'heartCanvas';
-        this.canvas.style.position = 'absolute';
-        this.canvas.style.top = '50%';
-        this.canvas.style.left = '50%';
-        this.canvas.style.transform = 'translate(-50%, -50%)';
-        this.canvas.style.zIndex = '2';
-        document.body.appendChild(this.canvas);
-        this.context = this.canvas.getContext('2d');
-
+    initializeCanvas() {
         this.canvas.width = window.innerWidth;
         this.canvas.height = window.innerHeight;
-
-        this.image = this.createHeartImage();
-
-        window.addEventListener('resize', this.boundOnResize);
+        this.context.fillStyle = "#000000";
+        this.context.fillRect(0, 0, this.canvas.width, this.canvas.height);
     }
 
     createHeartImage() {
-        const canvas_inner = document.createElement('canvas');
-        const context_inner = canvas_inner.getContext('2d');
-        canvas_inner.width = this.settings.particles.size;
-        canvas_inner.height = this.settings.particles.size;
+        const canvasInner = document.createElement("canvas");
+        const contextInner = canvasInner.getContext("2d");
+        canvasInner.width = this.settings.particles.size;
+        canvasInner.height = this.settings.particles.size;
 
         const to = (t) => {
             const point = this.pointOnHeart(t);
@@ -183,35 +177,42 @@ export class HeartEffect {
             return point;
         };
 
-        context_inner.beginPath();
+        contextInner.beginPath();
         let t = -Math.PI;
         let point = to(t);
-        context_inner.moveTo(point.x, point.y);
+        contextInner.moveTo(point.x, point.y);
         while (t < Math.PI) {
             t += 0.01;
             point = to(t);
-            context_inner.lineTo(point.x, point.y);
+            contextInner.lineTo(point.x, point.y);
         }
-        context_inner.closePath();
+        contextInner.closePath();
 
-        context_inner.fillStyle = this.color;
-        context_inner.fill();
+        contextInner.fillStyle = this.color;
+        contextInner.fill();
 
         const image = new Image();
-        image.src = canvas_inner.toDataURL();
+        image.src = canvasInner.toDataURL();
         return image;
     }
 
+    pointOnHeart(t) {
+        return new Point(
+            this.width * Math.pow(Math.sin(t), 3),
+            this.height * Math.cos(t) -
+            50 * Math.cos(2 * t) -
+            20 * Math.cos(3 * t) -
+            10 * Math.cos(4 * t) +
+            25
+        );
+    }
+
     start() {
-        this.createHeartCanvas();
         this.render();
     }
 
     onResize() {
-        if (this.canvas) {
-            this.canvas.width = window.innerWidth;
-            this.canvas.height = window.innerHeight;
-        }
+        this.initializeCanvas();
     }
 
     render() {
@@ -225,6 +226,9 @@ export class HeartEffect {
 
         // Clear canvas
         this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        this.context.fillStyle = "black";
+        this.context.fillRect(0, 0, this.canvas.width, this.canvas.height);
+
 
         // Create new particles
         const amount = this.particleRate * deltaTime;
@@ -241,21 +245,12 @@ export class HeartEffect {
 
     stop() {
         if (this.animationFrameId) {
-            cancelAnimationFrame(this.animationFrameId); // Stop the animation
+            cancelAnimationFrame(this.animationFrameId);
             this.animationFrameId = null;
         }
-        if (this.canvas && document.body.contains(this.canvas)) {
-            document.body.removeChild(this.canvas); // Remove the canvas from the document
-            this.canvas = null;
-            this.context = null;
+        if (this.canvas) {
+            this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
         }
-        window.removeEventListener('resize', this.boundOnResize); // Remove resize listener
-    }
-
-    pointOnHeart(t) {
-        return new Point(
-            this.width * Math.pow(Math.sin(t), 3),
-            this.height * Math.cos(t) - 50 * Math.cos(2 * t) - 20 * Math.cos(3 * t) - 10 * Math.cos(4 * t) + 25
-        );
+        window.removeEventListener("resize", this.boundOnResize);
     }
 }

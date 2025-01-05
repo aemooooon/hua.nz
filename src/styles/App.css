@@ -13,17 +13,16 @@ body {
 }
 
 .beau-rivage-regular {
-  font-family: "Beau Rivage", serif;
-  font-weight: 400;
-  font-style: normal;
+    font-family: "Beau Rivage", serif;
+    font-weight: 400;
+    font-style: normal;
 }
 
 .audiowide-regular {
-  font-family: "Audiowide", serif;
-  font-weight: 400;
-  font-style: normal;
+    font-family: "Audiowide", serif;
+    font-weight: 400;
+    font-style: normal;
 }
-
 
 #root {
     position: relative;
@@ -31,7 +30,7 @@ body {
     background: rgba(255, 255, 255, 0.1);
     border: 3px solid rgba(255, 255, 255, 0.382);
     border-radius: 30px;
-    backdrop-filter: blur(61px);
+    backdrop-filter: blur(7px);
     transform: scale(0);
     animation: zoom-in 1s ease forwards;
 }
@@ -63,18 +62,18 @@ header {
     z-index: 100;
 }
 
-.animated{
-  transform:  translateY(30px);
-  opacity: 0;
-  animation: slide-in 1s ease forwards;
-  animation-delay: 1s;
+.animated {
+    transform: translateY(30px);
+    opacity: 0;
+    animation: slide-in 1s ease forwards;
+    animation-delay: 1s;
 }
 
 @keyframes slide-in {
-  100%{
-    transform: translateY(0);
-    opacity: 1;
-  }
+    100% {
+        transform: translateY(0);
+        opacity: 1;
+    }
 }
 
 .logo {
@@ -112,8 +111,8 @@ header {
     animation-delay: 1.5s;
 }
 
-.home-detail{
-  line-height: 1.6;
+.home-detail {
+    line-height: 1.6;
 }
 
 .home-detail h1 {
@@ -167,7 +166,7 @@ header {
     color: #ffffff;
     text-decoration: none;
     margin: 0 8px;
-    transition: .5s;
+    transition: 0.5s;
 }
 
 .home-detail .social-icons a:hover {
@@ -176,19 +175,42 @@ header {
     box-shadow: 0 0 10px #ffffff;
 }
 
-.home-img .img-box{
-  position: relative;
-  width: 27vw;
-  height: 27vw;
-  border: 3px solid #ffffff;
-  border-radius: 50%;
-  box-shadow: 0 0 30px #ffffff;
-  overflow: hidden;
+.home-img .img-box {
+    position: relative;
+    width: 27vw;
+    height: 27vw;
+    border: 3px solid #ffffff;
+    border-radius: 50%;
+    box-shadow: 0 0 30px #ffffff;
+    animation: hueRotate 4s linear infinite;
+    overflow: hidden;
 }
 
-.home-img .img-box img{
-  position: absolute;
-  display: block;
-  width: 100%;
-  object-fit: object-cover;
+@keyframes hueRotate {
+    0% {
+        box-shadow: 0 0 10px hsl(0, 100%, 50%);
+        border: 3px solid hsl(0, 100%, 50%);
+    }
+    25% {
+        box-shadow: 0 0 20px hsl(90, 100%, 50%);
+        border: 3px solid hsl(90, 100%, 50%);
+    }
+    50% {
+        box-shadow: 0 0 30px hsl(180, 100%, 50%);
+        border: 3px solid hsl(180, 100%, 50%);
+    }
+    75% {
+        box-shadow: 0 0 20px hsl(270, 100%, 50%);
+        border: 3px solid hsl(270, 100%, 50%);
+    }
+    100% {
+        box-shadow: 0 0 10px hsl(360, 100%, 50%);
+        border: 3px solid hsl(360, 100%, 50%);
+    }
+}
+
+.home-img .img-box img {
+    position: absolute;
+    display: block;
+    object-fit: cover;
 }

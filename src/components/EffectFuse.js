@@ -1,23 +1,12 @@
-export class WebGLBackground {
-    constructor(params) {
-        this.canvas = document.createElement('canvas'); // 动态创建canvas
-        document.body.appendChild(this.canvas); // 将canvas添加到body中
+export class EffectFuse {
+    constructor(canvas, params) {
+        this.canvas = canvas;
         this.gl = this.canvas.getContext('webgl');
         this.params = params;
         this.program = null;
         this.animationFrameId = null;
-        this.startTime = performance.now(); // 初始化起始时间
-
-        this.resizeCanvas(); // 初始化canvas尺寸
+        this.startTime = performance.now();
         this.initGL();
-
-        window.addEventListener('resize', this.resizeCanvas.bind(this)); // 窗口调整时重新设置canvas尺寸
-    }
-
-    resizeCanvas() {
-        this.canvas.width = window.innerWidth;
-        this.canvas.height = window.innerHeight;
-        this.gl.viewport(0, 0, this.gl.canvas.width, this.gl.canvas.height); // 更新视口
     }
 
     initGL() {
@@ -158,6 +147,8 @@ export class WebGLBackground {
 
     start() {
         this.startTime = performance.now();
+        this.gl.viewport(0, 0, this.canvas.width, this.canvas.height);
+        this.gl.clearColor(0.0, 0.0, 0.0, 1.0);
         this.render();
     }
 
@@ -166,6 +157,12 @@ export class WebGLBackground {
             cancelAnimationFrame(this.animationFrameId);
             this.animationFrameId = null;
         }
+    }
+
+    onResize(width, height) {
+        this.canvas.width = width;
+        this.canvas.height = height;
+        this.gl.viewport(0, 0, this.canvas.width, this.canvas.height); 
     }
 
     render() {
@@ -186,7 +183,7 @@ export class WebGLBackground {
         const millisUniformLocation = this.gl.getUniformLocation(this.program, 'u_millis');
         const timeScaleUniformLocation = this.gl.getUniformLocation(this.program, 'u_timeScale');
 
-        this.gl.uniform2f(resolutionUniformLocation, this.gl.canvas.width, this.gl.canvas.height);
+        this.gl.uniform2f(resolutionUniformLocation, this.canvas.width, this.canvas.height);
         this.gl.uniform1f(brightnessUniformLocation, this.params.brightness);
         this.gl.uniform1f(blobinessUniformLocation, this.params.blobiness);
         this.gl.uniform1f(particlesUniformLocation, this.params.particles);
