@@ -1,7 +1,7 @@
 import * as THREE from "three";
 
 export class EffectLorenzAttractor {
-    constructor(canvas) {
+    constructor(canvas, params = {}) {
         this.canvas = canvas;
         this.renderer = null;
         this.scene = null;
@@ -21,8 +21,15 @@ export class EffectLorenzAttractor {
         this.dt = 0.005;
         this.maxParticles = 8888; // 最大小球数量
 
+        // Custom parameters
+        this.fireballColor = params.fireballColor || new THREE.Color(0xff4500);
+        this.particleColors = params.particleColors || [
+            new THREE.Color(0xff0000),
+            new THREE.Color(0x00ff00),
+            new THREE.Color(0x0000ff),
+        ];
+
         this.init();
-        window.addEventListener("resize", this.onResize.bind(this));
     }
 
     init() {
@@ -41,8 +48,8 @@ export class EffectLorenzAttractor {
         // Fireball
         const fireballGeometry = new THREE.SphereGeometry(10, 64, 64);
         const fireballMaterial = new THREE.MeshPhongMaterial({
-            color: 0xff4500,
-            emissive: 0xff4500,
+            color: this.fireballColor,
+            emissive: this.fireballColor,
             emissiveIntensity: 1,
             shininess: 100,
         });
@@ -54,14 +61,12 @@ export class EffectLorenzAttractor {
         // Trail setup
         this.sphereGeometry = new THREE.SphereGeometry(2, 16, 16); // 小球几何体
 
-        this.animate();
+        window.addEventListener("resize", this.onResize.bind(this));
     }
 
-    getRandomColor() {
-        const hue = Math.random(); // 随机生成一个色调值 [0, 1]
-        const saturation = 1; // 饱和度设为 1（全饱和）
-        const lightness = 0.5; // 明度设为 0.5（中等亮度）
-        return new THREE.Color().setHSL(hue, saturation, lightness);
+    getRandomParticleColor() {
+        const randomIndex = Math.floor(Math.random() * this.particleColors.length);
+        return this.particleColors[randomIndex];
     }
 
     createGlowMaterial(baseColor) {
@@ -100,6 +105,10 @@ export class EffectLorenzAttractor {
         });
     }
 
+    start() {
+        this.animate();
+    }
+
     animate() {
         this.animationFrameId = requestAnimationFrame(this.animate.bind(this));
 
@@ -122,7 +131,7 @@ export class EffectLorenzAttractor {
         this.fireball.position.set(rotatedX, rotatedY, this.z * 10);
 
         // Add new particle to the trail
-        const baseColor = this.getRandomColor();
+        const baseColor = this.getRandomParticleColor();
         const trailMaterial = new THREE.MeshPhongMaterial({
             color: baseColor,
             emissive: baseColor,

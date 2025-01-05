@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import * as THREE from "three";
 import { EffectFuse } from "./components/EffectFuse";
 import { EffectMonjori } from "./components/EffectMonjori";
+import { EffectLorenzAttractor } from "./components/EffectLorenzAttractor";
 import EffectPixelDistortion from "./components/EffectPixelDistortion";
 import EffectHeartBeats from "./components/EffectHeartBeats";
 import hua from "./assets/images/hua.jpeg";
@@ -38,17 +39,13 @@ const App = () => {
         };
 
         function convertColorsToRGBFormat(colors) {
-            return colors.map(color => {
+            return colors.map((color) => {
                 const { r, g, b } = color; // THREE.Color 已经将颜色存储为 0-1 范围的浮点数
                 return { r, g, b };
             });
         }
-        
-        const threeColors = [
-            new THREE.Color(0x032820),
-            new THREE.Color(0x80A416),
-            new THREE.Color(0xAD9F3C),
-        ];
+
+        const threeColors = [new THREE.Color(0x032820), new THREE.Color(0x80a416), new THREE.Color(0xad9f3c)];
 
         const rgbColors = convertColorsToRGBFormat(threeColors);
 
@@ -73,19 +70,22 @@ const App = () => {
             effectInstance = new EffectMonjori(canvas, params);
         } else if (currentEffect === "effectlorenzattractor") {
             canvas = createCanvas();
-            import("./components/EffectLorenzAttractor").then(({ EffectLorenzAttractor }) => {
-                effectInstance = new EffectLorenzAttractor(canvas);
-            });
+            const params = {
+                fireballColor: new THREE.Color(0xff4500),
+                particleColors: threeColors,
+            };
+            effectInstance = new EffectLorenzAttractor(canvas, params);
+            effectInstance.start();
         } else if (currentEffect === "heartEffect") {
             canvas = createCanvas();
             const params = {
                 width: 180,
                 height: 130,
-                color: "#ff69b4", // Customizable heart color
+                color: "#FF4500", 
                 particles: {
-                    length: 500,
+                    length: 600,
                     duration: 2,
-                    velocity: 120,
+                    velocity: 300,
                     effect: -0.8,
                     size: 25,
                 },
