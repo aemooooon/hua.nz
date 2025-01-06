@@ -30,24 +30,24 @@ export default {
       keyframes: {
         hueRotate: {
           "0%": {
-            boxShadow: "0 0 20px var(--color-primary-dark)",
-            borderColor: "var(--color-primary-dark)",
+            boxShadow: "0 0 20px #1d2012",
+            borderColor: "#1d2012",
           },
           "20%": {
-            boxShadow: "0 0 40px var(--color-primary)",
-            borderColor: "var(--color-primary)",
+            boxShadow: "0 0 40px #afcc8f",
+            borderColor: "#afcc8f",
           },
           "50%": {
-            boxShadow: "0 0 60px var(--color-secondary)",
-            borderColor: "var(--color-secondary)",
+            boxShadow: "0 0 60px #7ca65c",
+            borderColor: "#7ca65c",
           },
           "80%": {
-            boxShadow: "0 0 40px var(--color-accent)",
-            borderColor: "var(--color-accent)",
+            boxShadow: "0 0 40px #5d7d4b",
+            borderColor: "#5d7d4b",
           },
           "100%": {
-            boxShadow: "0 0 20px var(--color-muted)",
-            borderColor: "var(--color-muted)",
+            boxShadow: "0 0 20px #768e90",
+            borderColor: "#768e90",
           },
         },
         zoomIn: {

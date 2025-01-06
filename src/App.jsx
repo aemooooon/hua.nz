@@ -9,6 +9,7 @@ import hua from "./assets/images/hua.jpeg";
 
 const App = () => {
     const [currentEffect, setCurrentEffect] = useState("effectfuse");
+    const [menuOpen, setMenuOpen] = useState(false);
 
     useEffect(() => {
         let effectInstance;
@@ -59,7 +60,7 @@ const App = () => {
             const params = {
                 brightness: 0.6,
                 blobiness: 1.5,
-                particles: 10,
+                particles: 37,
                 energy: 1.01,
                 scanlines: true,
                 colors: rgbColors,
@@ -116,43 +117,83 @@ const App = () => {
 
     return (
         <>
-            <header className="bg-primary-dark text-light p-8 absolute w-full z-10 text-white flex justify-between items-center z-100 animate-slideIn">
-                <span className="text-2xl font-bold font-audiowide cursor-pointer" onClick={() => setCurrentEffect("effectfuse")}>
+            <header className="fixed top-0 left-0 w-full p-12 z-10 bg-primary-dark text-white flex justify-between items-center animate-slideIn">
+                <span
+                    className="text-2xl font-bold font-audiowide cursor-pointer"
+                    onClick={() => setCurrentEffect("effectfuse")}
+                >
                     Portfolio.
                 </span>
-                <nav className="flex space-x-4">
-                    <a href="#" className="hover-effect" onClick={() => setCurrentEffect("effectfuse")}>
+                <div className="lg:hidden">
+                    <button className="text-3xl focus:outline-none" onClick={() => setMenuOpen(!menuOpen)}>
+                        &#9776;
+                    </button>
+                </div>
+                <nav
+                    className={`lg:flex space-x-4 absolute lg:static top-[60px] left-0 bg-primary-dark w-full lg:w-auto lg:bg-transparent flex-col lg:flex-row items-center text-center transition-transform duration-300 transform lg:translate-x-0 ${
+                        menuOpen ? "translate-x-0" : "-translate-x-full"
+                    }`}
+                >
+                    <a
+                        href="#"
+                        className="hover-effect block lg:inline-block p-2 lg:p-0"
+                        onClick={() => {
+                            setMenuOpen(false);
+                            setCurrentEffect("effectfuse");
+                        }}
+                    >
                         Home
                     </a>
-                    <a href="#" className="hover-effect" onClick={() => setCurrentEffect("effectlorenzattractor")}>
+                    <a
+                        href="#"
+                        className="hover-effect block lg:inline-block p-2 lg:p-0"
+                        onClick={() => {
+                            setMenuOpen(false);
+                            setCurrentEffect("effectlorenzattractor");
+                        }}
+                    >
                         About
                     </a>
-                    <a href="#" className="hover-effect" onClick={() => setCurrentEffect("effectmonjori")}>
+                    <a
+                        href="#"
+                        className="hover-effect block lg:inline-block p-2 lg:p-0"
+                        onClick={() => {
+                            setMenuOpen(false);
+                            setCurrentEffect("effectmonjori");
+                        }}
+                    >
                         Project
                     </a>
-                    <a href="#" className="hover-effect" onClick={() => setCurrentEffect("heartEffect")}>
+                    <a
+                        href="#"
+                        className="hover-effect block lg:inline-block p-2 lg:p-0"
+                        onClick={() => {
+                            setMenuOpen(false);
+                            setCurrentEffect("heartEffect");
+                        }}
+                    >
                         Contact
                     </a>
                 </nav>
             </header>
 
-            <section className="flex justify-center z-1 items-center gap-8 p-12 h-full text-white animate-slideIn">
-                <div className="text-primary-dark space-y-6">
+            <section className="flex flex-col lg:flex-row justify-center items-center gap-12 p-12 h-full animate-slideIn text-white z-1">
+                <div className="order-2 lg:order-1 text-primary-dark space-y-6 text-center lg:text-left">
                     <h1 className="text-6xl font-bold font-beauRivage mb-6">Hua Wang</h1>
                     <h2 className="text-3xl font-semibold mb-6 font-mono">Web Developer / Data Engineer</h2>
-                    <p className="mt-4 leading-normal text-wrap text-lg font-poppins">
+                    <p className="mt-4 leading-normal text-lg font-poppins">
                         I am a skilled and reliable software engineer with over 4 years of experience specializing in
                         full stack development. My expertise includes building scalable APIs, integrating with cloud
                         services, and designing CI/CD pipelines.
                     </p>
-                    <div className="mt-12 flex items-center">
+                    <div className="mt-12 flex flex-col lg:flex-row items-center space-y-4 lg:space-y-0 lg:space-x-4">
                         <a
                             href="#"
                             className="btn bg-primary text-light px-4 py-2 rounded shadow-lg hover:bg-secondary"
                         >
                             Download CV
                         </a>
-                        <div className="social-icons ml-6 flex space-x-4">
+                        <div className="social-icons flex space-x-4">
                             <a
                                 href="#"
                                 className="w-10 h-10 bg-primary inline-flex items-center justify-center p-2 border-1 border-primary rounded-full text-[20px] text-white no-underline transition duration-500 hover:bg-secondary hover:text-bg hover:shadow-lg"
@@ -174,7 +215,7 @@ const App = () => {
                         </div>
                     </div>
                 </div>
-                <div>
+                <div className="order-1 lg:order-2">
                     <div className="relative w-[25vw] h-[25vw] border-4 border-primary-dark rounded-full shadow-md overflow-hidden bg-light animate-hueRotate">
                         <EffectPixelDistortion
                             src={hua}
