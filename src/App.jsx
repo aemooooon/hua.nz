@@ -116,8 +116,8 @@ const App = () => {
 
     return (
         <>
-            <header className="fixed top-0 left-0 w-full text-white z-50 bg-primary-dark text-light p-8 flex justify-between items-center">
-                <span className="text-4xl font-bold font-audiowide" onClick={() => setCurrentEffect("effectfuse")}>
+            <header className="bg-primary-dark text-light p-8 absolute w-full z-10 text-white flex justify-between items-center z-100 animate-slideIn">
+                <span className="text-2xl font-bold font-audiowide cursor-pointer" onClick={() => setCurrentEffect("effectfuse")}>
                     Portfolio.
                 </span>
                 <nav className="flex space-x-4">
@@ -136,7 +136,7 @@ const App = () => {
                 </nav>
             </header>
 
-            <section className="mt-[80px] flex flex-col lg:flex-row justify-center items-center gap-8 p-12 h-full text-white">
+            <section className="flex justify-center z-1 items-center gap-8 p-12 h-full text-white animate-slideIn">
                 <div className="text-primary-dark space-y-6">
                     <h1 className="text-6xl font-bold font-beauRivage mb-6">Hua Wang</h1>
                     <h2 className="text-3xl font-semibold mb-6 font-mono">Web Developer / Data Engineer</h2>
