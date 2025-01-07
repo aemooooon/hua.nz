@@ -143,7 +143,7 @@ const EffectPixelDistortion = ({ src, style = {} }) => {
             },
             undefined,
             (error) => {
-                console.error("Error loading texture:", error);
+                console.error(`Error loading texture from ${src}:`, error);
             }
         );
 

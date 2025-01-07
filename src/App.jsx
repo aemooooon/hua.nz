@@ -6,10 +6,50 @@ import { EffectLorenzAttractor } from "./components/EffectLorenzAttractor";
 import EffectPixelDistortion from "./components/EffectPixelDistortion";
 import EffectHeartBeats from "./components/EffectHeartBeats";
 import hua from "./assets/images/hua.jpeg";
+import PortfolioCard from "./components/PortfolioCard";
+import aqi1 from "./assets/images/aqi/AQI1.jpg";
+import aqi2 from "./assets/images/aqi/AQI2.jpg";
+import aqi3 from "./assets/images/aqi/AQI3.jpg";
+import aqi4 from "./assets/images/aqi/AQI4.jpg";
+import aqi5 from "./assets/images/aqi/AQI5.jpg";
 
 const App = () => {
     const [currentEffect, setCurrentEffect] = useState("effectfuse");
     const [menuOpen, setMenuOpen] = useState(false);
+    const [activeSection, setActiveSection] = useState("home");
+
+    const portfolioData = [
+        {
+            title: "Frontend Project",
+            description: "Lorem ipsum dolor sit amet consectetur volup adipisicing elit. Placeat el voluptatem.",
+            techUsed: "HTML5, CSS3, JavaScript",
+            imgSrc: aqi1,
+        },
+        {
+            title: "Full Stack Project",
+            description: "Lorem ipsum dolor sit amet consectetur volup adipisicing elit. Placeat el voluptatem.",
+            techUsed: "Next.js, Tailwind.css, Node.js",
+            imgSrc: aqi2,
+        },
+        {
+            title: "Frontend Project",
+            description: "Lorem ipsum dolor sit amet consectetur volup adipisicing elit. Placeat el voluptatem.",
+            techUsed: "React.js, Tailwind.css",
+            imgSrc: aqi3,
+        },
+        {
+            title: "Frontend Project",
+            description: "Lorem ipsum dolor sit amet consectetur volup adipisicing elit. Placeat el voluptatem.",
+            techUsed: "HTML5, Bootstrap, JavaScript",
+            imgSrc: aqi4,
+        },
+        {
+            title: "Frontend Project",
+            description: "Lorem ipsum dolor sit amet consectetur volup adipisicing elit. Placeat el voluptatem.",
+            techUsed: "Next.js, Tailwind.css",
+            imgSrc: aqi5,
+        },
+    ];
 
     useEffect(() => {
         let effectInstance;
@@ -58,11 +98,11 @@ const App = () => {
         if (currentEffect === "effectfuse") {
             canvas = createCanvas();
             const params = {
-                brightness: 0.6,
-                blobiness: 1.5,
-                particles: 37,
-                energy: 1.01,
-                scanlines: true,
+                brightness: 0.61,
+                blobiness: 1.6,
+                particles: 16,
+                energy: 1.11,
+                scanlines: false,
                 colors: rgbColors,
             };
             effectInstance = new EffectFuse(canvas, params);
@@ -117,10 +157,13 @@ const App = () => {
 
     return (
         <>
-            <header className="fixed top-0 left-0 w-full p-12 z-10 bg-primary-dark text-white flex justify-between items-center animate-slideIn">
+            <header className="fixed top-0 left-0 w-full pt-20 px-24 z-10 bg-primary-dark text-white flex justify-between items-center">
                 <span
-                    className="text-2xl font-bold font-audiowide cursor-pointer"
-                    onClick={() => setCurrentEffect("effectfuse")}
+                    className="text-2xl font-bold font-audiowide cursor-pointer animate-slideIn"
+                    onClick={() => {
+                        setCurrentEffect("effectfuse");
+                        setActiveSection("home");
+                    }}
                 >
                     Portfolio.
                 </span>
@@ -136,40 +179,55 @@ const App = () => {
                 >
                     <a
                         href="#"
-                        className="hover-effect block lg:inline-block p-2 lg:p-0"
+                        className="font-audiowide text-lg hover:underline underline-offset-8 block lg:inline-block p-2 lg:p-0"
                         onClick={() => {
                             setMenuOpen(false);
                             setCurrentEffect("effectfuse");
+                            setActiveSection("home");
                         }}
                     >
                         Home
                     </a>
                     <a
                         href="#"
-                        className="hover-effect block lg:inline-block p-2 lg:p-0"
-                        onClick={() => {
-                            setMenuOpen(false);
-                            setCurrentEffect("effectlorenzattractor");
-                        }}
-                    >
-                        About
-                    </a>
-                    <a
-                        href="#"
-                        className="hover-effect block lg:inline-block p-2 lg:p-0"
+                        className="font-audiowide text-lg hover:underline underline-offset-8 block lg:inline-block p-2 lg:p-0"
                         onClick={() => {
                             setMenuOpen(false);
                             setCurrentEffect("effectmonjori");
+                            setActiveSection("project");
                         }}
                     >
                         Project
                     </a>
                     <a
                         href="#"
-                        className="hover-effect block lg:inline-block p-2 lg:p-0"
+                        className="font-audiowide text-lg hover:underline underline-offset-8 block lg:inline-block p-2 lg:p-0"
+                        onClick={() => {
+                            setMenuOpen(false);
+                            setCurrentEffect("effectlorenzattractor");
+                            setActiveSection("gallery");
+                        }}
+                    >
+                        Gallery
+                    </a>
+                    <a
+                        href="#"
+                        className="font-audiowide text-lg hover:underline underline-offset-8 block lg:inline-block p-2 lg:p-0"
+                        onClick={() => {
+                            setMenuOpen(false);
+                            setCurrentEffect("effectlorenzattractor");
+                            setActiveSection("about");
+                        }}
+                    >
+                        About
+                    </a>
+                    <a
+                        href="#"
+                        className="font-audiowide text-lg hover:underline underline-offset-8 block lg:inline-block p-2 lg:p-0"
                         onClick={() => {
                             setMenuOpen(false);
                             setCurrentEffect("heartEffect");
+                            setActiveSection("contact");
                         }}
                     >
                         Contact
@@ -177,53 +235,159 @@ const App = () => {
                 </nav>
             </header>
 
-            <section className="flex flex-col lg:flex-row justify-center items-center gap-12 p-12 h-full animate-slideIn text-white z-1">
-                <div className="order-2 lg:order-1 text-primary-dark space-y-6 text-center lg:text-left">
-                    <h1 className="text-6xl font-bold font-beauRivage mb-6">Hua Wang</h1>
-                    <h2 className="text-3xl font-semibold mb-6 font-mono">Web Developer / Data Engineer</h2>
-                    <p className="mt-4 leading-normal text-lg font-poppins">
-                        I am a skilled and reliable software engineer with over 4 years of experience specializing in
-                        full stack development. My expertise includes building scalable APIs, integrating with cloud
-                        services, and designing CI/CD pipelines.
-                    </p>
-                    <div className="mt-12 flex flex-col lg:flex-row items-center space-y-4 lg:space-y-0 lg:space-x-4">
-                        <a
-                            href="#"
-                            className="btn bg-primary text-light px-4 py-2 rounded shadow-lg hover:bg-secondary"
-                        >
-                            Download CV
-                        </a>
-                        <div className="social-icons flex space-x-4">
+            {activeSection === "home" && (
+                <section className="flex flex-col lg:flex-row justify-center items-center gap-12 p-36 h-full text-white z-1">
+                    <div className="order-2 lg:order-1 text-primary-dark space-y-6 text-center lg:text-left animate-slideIn">
+                        <h1 className="text-6xl font-bold font-beauRivage mb-6">Hua Wang</h1>
+                        <h2 className="text-3xl font-semibold mb-6 font-mono">Web Developer / Data Engineer</h2>
+                        <p className="mt-4 leading-normal text-lg font-poppins">
+                            I am a skilled and reliable software engineer with over 4 years of experience specializing
+                            in full stack development. My expertise includes building scalable APIs, integrating with
+                            cloud services, and designing CI/CD pipelines.
+                        </p>
+                        <div className="mt-12 flex flex-col lg:flex-row items-center space-y-4 lg:space-y-0 lg:space-x-4">
                             <a
                                 href="#"
-                                className="w-10 h-10 bg-primary inline-flex items-center justify-center p-2 border-1 border-primary rounded-full text-[20px] text-white no-underline transition duration-500 hover:bg-secondary hover:text-bg hover:shadow-lg"
+                                className="btn border-solid border-2 border-secondary text-light px-4 py-2 rounded shadow-lg hover:bg-secondary"
                             >
-                                <i className="ri-github-fill"></i>
+                                Download CV
                             </a>
-                            <a
-                                href="#"
-                                className="w-10 h-10 bg-primary inline-flex items-center justify-center p-2 border-1 border-primary rounded-full text-[20px]  text-white no-underline transition duration-500 hover:bg-secondary hover:text-bg hover:shadow-lg"
-                            >
-                                <i className="ri-linkedin-fill"></i>
-                            </a>
-                            <a
-                                href="#"
-                                className="w-10 h-10 bg-primary inline-flex items-center justify-center p-2 border-1 border-primary rounded-full text-[20px]  text-white no-underline transition duration-500 hover:bg-secondary hover:text-bg hover:shadow-lg"
-                            >
-                                <i className="ri-google-fill"></i>
-                            </a>
+                            <div className="flex space-x-4">
+                                <a
+                                    href="https://github.com/aemooooon"
+                                    target="_blank"
+                                    rel="noreferrer"
+                                    className="w-10 h-10 inline-flex items-center justify-center p-2 border-solid border-2 border-secondary rounded-full text-[24px] text-white no-underline transition duration-500 hover:bg-secondary hover:text-bg hover:shadow-lg"
+                                >
+                                    <i className="ri-github-fill"></i>
+                                </a>
+                                <a
+                                    href="https://www.linkedin.com/in/aemonwang"
+                                    target="_blank"
+                                    rel="noreferrer"
+                                    className="w-10 h-10 inline-flex items-center justify-center p-2 border-solid border-2 border-secondary rounded-full text-[20px]  text-white no-underline transition duration-500 hover:bg-secondary hover:text-bg hover:shadow-lg"
+                                >
+                                    <i className="ri-linkedin-fill"></i>
+                                </a>
+                                <a
+                                    href="mailto:aemooooon@gmail.com"
+                                    rel="noreferrer"
+                                    className="w-10 h-10 inline-flex items-center justify-center p-2 border-solid border-2 border-secondary rounded-full text-[20px]  text-white no-underline transition duration-500 hover:bg-secondary hover:text-bg hover:shadow-lg"
+                                >
+                                    <i className="ri-google-fill"></i>
+                                </a>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div className="order-1 lg:order-2">
-                    <div className="relative w-[25vw] h-[25vw] border-4 border-primary-dark rounded-full shadow-md overflow-hidden bg-light animate-hueRotate">
-                        <EffectPixelDistortion
-                            src={hua}
-                            style={{ width: "100%", height: "100%", cursor: "all-scroll" }}
-                        />
+                    <div className="order-1 lg:order-2 animate-zoomIn">
+                        <div className="relative w-[25vw] h-[25vw] border-4 border-secondary rounded-full shadow-md overflow-hidden bg-light animate-hueRotate">
+                            <EffectPixelDistortion
+                                src={hua}
+                                style={{ width: "100%", height: "100%", cursor: "all-scroll" }}
+                            />
+                        </div>
                     </div>
-                </div>
-            </section>
+                </section>
+            )}
+
+            {activeSection === "about" && (
+                <section className="flex justify-center items-center p-12 h-full text-white">
+                    <h1>About Section Placeholder</h1>
+                </section>
+            )}
+
+            {activeSection === "project" && (
+                <section
+                    className="my-36 mx-12 text-white overflow-y-auto"
+                    style={{ maxHeight: "calc(100vh - 300px)" }}
+                >
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 p-6">
+                        {portfolioData.map((item, index) => (
+                            <PortfolioCard key={index} {...item} />
+                        ))}
+                    </div>
+                </section>
+            )}
+
+            {activeSection === "gallery" && (
+                <section className="flex justify-center items-center p-12 h-full text-white">
+                    <h1>Gallery</h1>
+                </section>
+            )}
+
+            {activeSection === "contact" && (
+                <section className="py-8 lg:py-20 h-full text-white">
+                    <div className="flex justify-center items-center h-full">
+                        <form className="flex flex-col justify-center items-center w-full max-w-4xl">
+                            <h3 className="text-4xl font-semibold text-primary mb-12">Let&#39;s Work Together!</h3>
+                            <div className="flex space-x-4 justify-center items-center mb-12">
+                                <a
+                                    href="https://github.com/aemooooon"
+                                    target="_blank"
+                                    rel="noreferrer"
+                                    className="w-10 h-10 inline-flex items-center justify-center p-2 border-solid border-2 border-secondary rounded-full text-[24px] text-white no-underline transition duration-500 hover:bg-secondary hover:text-bg hover:shadow-lg"
+                                >
+                                    <i className="ri-github-fill"></i>
+                                </a>
+                                <a
+                                    href="https://www.linkedin.com/in/aemonwang"
+                                    target="_blank"
+                                    rel="noreferrer"
+                                    className="w-10 h-10 inline-flex items-center justify-center p-2 border-solid border-2 border-secondary rounded-full text-[20px]  text-white no-underline transition duration-500 hover:bg-secondary hover:text-bg hover:shadow-lg"
+                                >
+                                    <i className="ri-linkedin-fill"></i>
+                                </a>
+                                <a
+                                    href="mailto:aemooooon@gmail.com"
+                                    rel="noreferrer"
+                                    className="w-10 h-10 inline-flex items-center justify-center p-2 border-solid border-2 border-secondary rounded-full text-[20px]  text-white no-underline transition duration-500 hover:bg-secondary hover:text-bg hover:shadow-lg"
+                                >
+                                    <i className="ri-google-fill"></i>
+                                </a>
+                            </div>
+                            <div className="flex flex-wrap gap-6 w-full">
+                                <input
+                                    type="text"
+                                    placeholder="Full Name"
+                                    required
+                                    className="flex-1 min-w-[20rem] p-4 bg-gray-800 rounded-md text-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-primary focus:outline-none"
+                                />
+                                <input
+                                    type="email"
+                                    placeholder="Email Address"
+                                    required
+                                    className="flex-1 min-w-[20rem] p-4 bg-gray-800 rounded-md text-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-primary focus:outline-none"
+                                />
+                                <input
+                                    type="text"
+                                    placeholder="Phone Number"
+                                    required
+                                    className="flex-1 min-w-[20rem] p-4 bg-gray-800 rounded-md text-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-primary focus:outline-none"
+                                />
+                                <input
+                                    type="text"
+                                    placeholder="Email Subject"
+                                    required
+                                    className="flex-1 min-w-[20rem] p-4 bg-gray-800 rounded-md text-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-primary focus:outline-none"
+                                />
+                                <textarea
+                                    placeholder="Your Message"
+                                    required
+                                    className="w-full p-4 bg-gray-800 rounded-md text-lg text-white placeholder-gray-400 resize-none h-40 focus:ring-2 focus:ring-primary focus:outline-none"
+                                ></textarea>
+                            </div>
+                            <div className="mt-8">
+                                <button
+                                    type="submit"
+                                    className="btn bg-secondary text-light px-8 py-3 rounded font-semibold shadow-lg hover:bg-accent transition-all"
+                                >
+                                    Send Message
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </section>
+            )}
         </>
     );
 };

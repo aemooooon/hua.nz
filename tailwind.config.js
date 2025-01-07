@@ -21,6 +21,10 @@ export default {
         bg: '#f4f7f4', // 背景灰绿色
         textDark: '#1a1a1a', // 深色文本
         textLight: '#ffffff', // 浅色文本
+        dark: '#171f2b',
+        gray: {
+          800: '#2d3542', // 输入框背景色
+        },
       },
       animation: {
         hueRotate: "hueRotate 5s linear infinite",
