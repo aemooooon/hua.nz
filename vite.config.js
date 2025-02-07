@@ -6,7 +6,7 @@ import autoprefixer from 'autoprefixer';
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react()],
-  base: "./",
+  base: "/hua.nz/",
   assetsInclude: ['**/*.jpeg/**', '**/*.json/**', '**/*.jpg/**', '**/*.png/**', '**/*.svg/**', '**/*.webp/**'],
   css: {
     postcss: {
