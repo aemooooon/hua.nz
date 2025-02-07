@@ -239,15 +239,18 @@ const App = () => {
                 <section className="flex flex-col lg:flex-row justify-center items-center gap-12 p-36 h-full text-white z-1">
                     <div className="order-2 lg:order-1 text-primary-dark space-y-6 text-center lg:text-left animate-slideIn">
                         <h1 className="text-6xl font-bold font-beauRivage mb-6">Hua Wang</h1>
-                        <h2 className="text-3xl font-semibold mb-6 font-mono">Web Developer / Data Engineer</h2>
+                        <h2 className="text-3xl font-semibold mb-6 font-mono">Software Engineer / Web Developer / Data Engineer</h2>
                         <p className="mt-4 leading-normal text-lg font-poppins">
-                            I am a skilled and reliable software engineer with over 4 years of experience specializing
-                            in full stack development. My expertise includes building scalable APIs, integrating with
-                            cloud services, and designing CI/CD pipelines.
+                            I am a skilled, detail-oriented and reliable software engineer with 3 years of experience,
+                            especially in full-stack development. My expertise includes implementing Web APIs with
+                            several languages, building UI/UX based on the modern frontend framework and designing CI/CD
+                            pipelines with cloud services.
                         </p>
                         <div className="mt-12 flex flex-col lg:flex-row items-center space-y-4 lg:space-y-0 lg:space-x-4">
                             <a
-                                href="#"
+                                href="/public/Hua_Wang_Software_Engineer.pdf"
+                                target="_blank"
+                                download={true}
                                 className="btn border-solid border-2 border-secondary text-light px-4 py-2 rounded shadow-lg hover:bg-secondary"
                             >
                                 Download CV
