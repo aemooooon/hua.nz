@@ -19,7 +19,7 @@ export class EffectLorenzAttractor {
         this.y = 0;
         this.z = 0;
         this.dt = 0.005;
-        this.maxParticles = 8888; // 最大小球数量
+        this.maxParticles = 888; // 最大小球数量
 
         // Custom parameters
         this.fireballColor = params.fireballColor || new THREE.Color(0xff4500);

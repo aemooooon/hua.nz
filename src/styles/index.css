@@ -12,7 +12,6 @@
 body {
     height: 100vh;
     padding: 2.5%;
-    /* overflow: hidden; */
 }
 
 #root {
@@ -21,9 +20,9 @@ body {
     background: rgba(255, 255, 255, 0.1);
     border: 1px solid rgba(255, 255, 255, 0.382);
     border-radius: 1rem;
+    -webkit-backdrop-filter: blur(7px);
     backdrop-filter: blur(7px);
     min-width: 375px;
-    overflow: hidden;
 }
 
 /* 全局自定义滚动条 */
@@ -52,5 +51,7 @@ body {
 }
 
 /* 为滚动条在 Firefox 中启用 */
-scrollbar-width: thin; /* 滚动条宽度 */
-scrollbar-color: linear-gradient(45deg, #7ca65c, #afcc8f) #1d2012; /* 滚动条拇指和轨道颜色 */
+/* Fallback for browsers that do not support scrollbar-width */
+::-webkit-scrollbar {
+    width: 6px; /* 滚动条宽度 */
+}

@@ -7,6 +7,7 @@ import EffectPixelDistortion from "./components/EffectPixelDistortion";
 import EffectHeartBeats from "./components/EffectHeartBeats";
 import hua from "./assets/images/hua.jpeg";
 import PortfolioCard from "./components/PortfolioCard";
+import About from "./components/About";
 import aqi1 from "./assets/images/aqi/AQI1.jpg";
 import aqi2 from "./assets/images/aqi/AQI2.jpg";
 import aqi3 from "./assets/images/aqi/AQI3.jpg";
@@ -177,8 +178,7 @@ const App = () => {
                         menuOpen ? "translate-x-0" : "-translate-x-full"
                     }`}
                 >
-                    <a
-                        href="#"
+                    <button
                         className="font-audiowide text-lg hover:underline underline-offset-8 block lg:inline-block p-2 lg:p-0"
                         onClick={() => {
                             setMenuOpen(false);
@@ -187,9 +187,8 @@ const App = () => {
                         }}
                     >
                         Home
-                    </a>
-                    <a
-                        href="#"
+                    </button>
+                    <button
                         className="font-audiowide text-lg hover:underline underline-offset-8 block lg:inline-block p-2 lg:p-0"
                         onClick={() => {
                             setMenuOpen(false);
@@ -198,9 +197,8 @@ const App = () => {
                         }}
                     >
                         Project
-                    </a>
-                    <a
-                        href="#"
+                    </button>
+                    {/* <button
                         className="font-audiowide text-lg hover:underline underline-offset-8 block lg:inline-block p-2 lg:p-0"
                         onClick={() => {
                             setMenuOpen(false);
@@ -209,9 +207,8 @@ const App = () => {
                         }}
                     >
                         Gallery
-                    </a>
-                    <a
-                        href="#"
+                    </button> */}
+                    <button
                         className="font-audiowide text-lg hover:underline underline-offset-8 block lg:inline-block p-2 lg:p-0"
                         onClick={() => {
                             setMenuOpen(false);
@@ -220,9 +217,8 @@ const App = () => {
                         }}
                     >
                         About
-                    </a>
-                    <a
-                        href="#"
+                    </button>
+                    <button
                         className="font-audiowide text-lg hover:underline underline-offset-8 block lg:inline-block p-2 lg:p-0"
                         onClick={() => {
                             setMenuOpen(false);
@@ -231,15 +227,15 @@ const App = () => {
                         }}
                     >
                         Contact
-                    </a>
+                    </button>
                 </nav>
             </header>
 
             {activeSection === "home" && (
-                <section className="flex flex-col lg:flex-row justify-center items-center gap-12 p-36 h-full text-white z-1">
+                <section className="flex flex-col lg:flex-row justify-center items-center gap-12 p-36 h-full text-white z-1 fixed top-0 left-0 w-full">
                     <div className="order-2 lg:order-1 text-primary-dark space-y-6 text-center lg:text-left animate-slideIn">
                         <h1 className="text-6xl font-bold font-beauRivage mb-6">Hua Wang</h1>
-                        <h2 className="text-3xl font-semibold mb-6 font-mono">Software Engineer / Web Developer / Data Engineer</h2>
+                        <h2 className="text-3xl font-semibold mb-6 font-mono">Software Engineer</h2>
                         <p className="mt-4 leading-normal text-lg font-poppins">
                             I am a skilled, detail-oriented and reliable software engineer with 3 years of experience,
                             especially in full-stack development. My expertise includes implementing Web APIs with
@@ -294,9 +290,7 @@ const App = () => {
             )}
 
             {activeSection === "about" && (
-                <section className="flex justify-center items-center p-12 h-full text-white">
-                    <h1>About Section Placeholder</h1>
-                </section>
+                <About />
             )}
 
             {activeSection === "project" && (
