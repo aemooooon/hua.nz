@@ -8,11 +8,14 @@ import EffectHeartBeats from "./components/EffectHeartBeats";
 import hua from "./assets/images/hua.jpeg";
 import PortfolioCard from "./components/PortfolioCard";
 import About from "./components/About";
+import Contact from "./components/Contact";
 import aqi1 from "./assets/images/aqi/AQI1.jpg";
 import aqi2 from "./assets/images/aqi/AQI2.jpg";
 import aqi3 from "./assets/images/aqi/AQI3.jpg";
 import aqi4 from "./assets/images/aqi/AQI4.jpg";
 import aqi5 from "./assets/images/aqi/AQI5.jpg";
+import imageSrc from "./components/hua_icon_base64";
+import hoverImageSrc from "./assets/images/hua_500w1.jpg";
 
 const App = () => {
     const [currentEffect, setCurrentEffect] = useState("effectfuse");
@@ -289,9 +292,7 @@ const App = () => {
                 </section>
             )}
 
-            {activeSection === "about" && (
-                <About />
-            )}
+            {activeSection === "about" && <About />}
 
             {activeSection === "project" && (
                 <section
@@ -306,85 +307,13 @@ const App = () => {
                 </section>
             )}
 
-            {activeSection === "gallery" && (
+            {/* {activeSection === "gallery" && (
                 <section className="flex justify-center items-center p-12 h-full text-white">
                     <h1>Gallery</h1>
                 </section>
-            )}
+            )} */}
 
-            {activeSection === "contact" && (
-                <section className="py-8 lg:py-20 h-full text-white">
-                    <div className="flex justify-center items-center h-full">
-                        <form className="flex flex-col justify-center items-center w-full max-w-4xl">
-                            <h3 className="text-4xl font-semibold text-primary mb-12">Let&#39;s Work Together!</h3>
-                            <div className="flex space-x-4 justify-center items-center mb-12">
-                                <a
-                                    href="https://github.com/aemooooon"
-                                    target="_blank"
-                                    rel="noreferrer"
-                                    className="w-10 h-10 inline-flex items-center justify-center p-2 border-solid border-2 border-secondary rounded-full text-[24px] text-white no-underline transition duration-500 hover:bg-secondary hover:text-bg hover:shadow-lg"
-                                >
-                                    <i className="ri-github-fill"></i>
-                                </a>
-                                <a
-                                    href="https://www.linkedin.com/in/aemonwang"
-                                    target="_blank"
-                                    rel="noreferrer"
-                                    className="w-10 h-10 inline-flex items-center justify-center p-2 border-solid border-2 border-secondary rounded-full text-[20px]  text-white no-underline transition duration-500 hover:bg-secondary hover:text-bg hover:shadow-lg"
-                                >
-                                    <i className="ri-linkedin-fill"></i>
-                                </a>
-                                <a
-                                    href="mailto:aemooooon@gmail.com"
-                                    rel="noreferrer"
-                                    className="w-10 h-10 inline-flex items-center justify-center p-2 border-solid border-2 border-secondary rounded-full text-[20px]  text-white no-underline transition duration-500 hover:bg-secondary hover:text-bg hover:shadow-lg"
-                                >
-                                    <i className="ri-google-fill"></i>
-                                </a>
-                            </div>
-                            <div className="flex flex-wrap gap-6 w-full">
-                                <input
-                                    type="text"
-                                    placeholder="Full Name"
-                                    required
-                                    className="flex-1 min-w-[20rem] p-4 bg-gray-800 rounded-md text-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-primary focus:outline-none"
-                                />
-                                <input
-                                    type="email"
-                                    placeholder="Email Address"
-                                    required
-                                    className="flex-1 min-w-[20rem] p-4 bg-gray-800 rounded-md text-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-primary focus:outline-none"
-                                />
-                                <input
-                                    type="text"
-                                    placeholder="Phone Number"
-                                    required
-                                    className="flex-1 min-w-[20rem] p-4 bg-gray-800 rounded-md text-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-primary focus:outline-none"
-                                />
-                                <input
-                                    type="text"
-                                    placeholder="Email Subject"
-                                    required
-                                    className="flex-1 min-w-[20rem] p-4 bg-gray-800 rounded-md text-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-primary focus:outline-none"
-                                />
-                                <textarea
-                                    placeholder="Your Message"
-                                    required
-                                    className="w-full p-4 bg-gray-800 rounded-md text-lg text-white placeholder-gray-400 resize-none h-40 focus:ring-2 focus:ring-primary focus:outline-none"
-                                ></textarea>
-                            </div>
-                            <div className="mt-8">
-                                <button
-                                    type="submit"
-                                    className="btn bg-secondary text-light px-8 py-3 rounded font-semibold shadow-lg hover:bg-accent transition-all"
-                                >
-                                    Send Message
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                </section>
-            )}
+            {activeSection === "contact" && <Contact imageSrc={imageSrc} hoverImageSrc={hoverImageSrc} />}
         </>
     );
 };

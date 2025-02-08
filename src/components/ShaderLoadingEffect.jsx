@@ -1,9 +1,11 @@
 import { useEffect, useRef, useState } from "react";
 import { gsap } from "gsap";
 
-const ShaderLoadingEffect = ({ imageSrc }) => {
+const ShaderLoadingEffect = ({ imageSrc, hoverImageSrc }) => {
     const canvasRef = useRef(null);
+    const hoverImgRef = useRef(null); // 引用 hover img
     const [particles, setParticles] = useState([]);
+    const [isHovered, setIsHovered] = useState(false); // 控制图片显示状态
 
     // 初始化粒子动画
     const initializeParticles = (png) => {
@@ -69,8 +71,16 @@ const ShaderLoadingEffect = ({ imageSrc }) => {
         requestAnimationFrame(render);
     }, [particles]);
 
-    // 鼠标悬停时重新触发动画
+    // 鼠标悬停时显示图片并重新触发动画
     const handleMouseEnter = () => {
+        setIsHovered(true); // 显示图片
+        gsap.fromTo(
+            hoverImgRef.current,
+            { opacity: 0, scale: 0.8 }, // 初始状态
+            { opacity: 1, scale: 1.1, duration: 0.8, ease: "power2.out" } // 结束状态
+        );
+
+        // 重新触发动画
         const png = new Image();
         png.onload = () => {
             initializeParticles(png);
@@ -78,16 +88,51 @@ const ShaderLoadingEffect = ({ imageSrc }) => {
         png.src = imageSrc;
     };
 
+    // 鼠标离开时隐藏图片
+    const handleMouseLeave = () => {
+        gsap.to(hoverImgRef.current, {
+            opacity: 0,
+            scale: 0.8,
+            duration: 0.8,
+            ease: "power2.out",
+            onComplete: () => setIsHovered(false), // 动画完成后隐藏图片
+        });
+    };
+
     return (
-        <canvas
-            ref={canvasRef}
-            onMouseEnter={handleMouseEnter} // 监听鼠标点击事件
-            style={{
-                width: "100%",
-                height: "100%",
-                cursor: "pointer", // 添加鼠标指针样式
-            }}
-        />
+        <div
+            style={{ position: "relative", width: "100%", height: "100%" }}
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}
+        >
+            {/* Canvas */}
+            <canvas
+                ref={canvasRef}
+                style={{
+                    width: "100%",
+                    height: "100%",
+                    cursor: "pointer",
+                    objectFit: "cover",
+                }}
+            />
+
+            {/* 覆盖图片 */}
+            <img
+                ref={hoverImgRef}
+                src={hoverImageSrc}
+                alt="Hover Image"
+                style={{
+                    position: "absolute",
+                    top: "50%",
+                    left: "50%",
+                    transform: "translate(-50%, -50%) scale(0.8)", // 初始状态
+                    opacity: 0, // 初始状态
+                    visibility: isHovered ? "visible" : "hidden", // 控制可见性
+                    transition: "opacity 0.8s ease, transform 0.8s ease", // 添加过渡效果
+                    pointerEvents: "none", // 防止图片遮挡 Canvas 的交互
+                }}
+            />
+        </div>
     );
 };
 
