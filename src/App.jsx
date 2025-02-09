@@ -119,26 +119,39 @@ const App = () => {
 
     return (
         <>
-            <header className="fixed top-0 left-0 w-full z-10 bg-primary-dark text-white flex justify-between items-center">
+            <header className="fixed top-0 left-0 w-full z-10 bg-primary-dark text-white grid grid-cols-3 items-center">
                 <div
-                    className="animate-zoomIn cursor-pointer"
+                    className="flex justify-start cursor-pointer items-center text-2xl pl-8 font-bold font-audiowide"
                     onClick={() => {
                         setCurrentEffect("effectfuse");
                         setActiveSection("home");
                     }}
                 >
-                    <div className="relative w-[60px] h-[60px] mt-4 ml-4 border-4 border-secondary rounded-full shadow-md overflow-hidden bg-light animate-hueRotate">
+                    Home
+                </div>
+
+                <div
+                    className="flex justify-center cursor-pointer animate-zoomIn"
+                    onClick={() => {
+                        setCurrentEffect("effectfuse");
+                        setActiveSection("home");
+                    }}
+                >
+                    <div className="relative w-[60px] h-[60px] mt-4 border-2 border-secondary rounded-full shadow-md overflow-hidden bg-light animate-hueRotate">
                         <EffectPixelDistortion src={hua} />
                     </div>
                 </div>
-                <div
-                    className="text-2xl font-bold font-audiowide pr-12 cursor-pointer animate-slideIn"
-                    onClick={() => {
-                        setCurrentEffect("effectmonjori");
-                        setActiveSection("project");
-                    }}
-                >
-                    Portfolio.
+
+                <div className="flex justify-end items-center text-2xl font-bold font-audiowide pr-8 animate-slideIn">
+                    <div
+                        onClick={() => {
+                            setCurrentEffect("effectmonjori");
+                            setActiveSection("project");
+                        }}
+                        className="cursor-pointer"
+                    >
+                        Portfolio.
+                    </div>
                 </div>
             </header>
 

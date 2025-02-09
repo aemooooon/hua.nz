@@ -45,7 +45,7 @@ const Project = () => {
 
     const flyToMarker = (coordinates) => {
         if (mapRef.current) {
-            mapRef.current.flyTo(coordinates, 12, { animate: true, duration: 1.5 });
+            mapRef.current.flyTo(coordinates, 16, { animate: true, duration: 1.5 });
         }
     };
 
@@ -53,7 +53,7 @@ const Project = () => {
         if (mapRef.current && locations.length > 0) {
             const bounds = L.latLngBounds(locations.map((loc) => loc.coordinates));
             mapRef.current.flyToBounds(bounds, {
-                padding: [50, 50], // Add some padding around the markers
+                padding: [100, 100], // Add some padding around the markers
                 maxZoom: 10, // Prevent zoom from being too close
                 animate: true,
                 duration: 1.5,
@@ -74,20 +74,21 @@ const Project = () => {
         (loc) => activeCategory === "All" || loc.type === activeCategory
     );
 
+
     return (
         <>
             <section className="mt-24 mx-8 text-white overflow-hidden">
-                <div id="map" className="relative h-full rounded-lg shadow-lg overflow-hidden">
+                <div id="map" className="relative h-full overflow-hidden">
                     {/* Filter Buttons */}
                     <div className="absolute flex flex-col top-1/2 right-4 transform -translate-y-1/2 space-y-4 z-[2000] pointer-events-auto">
-                        {["All", "project", "work", "education"].map((category) => (
+                        {["All", "education", "work", "project"].map((category) => (
                             <button
                                 key={category}
                                 onClick={() => handleFilterChange(category)}
                                 className={`btn px-4 py-2 rounded shadow-lg border-2 transition duration-300 ${
                                     activeCategory === category
                                         ? "bg-secondary text-white"
-                                        : "border-secondary text-white hover:bg-secondary hover:text-black"
+                                        : "border-secondary bg-secondary text-white hover:bg-secondary hover:text-black"
                                 }`}
                             >
                                 {category.charAt(0).toUpperCase() + category.slice(1)}
@@ -132,13 +133,24 @@ const Project = () => {
                                         click: () => flyToMarker(loc.coordinates),
                                     }}
                                 >
-                                    <Popup>
+                                    <Popup >
                                         <div>
-                                            <h3>{loc.title}</h3>
-                                            <p>{loc.description}</p>
-                                            <a href={loc.link} target="_blank" rel="noopener noreferrer">
-                                                Learn more
-                                            </a>
+                                            {loc.title && <h3 className="font-bold text-xl">{loc.title}</h3>}
+                                            {loc.name && <h3 className="text-xl italic mb-2">{loc.name}</h3>}
+                                            {loc.year && <h3 className="text-xl italic mb-2">{loc.year}</h3>}
+                                            {loc.img && (
+                                                <div>
+                                                    <img src={loc.img} className="object-cover" alt="Location" />
+                                                </div>
+                                            )}
+
+                                            {loc.description && <p>{loc.description}</p>}
+
+                                            {loc.link && (
+                                                <a href={loc.link} target="_blank" rel="noopener noreferrer">
+                                                    Learn more
+                                                </a>
+                                            )}
                                         </div>
                                     </Popup>
                                 </Marker>

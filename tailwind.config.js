@@ -1,4 +1,3 @@
-/** @type {import('tailwindcss').Config} */
 export default {
   content: [
     './index.html',
@@ -7,10 +6,10 @@ export default {
   theme: {
     extend: {
       screens: {
-        'xs': '320px', // 添加 iPhone 4S 的断点
+        'xs': '320px',
       },
       spacing: {
-        '72': '18rem', // 添加自定义间距
+        '72': '18rem',
         '84': '21rem',
         '96': '24rem',
       },
@@ -21,17 +20,17 @@ export default {
         poppins: ['"Poppins"', 'sans-serif'],
       },
       colors: {
-        primaryDark: '#1d2012', // 深绿色
-        primary: '#afcc8f', // 浅绿色
-        secondary: '#7ca65c', // 中等绿色
-        accent: '#5d7d4b', // 次要绿色
-        muted: '#768e90', // 蓝绿色
-        bg: '#f4f7f4', // 背景灰绿色
-        textDark: '#1a1a1a', // 深色文本
-        textLight: '#ffffff', // 浅色文本
+        primaryDark: '#1d2012',
+        primary: '#afcc8f',
+        secondary: '#7ca65c',
+        accent: '#5d7d4b',
+        muted: '#768e90',
+        bg: '#f4f7f4',
+        textDark: '#1a1a1a',
+        textLight: '#ffffff',
         dark: '#171f2b',
         gray: {
-          800: '#2d3542', // 输入框背景色
+          800: '#2d3542',
         },
       },
       animation: {
@@ -41,26 +40,11 @@ export default {
       },
       keyframes: {
         hueRotate: {
-          "0%": {
-            boxShadow: "0 0 20px #1d2012",
-            borderColor: "#1d2012",
-          },
-          "20%": {
-            boxShadow: "0 0 40px #afcc8f",
-            borderColor: "#afcc8f",
-          },
-          "50%": {
-            boxShadow: "0 0 60px #7ca65c",
-            borderColor: "#7ca65c",
-          },
-          "80%": {
-            boxShadow: "0 0 40px #5d7d4b",
-            borderColor: "#5d7d4b",
-          },
-          "100%": {
-            boxShadow: "0 0 20px #768e90",
-            borderColor: "#768e90",
-          },
+          "0%": { boxShadow: "0 0 20px #1d2012", borderColor: "#1d2012" },
+          "20%": { boxShadow: "0 0 40px #afcc8f", borderColor: "#afcc8f" },
+          "50%": { boxShadow: "0 0 60px #7ca65c", borderColor: "#7ca65c" },
+          "80%": { boxShadow: "0 0 40px #5d7d4b", borderColor: "#5d7d4b" },
+          "100%": { boxShadow: "0 0 20px #768e90", borderColor: "#768e90" },
         },
         zoomIn: {
           "0%": { transform: "scale(0)", opacity: "0" },
@@ -72,11 +56,10 @@ export default {
         },
       },
       borderRadius: {
-        DEFAULT: "0.25rem", // 默认边框半径
-        full: "50%", // 圆形边框
+        DEFAULT: "0.25rem",
+        full: "50%",
       },
     },
   },
   plugins: [],
 }
-
