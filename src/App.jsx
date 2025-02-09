@@ -4,56 +4,14 @@ import { EffectFuse } from "./components/EffectFuse";
 import { EffectMonjori } from "./components/EffectMonjori";
 import { EffectLorenzAttractor } from "./components/EffectLorenzAttractor";
 import EffectHeartBeats from "./components/EffectHeartBeats";
+import EffectPixelDistortion from "./components/EffectPixelDistortion";
 import hua from "./assets/images/hua.jpeg";
-import PortfolioCard from "./components/PortfolioCard";
 import Home from "./components/Home";
-import About from "./components/About";
-import Contact from "./components/Contact";
-import aqi1 from "./assets/images/aqi/AQI1.jpg";
-import aqi2 from "./assets/images/aqi/AQI2.jpg";
-import aqi3 from "./assets/images/aqi/AQI3.jpg";
-import aqi4 from "./assets/images/aqi/AQI4.jpg";
-import aqi5 from "./assets/images/aqi/AQI5.jpg";
-import imageSrc from "./components/hua_icon_base64";
-import hoverImageSrc from "./assets/images/hua_500w1.jpg";
+import Project from "./components/Project";
 
 const App = () => {
     const [currentEffect, setCurrentEffect] = useState("effectfuse");
-    const [menuOpen, setMenuOpen] = useState(false);
     const [activeSection, setActiveSection] = useState("home");
-
-    const portfolioData = [
-        {
-            title: "Frontend Project",
-            description: "Lorem ipsum dolor sit amet consectetur volup adipisicing elit. Placeat el voluptatem.",
-            techUsed: "HTML5, CSS3, JavaScript",
-            imgSrc: aqi1,
-        },
-        {
-            title: "Full Stack Project",
-            description: "Lorem ipsum dolor sit amet consectetur volup adipisicing elit. Placeat el voluptatem.",
-            techUsed: "Next.js, Tailwind.css, Node.js",
-            imgSrc: aqi2,
-        },
-        {
-            title: "Frontend Project",
-            description: "Lorem ipsum dolor sit amet consectetur volup adipisicing elit. Placeat el voluptatem.",
-            techUsed: "React.js, Tailwind.css",
-            imgSrc: aqi3,
-        },
-        {
-            title: "Frontend Project",
-            description: "Lorem ipsum dolor sit amet consectetur volup adipisicing elit. Placeat el voluptatem.",
-            techUsed: "HTML5, Bootstrap, JavaScript",
-            imgSrc: aqi4,
-        },
-        {
-            title: "Frontend Project",
-            description: "Lorem ipsum dolor sit amet consectetur volup adipisicing elit. Placeat el voluptatem.",
-            techUsed: "Next.js, Tailwind.css",
-            imgSrc: aqi5,
-        },
-    ];
 
     useEffect(() => {
         let effectInstance;
@@ -161,87 +119,32 @@ const App = () => {
 
     return (
         <>
-            <header className="fixed top-0 left-0 w-full pt-10 px-10 z-10 bg-primary-dark text-white flex justify-between items-center">
-                <span
-                    className="text-2xl font-bold font-audiowide cursor-pointer animate-slideIn"
+            <header className="fixed top-0 left-0 w-full z-10 bg-primary-dark text-white flex justify-between items-center">
+                <div
+                    className="animate-zoomIn cursor-pointer"
                     onClick={() => {
                         setCurrentEffect("effectfuse");
                         setActiveSection("home");
                     }}
                 >
-                    Portfolio.
-                </span>
-                <div className="lg:hidden">
-                    <button className="text-3xl focus:outline-none" onClick={() => setMenuOpen(!menuOpen)}>
-                        &#9776;
-                    </button>
+                    <div className="relative w-[60px] h-[60px] mt-4 ml-4 border-4 border-secondary rounded-full shadow-md overflow-hidden bg-light animate-hueRotate">
+                        <EffectPixelDistortion src={hua} />
+                    </div>
                 </div>
-                <nav
-                    className={`lg:flex space-x-4 absolute lg:static top-[60px] left-0 bg-primary-dark w-full lg:w-auto lg:bg-transparent flex-col lg:flex-row items-center text-center transition-transform duration-300 transform lg:translate-x-0 ${
-                        menuOpen ? "translate-x-0" : "-translate-x-full"
-                    }`}
+                <div
+                    className="text-2xl font-bold font-audiowide pr-12 cursor-pointer animate-slideIn"
+                    onClick={() => {
+                        setCurrentEffect("effectmonjori");
+                        setActiveSection("project");
+                    }}
                 >
-                    <button
-                        className="font-audiowide text-lg hover:underline underline-offset-8 block lg:inline-block p-2 lg:p-0"
-                        onClick={() => {
-                            setMenuOpen(false);
-                            setCurrentEffect("effectfuse");
-                            setActiveSection("home");
-                        }}
-                    >
-                        Home
-                    </button>
-                    <button
-                        className="font-audiowide text-lg hover:underline underline-offset-8 block lg:inline-block p-2 lg:p-0"
-                        onClick={() => {
-                            setMenuOpen(false);
-                            setCurrentEffect("effectmonjori");
-                            setActiveSection("project");
-                        }}
-                    >
-                        Project
-                    </button>
-                    <button
-                        className="font-audiowide text-lg hover:underline underline-offset-8 block lg:inline-block p-2 lg:p-0"
-                        onClick={() => {
-                            setMenuOpen(false);
-                            setCurrentEffect("effectlorenzattractor");
-                            setActiveSection("about");
-                        }}
-                    >
-                        About
-                    </button>
-                    <button
-                        className="font-audiowide text-lg hover:underline underline-offset-8 block lg:inline-block p-2 lg:p-0"
-                        onClick={() => {
-                            setMenuOpen(false);
-                            setCurrentEffect("heartEffect");
-                            setActiveSection("contact");
-                        }}
-                    >
-                        Contact
-                    </button>
-                </nav>
+                    Portfolio.
+                </div>
             </header>
 
             {activeSection === "home" && <Home hua={hua} />}
 
-            {activeSection === "about" && <About />}
-
-            {activeSection === "project" && (
-                <section
-                    className="my-36 mx-12 text-white overflow-y-auto"
-                    style={{ maxHeight: "calc(100vh - 300px)" }}
-                >
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 p-6">
-                        {portfolioData.map((item, index) => (
-                            <PortfolioCard key={index} {...item} />
-                        ))}
-                    </div>
-                </section>
-            )}
-
-            {activeSection === "contact" && <Contact imageSrc={imageSrc} hoverImageSrc={hoverImageSrc} />}
+            {activeSection === "project" && <Project />}
         </>
     );
 };

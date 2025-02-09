@@ -24,18 +24,24 @@ const customMarkerIcon = L.divIcon({
     iconAnchor: [20, 40],
 });
 
-const About = () => {
+const Project = () => {
     const mapRef = useRef(null);
     const [activeCategory, setActiveCategory] = useState("All");
 
+    // Function to calculate centroid of filtered locations
     const calculateCentroid = (locations) => {
         const total = locations.length;
+        if (total === 0) return [0, 0];
         const sumLat = locations.reduce((acc, loc) => acc + loc.coordinates[0], 0);
         const sumLon = locations.reduce((acc, loc) => acc + loc.coordinates[1], 0);
         return [sumLat / total, sumLon / total];
     };
 
-    const centroid = calculateCentroid(locationData.locations);
+    const handleFilterChange = (category) => {
+        setActiveCategory(category);
+        const filtered = locationData.locations.filter((loc) => category === "All" || loc.type === category);
+        flyToFilteredLocations(filtered);
+    };
 
     const flyToMarker = (coordinates) => {
         if (mapRef.current) {
@@ -43,10 +49,20 @@ const About = () => {
         }
     };
 
-    const createCustomClusterIcon = (cluster) => {
-        // Count markers in the cluster
-        const childCount = cluster.getChildCount();
+    const flyToFilteredLocations = (locations) => {
+        if (mapRef.current && locations.length > 0) {
+            const bounds = L.latLngBounds(locations.map((loc) => loc.coordinates));
+            mapRef.current.flyToBounds(bounds, {
+                padding: [50, 50], // Add some padding around the markers
+                maxZoom: 10, // Prevent zoom from being too close
+                animate: true,
+                duration: 1.5,
+            });
+        }
+    };
 
+    const createCustomClusterIcon = (cluster) => {
+        const childCount = cluster.getChildCount();
         return L.divIcon({
             html: `<div class="custom-cluster-icon">${childCount}</div>`,
             className: "custom-cluster",
@@ -60,29 +76,30 @@ const About = () => {
 
     return (
         <>
-            <section className="my-36 mx-12 text-white overflow-hidden" style={{ maxHeight: "calc(100vh - 300px)" }}>
-                <div id="map" className="relative">
+            <section className="mt-24 mx-8 text-white overflow-hidden">
+                <div id="map" className="relative h-full rounded-lg shadow-lg overflow-hidden">
                     {/* Filter Buttons */}
-                    <div className="absolute top-1/2 right-4 transform -translate-y-1/2 space-y-4 z-[2000] pointer-events-auto">
-                        {["All", "work", "project", "education"].map((category) => (
+                    <div className="absolute flex flex-col top-1/2 right-4 transform -translate-y-1/2 space-y-4 z-[2000] pointer-events-auto">
+                        {["All", "project", "work", "education"].map((category) => (
                             <button
                                 key={category}
-                                onClick={() => setActiveCategory(category)}
-                                className={`btn px-4 py-2 rounded shadow-lg border-2 ${
+                                onClick={() => handleFilterChange(category)}
+                                className={`btn px-4 py-2 rounded shadow-lg border-2 transition duration-300 ${
                                     activeCategory === category
                                         ? "bg-secondary text-white"
-                                        : "border-secondary text-white"
-                                } transition hover:bg-secondary hover:text-bg`}
+                                        : "border-secondary text-white hover:bg-secondary hover:text-black"
+                                }`}
                             >
                                 {category.charAt(0).toUpperCase() + category.slice(1)}
                             </button>
                         ))}
                     </div>
+
                     <MapContainer
-                        center={centroid}
+                        center={calculateCentroid(locationData.locations)}
                         zoom={3}
                         scrollWheelZoom
-                        style={{ width: "100%", height: "75vh" }}
+                        style={{ width: "100%", height: "calc(100vh - 15rem)" }}
                         zoomControl={false}
                     >
                         <MapInstanceSetter mapRef={mapRef} />
@@ -150,4 +167,4 @@ MapInstanceSetter.propTypes = {
     }).isRequired,
 };
 
-export default About;
+export default Project;

@@ -159,7 +159,7 @@ const ShaderLoadingEffect = ({ imageSrc, hoverImageSrc }) => {
                     position: "absolute",
                     top: "50%",
                     left: "50%",
-                    transform: "translate(-50%, -50%)", // 初始状态
+                    transform: "translate(-50%, -30%) scale(1.5)", // 初始状态
                 }}
             />
 
@@ -172,7 +172,7 @@ const ShaderLoadingEffect = ({ imageSrc, hoverImageSrc }) => {
                     position: "absolute",
                     top: "50%",
                     left: "50%",
-                    transform: "translate(-50%, -50%)", // 初始状态
+                    transform: "translate(-50%, -40%)", // 初始状态
                     opacity: 0, // 初始状态
                     visibility: isHovered ? "visible" : "hidden", // 控制可见性
                     transition: "opacity 0.8s ease, transform 0.8s ease", // 添加过渡效果

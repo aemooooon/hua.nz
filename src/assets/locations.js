@@ -30,7 +30,7 @@ const locations = {
             "description": "Built a real-time AQI publishing system with Java Spring Boot and React frontend.",
             "coordinates": [30.271498, 109.488606],
             "year": "2020",
-            "link": ""
+            "link": "https://aqi.eseemc.cn/"
         },
         {
             "type": "education",

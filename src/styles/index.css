@@ -23,6 +23,7 @@ body {
     -webkit-backdrop-filter: blur(7px);
     backdrop-filter: blur(7px);
     min-width: 375px;
+    min-height: 618px;
 }
 
 /* 全局自定义滚动条 */
@@ -72,8 +73,9 @@ body {
 .marker-icon {
     width: 20px;
     height: 20px;
-    background: radial-gradient(circle, #00f260, #5d7d4b);
+    background-color: #e63946;
     border-radius: 50%;
+    border: 2px solid white;
 }
 
 .custom-cluster {
