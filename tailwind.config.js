@@ -6,6 +6,14 @@ export default {
   ],
   theme: {
     extend: {
+      screens: {
+        'xs': '320px', // 添加 iPhone 4S 的断点
+      },
+      spacing: {
+        '72': '18rem', // 添加自定义间距
+        '84': '21rem',
+        '96': '24rem',
+      },
       fontFamily: {
         audiowide: ['"Audiowide"', 'cursive'],
         beauRivage: ['"Beau Rivage"', 'serif'],

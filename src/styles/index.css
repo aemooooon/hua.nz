@@ -11,7 +11,7 @@
 
 body {
     height: 100vh;
-    padding: 2.5%;
+    padding: 2%;
 }
 
 #root {
@@ -54,4 +54,46 @@ body {
 /* Fallback for browsers that do not support scrollbar-width */
 ::-webkit-scrollbar {
     width: 6px; /* 滚动条宽度 */
+}
+
+.leaflet-marker-icon.custom-marker {
+    background-color: #afcc8f;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    font-weight: bold;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+}
+
+.marker-icon {
+    width: 20px;
+    height: 20px;
+    background: radial-gradient(circle, #00f260, #5d7d4b);
+    border-radius: 50%;
+}
+
+.custom-cluster {
+    background: linear-gradient(to right, #7ca65c, #afcc8f);
+    border: 1px solid #fff;
+    border-radius: 50%;
+    color: white;
+    font-weight: bold;
+    display: flex;
+    justify-content: center;
+    text-align: center;
+    align-items: center;
+    animation: hueRotate 6s infinite linear;
+}
+
+.custom-cluster:hover {
+    transform: scale(1.5);
+}
+
+.custom-cluster-icon {
+    font-size: 24px;
+    font-family: Arial, sans-serif;
 }

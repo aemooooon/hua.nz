@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import PropTypes from "prop-types";
 import { gsap } from "gsap";
 
 const ShaderLoadingEffect = ({ imageSrc, hoverImageSrc }) => {
@@ -6,22 +7,26 @@ const ShaderLoadingEffect = ({ imageSrc, hoverImageSrc }) => {
     const hoverImgRef = useRef(null); // 引用 hover img
     const [particles, setParticles] = useState([]);
     const [isHovered, setIsHovered] = useState(false); // 控制图片显示状态
+    const [aspectRatio, setAspectRatio] = useState(1); // 存储 canvas 的宽高比
 
     // 初始化粒子动画
     const initializeParticles = (png) => {
         const canvas = canvasRef.current;
-        const ctx = canvas.getContext("2d");
+        const ctx = canvas.getContext("2d", { willReadFrequently: true });
 
+        // 设置 canvas 的原始宽高
         canvas.width = png.width * 2;
         canvas.height = png.height * 2;
+        setAspectRatio(png.width / png.height); // 计算宽高比
+
         ctx.drawImage(png, 0, 0);
 
         const data = ctx.getImageData(0, 0, png.width, png.height);
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
         const newParticles = [];
-        for (let y = 0, y2 = data.height; y < y2; y += 8) {
-            for (let x = 0, x2 = data.width; x < x2; x += 8) {
+        for (let y = 0, y2 = data.height; y < y2; y += 4) {
+            for (let x = 0, x2 = data.width; x < x2; x += 4) {
                 const particle = {
                     x0: x,
                     y0: y,
@@ -71,13 +76,52 @@ const ShaderLoadingEffect = ({ imageSrc, hoverImageSrc }) => {
         requestAnimationFrame(render);
     }, [particles]);
 
+    // 监听浏览器缩放事件
+    useEffect(() => {
+        const handleResize = () => {
+            const canvas = canvasRef.current;
+            if (!canvas) return;
+
+            // 获取父容器的宽度
+            const parentWidth = canvas.parentElement.clientWidth;
+            const parentHeight = canvas.parentElement.clientHeight;
+
+            // 根据宽高比计算 canvas 的新宽度和高度
+            let newWidth, newHeight;
+            if (parentWidth / parentHeight > aspectRatio) {
+                // 父容器宽度过大，以高度为基准
+                newHeight = parentHeight;
+                newWidth = newHeight * aspectRatio;
+            } else {
+                // 父容器高度过大，以宽度为基准
+                newWidth = parentWidth;
+                newHeight = newWidth / aspectRatio;
+            }
+
+            // 设置 canvas 的宽度和高度
+            canvas.style.width = `${newWidth}px`;
+            canvas.style.height = `${newHeight}px`;
+        };
+
+        // 初始化时调用一次
+        handleResize();
+
+        // 监听 resize 事件
+        window.addEventListener("resize", handleResize);
+
+        // 清理事件监听器
+        return () => {
+            window.removeEventListener("resize", handleResize);
+        };
+    }, [aspectRatio]);
+
     // 鼠标悬停时显示图片并重新触发动画
     const handleMouseEnter = () => {
         setIsHovered(true); // 显示图片
         gsap.fromTo(
             hoverImgRef.current,
-            { opacity: 0, scale: 0.8 }, // 初始状态
-            { opacity: 1, scale: 1.1, duration: 0.8, ease: "power2.out" } // 结束状态
+            { opacity: 0 }, // 初始状态
+            { opacity: 1, scale: 1.0, duration: 0.8, ease: "power2.out" } // 结束状态
         );
 
         // 重新触发动画
@@ -92,7 +136,6 @@ const ShaderLoadingEffect = ({ imageSrc, hoverImageSrc }) => {
     const handleMouseLeave = () => {
         gsap.to(hoverImgRef.current, {
             opacity: 0,
-            scale: 0.8,
             duration: 0.8,
             ease: "power2.out",
             onComplete: () => setIsHovered(false), // 动画完成后隐藏图片
@@ -113,6 +156,10 @@ const ShaderLoadingEffect = ({ imageSrc, hoverImageSrc }) => {
                     height: "100%",
                     cursor: "pointer",
                     objectFit: "cover",
+                    position: "absolute",
+                    top: "50%",
+                    left: "50%",
+                    transform: "translate(-50%, -50%)", // 初始状态
                 }}
             />
 
@@ -125,7 +172,7 @@ const ShaderLoadingEffect = ({ imageSrc, hoverImageSrc }) => {
                     position: "absolute",
                     top: "50%",
                     left: "50%",
-                    transform: "translate(-50%, -50%) scale(0.8)", // 初始状态
+                    transform: "translate(-50%, -50%)", // 初始状态
                     opacity: 0, // 初始状态
                     visibility: isHovered ? "visible" : "hidden", // 控制可见性
                     transition: "opacity 0.8s ease, transform 0.8s ease", // 添加过渡效果
@@ -134,6 +181,10 @@ const ShaderLoadingEffect = ({ imageSrc, hoverImageSrc }) => {
             />
         </div>
     );
+};
+ShaderLoadingEffect.propTypes = {
+    imageSrc: PropTypes.string.isRequired,
+    hoverImageSrc: PropTypes.string.isRequired,
 };
 
 export default ShaderLoadingEffect;

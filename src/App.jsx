@@ -3,10 +3,10 @@ import * as THREE from "three";
 import { EffectFuse } from "./components/EffectFuse";
 import { EffectMonjori } from "./components/EffectMonjori";
 import { EffectLorenzAttractor } from "./components/EffectLorenzAttractor";
-import EffectPixelDistortion from "./components/EffectPixelDistortion";
 import EffectHeartBeats from "./components/EffectHeartBeats";
 import hua from "./assets/images/hua.jpeg";
 import PortfolioCard from "./components/PortfolioCard";
+import Home from "./components/Home";
 import About from "./components/About";
 import Contact from "./components/Contact";
 import aqi1 from "./assets/images/aqi/AQI1.jpg";
@@ -161,7 +161,7 @@ const App = () => {
 
     return (
         <>
-            <header className="fixed top-0 left-0 w-full pt-20 px-24 z-10 bg-primary-dark text-white flex justify-between items-center">
+            <header className="fixed top-0 left-0 w-full pt-10 px-10 z-10 bg-primary-dark text-white flex justify-between items-center">
                 <span
                     className="text-2xl font-bold font-audiowide cursor-pointer animate-slideIn"
                     onClick={() => {
@@ -201,16 +201,6 @@ const App = () => {
                     >
                         Project
                     </button>
-                    {/* <button
-                        className="font-audiowide text-lg hover:underline underline-offset-8 block lg:inline-block p-2 lg:p-0"
-                        onClick={() => {
-                            setMenuOpen(false);
-                            setCurrentEffect("effectlorenzattractor");
-                            setActiveSection("gallery");
-                        }}
-                    >
-                        Gallery
-                    </button> */}
                     <button
                         className="font-audiowide text-lg hover:underline underline-offset-8 block lg:inline-block p-2 lg:p-0"
                         onClick={() => {
@@ -234,63 +224,7 @@ const App = () => {
                 </nav>
             </header>
 
-            {activeSection === "home" && (
-                <section className="flex flex-col lg:flex-row justify-center items-center gap-12 p-36 h-full text-white z-1 fixed top-0 left-0 w-full">
-                    <div className="order-2 lg:order-1 text-primary-dark space-y-6 text-center lg:text-left animate-slideIn">
-                        <h1 className="text-6xl font-bold font-beauRivage mb-6">Hua Wang</h1>
-                        <h2 className="text-3xl font-semibold mb-6 font-mono">Software Engineer</h2>
-                        <p className="mt-4 leading-normal text-lg font-poppins">
-                            I am a skilled, detail-oriented and reliable software engineer with 3 years of experience,
-                            especially in full-stack development. My expertise includes implementing Web APIs with
-                            several languages, building UI/UX based on the modern frontend framework and designing CI/CD
-                            pipelines with cloud services.
-                        </p>
-                        <div className="mt-12 flex flex-col lg:flex-row items-center space-y-4 lg:space-y-0 lg:space-x-4">
-                            <a
-                                href="/Hua_Wang_Software_Engineer.pdf"
-                                target="_blank"
-                                download={true}
-                                className="btn border-solid border-2 border-secondary text-light px-4 py-2 rounded shadow-lg hover:bg-secondary"
-                            >
-                                Download CV
-                            </a>
-                            <div className="flex space-x-4">
-                                <a
-                                    href="https://github.com/aemooooon"
-                                    target="_blank"
-                                    rel="noreferrer"
-                                    className="w-10 h-10 inline-flex items-center justify-center p-2 border-solid border-2 border-secondary rounded-full text-[24px] text-white no-underline transition duration-500 hover:bg-secondary hover:text-bg hover:shadow-lg"
-                                >
-                                    <i className="ri-github-fill"></i>
-                                </a>
-                                <a
-                                    href="https://www.linkedin.com/in/aemonwang"
-                                    target="_blank"
-                                    rel="noreferrer"
-                                    className="w-10 h-10 inline-flex items-center justify-center p-2 border-solid border-2 border-secondary rounded-full text-[20px]  text-white no-underline transition duration-500 hover:bg-secondary hover:text-bg hover:shadow-lg"
-                                >
-                                    <i className="ri-linkedin-fill"></i>
-                                </a>
-                                <a
-                                    href="mailto:aemooooon@gmail.com"
-                                    rel="noreferrer"
-                                    className="w-10 h-10 inline-flex items-center justify-center p-2 border-solid border-2 border-secondary rounded-full text-[20px]  text-white no-underline transition duration-500 hover:bg-secondary hover:text-bg hover:shadow-lg"
-                                >
-                                    <i className="ri-google-fill"></i>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                    <div className="order-1 lg:order-2 animate-zoomIn">
-                        <div className="relative w-[25vw] h-[25vw] border-4 border-secondary rounded-full shadow-md overflow-hidden bg-light animate-hueRotate">
-                            <EffectPixelDistortion
-                                src={hua}
-                                style={{ width: "100%", height: "100%", cursor: "all-scroll" }}
-                            />
-                        </div>
-                    </div>
-                </section>
-            )}
+            {activeSection === "home" && <Home hua={hua} />}
 
             {activeSection === "about" && <About />}
 
@@ -306,12 +240,6 @@ const App = () => {
                     </div>
                 </section>
             )}
-
-            {/* {activeSection === "gallery" && (
-                <section className="flex justify-center items-center p-12 h-full text-white">
-                    <h1>Gallery</h1>
-                </section>
-            )} */}
 
             {activeSection === "contact" && <Contact imageSrc={imageSrc} hoverImageSrc={hoverImageSrc} />}
         </>
