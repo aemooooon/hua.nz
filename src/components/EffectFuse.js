@@ -157,12 +157,20 @@ export class EffectFuse {
             cancelAnimationFrame(this.animationFrameId);
             this.animationFrameId = null;
         }
+
+        // 释放 WebGL 程序和缓冲区
+        if (this.gl) {
+            this.gl.deleteProgram(this.program);
+            this.gl.deleteBuffer(this.positionBuffer);  // 确保在 setupBuffers() 中存储 positionBuffer
+        }
+
+        this.gl = null;  // 释放 WebGL 上下文
     }
 
     onResize(width, height) {
         this.canvas.width = width;
         this.canvas.height = height;
-        this.gl.viewport(0, 0, this.canvas.width, this.canvas.height); 
+        this.gl.viewport(0, 0, this.canvas.width, this.canvas.height);
     }
 
     render() {

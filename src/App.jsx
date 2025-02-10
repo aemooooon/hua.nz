@@ -2,9 +2,6 @@ import { useEffect, useState } from "react";
 import * as THREE from "three";
 import { EffectFuse } from "./components/EffectFuse";
 import { EffectMonjori } from "./components/EffectMonjori";
-import { EffectLorenzAttractor } from "./components/EffectLorenzAttractor";
-import EffectHeartBeats from "./components/EffectHeartBeats";
-import EffectPixelDistortion from "./components/EffectPixelDistortion";
 import hua from "./assets/images/hua.jpeg";
 import Home from "./components/Home";
 import Project from "./components/Project";
@@ -24,7 +21,7 @@ const App = () => {
             newCanvas.style.left = "0";
             newCanvas.style.width = "100%";
             newCanvas.style.height = "100%";
-            newCanvas.style.zIndex = "-1";
+            newCanvas.style.zIndex = "-10";
             document.body.appendChild(newCanvas);
             return newCanvas;
         };
@@ -76,30 +73,6 @@ const App = () => {
                 colors: threeColors,
             };
             effectInstance = new EffectMonjori(canvas, params);
-        } else if (currentEffect === "effectlorenzattractor") {
-            canvas = createCanvas();
-            const params = {
-                fireballColor: new THREE.Color(0xafcc8f),
-                particleColors: threeColors,
-            };
-            effectInstance = new EffectLorenzAttractor(canvas, params);
-            effectInstance.start();
-        } else if (currentEffect === "heartEffect") {
-            canvas = createCanvas();
-            const params = {
-                width: 180,
-                height: 130,
-                color: "#7CA65C",
-                particles: {
-                    length: 600,
-                    duration: 2,
-                    velocity: 300,
-                    effect: -0.8,
-                    size: 25,
-                },
-            };
-            effectInstance = new EffectHeartBeats(canvas, params);
-            effectInstance.start();
         }
 
         window.addEventListener("resize", handleResize);
@@ -119,45 +92,20 @@ const App = () => {
 
     return (
         <>
-            <header className="fixed top-0 left-0 w-full z-10 bg-primary-dark text-white grid grid-cols-3 items-center">
-                <div
-                    className="flex justify-start cursor-pointer items-center text-2xl pl-8 font-bold font-audiowide"
-                    onClick={() => {
-                        setCurrentEffect("effectfuse");
-                        setActiveSection("home");
-                    }}
-                >
-                    Home
-                </div>
-
-                <div
-                    className="flex justify-center cursor-pointer animate-zoomIn"
-                    onClick={() => {
-                        setCurrentEffect("effectfuse");
-                        setActiveSection("home");
-                    }}
-                >
-                    <div className="relative w-[60px] h-[60px] mt-4 border-2 border-secondary rounded-full shadow-md overflow-hidden bg-light animate-hueRotate">
-                        <EffectPixelDistortion src={hua} />
-                    </div>
-                </div>
-
-                <div className="flex justify-end items-center text-2xl font-bold font-audiowide pr-8 animate-slideIn">
-                    <div
-                        onClick={() => {
-                            setCurrentEffect("effectmonjori");
-                            setActiveSection("project");
-                        }}
-                        className="cursor-pointer"
-                    >
-                        Portfolio.
-                    </div>
-                </div>
-            </header>
+            <div
+                className="text-2xl font-bold font-audiowide text-white fixed top-0 right-0 mt-6 mr-12 cursor-pointer z-10"
+                onClick={() => {
+                    setCurrentEffect("effectmonjori");
+                    setActiveSection("project");
+                }}
+                style={{display: activeSection === "home" ? "block" : "none"}}
+            >
+                about me
+            </div>
 
             {activeSection === "home" && <Home hua={hua} />}
 
-            {activeSection === "project" && <Project />}
+            {activeSection === "project" && <Project setActiveSection={setActiveSection} setCurrentEffect={setCurrentEffect} />}
         </>
     );
 };

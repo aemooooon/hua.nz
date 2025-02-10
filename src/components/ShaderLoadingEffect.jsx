@@ -62,7 +62,7 @@ const ShaderLoadingEffect = ({ imageSrc, hoverImageSrc }) => {
     // 渲染粒子
     useEffect(() => {
         const canvas = canvasRef.current;
-        const ctx = canvas.getContext("2d");
+        const ctx = canvas.getContext("2d", { willReadFrequently: true });
 
         const render = () => {
             ctx.clearRect(0, 0, canvas.width, canvas.height);

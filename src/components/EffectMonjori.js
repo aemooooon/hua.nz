@@ -102,7 +102,10 @@ export function EffectMonjori(canvas, params = {}) {
 
     const stop = () => {
         if (animationFrameId) cancelAnimationFrame(animationFrameId);
-        if (renderer) renderer.dispose();
+        if (renderer) {
+            renderer.dispose();
+            renderer.forceContextLoss();
+        }
         window.removeEventListener("resize", onWindowResize);
     };
 

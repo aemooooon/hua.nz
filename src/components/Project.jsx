@@ -24,7 +24,7 @@ const customMarkerIcon = L.divIcon({
     iconAnchor: [20, 40],
 });
 
-const Project = () => {
+const Project = ({ setActiveSection, setCurrentEffect }) => {
     const mapRef = useRef(null);
     const [activeCategory, setActiveCategory] = useState("All");
 
@@ -37,17 +37,10 @@ const Project = () => {
         return [sumLat / total, sumLon / total];
     };
 
-    let debounceTimeout;
-
     const handleFilterChange = (category) => {
         setActiveCategory(category);
-
-        if (debounceTimeout) clearTimeout(debounceTimeout);
-
-        debounceTimeout = setTimeout(() => {
-            const filtered = locationData.locations.filter((loc) => category === "All" || loc.type === category);
-            flyToFilteredLocations(filtered);
-        }, 300); // Debounce time in milliseconds
+        const filtered = locationData.locations.filter((loc) => loc.type === category || category === "All");
+        flyToFilteredLocations(filtered);
     };
 
     const flyToMarker = (coordinates) => {
@@ -55,19 +48,21 @@ const Project = () => {
             mapRef.current.flyTo(coordinates, 16, { animate: true, duration: 1.5 });
         }
     };
-    
+
     const flyToFilteredLocations = (locations) => {
         if (mapRef.current && locations.length > 0) {
             if (locations.length === 1) {
                 mapRef.current.flyTo(locations[0].coordinates, 10, { animate: true, duration: 1.5 });
             } else {
-                const bounds = L.latLngBounds(locations.map((loc) => loc.coordinates));
-                mapRef.current.flyToBounds(bounds, {
-                    padding: [100, 100],
-                    maxZoom: 10,
-                    animate: true,
-                    duration: 1.5,
-                });
+                setTimeout(() => {
+                    const bounds = L.latLngBounds(locations.map((loc) => loc.coordinates));
+                    mapRef.current.flyToBounds(bounds, {
+                        padding: [100, 100],
+                        maxZoom: 10,
+                        animate: true,
+                        duration: 1.5,
+                    });
+                }, 100);
             }
         }
     };
@@ -90,9 +85,11 @@ const Project = () => {
         );
     };
 
-    const filteredLocations = locationData.locations.filter(
-        (loc) => (activeCategory === "All" || loc.type === activeCategory) && isValidCoordinates(loc.coordinates)
-    );
+    const filteredLocations = locationData.locations.filter((loc) => isValidCoordinates(loc.coordinates));
+
+    useEffect(() => {
+        if (!mapRef.current) return;
+    }, [mapRef, activeCategory]);
 
     if (filteredLocations.length === 0) {
         return <div className="text-center text-gray-500 mt-8">No locations found.</div>;
@@ -100,8 +97,20 @@ const Project = () => {
 
     return (
         <>
-            <section className="mt-24 mx-8 text-white overflow-hidden">
+            <section className="text-white overflow-hidden w-full h-full animate-zoomIn">
                 <div id="map" className="relative h-full overflow-hidden">
+                    <div
+                        onClick={() => {
+                            setActiveSection("home");
+                            setCurrentEffect("effectfuse");
+                        }}
+                        className="absolute z-[2000] w-12 h-12 flex justify-center items-center rounded-full top-4 left-1/2 transform -translate-x-1/2 bg-accent hover:bg-red-600 transition-colors duration-300 cursor-pointer group shadow-lg"
+                    >
+                        <span className="text-white text-xl font-bold group-hover:scale-110 group-hover:rotate-90 transition-all duration-300 ease-in-out">
+                            ✕
+                        </span>
+                    </div>
+
                     {/* Filter Buttons */}
                     <div className="absolute flex flex-col top-1/2 right-4 transform -translate-y-1/2 space-y-4 z-[2000] pointer-events-auto">
                         {["All", "education", "work", "project"].map((category) => (
@@ -123,8 +132,9 @@ const Project = () => {
                         center={calculateCentroid(locationData.locations)}
                         zoom={3}
                         scrollWheelZoom
-                        style={{ width: "100%", height: "calc(100vh - 15rem)" }}
+                        style={{ width: "100%", height: "100%" }}
                         zoomControl={false}
+                        className="border border-white/38 rounded-xl"
                     >
                         <MapInstanceSetter mapRef={mapRef} />
                         <Pane name="popupOnTop" style={{ zIndex: 1000 }}></Pane>
@@ -200,6 +210,11 @@ MapInstanceSetter.propTypes = {
     mapRef: PropTypes.shape({
         current: PropTypes.object,
     }).isRequired,
+};
+
+Project.propTypes = {
+    setActiveSection: PropTypes.func.isRequired,
+    setCurrentEffect: PropTypes.func.isRequired,
 };
 
 export default Project;

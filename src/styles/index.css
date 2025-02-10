@@ -100,22 +100,6 @@ body {
     font-family: Arial, sans-serif;
 }
 
-/* .leaflet-popup-content-wrapper {
-    width: 600px !important; 
-    padding: 1rem !important;
-    background: #fff;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-.leaflet-popup-content {
-    font-size: 16px;
-    line-height: 1.5;
-    width: 100% !important;
-    padding: 0 !important;
-    margin: 0 !important;
-} */
-
 .leaflet-popup-content-wrapper {
     padding: 1rem !important;
     background: #fff;
@@ -125,14 +109,13 @@ body {
 }
 
 .leaflet-popup-content {
-    font-size: 14px; /* 默认字体大小 */
+    font-size: 14px; 
     line-height: 1.5;
     width: 100% !important;
     padding: 0 !important;
     margin: 0 !important;
 }
 
-/* 响应式设计 */
 @media (min-width: 375px) {
     .leaflet-popup-content-wrapper {
         width: 300px !important; /* 375px 屏幕宽度下的宽度 */
