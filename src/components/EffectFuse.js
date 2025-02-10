@@ -6,6 +6,7 @@ export class EffectFuse {
         this.program = null;
         this.animationFrameId = null;
         this.startTime = performance.now();
+        this.uniformLocations = {};
         this.initGL();
     }
 
@@ -62,7 +63,7 @@ export class EffectFuse {
                 float step = 1.0 / u_particles;
                 float n = 0.0;
 
-                for (float i = 0.0; i <= 1.0; i += 0.025) {
+                for (float i = 0.0; i <= 1.0; i += 0.05) {
                     if (i <= limit) {
                         vec2 np = vec2(n, 1-1);
 
@@ -98,6 +99,17 @@ export class EffectFuse {
         const vertShader = this.createShader(this.gl.VERTEX_SHADER, vertexShaderSource);
         const fragShader = this.createShader(this.gl.FRAGMENT_SHADER, fragmentShaderSource);
         this.program = this.createProgram(vertShader, fragShader);
+
+        this.uniformLocations = {
+            resolution: this.gl.getUniformLocation(this.program, 'u_resolution'),
+            brightness: this.gl.getUniformLocation(this.program, 'u_brightness'),
+            blobiness: this.gl.getUniformLocation(this.program, 'u_blobiness'),
+            particles: this.gl.getUniformLocation(this.program, 'u_particles'),
+            scanlines: this.gl.getUniformLocation(this.program, 'u_scanlines'),
+            energy: this.gl.getUniformLocation(this.program, 'u_energy'),
+            millis: this.gl.getUniformLocation(this.program, 'u_millis'),
+            timeScale: this.gl.getUniformLocation(this.program, 'u_timeScale'),
+        };
 
         this.setupBuffers();
     }
@@ -182,23 +194,14 @@ export class EffectFuse {
         this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
         this.gl.useProgram(this.program);
 
-        const resolutionUniformLocation = this.gl.getUniformLocation(this.program, 'u_resolution');
-        const brightnessUniformLocation = this.gl.getUniformLocation(this.program, 'u_brightness');
-        const blobinessUniformLocation = this.gl.getUniformLocation(this.program, 'u_blobiness');
-        const particlesUniformLocation = this.gl.getUniformLocation(this.program, 'u_particles');
-        const scanlinesUniformLocation = this.gl.getUniformLocation(this.program, 'u_scanlines');
-        const energyUniformLocation = this.gl.getUniformLocation(this.program, 'u_energy');
-        const millisUniformLocation = this.gl.getUniformLocation(this.program, 'u_millis');
-        const timeScaleUniformLocation = this.gl.getUniformLocation(this.program, 'u_timeScale');
-
-        this.gl.uniform2f(resolutionUniformLocation, this.canvas.width, this.canvas.height);
-        this.gl.uniform1f(brightnessUniformLocation, this.params.brightness);
-        this.gl.uniform1f(blobinessUniformLocation, this.params.blobiness);
-        this.gl.uniform1f(particlesUniformLocation, this.params.particles);
-        this.gl.uniform1i(scanlinesUniformLocation, this.params.scanlines);
-        this.gl.uniform1f(energyUniformLocation, this.params.energy);
-        this.gl.uniform1f(millisUniformLocation, timeDelta);
-        this.gl.uniform1f(timeScaleUniformLocation, 0.5);
+        this.gl.uniform2f(this.uniformLocations.resolution, this.canvas.width, this.canvas.height);
+        this.gl.uniform1f(this.uniformLocations.brightness, this.params.brightness);
+        this.gl.uniform1f(this.uniformLocations.blobiness, this.params.blobiness);
+        this.gl.uniform1f(this.uniformLocations.particles, this.params.particles);
+        this.gl.uniform1i(this.uniformLocations.scanlines, this.params.scanlines);
+        this.gl.uniform1f(this.uniformLocations.energy, this.params.energy);
+        this.gl.uniform1f(this.uniformLocations.millis, timeDelta);
+        this.gl.uniform1f(this.uniformLocations.timeScale, 0.5);
 
         this.gl.drawArrays(this.gl.TRIANGLES, 0, 6);
     }
