@@ -169,7 +169,7 @@ const Project = ({ setActiveSection, setCurrentEffect }) => {
                                     <Popup>
                                         <div>
                                             {loc.title && <h3 className="font-bold text-xl">{loc.title}</h3>}
-                                            {loc.name && <h3 className="text-xl italic mb-2">{loc.name}</h3>}
+                                            {loc.name && <h3 className="text-xl mb-2">{loc.name}</h3>}
                                             {loc.year && <h3 className="text-xl italic mb-2">{loc.year}</h3>}
                                             {loc.img && (
                                                 <div>

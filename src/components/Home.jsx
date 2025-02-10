@@ -38,7 +38,7 @@ const Home = () => {
             <div className="order-2 lg:order-1 text-white space-y-4 sm:space-y-6 text-center lg:text-left animate-slideIn">
                 <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold font-beauRivage mb-4 sm:mb-6">Hua Wang</h1>
                 <h2 className="text-2xl sm:text-3xl font-semibold mb-4 sm:mb-6 font-mono">Software Engineer</h2>
-                <p className="mt-2 sm:mt-4 leading-normal text-base sm:text-lg lg:pr-32 md:pr-24 font-poppins">
+                <p className="mt-2 sm:mt-4 leading-normal text-base sm:text-lg font-poppins">
                     I am a skilled, detail-oriented and reliable software engineer with 3 years of experience,
                     especially in full-stack development. My expertise includes implementing Web APIs with several
                     languages, building UI/UX based on the modern frontend framework and designing CI/CD pipelines with
@@ -83,7 +83,7 @@ const Home = () => {
             </div>
 
             <div className="order-1 lg:order-2 animate-zoomIn">
-                <div onClick={togglePlay} className="relative sm:w-[25vw] sm:h-[25vw] max-w-[500px] max-h-[500px] border-4 border-secondary rounded-full shadow-md overflow-hidden bg-light animate-hueRotate">
+                <div onClick={togglePlay} className="relative w-[25vw] h-[25vw] max-w-[500px] max-h-[500px] border-4 border-secondary rounded-full shadow-md overflow-hidden bg-light animate-hueRotate">
                     <ShaderLoadingEffect imageSrc={imageSrc} hoverImageSrc={hoverImageSrc} />
                 </div>
             </div>

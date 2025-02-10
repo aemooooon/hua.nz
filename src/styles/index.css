@@ -116,9 +116,15 @@ body {
     margin: 0 !important;
 }
 
+.leaflet-popup-close-button {
+    font-size: 40px !important;
+    padding-right: 40px !important;
+    padding-top: 8px !important;
+}
+
 @media (min-width: 375px) {
     .leaflet-popup-content-wrapper {
-        width: 300px !important; /* 375px 屏幕宽度下的宽度 */
+        width: 350px !important; /* 375px 屏幕宽度下的宽度 */
     }
     .leaflet-popup-content {
         font-size: 14px; /* 375px 屏幕宽度下的字体大小 */
@@ -127,7 +133,7 @@ body {
 
 @media (min-width: 768px) {
     .leaflet-popup-content-wrapper {
-        width: 600px !important; /* 768px 屏幕宽度下的宽度 */
+        width: 700px !important; /* 768px 屏幕宽度下的宽度 */
     }
     .leaflet-popup-content {
         font-size: 16px; /* 768px 屏幕宽度下的字体大小 */
@@ -136,7 +142,7 @@ body {
 
 @media (min-width: 1024px) {
     .leaflet-popup-content-wrapper {
-        width: 800px !important; /* 1024px 屏幕宽度下的宽度 */
+        width: 1000px !important; /* 1024px 屏幕宽度下的宽度 */
     }
     .leaflet-popup-content {
         font-size: 18px; /* 1024px 屏幕宽度下的字体大小 */
@@ -145,7 +151,7 @@ body {
 
 @media (min-width: 1440px) {
     .leaflet-popup-content-wrapper {
-        width: 1000px !important; /* 1440px 屏幕宽度下的宽度 */
+        width: 1400px !important; /* 1440px 屏幕宽度下的宽度 */
     }
     .leaflet-popup-content {
         font-size: 20px; /* 1440px 屏幕宽度下的字体大小 */
@@ -154,7 +160,7 @@ body {
 
 @media (min-width: 2560px) {
     .leaflet-popup-content-wrapper {
-        width: 1600px !important; /* 4K 屏幕宽度下的宽度 */
+        width: 1800px !important; /* 4K 屏幕宽度下的宽度 */
     }
     .leaflet-popup-content {
         font-size: 24px; /* 4K 屏幕宽度下的字体大小 */
