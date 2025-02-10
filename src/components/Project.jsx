@@ -37,27 +37,38 @@ const Project = () => {
         return [sumLat / total, sumLon / total];
     };
 
+    let debounceTimeout;
+
     const handleFilterChange = (category) => {
         setActiveCategory(category);
-        const filtered = locationData.locations.filter((loc) => category === "All" || loc.type === category);
-        flyToFilteredLocations(filtered);
+
+        if (debounceTimeout) clearTimeout(debounceTimeout);
+
+        debounceTimeout = setTimeout(() => {
+            const filtered = locationData.locations.filter((loc) => category === "All" || loc.type === category);
+            flyToFilteredLocations(filtered);
+        }, 300); // Debounce time in milliseconds
     };
 
     const flyToMarker = (coordinates) => {
-        if (mapRef.current) {
+        if (mapRef.current && coordinates) {
             mapRef.current.flyTo(coordinates, 16, { animate: true, duration: 1.5 });
         }
     };
-
+    
     const flyToFilteredLocations = (locations) => {
         if (mapRef.current && locations.length > 0) {
-            const bounds = L.latLngBounds(locations.map((loc) => loc.coordinates));
-            mapRef.current.flyToBounds(bounds, {
-                padding: [100, 100], // Add some padding around the markers
-                maxZoom: 10, // Prevent zoom from being too close
-                animate: true,
-                duration: 1.5,
-            });
+            if (locations.length === 1) {
+                mapRef.current.flyTo(locations[0].coordinates, 10, { animate: true, duration: 1.5 });
+            } else {
+                const bounds = L.latLngBounds(locations.map((loc) => loc.coordinates));
+                mapRef.current.flyToBounds(bounds, {
+                    padding: [100, 100],
+                    maxZoom: 10,
+                    animate: true,
+                    duration: 1.5,
+                });
+            }
         }
     };
 
@@ -70,10 +81,22 @@ const Project = () => {
         });
     };
 
+    const isValidCoordinates = (coordinates) => {
+        return (
+            Array.isArray(coordinates) &&
+            coordinates.length === 2 &&
+            typeof coordinates[0] === "number" &&
+            typeof coordinates[1] === "number"
+        );
+    };
+
     const filteredLocations = locationData.locations.filter(
-        (loc) => activeCategory === "All" || loc.type === activeCategory
+        (loc) => (activeCategory === "All" || loc.type === activeCategory) && isValidCoordinates(loc.coordinates)
     );
 
+    if (filteredLocations.length === 0) {
+        return <div className="text-center text-gray-500 mt-8">No locations found.</div>;
+    }
 
     return (
         <>
@@ -133,7 +156,7 @@ const Project = () => {
                                         click: () => flyToMarker(loc.coordinates),
                                     }}
                                 >
-                                    <Popup >
+                                    <Popup>
                                         <div>
                                             {loc.title && <h3 className="font-bold text-xl">{loc.title}</h3>}
                                             {loc.name && <h3 className="text-xl italic mb-2">{loc.name}</h3>}
@@ -166,7 +189,7 @@ const Project = () => {
 const MapInstanceSetter = ({ mapRef }) => {
     const map = useMap();
     useEffect(() => {
-        if (map && !mapRef.current) {
+        if (map) {
             mapRef.current = map;
         }
     }, [map, mapRef]);

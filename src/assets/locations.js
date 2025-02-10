@@ -145,7 +145,7 @@ const locations = {
             "title": "Interactive 360-Degree Virtual Tour Application",
             "name": "Jiangxiangmingmen · 将相名门",
             "description": "Developed an interactive 360-degree virtual tour application using JavaScript and 3D libraries, enabling users to explore panoramic views of buildings, rooms, and outdoor spaces with 720-degree navigation. Implemented clickable markers and hyperlinks to facilitate seamless transitions between multiple scenes, such as moving between rooms or buildings, while providing an immersive experience optimised for both web and mobile platforms.",
-            "coordinates": [27.497812, 106.233872],
+            "coordinates": [28.175622, 109.185229],
             "year": "2020-2021",
             "link": "",
             "img": "/jxmm.jpg"
@@ -155,7 +155,7 @@ const locations = {
             "title": "Interactive 360-Degree Virtual Tour Application",
             "name": "Jinsha · 金沙将相名门",
             "description": "Developed an interactive 360-degree virtual tour application using JavaScript and 3D libraries, enabling users to explore panoramic views of buildings, rooms, and outdoor spaces with 720-degree navigation. Implemented clickable markers and hyperlinks to facilitate seamless transitions between multiple scenes, such as moving between rooms or buildings, while providing an immersive experience optimised for both web and mobile platforms.",
-            "coordinates": [28.175622, 109.185229],
+            "coordinates": [27.497812, 106.233872],
             "year": "2020-2021",
             "link": "",
             "img": "/jsjxmm.jpg"
