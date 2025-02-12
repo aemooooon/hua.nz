@@ -4,7 +4,6 @@ import {
     MapContainer,
     TileLayer,
     Marker,
-    Popup,
     LayersControl,
     ScaleControl,
     useMap,
@@ -28,6 +27,7 @@ const Project = ({ setActiveSection, setCurrentEffect }) => {
     const mapRef = useRef(null);
     const [activeCategory, setActiveCategory] = useState("All");
     const [selectedLocation, setSelectedLocation] = useState(null);
+    const [filteredLocations, setFilteredLocations] = useState(locationData.locations);
 
     // Function to calculate centroid of filtered locations
     const calculateCentroid = (locations) => {
@@ -40,8 +40,11 @@ const Project = ({ setActiveSection, setCurrentEffect }) => {
 
     const handleFilterChange = (category) => {
         setActiveCategory(category);
-        const filtered = locationData.locations.filter((loc) => loc.type === category || category === "All");
-        flyToFilteredLocations(filtered);
+        const newFilteredLocations = locationData.locations.filter(
+            (loc) => loc.type === category || category === "All"
+        );
+        setFilteredLocations(newFilteredLocations);
+        flyToFilteredLocations(newFilteredLocations);
     };
 
     const flyToMarker = (coordinates) => {
@@ -76,17 +79,6 @@ const Project = ({ setActiveSection, setCurrentEffect }) => {
             iconSize: [40, 40],
         });
     };
-
-    const isValidCoordinates = (coordinates) => {
-        return (
-            Array.isArray(coordinates) &&
-            coordinates.length === 2 &&
-            typeof coordinates[0] === "number" &&
-            typeof coordinates[1] === "number"
-        );
-    };
-
-    const filteredLocations = locationData.locations.filter((loc) => isValidCoordinates(loc.coordinates));
 
     useEffect(() => {
         if (!mapRef.current) return;
@@ -125,7 +117,7 @@ const Project = ({ setActiveSection, setCurrentEffect }) => {
                             {selectedLocation.img && (
                                 <img
                                     src={selectedLocation.img}
-                                    className="object-cover rounded-md mx-auto mt-4 max-h-fit"
+                                    className="object-cover rounded-md mx-auto mt-4 h-fit"
                                     alt="Location"
                                 />
                             )}

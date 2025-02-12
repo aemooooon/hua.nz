@@ -22,7 +22,7 @@ const Home = ({ setActiveSection, setCurrentEffect }) => {
                             setCurrentEffect("effectmonjori");
                             setActiveSection("project");
                         }}
-                        className="btn border-solid cursor-pointer border-2 border-secondary text-light px-4 py-2 rounded shadow-lg hover:bg-secondary"
+                        className="btn border-solid cursor-pointer border-2 border-secondary text-light px-4 py-2 rounded shadow-lg hover:bg-secondary animate-hueRotate"
                     >
                         Projects
                     </div>
@@ -39,7 +39,7 @@ const Home = ({ setActiveSection, setCurrentEffect }) => {
                             href="https://github.com/aemooooon"
                             target="_blank"
                             rel="noreferrer"
-                            className="w-8 h-8 sm:w-10 sm:h-10 inline-flex items-center justify-center p-2 border-solid border-2 border-secondary rounded-full text-[20px] sm:text-[24px] text-white no-underline transition duration-500 hover:bg-secondary hover:text-bg hover:shadow-lg"
+                            className="w-8 h-8 sm:w-10 sm:h-10 inline-flex items-center justify-center p-2 border-solid border-2 border-secondary rounded-full text-[20px] sm:text-[24px] text-white no-underline transition duration-500 hover:bg-secondary hover:text-bg hover:shadow-lg hover:animate-spin"
                         >
                             <i className="ri-github-fill"></i>
                         </a>
@@ -47,14 +47,14 @@ const Home = ({ setActiveSection, setCurrentEffect }) => {
                             href="https://www.linkedin.com/in/aemonwang"
                             target="_blank"
                             rel="noreferrer"
-                            className="w-8 h-8 sm:w-10 sm:h-10 inline-flex items-center justify-center p-2 border-solid border-2 border-secondary rounded-full text-[18px] sm:text-[20px] text-white no-underline transition duration-500 hover:bg-secondary hover:text-bg hover:shadow-lg"
+                            className="w-8 h-8 sm:w-10 sm:h-10 inline-flex items-center justify-center p-2 border-solid border-2 border-secondary rounded-full text-[18px] sm:text-[20px] text-white no-underline transition duration-500 hover:bg-secondary hover:text-bg hover:shadow-lg hover:animate-spin"
                         >
                             <i className="ri-linkedin-fill"></i>
                         </a>
                         <a
                             href="mailto:aemooooon@gmail.com"
                             rel="noreferrer"
-                            className="w-8 h-8 sm:w-10 sm:h-10 inline-flex items-center justify-center p-2 border-solid border-2 border-secondary rounded-full text-[18px] sm:text-[20px] text-white no-underline transition duration-500 hover:bg-secondary hover:text-bg hover:shadow-lg"
+                            className="w-8 h-8 sm:w-10 sm:h-10 inline-flex items-center justify-center p-2 border-solid border-2 border-secondary rounded-full text-[18px] sm:text-[20px] text-white no-underline transition duration-500 hover:bg-secondary hover:text-bg hover:shadow-lg hover:animate-spin"
                         >
                             <i className="ri-google-fill"></i>
                         </a>
