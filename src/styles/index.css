@@ -108,7 +108,7 @@ body {
     width: 600px !important; /* 默认宽度为屏幕宽度的90%，适用于小屏幕 */
     position:  relative !important;
 }
-/* 
+
 .leaflet-popup {
     position: absolute !important;
     left: 20px; 
@@ -118,7 +118,7 @@ body {
 
 .leaflet-popup-tip {
     display: none;
-} */
+}
 
 
 .leaflet-popup-content {
