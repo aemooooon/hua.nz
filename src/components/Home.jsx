@@ -1,4 +1,3 @@
-import { useRef, useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import ShaderLoadingEffect from "./ShaderLoadingEffect"; // 假设你已经实现了 ShaderLoadingEffect 组件
 import imageSrc from "./hua_icon_base64";
@@ -71,6 +70,8 @@ const Home = ({ setActiveSection, setCurrentEffect }) => {
     );
 };
 Home.propTypes = {
+    setActiveSection: PropTypes.func.isRequired,
+    setCurrentEffect: PropTypes.func.isRequired,
     hua: PropTypes.string.isRequired,
 };
 
