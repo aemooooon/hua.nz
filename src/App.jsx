@@ -95,16 +95,6 @@ const App = () => {
     return (
         <>
             <AudioVisualizer canvasId="audioCanvas" musicFile={portfolioMusic} />{" "}
-            {/* <div
-                className="text-2xl font-bold font-audiowide text-white fixed top-0 right-0 mt-6 mr-12 cursor-pointer z-10"
-                onClick={() => {
-                    setCurrentEffect("effectmonjori");
-                    setActiveSection("project");
-                }}
-                style={{ display: activeSection === "home" ? "block" : "none" }}
-            >
-                about me
-            </div> */}
             {activeSection === "home" && (
                 <Home setActiveSection={setActiveSection} setCurrentEffect={setCurrentEffect} hua={hua} />
             )}

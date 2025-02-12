@@ -9,6 +9,7 @@ import {
     useMap,
     ZoomControl,
     Pane,
+    Popup,
 } from "react-leaflet";
 import L from "leaflet";
 import "leaflet-extra-markers/dist/css/leaflet.extra-markers.min.css";
@@ -80,9 +81,31 @@ const Project = ({ setActiveSection, setCurrentEffect }) => {
         });
     };
 
+    const handleMapClick = () => setSelectedLocation(null);
+
+    useEffect(() => {
+        if (mapRef.current) {
+            mapRef.current.on("click", handleMapClick);
+        }
+
+        return () => {
+            if (mapRef.current) {
+                mapRef.current.off("click", handleMapClick);
+            }
+        };
+    }, []);
+
     useEffect(() => {
         if (!mapRef.current) return;
     }, [mapRef, activeCategory]);
+
+    useEffect(() => {
+        if (mapRef.current) {
+            setTimeout(() => {
+                mapRef.current.invalidateSize();
+            }, 300);
+        }
+    }, [selectedLocation]);
 
     if (filteredLocations.length === 0) {
         return <div className="text-center text-gray-500 mt-8">No locations found.</div>;
@@ -102,15 +125,17 @@ const Project = ({ setActiveSection, setCurrentEffect }) => {
                 </span>
             </div>
             <section className="text-white overflow-hidden w-full h-full animate-zoomIn">
-                <div id="map" className="relative h-full overflow-hidden">
+                <div id="map" className="relative h-full overflow-hidden flex justify-center items-center">
                     {selectedLocation && (
-                        <div className="absolute top-0 left-0 w-2/5 h-full bg-accent text-white p-4 overflow-auto z-[2000] rounded-tl-xl rounded-bl-xl ">
-                            <button
-                                className="absolute top-4 right-4 text-xl font-bold text-white hover:text-red-500"
+                        <div className="top-0 w-3/5 h-full text-white p-4 overflow-auto z-[2000] animate-zoomIn">
+                            <div
                                 onClick={() => setSelectedLocation(null)}
+                                className="absolute z-[2000] w-10 h-10 flex justify-center items-center rounded-full top-[5px] right-[5px] bg-accent hover:bg-red-600 transition-colors duration-300 cursor-pointer group shadow-lg"
                             >
-                                ✕
-                            </button>
+                                <span className="text-white text-xl font-bold group-hover:scale-110 group-hover:rotate-180 transition-all duration-300 ease-in-out">
+                                    &larr;
+                                </span>
+                            </div>
                             <h3 className="font-bold text-2xl">{selectedLocation.title || "Location"}</h3>
                             {selectedLocation.name && <h3 className="text-xl mb-2">{selectedLocation.name}</h3>}
                             {selectedLocation.year && <h3 className="text-xl italic mb-2">{selectedLocation.year}</h3>}
@@ -136,29 +161,31 @@ const Project = ({ setActiveSection, setCurrentEffect }) => {
                     )}
 
                     {/* Filter Buttons */}
-                    <div className="absolute flex flex-col top-1/2 right-4 transform -translate-y-1/2 space-y-4 z-[2000] pointer-events-auto">
+                    <div className="absolute flex flex-col top-1/2 right-2 transform -translate-y-1/2 space-y-2 z-[2000] pointer-events-auto">
                         {["All", "education", "work", "project"].map((category) => (
                             <button
                                 key={category}
                                 onClick={() => handleFilterChange(category)}
                                 className={`btn px-4 py-2 rounded shadow-lg border-2 transition duration-300 ${
                                     activeCategory === category
-                                        ? "bg-secondary text-white"
-                                        : "border-secondary bg-secondary text-white hover:bg-secondary hover:text-black"
+                                        ? "bg-secondary text-white animate-hueRotate"
+                                        : "border-solid border-2 border-secondary text-light px-4 py-2 rounded shadow-lg hover:bg-secondary"
                                 }`}
                             >
                                 {category.charAt(0).toUpperCase() + category.slice(1)}
                             </button>
                         ))}
                     </div>
-
                     <MapContainer
+                        ref={mapRef}
                         center={calculateCentroid(locationData.locations)}
                         zoom={3}
                         scrollWheelZoom
                         style={{ width: "100%", height: "100%" }}
                         zoomControl={false}
-                        className="border border-white/38 rounded-xl"
+                        className={`border border-white/38 transition-all duration-500 ${
+                            selectedLocation ? "rounded-tr-xl rounded-br-xl" : "rounded-xl"
+                        }`}
                     >
                         <MapInstanceSetter mapRef={mapRef} />
                         <Pane name="popupOnTop" style={{ zIndex: 1000 }}></Pane>
@@ -192,7 +219,30 @@ const Project = ({ setActiveSection, setCurrentEffect }) => {
                                             setSelectedLocation(loc);
                                         },
                                     }}
-                                />
+                                >
+                                    <Popup
+                                        offset={[-5, -40]}
+                                        autoPan={true}
+                                        eventHandlers={{
+                                            remove: () => setSelectedLocation(null),
+                                        }}
+                                    >
+                                        <h3 className="font-bold text-lg">{loc.title}</h3>
+                                        {loc.name && <h3 className="text-base italic mb-2">{loc.name}</h3>}
+                                        {loc.year && <h3 className="text-base italic mb-2">{loc.year}</h3>}
+                                        {loc.description && <p className="mt-2">{loc.description}</p>}
+                                        {loc.link && (
+                                            <a
+                                                href={loc.link}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="mt-4 block text-blue-400 hover:underline"
+                                            >
+                                                Learn more →
+                                            </a>
+                                        )}
+                                    </Popup>
+                                </Marker>
                             ))}
                         </MarkerClusterGroup>
                     </MapContainer>
