@@ -279,6 +279,16 @@ const locations = {
             "year": "2020-2021",
             "link": "https://www.es9e.cn/",
             "img": "/es9e.jpg"
+        },
+        {
+            "type": "project",
+            "title": "FitsGo",
+            "name": "Mobile App",
+            "description": "This is a mobile application that aims to help get people to start exercising. This App is a cross-platform application which runs both of Android and IOS. It is built using Facebook React-Native and Google Firebase real-time database. This app provides a set of target locations that the user can run/walk/bike. Only locations in your current region will be displayed to you. Routes to these locations are shown to the user when the user selects the marker and if the user chooses to go to these locations, the distance, calories burnt, the time it took to travel there and the marker badge will be added to their record. This is done so the user can keep track of their exercise journey through this application. The user can also adjust and customize their profile which includes their personnel details such as names, weight and date of birth.",
+            "coordinates": [-45.8750186, 170.4973482],
+            "year": "2019-2020",
+            "link": "https://github.com/aemooooon/FitsGo",
+            "img": "/fitsgo.gif"
         }
     ]
 };

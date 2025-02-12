@@ -18,9 +18,9 @@ import locationData from "../assets/locations";
 import MarkerClusterGroup from "react-leaflet-cluster";
 
 const customMarkerIcon = L.divIcon({
-    className: "custom-marker",
+    className: "custom-marker animate-hueRotate",
     html: '<div class="marker-icon"></div>',
-    iconSize: [40, 40],
+    iconSize: [30, 30],
     iconAnchor: [20, 40],
 });
 
@@ -98,10 +98,21 @@ const Project = ({ setActiveSection, setCurrentEffect }) => {
 
     return (
         <>
+            <div
+                onClick={() => {
+                    setActiveSection("home");
+                    setCurrentEffect("effectfuse");
+                }}
+                className="absolute z-[2000] w-10 h-10 flex justify-center items-center rounded-full top-[-25px] right-[-25px] bg-red-600 hover:bg-accent transition-colors duration-300 cursor-pointer group shadow-lg"
+            >
+                <span className="text-white text-xl font-bold group-hover:scale-110 group-hover:rotate-90 transition-all duration-300 ease-in-out">
+                    ✕
+                </span>
+            </div>
             <section className="text-white overflow-hidden w-full h-full animate-zoomIn">
                 <div id="map" className="relative h-full overflow-hidden">
                     {selectedLocation && (
-                        <div className="absolute top-0 left-0 w-1/3 h-full bg-black/75 text-white p-4 overflow-auto z-[2000] shadow-lg">
+                        <div className="absolute top-0 left-0 w-2/5 h-full bg-accent text-white p-4 overflow-auto z-[2000] rounded-tl-xl rounded-bl-xl ">
                             <button
                                 className="absolute top-4 right-4 text-xl font-bold text-white hover:text-red-500"
                                 onClick={() => setSelectedLocation(null)}
@@ -114,7 +125,7 @@ const Project = ({ setActiveSection, setCurrentEffect }) => {
                             {selectedLocation.img && (
                                 <img
                                     src={selectedLocation.img}
-                                    className="object-cover rounded-md w-full mt-4"
+                                    className="object-cover rounded-md mx-auto mt-4 max-h-fit"
                                     alt="Location"
                                 />
                             )}
@@ -131,18 +142,6 @@ const Project = ({ setActiveSection, setCurrentEffect }) => {
                             )}
                         </div>
                     )}
-
-                    <div
-                        onClick={() => {
-                            setActiveSection("home");
-                            setCurrentEffect("effectfuse");
-                        }}
-                        className="absolute z-[2000] w-12 h-12 flex justify-center items-center rounded-full bottom-2 left-1/2 transform -translate-x-1/2 bg-red-600 hover:bg-accent transition-colors duration-300 cursor-pointer group shadow-lg"
-                    >
-                        <span className="text-white text-xl font-bold group-hover:scale-110 group-hover:rotate-90 transition-all duration-300 ease-in-out">
-                            ✕
-                        </span>
-                    </div>
 
                     {/* Filter Buttons */}
                     <div className="absolute flex flex-col top-1/2 right-4 transform -translate-y-1/2 space-y-4 z-[2000] pointer-events-auto">
@@ -201,28 +200,7 @@ const Project = ({ setActiveSection, setCurrentEffect }) => {
                                             setSelectedLocation(loc);
                                         },
                                     }}
-                                >
-                                    {/* <Popup>
-                                        <div>
-                                            {loc.title && <h3 className="font-bold text-xl">{loc.title}</h3>}
-                                            {loc.name && <h3 className="text-xl mb-2">{loc.name}</h3>}
-                                            {loc.year && <h3 className="text-xl italic mb-2">{loc.year}</h3>}
-                                            {loc.img && (
-                                                <div>
-                                                    <img src={loc.img} className="object-cover" alt="Location" />
-                                                </div>
-                                            )}
-
-                                            {loc.description && <p>{loc.description}</p>}
-
-                                            {loc.link && (
-                                                <a href={loc.link} target="_blank" rel="noopener noreferrer">
-                                                    Learn more
-                                                </a>
-                                            )}
-                                        </div>
-                                    </Popup> */}
-                                </Marker>
+                                />
                             ))}
                         </MarkerClusterGroup>
                     </MapContainer>
