@@ -27,6 +27,7 @@ const customMarkerIcon = L.divIcon({
 const Project = ({ setActiveSection, setCurrentEffect }) => {
     const mapRef = useRef(null);
     const [activeCategory, setActiveCategory] = useState("All");
+    const [selectedLocation, setSelectedLocation] = useState(null);
 
     // Function to calculate centroid of filtered locations
     const calculateCentroid = (locations) => {
@@ -99,6 +100,38 @@ const Project = ({ setActiveSection, setCurrentEffect }) => {
         <>
             <section className="text-white overflow-hidden w-full h-full animate-zoomIn">
                 <div id="map" className="relative h-full overflow-hidden">
+                    {selectedLocation && (
+                        <div className="absolute top-0 left-0 w-1/3 h-full bg-black/75 text-white p-4 overflow-auto z-[2000] shadow-lg">
+                            <button
+                                className="absolute top-4 right-4 text-xl font-bold text-white hover:text-red-500"
+                                onClick={() => setSelectedLocation(null)}
+                            >
+                                ✕
+                            </button>
+                            <h3 className="font-bold text-2xl">{selectedLocation.title || "Location"}</h3>
+                            {selectedLocation.name && <h3 className="text-xl mb-2">{selectedLocation.name}</h3>}
+                            {selectedLocation.year && <h3 className="text-xl italic mb-2">{selectedLocation.year}</h3>}
+                            {selectedLocation.img && (
+                                <img
+                                    src={selectedLocation.img}
+                                    className="object-cover rounded-md w-full mt-4"
+                                    alt="Location"
+                                />
+                            )}
+                            {selectedLocation.description && <p className="mt-2">{selectedLocation.description}</p>}
+                            {selectedLocation.link && (
+                                <a
+                                    href={selectedLocation.link}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="mt-4 block text-blue-400 hover:underline"
+                                >
+                                    Learn more →
+                                </a>
+                            )}
+                        </div>
+                    )}
+
                     <div
                         onClick={() => {
                             setActiveSection("home");
@@ -163,10 +196,13 @@ const Project = ({ setActiveSection, setCurrentEffect }) => {
                                     position={loc.coordinates}
                                     icon={customMarkerIcon}
                                     eventHandlers={{
-                                        click: () => flyToMarker(loc.coordinates),
+                                        click: () => {
+                                            flyToMarker(loc.coordinates);
+                                            setSelectedLocation(loc);
+                                        },
                                     }}
                                 >
-                                    <Popup>
+                                    {/* <Popup>
                                         <div>
                                             {loc.title && <h3 className="font-bold text-xl">{loc.title}</h3>}
                                             {loc.name && <h3 className="text-xl mb-2">{loc.name}</h3>}
@@ -185,7 +221,7 @@ const Project = ({ setActiveSection, setCurrentEffect }) => {
                                                 </a>
                                             )}
                                         </div>
-                                    </Popup>
+                                    </Popup> */}
                                 </Marker>
                             ))}
                         </MarkerClusterGroup>
