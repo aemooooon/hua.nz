@@ -101,6 +101,14 @@ const Project = ({ setActiveSection, setCurrentEffect }) => {
 
     useEffect(() => {
         if (mapRef.current) {
+            const mapContainer = mapRef.current.getContainer();
+            if (selectedLocation) {
+                mapContainer.classList.add("rounded-tr-xl", "rounded-br-xl");
+                mapContainer.classList.remove("rounded-xl");
+            } else {
+                mapContainer.classList.add("rounded-xl");
+                mapContainer.classList.remove("rounded-tr-xl", "rounded-br-xl");
+            }
             setTimeout(() => {
                 mapRef.current.invalidateSize();
             }, 300);
