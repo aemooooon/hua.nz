@@ -105,8 +105,21 @@ body {
     background: #fff;
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    width: 90% !important; /* 默认宽度为屏幕宽度的90%，适用于小屏幕 */
+    width: 600px !important; /* 默认宽度为屏幕宽度的90%，适用于小屏幕 */
+    position:  relative !important;
 }
+/* 
+.leaflet-popup {
+    position: absolute !important;
+    left: 20px; 
+    top: 20px !important; 
+    margin: 0 !important;
+}
+
+.leaflet-popup-tip {
+    display: none;
+} */
+
 
 .leaflet-popup-content {
     font-size: 14px; 
@@ -120,49 +133,4 @@ body {
     font-size: 40px !important;
     padding-right: 40px !important;
     padding-top: 8px !important;
-}
-
-@media (min-width: 375px) {
-    .leaflet-popup-content-wrapper {
-        width: 350px !important; /* 375px 屏幕宽度下的宽度 */
-    }
-    .leaflet-popup-content {
-        font-size: 14px; /* 375px 屏幕宽度下的字体大小 */
-    }
-}
-
-@media (min-width: 768px) {
-    .leaflet-popup-content-wrapper {
-        width: 700px !important; /* 768px 屏幕宽度下的宽度 */
-    }
-    .leaflet-popup-content {
-        font-size: 16px; /* 768px 屏幕宽度下的字体大小 */
-    }
-}
-
-@media (min-width: 1024px) {
-    .leaflet-popup-content-wrapper {
-        width: 1000px !important; /* 1024px 屏幕宽度下的宽度 */
-    }
-    .leaflet-popup-content {
-        font-size: 18px; /* 1024px 屏幕宽度下的字体大小 */
-    }
-}
-
-@media (min-width: 1440px) {
-    .leaflet-popup-content-wrapper {
-        width: 1400px !important; /* 1440px 屏幕宽度下的宽度 */
-    }
-    .leaflet-popup-content {
-        font-size: 20px; /* 1440px 屏幕宽度下的字体大小 */
-    }
-}
-
-@media (min-width: 2560px) {
-    .leaflet-popup-content-wrapper {
-        width: 1800px !important; /* 4K 屏幕宽度下的宽度 */
-    }
-    .leaflet-popup-content {
-        font-size: 24px; /* 4K 屏幕宽度下的字体大小 */
-    }
 }

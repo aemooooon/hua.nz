@@ -104,7 +104,7 @@ const Project = ({ setActiveSection, setCurrentEffect }) => {
                             setActiveSection("home");
                             setCurrentEffect("effectfuse");
                         }}
-                        className="absolute z-[2000] w-12 h-12 flex justify-center items-center rounded-full top-4 left-1/2 transform -translate-x-1/2 bg-accent hover:bg-red-600 transition-colors duration-300 cursor-pointer group shadow-lg"
+                        className="absolute z-[2000] w-12 h-12 flex justify-center items-center rounded-full bottom-2 left-1/2 transform -translate-x-1/2 bg-red-600 hover:bg-accent transition-colors duration-300 cursor-pointer group shadow-lg"
                     >
                         <span className="text-white text-xl font-bold group-hover:scale-110 group-hover:rotate-90 transition-all duration-300 ease-in-out">
                             ✕

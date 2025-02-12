@@ -3,36 +3,8 @@ import PropTypes from "prop-types";
 import ShaderLoadingEffect from "./ShaderLoadingEffect"; // 假设你已经实现了 ShaderLoadingEffect 组件
 import imageSrc from "./hua_icon_base64";
 import hoverImageSrc from "../assets/images/hua_500w1.jpg";
-import portfolioMusic from "../assets/audio.mp3";
 
-const Home = () => {
-    const [isPlaying, setIsPlaying] = useState(false);
-    const audioRef = useRef(null);
-
-    useEffect(() => {
-        const audioElement = audioRef.current;
-        if (audioElement) {
-            audioElement.volume = 0.6;
-        }
-
-        return () => {
-            if (audioElement) {
-                audioElement.pause();
-                audioElement.currentTime = 0;
-            }
-        };
-    }, []);
-
-    const togglePlay = () => {
-        if (audioRef.current) {
-            if (isPlaying) {
-                audioRef.current.pause();
-            } else {
-                audioRef.current.play();
-            }
-            setIsPlaying(!isPlaying);
-        }
-    };
+const Home = ({ setActiveSection, setCurrentEffect }) => {
     return (
         <section className="flex flex-col lg:flex-row justify-center items-center gap-6 sm:gap-12 p-8 sm:p-12 md:p-24 lg:p-36 h-full z-1 fixed top-0 left-0 w-full">
             <div className="order-2 lg:order-1 text-white space-y-4 sm:space-y-6 text-center lg:text-left animate-slideIn">
@@ -45,13 +17,22 @@ const Home = () => {
                     cloud services.
                 </p>
                 <div className="mt-8 sm:mt-12 flex flex-col lg:flex-row items-center space-y-4 lg:space-y-0 lg:space-x-4">
+                    <div
+                        onClick={() => {
+                            setCurrentEffect("effectmonjori");
+                            setActiveSection("project");
+                        }}
+                        className="btn border-solid cursor-pointer border-2 border-secondary text-light px-4 py-2 rounded shadow-lg hover:bg-secondary"
+                    >
+                        Projects
+                    </div>
                     <a
                         href="/Hua_Wang_Software_Engineer.pdf"
                         target="_blank"
                         download={true}
                         className="btn border-solid border-2 border-secondary text-light px-4 py-2 rounded shadow-lg hover:bg-secondary"
                     >
-                        Download CV
+                        Resume
                     </a>
                     <div className="flex space-x-4">
                         <a
@@ -77,13 +58,12 @@ const Home = () => {
                         >
                             <i className="ri-google-fill"></i>
                         </a>
-                        <audio ref={audioRef} src={portfolioMusic} preload="auto" />
                     </div>
                 </div>
             </div>
 
             <div className="order-1 lg:order-2 animate-zoomIn">
-                <div onClick={togglePlay} className="relative w-[25vw] h-[25vw] max-w-[500px] max-h-[500px] border-4 border-secondary rounded-full shadow-md overflow-hidden bg-light animate-hueRotate">
+                <div className="relative w-[25vw] h-[25vw] max-w-[500px] max-h-[500px] border-4 border-secondary rounded-full shadow-md overflow-hidden bg-light animate-hueRotate">
                     <ShaderLoadingEffect imageSrc={imageSrc} hoverImageSrc={hoverImageSrc} />
                 </div>
             </div>

@@ -3,8 +3,10 @@ import * as THREE from "three";
 import { EffectFuse } from "./components/EffectFuse";
 import { EffectMonjori } from "./components/EffectMonjori";
 import hua from "./assets/images/hua.jpeg";
+import AudioVisualizer from "./components/AudioVisualizer";
 import Home from "./components/Home";
 import Project from "./components/Project";
+import portfolioMusic from "./assets/audio.mp3";
 
 const App = () => {
     const [currentEffect, setCurrentEffect] = useState("effectfuse");
@@ -92,20 +94,23 @@ const App = () => {
 
     return (
         <>
-            <div
+            <AudioVisualizer canvasId="audioCanvas" musicFile={portfolioMusic} />{" "}
+            {/* <div
                 className="text-2xl font-bold font-audiowide text-white fixed top-0 right-0 mt-6 mr-12 cursor-pointer z-10"
                 onClick={() => {
                     setCurrentEffect("effectmonjori");
                     setActiveSection("project");
                 }}
-                style={{display: activeSection === "home" ? "block" : "none"}}
+                style={{ display: activeSection === "home" ? "block" : "none" }}
             >
                 about me
-            </div>
-
-            {activeSection === "home" && <Home hua={hua} />}
-
-            {activeSection === "project" && <Project setActiveSection={setActiveSection} setCurrentEffect={setCurrentEffect} />}
+            </div> */}
+            {activeSection === "home" && (
+                <Home setActiveSection={setActiveSection} setCurrentEffect={setCurrentEffect} hua={hua} />
+            )}
+            {activeSection === "project" && (
+                <Project setActiveSection={setActiveSection} setCurrentEffect={setCurrentEffect} />
+            )}
         </>
     );
 };
