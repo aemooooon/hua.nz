@@ -134,3 +134,20 @@ body {
     padding-right: 40px !important;
     padding-top: 8px !important;
 } */
+
+/* 左侧信息面板的过渡效果 */
+.info-panel {
+    transition: transform 0.3s ease, opacity 0.3s ease;
+    transform: translateX(-100%);
+    opacity: 0;
+}
+
+.info-panel.open {
+    transform: translateX(0);
+    opacity: 1;
+}
+
+/* 地图容器的过渡效果 */
+.map-container {
+    transition: width 0.3s ease, border-radius 0.3s ease;
+}

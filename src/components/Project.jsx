@@ -127,7 +127,11 @@ const Project = ({ setActiveSection, setCurrentEffect }) => {
             <section className="text-white overflow-hidden w-full h-full animate-zoomIn">
                 <div id="map" className="relative h-full overflow-hidden flex justify-center items-center">
                     {selectedLocation && (
-                        <div className="top-0 w-3/5 h-full text-white p-4 overflow-auto z-[2000] animate-zoomIn">
+                        <div
+                            className={`top-0 w-3/5 h-full text-white p-4 overflow-auto z-[2000] animate-zoomIn info-panel ${
+                                selectedLocation ? "open" : ""
+                            }`}
+                        >
                             <div
                                 onClick={() => setSelectedLocation(null)}
                                 className="absolute z-[2000] w-10 h-10 flex justify-center items-center rounded-full top-[5px] right-[5px] bg-accent hover:bg-red-600 transition-colors duration-300 cursor-pointer group shadow-lg"
@@ -183,7 +187,7 @@ const Project = ({ setActiveSection, setCurrentEffect }) => {
                         scrollWheelZoom
                         style={{ width: "100%", height: "100%" }}
                         zoomControl={false}
-                        className={`border border-white/38 transition-all duration-500 ${
+                        className={`border border-white/38  map-container transition-all duration-500 ${
                             selectedLocation ? "rounded-tr-xl rounded-br-xl" : "rounded-xl"
                         }`}
                     >
