@@ -42,7 +42,7 @@ const locations = {
             "location": "Enshi, Hubei, China",
             "year": "2020",
             "link": "https://aqi.eseemc.cn/",
-            "img": ["/aqi.jpg", "AQI1.jpg", "AQI2.jpg", "AQI3.jpg", "AQI4.jpg", "AQI5.jpg"]
+            "img": ["/aqi.jpg", "AQI1.webp", "AQI2.webp", "AQI3.jpg", "AQI4.jpg", "AQI5.jpg"]
         },
         {
             "type": "education",
@@ -72,7 +72,7 @@ const locations = {
             "name": "Changpingli · 常平里",
             "description": "Developed an interactive 360° virtual tour application using JavaScript and 3D libraries, enabling users to explore panoramic views of buildings, rooms, and outdoor spaces with 720-degree navigation. Implemented clickable markers and hyperlinks to facilitate seamless transitions between multiple scenes, such as moving between rooms or buildings, while providing an immersive experience optimised for both web and mobile platforms.",
             "coordinates": [26.564722, 104.858717],
-            "location": "",
+            "location": "Liupanshui, Guizhou, China",
             "year": "2020-2021",
             "link": "",
             "img": "/changpingli.jpg"
@@ -83,7 +83,7 @@ const locations = {
             "name": "Dalincheng · 大林城",
             "description": "Developed an interactive 360° virtual tour application using JavaScript and 3D libraries, enabling users to explore panoramic views of buildings, rooms, and outdoor spaces with 720-degree navigation. Implemented clickable markers and hyperlinks to facilitate seamless transitions between multiple scenes, such as moving between rooms or buildings, while providing an immersive experience optimised for both web and mobile platforms.",
             "coordinates": [25.725958, 104.449007],
-            "location": "",
+            "location": "Liupanshui, Guizhou, China",
             "year": "2020-2021",
             "link": "",
             "img": "/dalincheng.jpg"
@@ -105,7 +105,7 @@ const locations = {
             "name": "Number 1 Parking · 公园①号",
             "description": "Developed an interactive 360° virtual tour application using JavaScript and 3D libraries, enabling users to explore panoramic views of buildings, rooms, and outdoor spaces with 720-degree navigation. Implemented clickable markers and hyperlinks to facilitate seamless transitions between multiple scenes, such as moving between rooms or buildings, while providing an immersive experience optimised for both web and mobile platforms.",
             "coordinates": [27.326395, 105.280762],
-            "location": "",
+            "location": "Bijie, Guizhou, China",
             "year": "2020-2021",
             "link": "",
             "img": "/gyyh.jpg"
@@ -116,7 +116,7 @@ const locations = {
             "name": "Hengtianfengxijun · 恒天枫溪郡",
             "description": "Developed an interactive 360° virtual tour application using JavaScript and 3D libraries, enabling users to explore panoramic views of buildings, rooms, and outdoor spaces with 720-degree navigation. Implemented clickable markers and hyperlinks to facilitate seamless transitions between multiple scenes, such as moving between rooms or buildings, while providing an immersive experience optimised for both web and mobile platforms.",
             "coordinates": [39.163164, 116.354244],
-            "location": "",
+            "location": "Langfang, Hebei, China",
             "year": "2020-2021",
             "link": "",
             "img": "/htfxj.jpg"
@@ -127,7 +127,7 @@ const locations = {
             "name": "Jiahe Garden in Sky · 家和空中花园",
             "description": "Developed an interactive 360° virtual tour application using JavaScript and 3D libraries, enabling users to explore panoramic views of buildings, rooms, and outdoor spaces with 720-degree navigation. Implemented clickable markers and hyperlinks to facilitate seamless transitions between multiple scenes, such as moving between rooms or buildings, while providing an immersive experience optimised for both web and mobile platforms.",
             "coordinates": [29.475417, 109.406526],
-            "location": "",
+            "location": "Enshi, Hubei, China",
             "year": "2020-2021",
             "link": "",
             "img": "/jhhy.jpg"
@@ -138,7 +138,7 @@ const locations = {
             "name": "Jinnanwan · 金澜湾",
             "description": "Developed an interactive 360° virtual tour application using JavaScript and 3D libraries, enabling users to explore panoramic views of buildings, rooms, and outdoor spaces with 720-degree navigation. Implemented clickable markers and hyperlinks to facilitate seamless transitions between multiple scenes, such as moving between rooms or buildings, while providing an immersive experience optimised for both web and mobile platforms.",
             "coordinates": [27.502244, 106.234353],
-            "location": "",
+            "location": "Bijie, Guizhou, China",
             "year": "2020-2021",
             "link": "",
             "img": "/jlw.jpg"
@@ -149,7 +149,7 @@ const locations = {
             "name": "Jiangnanyipin · 江南一品",
             "description": "Developed an interactive 360° virtual tour application using JavaScript and 3D libraries, enabling users to explore panoramic views of buildings, rooms, and outdoor spaces with 720-degree navigation. Implemented clickable markers and hyperlinks to facilitate seamless transitions between multiple scenes, such as moving between rooms or buildings, while providing an immersive experience optimised for both web and mobile platforms.",
             "coordinates": [27.754975, 107.461993],
-            "location": "",
+            "location": "Zunyi, Guizhou, China",
             "year": "2020-2021",
             "link": "",
             "img": "/jnyp.jpg"
@@ -160,7 +160,7 @@ const locations = {
             "name": "Jiangxiangmingmen · 将相名门",
             "description": "Developed an interactive 360° virtual tour application using JavaScript and 3D libraries, enabling users to explore panoramic views of buildings, rooms, and outdoor spaces with 720-degree navigation. Implemented clickable markers and hyperlinks to facilitate seamless transitions between multiple scenes, such as moving between rooms or buildings, while providing an immersive experience optimised for both web and mobile platforms.",
             "coordinates": [28.175622, 109.185229],
-            "location": "",
+            "location": "Tongren, Guizhou, China",
             "year": "2020-2021",
             "link": "",
             "img": "/jxmm.jpg"
@@ -171,7 +171,7 @@ const locations = {
             "name": "Jinsha · 金沙将相名门",
             "description": "Developed an interactive 360° virtual tour application using JavaScript and 3D libraries, enabling users to explore panoramic views of buildings, rooms, and outdoor spaces with 720-degree navigation. Implemented clickable markers and hyperlinks to facilitate seamless transitions between multiple scenes, such as moving between rooms or buildings, while providing an immersive experience optimised for both web and mobile platforms.",
             "coordinates": [27.497812, 106.233872],
-            "location": "",
+            "location": "Jinsha, Guizhou, China",
             "year": "2020-2021",
             "link": "",
             "img": "/jsjxmm.jpg"
@@ -182,7 +182,7 @@ const locations = {
             "name": "Guiyuan · 盘州府壹号",
             "description": "Developed an interactive 360° virtual tour application using JavaScript and 3D libraries, enabling users to explore panoramic views of buildings, rooms, and outdoor spaces with 720-degree navigation. Implemented clickable markers and hyperlinks to facilitate seamless transitions between multiple scenes, such as moving between rooms or buildings, while providing an immersive experience optimised for both web and mobile platforms.",
             "coordinates": [25.692363, 104.485536],
-            "location": "",
+            "location": "Liupanshui, Guizhou, China",
             "year": "2020-2021",
             "link": "",
             "img": "/pzf.jpg"
@@ -193,7 +193,7 @@ const locations = {
             "name": "Taifu Wutongxi · 泰府梧桐栖",
             "description": "Developed an interactive 360° virtual tour application using JavaScript and 3D libraries, enabling users to explore panoramic views of buildings, rooms, and outdoor spaces with 720-degree navigation. Implemented clickable markers and hyperlinks to facilitate seamless transitions between multiple scenes, such as moving between rooms or buildings, while providing an immersive experience optimised for both web and mobile platforms.",
             "coordinates": [36.568705, 111.742927],
-            "location": "",
+            "location": "Huozhou, Shanxi, China",
             "year": "2020-2021",
             "link": "",
             "img": "/tf.jpg"
@@ -204,7 +204,7 @@ const locations = {
             "name": "Yuheyuan · 通盛御河园",
             "description": "Developed an interactive 360° virtual tour application using JavaScript and 3D libraries, enabling users to explore panoramic views of buildings, rooms, and outdoor spaces with 720-degree navigation. Implemented clickable markers and hyperlinks to facilitate seamless transitions between multiple scenes, such as moving between rooms or buildings, while providing an immersive experience optimised for both web and mobile platforms.",
             "coordinates": [28.309843, 106.225531],
-            "location": "",
+            "location": "Zaozhuang, Shandong, China",
             "year": "2020-2021",
             "link": "",
             "img": "/tsyhy.jpg"
@@ -215,7 +215,7 @@ const locations = {
             "name": "Yuheyuan · 文璟上府",
             "description": "Developed an interactive 360° virtual tour application using JavaScript and 3D libraries, enabling users to explore panoramic views of buildings, rooms, and outdoor spaces with 720-degree navigation. Implemented clickable markers and hyperlinks to facilitate seamless transitions between multiple scenes, such as moving between rooms or buildings, while providing an immersive experience optimised for both web and mobile platforms.",
             "coordinates": [26.24033, 109.140568],
-            "location": "",
+            "location": "Liping, Guizhou, China",
             "year": "2020-2021",
             "link": "",
             "img": "/wjsf.jpg"
@@ -226,7 +226,7 @@ const locations = {
             "name": "Dongsheng - 芯宸时代",
             "description": "Developed an interactive 360° virtual tour application using JavaScript and 3D libraries, enabling users to explore panoramic views of buildings, rooms, and outdoor spaces with 720-degree navigation. Implemented clickable markers and hyperlinks to facilitate seamless transitions between multiple scenes, such as moving between rooms or buildings, while providing an immersive experience optimised for both web and mobile platforms.",
             "coordinates": [29.681751, 109.162283],
-            "location": "",
+            "location": "Enshi，Hubei, China",
             "year": "2020-2021",
             "link": "",
             "img": "/xcsd.jpg"
@@ -237,7 +237,7 @@ const locations = {
             "name": "Lvcheng · 迎宾华府",
             "description": "Developed an interactive 360° virtual tour application using JavaScript and 3D libraries, enabling users to explore panoramic views of buildings, rooms, and outdoor spaces with 720-degree navigation. Implemented clickable markers and hyperlinks to facilitate seamless transitions between multiple scenes, such as moving between rooms or buildings, while providing an immersive experience optimised for both web and mobile platforms.",
             "coordinates": [39.122386, 116.415274],
-            "location": "",
+            "location": "Langfang, Hebei, China",
             "year": "2020-2021",
             "link": "",
             "img": "/ybhf.jpg"
@@ -248,7 +248,7 @@ const locations = {
             "name": "Jiahe · 雲尚星城",
             "description": "Developed an interactive 360° virtual tour application using JavaScript and 3D libraries, enabling users to explore panoramic views of buildings, rooms, and outdoor spaces with 720-degree navigation. Implemented clickable markers and hyperlinks to facilitate seamless transitions between multiple scenes, such as moving between rooms or buildings, while providing an immersive experience optimised for both web and mobile platforms.",
             "coordinates": [29.688752, 109.149443],
-            "location": "",
+            "location": "Enshi, Hubei, China",
             "year": "2020-2021",
             "link": "",
             "img": "/ysxc.jpg"
@@ -259,7 +259,7 @@ const locations = {
             "name": "Yuecheng · 悦城",
             "description": "Developed an interactive 360° virtual tour application using JavaScript and 3D libraries, enabling users to explore panoramic views of buildings, rooms, and outdoor spaces with 720-degree navigation. Implemented clickable markers and hyperlinks to facilitate seamless transitions between multiple scenes, such as moving between rooms or buildings, while providing an immersive experience optimised for both web and mobile platforms.",
             "coordinates": [27.579996, 106.864341],
-            "location": "",
+            "location": "Zunyi, Guizhou, China",
             "year": "2020-2021",
             "link": "",
             "img": "/zyyc.jpg"
@@ -271,7 +271,7 @@ const locations = {
             "description": "Official Website",
             "coordinates": [30.3335111, 108.98434],
             "location": "Lichuan, Hubei, China",
-            "year": "2020-2021",
+            "year": "2019",
             "link": "http://tenglongdong.net.cn/",
             "img": "/tld.jpg"
         },
@@ -282,7 +282,7 @@ const locations = {
             "description": "Official Website",
             "coordinates": [31.0419753, 110.3386598],
             "location": "Badong, Hubei, China",
-            "year": "2020-2021",
+            "year": "2019",
             "link": "",
             "img": ""
         },
@@ -293,7 +293,7 @@ const locations = {
             "description": "Official Website",
             "coordinates": [30.2889132, 110.2148372],
             "location": "Badong, Hubei, China",
-            "year": "2020-2021",
+            "year": "2019",
             "link": "",
             "img": ""
         },
@@ -304,7 +304,7 @@ const locations = {
             "description": "Official Website",
             "coordinates": [30.297884, 109.4955927],
             "location": "Enshi, Hubei, China",
-            "year": "2020-2021",
+            "year": "2019",
             "link": "https://www.es9e.cn/",
             "img": "/es9e.jpg"
         },
@@ -315,9 +315,20 @@ const locations = {
             "description": "This is a mobile application that aims to help get people to start exercising. This App is a cross-platform application which runs both of Android and IOS. It is built using React-Native and Google Firebase real-time database.",
             "coordinates": [-45.8750186, 170.4973482],
             "location": "Dunedin, New Zealand",
-            "year": "2019-2020",
+            "year": "2019",
             "link": "https://github.com/aemooooon/FitsGo",
             "img": ["/fitsgo.gif", "fitsgo-team.jpg"]
+        },
+        {
+            "type": "project",
+            "title": "ECAN Data Pipeline",
+            "name": "University of Canterbury",
+            "description": "Developed a system to aggregate data from over 20 sources, then centralized it into a central database. Web API is provided to the front end, enabling analyses and visualizations: Collect more than 20 people's data from the AWS EC2. Built data pipelines using Apache Airfow to automate ETL processes. Stored data in a PostgreSQL database on AWS RDS. Developed a Node.js API with Swagger documentation to serve endpoints. Implemented Python Streamlit and R Shiny dashboard to visualise data.",
+            "coordinates": [-43.5357406, 172.6358119],
+            "location": "Christchurch, New Zealand",
+            "year": "2024",
+            "link": "https://github.com/aemooooon/DATA472-Individual-Project-Submission",
+            "img": ["/data472/472.png", "/data472/af01.jpg", "/data472/datapipeline.png", "/data472/FuelPriceData.jpg", "/data472/GasStationData.jpg", "/data472/ProjectManagement.jpg", "/data472/services.png", "/data472/v1.gif", "/data472/v2.gif", "/data472/", "/data472/WebApiResponse.jpg",]
         },
         {
             "type": "activity",

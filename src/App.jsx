@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import * as THREE from "three";
 import { EffectFuse } from "./components/EffectFuse";
 import { EffectMonjori } from "./components/EffectMonjori";
-import hua from "./assets/images/hua.jpeg";
 import AudioVisualizer from "./components/AudioVisualizer";
 import Home from "./components/Home";
 import Project from "./components/Project";
@@ -96,7 +95,7 @@ const App = () => {
         <>
             <AudioVisualizer canvasId="audioCanvas" musicFile={portfolioMusic} />{" "}
             {activeSection === "home" && (
-                <Home setActiveSection={setActiveSection} setCurrentEffect={setCurrentEffect} hua={hua} />
+                <Home setActiveSection={setActiveSection} setCurrentEffect={setCurrentEffect} />
             )}
             {activeSection === "project" && (
                 <Project setActiveSection={setActiveSection} setCurrentEffect={setCurrentEffect} />
