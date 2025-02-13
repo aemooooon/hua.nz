@@ -6,7 +6,7 @@ const locations = {
             "name": "Zespri International",
             "description": "Built ETL pipelines and developed an interactive GIS-based web application for orchard sampling optimization.",
             "coordinates": [-37.7866, 176.4416],
-            "location": "",
+            "location": "Bay of Plenty, New Zealand",
             "year": "2024-2025",
             "link": "https://www.zespri.com",
             "img": "/zespri_poster.png"
@@ -15,34 +15,34 @@ const locations = {
             "type": "work",
             "title": "Software Engineer",
             "name": "Realibox",
-            "description": "Developed a 3D asset hub using React, WebGL, and Node.js. Created CI/CD pipelines for deployment.",
+            "description": "Developed and maintained the central hub for Realibox’s 3D assets, using React with a WebGL-based library for the frontend and Node.js/Python for the backend. Implemented CI/CD pipelines using GitLab for code integration and deployment. Worked in an Agile environment, collaborating closely with PMs, QAs, and Designers to ensure feature delivery aligned with requirements.",
             "coordinates": [22.9951158, 113.3335372],
-            "location": "",
+            "location": "Guangzhou, China",
             "year": "2021-2023",
             "link": "https://hub.realibox.com/",
-            "img": "/realibox.jpg"
+            "img": ["/realibox-00.jpg", "realibox-01.jpeg"]
         },
         {
             "type": "work",
             "title": "Frontend Developer",
             "name": "Chongqing Nuclear Stone Technology",
-            "description": "Developed HTML5 micro-apps on WeChat platform, integrated 3D scene tours and panoramic views.",
+            "description": "Develop H5 micro-apps on the WeChat platform, which include front-end page implementation, 3D scene tour and transition in panorama, and App deployment.",
             "coordinates": [29.5638, 106.5505],
-            "location": "",
+            "location": "Chongqing, China",
             "year": "2020-2021",
             "link": "",
             "img": "/stone.jpg"
         },
         {
-            "type": "work",
+            "type": "project",
             "title": "Full Stack Developer",
-            "name": "Hubei Day Digital Technology",
-            "description": "Built a real-time AQI publishing system with Java Spring Boot and React frontend.",
+            "name": "Real-time Air Quality Index Publish Platform",
+            "description": "Developed a real-time Air Quality Index dashboard for a population of 5 million, involving an ETL workflow to extract XML data from a third-party Web service on schedule, transform it into structured objects, and load it into a MySQL database. The backend, built with Java Spring Boot, provided RESTful APIs for data access, while the front end, developed using React and EChart, visualized AQI trends and geographic distributions through interactive and dynamic charts.",
             "coordinates": [30.311395, 109.4795951],
-            "location": "",
+            "location": "Enshi, Hubei, China",
             "year": "2020",
             "link": "https://aqi.eseemc.cn/",
-            "img": "/aqi.jpg",
+            "img": ["/aqi.jpg", "AQI1.jpg", "AQI2.jpg", "AQI3.jpg", "AQI4.jpg", "AQI5.jpg"]
         },
         {
             "type": "education",
@@ -50,21 +50,21 @@ const locations = {
             name: "University of Canterbury",
             "description": "Focus on Data Engineer, Visualisation and Deep Learning.",
             "coordinates": [-43.5232, 172.5835],
-            "location": "",
+            "location": "Christchurch, New Zealand",
             "year": "2024-2025",
             "link": "https://www.canterbury.ac.nz",
-            "img": "/hua_presentation.jpg"
+            "img": ["uc-ds-all.jpg", "/hua_presentation.jpg"]
         },
         {
             "type": "education",
             "title": "Bachelor of Information Technology",
             "name": "Otago Polytechnic",
-            "description": "Graduated with distinction, awarded Academic Excellence and Best Programmer.",
+            "description": "Graduated with distinction, focuse on Web Development, full stack, and awarded Academic Excellence and Best Programmer.",
             "coordinates": [-45.8664633, 170.5182829],
-            "location": "",
+            "location": "Dunedin, New Zealand",
             "year": "2017-2021",
             "link": "https://www.op.ac.nz",
-            "img": "/op.jpg"
+            "img": ["awared-best-programmer.jpeg", "awared-excellence.jpeg"]
         },
         {
             "type": "project",
@@ -94,7 +94,7 @@ const locations = {
             "name": "Fenghuangjiayuan · 凤凰嘉苑",
             "description": "Developed an interactive 360° virtual tour application using JavaScript and 3D libraries, enabling users to explore panoramic views of buildings, rooms, and outdoor spaces with 720-degree navigation. Implemented clickable markers and hyperlinks to facilitate seamless transitions between multiple scenes, such as moving between rooms or buildings, while providing an immersive experience optimised for both web and mobile platforms.",
             "coordinates": [30.2788597, 109.4846285],
-            "location": "",
+            "location": "Enshi, Hubei, China",
             "year": "2020-2021",
             "link": "",
             "img": "/fhjy.jpg"
@@ -270,7 +270,7 @@ const locations = {
             "name": "腾龙洞",
             "description": "Official Website",
             "coordinates": [30.3335111, 108.98434],
-            "location": "",
+            "location": "Lichuan, Hubei, China",
             "year": "2020-2021",
             "link": "http://tenglongdong.net.cn/",
             "img": "/tld.jpg"
@@ -281,7 +281,7 @@ const locations = {
             "name": "巴东县旅游局",
             "description": "Official Website",
             "coordinates": [31.0419753, 110.3386598],
-            "location": "",
+            "location": "Badong, Hubei, China",
             "year": "2020-2021",
             "link": "",
             "img": ""
@@ -292,7 +292,7 @@ const locations = {
             "name": "金果茶叶",
             "description": "Official Website",
             "coordinates": [30.2889132, 110.2148372],
-            "location": "",
+            "location": "Badong, Hubei, China",
             "year": "2020-2021",
             "link": "",
             "img": ""
@@ -303,7 +303,7 @@ const locations = {
             "name": "恩施州中心医院",
             "description": "Official Website",
             "coordinates": [30.297884, 109.4955927],
-            "location": "",
+            "location": "Enshi, Hubei, China",
             "year": "2020-2021",
             "link": "https://www.es9e.cn/",
             "img": "/es9e.jpg"
@@ -312,12 +312,12 @@ const locations = {
             "type": "project",
             "title": "FitsGo",
             "name": "Mobile App",
-            "description": "This is a mobile application that aims to help get people to start exercising. This App is a cross-platform application which runs both of Android and IOS. It is built using Facebook React-Native and Google Firebase real-time database. This app provides a set of target locations that the user can run/walk/bike. Only locations in your current region will be displayed to you. Routes to these locations are shown to the user when the user selects the marker and if the user chooses to go to these locations, the distance, calories burnt, the time it took to travel there and the marker badge will be added to their record. This is done so the user can keep track of their exercise journey through this application. The user can also adjust and customize their profile which includes their personnel details such as names, weight and date of birth.",
+            "description": "This is a mobile application that aims to help get people to start exercising. This App is a cross-platform application which runs both of Android and IOS. It is built using React-Native and Google Firebase real-time database.",
             "coordinates": [-45.8750186, 170.4973482],
-            "location": "",
+            "location": "Dunedin, New Zealand",
             "year": "2019-2020",
             "link": "https://github.com/aemooooon/FitsGo",
-            "img": "/fitsgo.gif"
+            "img": ["/fitsgo.gif", "fitsgo-team.jpg"]
         },
         {
             "type": "activity",
@@ -325,7 +325,7 @@ const locations = {
             "name": "CITANZ CHCH Volunteer",
             "description": "Assisted in planning and managing IT community meetups once a month.",
             "coordinates": [-43.5828903, 172.5695089],
-            "location": "Halswell Library",
+            "location": "Halswell Library, Christchurch",
             "year": "2024-2025",
             "link": "https://www.cita.org.nz/",
             "img": ["cita-02.jpg", "cita-01.jpg", "cita-04.jpg", "cita-03.jpg", "cita-05.jpg"]
@@ -335,11 +335,11 @@ const locations = {
             "title": "Save Kiwi",
             "name": "AI Hackathon 2024",
             "description": "Design an AI solution to help existing organizations improve maintenance and analysis efficiency to better protect kiwi birds. It uses advanced tech to protect kiwi birds by combining smart cages, edge computing, and cloud analytics. Smart cages with RGB cameras monitor wildlife, while edge computing processes images in real-time using a vision-transformer model. This model distinguishes between kiwi birds, predators, and non-threatening animals. Predators are captured; others are released. Data is sent to a cloud platform for monitoring and alerts, enabling quick conservation responses.",
-            "coordinates": [-43.5218726,172.5674936],
+            "coordinates": [-43.5218726, 172.5674936],
             "location": "University of Canterbury, Christchurch",
             "year": "2024",
             "link": "https://www.cita.org.nz/",
-            "img": ["/UC_F4.001.jpeg", "/UC_F4.002.jpeg","f4.jpg"]
+            "img": ["/UC_F4.001.jpeg", "/UC_F4.002.jpeg", "f4.jpg"]
         }
     ]
 };
