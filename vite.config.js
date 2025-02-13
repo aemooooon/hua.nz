@@ -15,4 +15,20 @@ export default defineConfig({
       ],
     },
   },
+  build: {
+    chunkSizeWarningLimit: 500,
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (id.includes("node_modules")) {
+            if (id.includes("react")) return "react";
+            if (id.includes("leaflet")) return "leaflet";
+            if (id.includes("gsap")) return "gsap";
+            if (id.includes("three")) return "three";
+            return "vendor";
+          }
+        },
+      },
+    },
+  },
 })
