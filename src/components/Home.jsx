@@ -28,7 +28,6 @@ const Home = ({ setActiveSection, setCurrentEffect }) => {
                     <a
                         href="/Hua_Wang_Software_Engineer.pdf"
                         target="_blank"
-                        download={true}
                         className="btn border-solid border-2 border-secondary text-light px-4 py-2 rounded shadow-lg hover:bg-secondary"
                     >
                         Resume

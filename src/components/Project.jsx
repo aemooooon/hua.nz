@@ -16,6 +16,16 @@ import "leaflet-extra-markers/dist/css/leaflet.extra-markers.min.css";
 import "leaflet/dist/leaflet.css";
 import locationData from "../assets/locations";
 import MarkerClusterGroup from "react-leaflet-cluster";
+import {
+    FaUniversity,
+    FaCalendarAlt,
+    FaFilter,
+    FaGraduationCap,
+    FaBriefcase,
+    FaProjectDiagram,
+    FaRunning,
+    FaMapMarkerAlt,
+} from "react-icons/fa";
 
 const customMarkerIcon = L.divIcon({
     className: "custom-marker animate-hueRotate",
@@ -39,11 +49,17 @@ const Project = ({ setActiveSection, setCurrentEffect }) => {
         return [sumLat / total, sumLon / total];
     };
 
-    const handleFilterChange = (category) => {
-        setActiveCategory(category);
-        const newFilteredLocations = locationData.locations.filter(
-            (loc) => loc.type === category || category === "All"
-        );
+    const filterButtons = [
+        { label: "All", value: "all", icon: <FaFilter /> },
+        { label: "Projects", value: "project", icon: <FaProjectDiagram /> },
+        { label: "Work", value: "work", icon: <FaBriefcase /> },
+        { label: "Education", value: "education", icon: <FaGraduationCap /> },
+        { label: "Activities", value: "activity", icon: <FaRunning /> },
+    ];
+
+    const handleFilterChange = (value) => {
+        setActiveCategory(value);
+        const newFilteredLocations = locationData.locations.filter((loc) => loc.type === value || value === "all");
         setFilteredLocations(newFilteredLocations);
         flyToFilteredLocations(newFilteredLocations);
     };
@@ -81,7 +97,9 @@ const Project = ({ setActiveSection, setCurrentEffect }) => {
         });
     };
 
-    const handleMapClick = () => setSelectedLocation(null);
+    const handleMapClick = () => {
+        setSelectedLocation(null);
+    };
 
     useEffect(() => {
         if (mapRef.current) {
@@ -116,7 +134,20 @@ const Project = ({ setActiveSection, setCurrentEffect }) => {
     }, [selectedLocation]);
 
     if (filteredLocations.length === 0) {
-        return <div className="text-center text-gray-500 mt-8">No locations found.</div>;
+        return (
+            <div className="flex justify-center items-center h-full text-white">
+                <span className="text-2xl">No locations found.</span>{" "}
+                <span
+                    onClick={() => {
+                        setActiveSection("home");
+                        setCurrentEffect("effectfuse");
+                    }}
+                    className="ml-10 text-xl rounded-full border-2 w-10 h-10 flex justify-center items-center border-red-500 cursor-pointer text-red-500 font-bold group-hover:scale-110 group-hover:rotate-90 transition-all duration-300 ease-in-out"
+                >
+                    ✕
+                </span>
+            </div>
+        );
     }
 
     return (
@@ -132,39 +163,54 @@ const Project = ({ setActiveSection, setCurrentEffect }) => {
                     ✕
                 </span>
             </div>
-            <section className="text-white overflow-hidden w-full h-full animate-zoomIn">
+            <section className="text-white overflow-hidden w-full h-full animate-zoomIn transition-all duration-500 ease-in-out">
                 <div id="map" className="relative h-full overflow-hidden flex justify-center items-center">
                     {selectedLocation && (
                         <div
-                            className={`top-0 w-3/5 h-full text-white p-4 overflow-auto z-[2000] animate-zoomIn info-panel ${
+                            className={`top-0 w-3/5 h-full text-white p-6 overflow-auto z-[2000] animate-zoomIn info-panel ${
                                 selectedLocation ? "open" : ""
                             }`}
                         >
                             <div
                                 onClick={() => setSelectedLocation(null)}
-                                className="absolute z-[2000] w-10 h-10 flex justify-center items-center rounded-full top-[5px] right-[5px] bg-accent hover:bg-red-600 transition-colors duration-300 cursor-pointer group shadow-lg"
+                                className="absolute z-[1000] w-10 h-10 flex justify-center items-center rounded-full top-[5px] right-[5px] bg-accent hover:bg-red-600 transition-colors duration-300 cursor-pointer group shadow-lg"
                             >
                                 <span className="text-white text-xl font-bold group-hover:scale-110 group-hover:rotate-180 transition-all duration-300 ease-in-out">
                                     &larr;
                                 </span>
                             </div>
-                            <h3 className="font-bold text-2xl">{selectedLocation.title || "Location"}</h3>
-                            {selectedLocation.name && <h3 className="text-xl mb-2">{selectedLocation.name}</h3>}
-                            {selectedLocation.year && <h3 className="text-xl italic mb-2">{selectedLocation.year}</h3>}
+                            <h3 className="font-bold mt-4 text-2xl font-audiowide capitalize text-white-800 mb-2">
+                                {selectedLocation.title || "Location"}
+                            </h3>
+
                             {selectedLocation.img && (
-                                <img
-                                    src={selectedLocation.img}
-                                    className="object-cover rounded-md mx-auto mt-4 h-fit"
-                                    alt="Location"
-                                />
+                                <div className="mt-4 space-y-4">
+                                    {Array.isArray(selectedLocation.img) ? (
+                                        // 多张图片
+                                        selectedLocation.img.map((imgSrc, index) => (
+                                            <img
+                                                key={index}
+                                                src={imgSrc}
+                                                className="object-cover w-full rounded-md"
+                                                alt={`Location ${index + 1}`}
+                                            />
+                                        ))
+                                    ) : (
+                                        // 单张图片
+                                        <img
+                                            src={selectedLocation.img}
+                                            className="object-cover w-full rounded-md"
+                                            alt="Location"
+                                        />
+                                    )}
+                                </div>
                             )}
-                            {selectedLocation.description && <p className="mt-2">{selectedLocation.description}</p>}
                             {selectedLocation.link && (
                                 <a
                                     href={selectedLocation.link}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="mt-4 block text-blue-400 hover:underline"
+                                    className="mt-4 text-right block text-blue-400 hover:underline"
                                 >
                                     Learn more →
                                 </a>
@@ -172,22 +218,6 @@ const Project = ({ setActiveSection, setCurrentEffect }) => {
                         </div>
                     )}
 
-                    {/* Filter Buttons */}
-                    <div className="absolute flex flex-col top-1/2 right-2 transform -translate-y-1/2 space-y-2 z-[2000] pointer-events-auto">
-                        {["All", "education", "work", "project"].map((category) => (
-                            <button
-                                key={category}
-                                onClick={() => handleFilterChange(category)}
-                                className={`btn px-4 py-2 rounded shadow-lg border-2 transition duration-300 ${
-                                    activeCategory === category
-                                        ? "bg-secondary text-white animate-hueRotate"
-                                        : "border-solid border-2 border-secondary text-light px-4 py-2 rounded shadow-lg hover:bg-secondary"
-                                }`}
-                            >
-                                {category.charAt(0).toUpperCase() + category.slice(1)}
-                            </button>
-                        ))}
-                    </div>
                     <MapContainer
                         ref={mapRef}
                         center={calculateCentroid(locationData.locations)}
@@ -195,7 +225,7 @@ const Project = ({ setActiveSection, setCurrentEffect }) => {
                         scrollWheelZoom
                         style={{ width: "100%", height: "100%" }}
                         zoomControl={false}
-                        className={`border border-white/38  map-container transition-all duration-500 ${
+                        className={`border border-white/38 ${
                             selectedLocation ? "rounded-tr-xl rounded-br-xl" : "rounded-xl"
                         }`}
                     >
@@ -233,31 +263,62 @@ const Project = ({ setActiveSection, setCurrentEffect }) => {
                                     }}
                                 >
                                     <Popup
-                                        offset={[-5, -40]}
+                                        offset={[-5, -42]}
                                         autoPan={true}
                                         eventHandlers={{
                                             remove: () => setSelectedLocation(null),
                                         }}
+                                        className="custom-popup"
+                                        maxWidth={600}
                                     >
-                                        <h3 className="font-bold text-lg">{loc.title}</h3>
-                                        {loc.name && <h3 className="text-base italic mb-2">{loc.name}</h3>}
-                                        {loc.year && <h3 className="text-base italic mb-2">{loc.year}</h3>}
-                                        {loc.description && <p className="mt-2">{loc.description}</p>}
-                                        {loc.link && (
-                                            <a
-                                                href={loc.link}
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                                className="mt-4 block text-blue-400 hover:underline"
-                                            >
-                                                Learn more →
-                                            </a>
-                                        )}
+                                        <div className="p-6 bg-gradient-to-br from-blue-50 to-purple-50 rounded-lg shadow-xl border border-gray-200">
+                                            <h3 className="font-bold text-xl font-audiowide capitalize text-gray-800 mb-2">
+                                                {loc.type}
+                                            </h3>
+                                            {loc.name && (
+                                                <h3 className="text-xl mt-2 text-gray-700 font-poppins">{loc.name}</h3>
+                                            )}
+
+                                            {loc.description && (
+                                                <p className="text-gray-600 leading-relaxed text-base">
+                                                    {loc.description}
+                                                </p>
+                                            )}
+
+                                            <div className="flex items-center justify-stretch mb-2">
+                                                <div className="flex items-center space-x-2">
+                                                    <FaMapMarkerAlt className="text-blue-500 text-base font-mono" />{" "}
+                                                    <span className="text-gray-700 text-base">{loc.location}</span>
+                                                </div>
+                                                <div className="flex items-center space-x-2">
+                                                    <FaCalendarAlt className="text-purple-500 text-base" />{" "}
+                                                    <span className="text-gray-700 text-sm">{loc.year}</span>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </Popup>
                                 </Marker>
                             ))}
                         </MarkerClusterGroup>
                     </MapContainer>
+
+                    {/* Filter Buttons */}
+                    <div className="absolute flex flex-col top-1/2 right-2 transform -translate-y-1/2 space-y-2 z-[2000] pointer-events-auto">
+                        {filterButtons.map((category) => (
+                            <button
+                                key={category.value}
+                                onClick={() => handleFilterChange(category.value)}
+                                className={`flex items-center space-x-2 px-4 py-2 rounded-lg shadow-md transition-all duration-300 ${
+                                    activeCategory === category.value
+                                        ? "bg-gradient-to-r from-blue-500 to-purple-500 text-white transform scale-105"
+                                        : "bg-white text-gray-700 border border-gray-200 hover:bg-gray-50"
+                                }`}
+                            >
+                                <span className="text-lg">{category.icon}</span> {/* 图标 */}
+                                <span>{category.label}</span> {/* 文字 */}
+                            </button>
+                        ))}
+                    </div>
                 </div>
             </section>
         </>
