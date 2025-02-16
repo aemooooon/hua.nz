@@ -16,22 +16,24 @@ const Home = ({ setActiveSection, setCurrentEffect }) => {
                     cloud services.
                 </p>
                 <div className="mt-8 sm:mt-12 flex flex-col lg:flex-row items-center space-y-4 lg:space-y-0 lg:space-x-4">
-                    <div
-                        onClick={() => {
-                            setCurrentEffect("effectmonjori");
-                            setActiveSection("project");
-                        }}
-                        className="btn border-solid cursor-pointer border-2 border-secondary text-light px-4 py-2 rounded shadow-lg hover:bg-secondary animate-hueRotate"
-                    >
-                        Projects
+                    <div className="flex space-x-4">
+                        <div
+                            onClick={() => {
+                                setCurrentEffect("effectmonjori");
+                                setActiveSection("project");
+                            }}
+                            className="btn border-solid cursor-pointer border-2 border-secondary text-light px-4 py-2 rounded shadow-lg hover:bg-secondary animate-hueRotate"
+                        >
+                            Projects
+                        </div>
+                        <a
+                            href="/Hua_Wang_Software_Engineer.pdf"
+                            target="_blank"
+                            className="btn border-solid border-2 border-secondary text-light px-4 py-2 rounded shadow-lg hover:bg-secondary"
+                        >
+                            Resume
+                        </a>
                     </div>
-                    <a
-                        href="/Hua_Wang_Software_Engineer.pdf"
-                        target="_blank"
-                        className="btn border-solid border-2 border-secondary text-light px-4 py-2 rounded shadow-lg hover:bg-secondary"
-                    >
-                        Resume
-                    </a>
                     <div className="flex space-x-4">
                         <a
                             href="https://github.com/aemooooon"

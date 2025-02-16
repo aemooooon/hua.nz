@@ -17,7 +17,6 @@ import "leaflet/dist/leaflet.css";
 import locationData from "../assets/locations";
 import MarkerClusterGroup from "react-leaflet-cluster";
 import {
-    FaUniversity,
     FaCalendarAlt,
     FaFilter,
     FaGraduationCap,
@@ -59,32 +58,39 @@ const Project = ({ setActiveSection, setCurrentEffect }) => {
 
     const handleFilterChange = (value) => {
         setActiveCategory(value);
-        const newFilteredLocations = locationData.locations.filter((loc) => loc.type === value || value === "all");
+        setSelectedLocation(null);
+        const newFilteredLocations = locationData.locations.filter((loc) => {
+            return (loc.type === value || value === "all") && loc.coordinates;
+        });
         setFilteredLocations(newFilteredLocations);
         flyToFilteredLocations(newFilteredLocations);
     };
 
     const flyToMarker = (coordinates) => {
-        if (mapRef.current && coordinates) {
+        try {
+            if (!mapRef.current || !coordinates) return;
             mapRef.current.flyTo(coordinates, 16, { animate: true, duration: 1.5 });
+        } catch (error) {
+            console.error("Map flyTo failed:", error);
         }
     };
 
     const flyToFilteredLocations = (locations) => {
-        if (mapRef.current && locations.length > 0) {
-            if (locations.length === 1) {
-                mapRef.current.flyTo(locations[0].coordinates, 10, { animate: true, duration: 1.5 });
-            } else {
-                setTimeout(() => {
-                    const bounds = L.latLngBounds(locations.map((loc) => loc.coordinates));
+        if (!mapRef.current || locations.length === 0) return;
+        if (locations.length === 1) {
+            mapRef.current.flyTo(locations[0].coordinates, 10, { animate: true, duration: 1.5 });
+        } else {
+            setTimeout(() => {
+                const bounds = L.latLngBounds(locations.map((loc) => loc.coordinates));
+                if (mapRef.current) {
                     mapRef.current.flyToBounds(bounds, {
                         padding: [100, 100],
                         maxZoom: 10,
                         animate: true,
                         duration: 1.5,
                     });
-                }, 100);
-            }
+                }
+            }, 100);
         }
     };
 
@@ -102,13 +108,14 @@ const Project = ({ setActiveSection, setCurrentEffect }) => {
     };
 
     useEffect(() => {
-        if (mapRef.current) {
-            mapRef.current.on("click", handleMapClick);
+        const mapInstance = mapRef.current;
+        if (mapInstance) {
+            mapInstance.on("click", handleMapClick);
         }
 
         return () => {
-            if (mapRef.current) {
-                mapRef.current.off("click", handleMapClick);
+            if (mapInstance) {
+                mapInstance.off("click", handleMapClick);
             }
         };
     }, []);
@@ -118,19 +125,20 @@ const Project = ({ setActiveSection, setCurrentEffect }) => {
     }, [mapRef, activeCategory]);
 
     useEffect(() => {
-        if (mapRef.current) {
-            const mapContainer = mapRef.current.getContainer();
-            if (selectedLocation) {
-                mapContainer.classList.add("rounded-tr-xl", "rounded-br-xl");
-                mapContainer.classList.remove("rounded-xl");
-            } else {
-                mapContainer.classList.add("rounded-xl");
-                mapContainer.classList.remove("rounded-tr-xl", "rounded-br-xl");
-            }
-            setTimeout(() => {
-                mapRef.current.invalidateSize();
-            }, 300);
+        if (!mapRef.current) return;
+        const mapContainer = mapRef.current.getContainer();
+
+        if (selectedLocation) {
+            mapContainer.classList.add("rounded-tr-xl", "rounded-br-xl");
+            mapContainer.classList.remove("rounded-xl");
+        } else {
+            mapContainer.classList.add("rounded-xl");
+            mapContainer.classList.remove("rounded-tr-xl", "rounded-br-xl");
         }
+
+        setTimeout(() => {
+            if (mapRef.current) mapRef.current.invalidateSize();
+        }, 300);
     }, [selectedLocation]);
 
     if (filteredLocations.length === 0) {
@@ -186,21 +194,25 @@ const Project = ({ setActiveSection, setCurrentEffect }) => {
                             {selectedLocation.img && (
                                 <div className="mt-4 space-y-4">
                                     {Array.isArray(selectedLocation.img) ? (
-                                        // 多张图片
                                         selectedLocation.img.map((imgSrc, index) => (
                                             <img
                                                 key={index}
                                                 src={imgSrc}
                                                 className="object-cover w-full rounded-md"
                                                 alt={`Location ${index + 1}`}
+                                                loading="lazy"
+                                                width={600}
+                                                height={400}
                                             />
                                         ))
                                     ) : (
-                                        // 单张图片
                                         <img
                                             src={selectedLocation.img}
                                             className="object-cover w-full rounded-md"
                                             alt="Location"
+                                            loading="lazy"
+                                            width={600}
+                                            height={400}
                                         />
                                     )}
                                 </div>
@@ -266,7 +278,9 @@ const Project = ({ setActiveSection, setCurrentEffect }) => {
                                         offset={[-5, -42]}
                                         autoPan={true}
                                         eventHandlers={{
-                                            remove: () => setSelectedLocation(null),
+                                            remove: () => {
+                                                if (mapRef.current) setSelectedLocation(null);
+                                            },
                                         }}
                                         className="custom-popup"
                                         maxWidth={600}
