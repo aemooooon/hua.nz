@@ -4,57 +4,47 @@ import { gsap } from "gsap";
 
 const ShaderLoadingEffect = ({ imageSrc, hoverImageSrc }) => {
     const canvasRef = useRef(null);
-    const hoverImgRef = useRef(null); // 引用 hover img
-    const [particles, setParticles] = useState([]);
-    const [isHovered, setIsHovered] = useState(false); // 控制图片显示状态
-    const [aspectRatio, setAspectRatio] = useState(1); // 存储 canvas 的宽高比
+    const hoverImgRef = useRef(null);
+    const [isHovered, setIsHovered] = useState(false);
+    const [aspectRatio, setAspectRatio] = useState(1);
+    const workerRef = useRef(null);
+    const particlesRef = useRef([]);
 
-    // 初始化粒子动画
-    const initializeParticles = (png) => {
-        const canvas = canvasRef.current;
-        const ctx = canvas.getContext("2d", { willReadFrequently: true });
-
-        // 设置 canvas 的原始宽高
-        canvas.width = png.width * 2;
-        canvas.height = png.height * 2;
-        setAspectRatio(png.width / png.height); // 计算宽高比
-
-        ctx.drawImage(png, 0, 0);
-
-        const data = ctx.getImageData(0, 0, png.width, png.height);
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-        const newParticles = [];
-        for (let y = 0, y2 = data.height; y < y2; y += 4) {
-            for (let x = 0, x2 = data.width; x < x2; x += 4) {
-                const particle = {
-                    x0: x,
-                    y0: y,
-                    x1: png.width / 2,
-                    y1: png.height / 2,
-                    color: `rgb(${data.data[y * 4 * data.width + x * 4]}, ${
-                        data.data[y * 4 * data.width + x * 4 + 1]
-                    }, ${data.data[y * 4 * data.width + x * 4 + 2]})`,
-                    speed: Math.random() * 4 + 2,
-                };
+    useEffect(() => {
+        workerRef.current = new Worker(new URL("/particleWorker.js", import.meta.url));
+        workerRef.current.onmessage = (event) => {
+            const particles = event.data;
+            particles.forEach((particle) => {
                 gsap.to(particle, {
                     duration: particle.speed,
                     x1: particle.x0,
                     y1: particle.y0,
-                    delay: y / 130,
-                    ease: "elastic.out", // 使用 GSAP 的弹性缓动
+                    delay: particle.y0 / 130,
+                    ease: "elastic.out",
                 });
-                newParticles.push(particle);
-            }
-        }
-        setParticles(newParticles);
-    };
+            });
+            particlesRef.current = particles;
+        };
 
-    // 加载图片并初始化粒子
+        return () => {
+            workerRef.current.terminate();
+        };
+    }, []);
+
     useEffect(() => {
         const png = new Image();
         png.onload = () => {
-            initializeParticles(png);
+            const canvas = canvasRef.current;
+            canvas.width = png.width * 2;
+            canvas.height = png.height * 2;
+            setAspectRatio(png.width / png.height);
+
+            const offscreen = new OffscreenCanvas(png.width, png.height);
+            const offscreenCtx = offscreen.getContext("2d");
+            offscreenCtx.drawImage(png, 0, 0);
+
+            const imageBitmap = offscreen.transferToImageBitmap();
+            workerRef.current.postMessage({ imageBitmap, width: png.width, height: png.height }, [imageBitmap]);
         };
         png.src = imageSrc;
     }, [imageSrc]);
@@ -66,7 +56,7 @@ const ShaderLoadingEffect = ({ imageSrc, hoverImageSrc }) => {
 
         const render = () => {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            particles.forEach((particle) => {
+            particlesRef.current.forEach((particle) => {
                 ctx.fillStyle = particle.color;
                 ctx.fillRect(particle.x1 * 2, particle.y1 * 2, 2, 2);
             });
@@ -74,7 +64,7 @@ const ShaderLoadingEffect = ({ imageSrc, hoverImageSrc }) => {
         };
 
         requestAnimationFrame(render);
-    }, [particles]);
+    }, [particlesRef]);
 
     // 监听浏览器缩放事件
     useEffect(() => {
@@ -121,13 +111,18 @@ const ShaderLoadingEffect = ({ imageSrc, hoverImageSrc }) => {
         gsap.fromTo(
             hoverImgRef.current,
             { opacity: 0 }, // 初始状态
-            { opacity: 1, scale: 1.0, duration: 0.8, ease: "power2.out" } // 结束状态
+            { opacity: 1, scale: 1.0, duration: 0.8, ease: "elastic.in" } // 结束状态
         );
 
         // 重新触发动画
         const png = new Image();
         png.onload = () => {
-            initializeParticles(png);
+            const offscreen = new OffscreenCanvas(png.width, png.height);
+            const offscreenCtx = offscreen.getContext("2d");
+            offscreenCtx.drawImage(png, 0, 0);
+
+            const imageBitmap = offscreen.transferToImageBitmap();
+            workerRef.current.postMessage({ imageBitmap, width: png.width, height: png.height }, [imageBitmap]);
         };
         png.src = imageSrc;
     };
@@ -137,7 +132,7 @@ const ShaderLoadingEffect = ({ imageSrc, hoverImageSrc }) => {
         gsap.to(hoverImgRef.current, {
             opacity: 0,
             duration: 0.8,
-            ease: "power2.out",
+            ease: "elastic.out",
             onComplete: () => setIsHovered(false), // 动画完成后隐藏图片
         });
     };

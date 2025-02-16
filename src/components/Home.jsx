@@ -64,7 +64,7 @@ const Home = ({ setActiveSection, setCurrentEffect }) => {
             </div>
 
             <div className="order-1 lg:order-2 animate-zoomIn">
-                <div className="relative w-[25vw] h-[25vw] max-w-[500px] max-h-[500px] border-4 border-secondary rounded-full shadow-md overflow-hidden bg-light animate-hueRotate">
+                <div className="relative w-[32vw] h-[32vw] md:w-[28vw] md:h-[28vw] max-w-[500px] max-h-[500px] border-4 border-secondary rounded-full shadow-md overflow-hidden bg-light animate-hueRotate">
                     <Suspense fallback={<div>Loading...</div>}>
                         <ShaderLoadingEffect imageSrc={imageSrc} hoverImageSrc={hoverImageSrc} />
                     </Suspense>
