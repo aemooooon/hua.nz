@@ -11,7 +11,7 @@ const ShaderLoadingEffect = ({ imageSrc, hoverImageSrc }) => {
     const particlesRef = useRef([]);
 
     useEffect(() => {
-        workerRef.current = new Worker(new URL("/particleWorker.js", import.meta.url));
+        workerRef.current = new Worker(new URL("/particleWorker.js?worker_file&type=classic", import.meta.url));
         workerRef.current.onmessage = (event) => {
             const particles = event.data;
             particles.forEach((particle) => {
