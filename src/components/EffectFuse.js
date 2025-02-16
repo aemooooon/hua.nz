@@ -180,12 +180,23 @@ export class EffectFuse {
     }
 
     onResize(width, height) {
-        this.canvas.width = width;
-        this.canvas.height = height;
-        this.gl.viewport(0, 0, this.canvas.width, this.canvas.height);
+        if (!this.gl) return;
+        if (this.canvas) {
+            this.canvas.width = width;
+            this.canvas.height = height;
+            this.gl.viewport(0, 0, width, height);
+
+            requestAnimationFrame(() => {
+                if (this.gl) {
+                    this.render();
+                }
+            });
+        }
     }
 
     render() {
+        if (!this.gl) return;
+        
         this.animationFrameId = requestAnimationFrame(this.render.bind(this));
 
         const currentTime = performance.now();

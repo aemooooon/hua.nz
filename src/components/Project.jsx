@@ -129,6 +129,10 @@ const Project = ({ setActiveSection, setCurrentEffect }) => {
         const mapContainer = mapRef.current.getContainer();
 
         if (selectedLocation) {
+            requestAnimationFrame(() => mapRef.current.invalidateSize());
+        }
+
+        if (selectedLocation) {
             mapContainer.classList.add("rounded-tr-xl", "rounded-br-xl");
             mapContainer.classList.remove("rounded-xl");
         } else {

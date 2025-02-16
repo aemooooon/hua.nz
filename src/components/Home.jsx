@@ -1,7 +1,8 @@
+import React, { Suspense } from "react";
 import PropTypes from "prop-types";
-import ShaderLoadingEffect from "./ShaderLoadingEffect"; // 假设你已经实现了 ShaderLoadingEffect 组件
 import imageSrc from "./hua_icon_base64";
 import hoverImageSrc from "../assets/images/hua_500w1.jpg";
+const ShaderLoadingEffect = React.lazy(() => import("./ShaderLoadingEffect"));
 
 const Home = ({ setActiveSection, setCurrentEffect }) => {
     return (
@@ -64,7 +65,9 @@ const Home = ({ setActiveSection, setCurrentEffect }) => {
 
             <div className="order-1 lg:order-2 animate-zoomIn">
                 <div className="relative w-[25vw] h-[25vw] max-w-[500px] max-h-[500px] border-4 border-secondary rounded-full shadow-md overflow-hidden bg-light animate-hueRotate">
-                    <ShaderLoadingEffect imageSrc={imageSrc} hoverImageSrc={hoverImageSrc} />
+                    <Suspense fallback={<div>Loading...</div>}>
+                        <ShaderLoadingEffect imageSrc={imageSrc} hoverImageSrc={hoverImageSrc} />
+                    </Suspense>
                 </div>
             </div>
         </section>

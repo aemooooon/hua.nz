@@ -2,6 +2,9 @@ import * as THREE from "three";
 
 export function EffectMonjori(canvas, params = {}) {
     let renderer, scene, camera, uniforms, animationFrameId;
+    let lastFrameTime = 0;
+    const fps = 30;
+    const frameInterval = 1000 / fps;
 
     const init = () => {
         // Create camera and scene
@@ -79,7 +82,7 @@ export function EffectMonjori(canvas, params = {}) {
 
         // Renderer
         renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
-        renderer.setPixelRatio(window.devicePixelRatio);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
         renderer.setSize(window.innerWidth, window.innerHeight);
 
         window.addEventListener("resize", onWindowResize);
@@ -93,10 +96,11 @@ export function EffectMonjori(canvas, params = {}) {
 
     const animate = () => {
         animationFrameId = requestAnimationFrame(animate);
+        const now = performance.now();
+        if (now - lastFrameTime < frameInterval) return;
+        lastFrameTime = now;
 
-        // Update time uniform for animation
-        uniforms["time"].value = (performance.now() / 1000) * uniforms["animationSpeed"].value;
-
+        uniforms["time"].value = (now / 1000) * uniforms["animationSpeed"].value;
         renderer.render(scene, camera);
     };
 
@@ -105,6 +109,9 @@ export function EffectMonjori(canvas, params = {}) {
         if (renderer) {
             renderer.dispose();
             renderer.forceContextLoss();
+            if (canvas?.parentNode) {
+                canvas.parentNode.removeChild(canvas);
+            }
         }
         window.removeEventListener("resize", onWindowResize);
     };

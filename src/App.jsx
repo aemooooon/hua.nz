@@ -1,11 +1,12 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState, Suspense } from "react";
 import * as THREE from "three";
 import { EffectFuse } from "./components/EffectFuse";
 import { EffectMonjori } from "./components/EffectMonjori";
-import AudioVisualizer from "./components/AudioVisualizer";
 import Home from "./components/Home";
-import Project from "./components/Project";
 import portfolioMusic from "./assets/audio.mp3";
+import { debounce } from "lodash";
+const Project = React.lazy(() => import("./components/Project"));
+const AudioVisualizer = React.lazy(() => import("./components/AudioVisualizer"));
 
 const App = () => {
     const [currentEffect, setCurrentEffect] = useState("effectfuse");
@@ -27,17 +28,15 @@ const App = () => {
             return newCanvas;
         };
 
-        const handleResize = () => {
+        const handleResize = debounce(() => {
             if (canvas) {
                 canvas.width = window.innerWidth;
                 canvas.height = window.innerHeight;
-
-                // If the effectInstance has a method to handle resizing
-                if (effectInstance && effectInstance.onResize) {
+                if (effectInstance?.onResize) {
                     effectInstance.onResize(window.innerWidth, window.innerHeight);
                 }
             }
-        };
+        }, 200);
 
         function convertColorsToRGBFormat(colors) {
             return colors.map((color) => {
@@ -65,15 +64,19 @@ const App = () => {
                 scanlines: false,
                 colors: rgbColors,
             };
-            effectInstance = new EffectFuse(canvas, params);
-            effectInstance.start();
+            if (!effectInstance) {
+                effectInstance = new EffectFuse(canvas, params);
+                effectInstance.start();
+            }
         } else if (currentEffect === "effectmonjori") {
             canvas = createCanvas();
             const params = {
-                animationSpeed: 0.618,
+                animationSpeed: 0.6,
                 colors: threeColors,
             };
-            effectInstance = new EffectMonjori(canvas, params);
+            if (!effectInstance) {
+                effectInstance = new EffectMonjori(canvas, params);
+            }
         }
 
         window.addEventListener("resize", handleResize);
@@ -81,11 +84,11 @@ const App = () => {
         handleResize();
 
         return () => {
-            if (effectInstance && effectInstance.stop) {
+            if (effectInstance?.stop) {
                 effectInstance.stop();
             }
-            if (canvas) {
-                document.body.removeChild(canvas);
+            if (canvas?.parentNode) {
+                canvas.parentNode.removeChild(canvas);
             }
             window.removeEventListener("resize", handleResize);
         };
@@ -93,12 +96,16 @@ const App = () => {
 
     return (
         <>
-            <AudioVisualizer canvasId="audioCanvas" musicFile={portfolioMusic} />{" "}
+            <Suspense fallback={<div>Loading...</div>}>
+                <AudioVisualizer canvasId="audioCanvas" musicFile={portfolioMusic} />{" "}
+            </Suspense>
             {activeSection === "home" && (
                 <Home setActiveSection={setActiveSection} setCurrentEffect={setCurrentEffect} />
             )}
             {activeSection === "project" && (
-                <Project setActiveSection={setActiveSection} setCurrentEffect={setCurrentEffect} />
+                <Suspense fallback={<div>Loading...</div>}>
+                    <Project setActiveSection={setActiveSection} setCurrentEffect={setCurrentEffect} />
+                </Suspense>
             )}
         </>
     );
