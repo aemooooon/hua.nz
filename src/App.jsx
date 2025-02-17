@@ -5,6 +5,7 @@ import { EffectMonjori } from "./components/EffectMonjori";
 import Home from "./components/Home";
 import portfolioMusic from "./assets/audio.mp3";
 import { debounce } from "lodash";
+import { FaSpinner } from "react-icons/fa";
 const Project = React.lazy(() => import("./components/Project"));
 const AudioVisualizer = React.lazy(() => import("./components/AudioVisualizer"));
 
@@ -96,14 +97,26 @@ const App = () => {
 
     return (
         <>
-            <Suspense fallback={<div>Loading...</div>}>
+            <Suspense
+                fallback={
+                    <div className="w-full h-full flex justify-center items-center z-[9999]">
+                        <FaSpinner className="animate-spin text-green-500 text-4xl" />
+                    </div>
+                }
+            >
                 <AudioVisualizer canvasId="audioCanvas" musicFile={portfolioMusic} />{" "}
             </Suspense>
             {activeSection === "home" && (
                 <Home setActiveSection={setActiveSection} setCurrentEffect={setCurrentEffect} />
             )}
             {activeSection === "project" && (
-                <Suspense fallback={<div>Loading...</div>}>
+                <Suspense
+                    fallback={
+                        <div className="w-full h-full flex justify-center items-center z-[9999]">
+                            <FaSpinner className="animate-spin text-green-500 text-4xl" />
+                        </div>
+                    }
+                >
                     <Project setActiveSection={setActiveSection} setCurrentEffect={setCurrentEffect} />
                 </Suspense>
             )}

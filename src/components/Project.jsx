@@ -104,7 +104,6 @@ const Project = ({ setActiveSection, setCurrentEffect }) => {
             iconAnchor: [30, 30], // **设置锚点为正中心**
         });
     };
-    
 
     const handleMapClick = () => {
         setSelectedLocation(null);
@@ -186,11 +185,8 @@ const Project = ({ setActiveSection, setCurrentEffect }) => {
                                 selectedLocation ? "open" : ""
                             }`}
                         >
-                            <div
-                                onClick={() => setSelectedLocation(null)}
-                                className="absolute z-[1000] w-10 h-10 flex justify-center items-center rounded-full top-[5px] right-[5px] bg-accent hover:bg-red-600 transition-colors duration-300 cursor-pointer group shadow-lg"
-                            >
-                                <span className="text-white text-xl font-bold group-hover:scale-110 group-hover:rotate-180 transition-all duration-300 ease-in-out">
+                            <div onClick={() => setSelectedLocation(null)} className="z-[1000] sticky w-full h-12 flex justify-end items-center">
+                                <span className="text-white w-10 h-10 flex justify-center items-center text-xl font-bold rounded-full top-[5px] right-[5px] bg-accent hover:bg-red-600 hover:rotate-180 transition-all duration-300 cursor-pointer shadow-lg">
                                     &larr;
                                 </span>
                             </div>
@@ -291,7 +287,7 @@ const Project = ({ setActiveSection, setCurrentEffect }) => {
                                                 </p>
                                             )}
 
-                                            <div className="flex items-center justify-stretch mb-2">
+                                            <div className="flex items-center justify-between mb-2">
                                                 <div className="flex items-center space-x-2">
                                                     <FaMapMarkerAlt className="text-blue-500 text-base font-mono" />{" "}
                                                     <span className="text-gray-700 text-base">{loc.location}</span>
