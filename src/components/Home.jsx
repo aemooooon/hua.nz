@@ -11,10 +11,10 @@ const Home = ({ setActiveSection, setCurrentEffect }) => {
                 <h1 className="font-bold font-beauRivage mb-4 sm:mb-6" style={{ fontSize: "clamp(3rem, 5vw, 6rem)" }}>
                     Hua Wang
                 </h1>
-                <h2 className="text-2xl md:text-3xl xl:text-4xl font-semibold mb-4 sm:mb-6 font-mono">
+                <h2 className="text-xl md:text-2xl xl:text-4xl font-semibold mb-4 sm:mb-6 font-mono">
                     Software Engineer
                 </h2>
-                <p className="mt-2 sm:mt-4 leading-normal lg:leading-6 text-base sm:text-lg md:text-xl xl:text-2xl font-poppins">
+                <p className="mt-2 sm:mt-4 leading-relaxed text-base md:text-lg xl:text-xl font-poppins">
                     I am a skilled, detail-oriented and reliable software engineer with 3 years of experience,
                     especially in full-stack development. My expertise includes implementing Web APIs with several
                     languages, building UI/UX based on the modern frontend framework and designing CI/CD pipelines with
@@ -34,7 +34,7 @@ const Home = ({ setActiveSection, setCurrentEffect }) => {
                         <a
                             href="/Hua_Wang_Software_Engineer.pdf"
                             target="_blank"
-                            className="btn border-solid border-2 border-secondary text-light px-4 py-2 rounded shadow-lg hover:bg-secondary"
+                            className="relative btn border-solid border-2 border-secondary text-light px-4 py-2 rounded shadow-lg hover:bg-secondary"
                         >
                             Resume
                         </a>
@@ -68,7 +68,7 @@ const Home = ({ setActiveSection, setCurrentEffect }) => {
             </div>
 
             <div className="order-1 lg:order-2 animate-zoomIn">
-                <div className="relative w-[32vw] h-[32vw] md:w-[28vw] md:h-[28v] max-w-[500px] max-h-[500px] border-4 border-secondary rounded-full shadow-md overflow-hidden bg-light animate-hueRotate">
+                <div className="relative w-[32vw] h-[32vw] md:w-[28vw] md:h-[28vw] max-w-[500px] max-h-[500px] border-4 border-secondary rounded-full shadow-md overflow-hidden bg-light animate-hueRotate">
                     <Suspense fallback={<div>Loading...</div>}>
                         <ShaderLoadingEffect imageSrc={imageSrc} hoverImageSrc={hoverImageSrc} />
                     </Suspense>
