@@ -16,6 +16,7 @@ import "leaflet-extra-markers/dist/css/leaflet.extra-markers.min.css";
 import "leaflet/dist/leaflet.css";
 import locationData from "../assets/locations";
 import MarkerClusterGroup from "react-leaflet-cluster";
+import ImageWithLoader from "./ImageWithLoader";
 import {
     FaCalendarAlt,
     FaFilter,
@@ -97,11 +98,13 @@ const Project = ({ setActiveSection, setCurrentEffect }) => {
     const createCustomClusterIcon = (cluster) => {
         const childCount = cluster.getChildCount();
         return L.divIcon({
-            html: `<div class="custom-cluster-icon">${childCount}</div>`,
-            className: "custom-cluster",
-            iconSize: [40, 40],
+            html: `<div class="custom-cluster"><span class="custom-cluster-icon">${childCount}</span></div>`,
+            className: "custom-cluster-container",
+            iconSize: [60, 60], // 确保 icon 大小正确
+            iconAnchor: [30, 30], // **设置锚点为正中心**
         });
     };
+    
 
     const handleMapClick = () => {
         setSelectedLocation(null);
@@ -199,25 +202,10 @@ const Project = ({ setActiveSection, setCurrentEffect }) => {
                                 <div className="mt-4 space-y-4">
                                     {Array.isArray(selectedLocation.img) ? (
                                         selectedLocation.img.map((imgSrc, index) => (
-                                            <img
-                                                key={index}
-                                                src={imgSrc}
-                                                className="object-cover w-full rounded-md"
-                                                alt={`Location ${index + 1}`}
-                                                loading="lazy"
-                                                width={600}
-                                                height={400}
-                                            />
+                                            <ImageWithLoader key={index} src={imgSrc} alt={`Location ${index + 1}`} />
                                         ))
                                     ) : (
-                                        <img
-                                            src={selectedLocation.img}
-                                            className="object-cover w-full rounded-md"
-                                            alt="Location"
-                                            loading="lazy"
-                                            width={600}
-                                            height={400}
-                                        />
+                                        <ImageWithLoader src={selectedLocation.img} alt="Location" />
                                     )}
                                 </div>
                             )}
@@ -328,7 +316,7 @@ const Project = ({ setActiveSection, setCurrentEffect }) => {
                                 onClick={() => handleFilterChange(category.value)}
                                 className={`flex items-center space-x-2 px-4 py-2 rounded-lg shadow-md transition-all duration-300 ${
                                     activeCategory === category.value
-                                        ? "bg-gradient-to-r from-blue-500 to-purple-500 text-white transform scale-105"
+                                        ? "bg-gradient-to-r from-green-600 to-green-900 text-white transform scale-110"
                                         : "bg-white text-gray-700 border border-gray-200 hover:bg-gray-50"
                                 }`}
                             >
