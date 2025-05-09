@@ -12,13 +12,18 @@ const Home = ({ setActiveSection, setCurrentEffect }) => {
                     Hua Wang
                 </h1>
                 <h2 className="text-xl md:text-2xl xl:text-4xl font-semibold mb-4 sm:mb-6 font-mono">
-                    Software Engineer
+                    Full Stack Engineer
                 </h2>
                 <p className="mt-2 sm:mt-4 leading-relaxed text-base md:text-lg xl:text-xl font-poppins">
-                    I am a skilled, detail-oriented and reliable software engineer with 3 years of experience,
-                    especially in full-stack development. My expertise includes implementing Web APIs with several
-                    languages, building UI/UX based on the modern frontend framework and designing CI/CD pipelines with
-                    cloud services.
+                    I’m a full-stack developer with a strong focus on frontend, especially building interactive web
+                    applications and visualisation dashboards. I have experience with modern frontend frameworks such as
+                    React, Next.js, and TypeScript, as well as working with libraries such as Three.js and ECharts. On
+                    the backend side, I am skilled in developing RESTful APIs and data-driven apps using Java, Python,
+                    Node.js, and C# ASP.NET. I have also been working with containerised environments (Docker,
+                    Kubernetes), GitHub Actions, GitLab CI/CD pipelines, and cloud platforms such as AWS and Azure.
+                    Recently, I earned a Master of Applied Data Science, which has strengthened my skills in AI-powered
+                    and data-driven development. I am currently seeking a position where I can apply my skills to build
+                    web applications and continue growing in collaborative teams.
                 </p>
                 <div className="mt-8 sm:mt-12 flex flex-col lg:flex-row items-center space-y-4 lg:space-y-0 lg:space-x-4">
                     <div className="flex space-x-4">
@@ -32,7 +37,7 @@ const Home = ({ setActiveSection, setCurrentEffect }) => {
                             Projects
                         </div>
                         <a
-                            href="/Hua_Wang_Software_Engineer.pdf"
+                            href="/Hua_Wang_Full_Stack_Engineer.pdf"
                             target="_blank"
                             className="relative btn border-solid border-2 border-secondary text-light px-4 py-2 rounded shadow-lg hover:bg-secondary"
                         >
