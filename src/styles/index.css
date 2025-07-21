@@ -12,18 +12,79 @@
 body {
     height: 100vh;
     padding: 2%;
+    @apply transition-colors duration-300;
+}
+
+body.dark {
+    @apply bg-background-dark text-foreground-dark;
+}
+
+body.light {
+    @apply bg-background-light text-foreground-light;
 }
 
 #root {
     position: relative;
     height: 100%;
-    background: rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.382);
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.15);
     border-radius: 1rem;
-    -webkit-backdrop-filter: blur(7px);
-    backdrop-filter: blur(7px);
+    -webkit-backdrop-filter: blur(2px);
+    backdrop-filter: blur(2px);
     min-width: 375px;
     min-height: 618px;
+    @apply transition-all duration-300;
+}
+
+.dark #root {
+    background: rgba(255, 255, 255, 0.03);
+    border-color: rgba(255, 255, 255, 0.15);
+}
+
+.light #root {
+    background: rgba(0, 0, 0, 0.05);
+    border-color: rgba(0, 0, 0, 0.1);
+}
+
+/* 内容区域增强毛玻璃效果 */
+.content-section {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 0.75rem;
+    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    @apply transition-all duration-300;
+}
+
+.dark .content-section {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.15);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.light .content-section {
+    background: rgba(0, 0, 0, 0.05);
+    border-color: rgba(0, 0, 0, 0.1);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+/* 文字背景确保可读性 */
+.text-enhanced {
+    background: rgba(0, 0, 0, 0.4);
+    border-radius: 0.5rem;
+    -webkit-backdrop-filter: blur(20px);
+    backdrop-filter: blur(20px);
+    @apply transition-all duration-300;
+}
+
+.dark .text-enhanced {
+    background: rgba(0, 0, 0, 0.4);
+}
+
+.light .text-enhanced {
+    background: rgba(255, 255, 255, 0.8);
+    @apply text-gray-800;
 }
 
 /* 全局自定义滚动条 */

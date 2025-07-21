@@ -3,6 +3,7 @@ export default {
     './index.html',
     './src/**/*.{js,jsx}',
   ],
+  darkMode: 'class',
   theme: {
     extend: {
       screens: {
@@ -20,6 +21,7 @@ export default {
         poppins: ['"Poppins"', 'sans-serif'],
       },
       colors: {
+        // 保留原有颜色
         primaryDark: '#1d2012',
         primary: '#afcc8f',
         secondary: '#7ca65c',
@@ -29,9 +31,24 @@ export default {
         textDark: '#1a1a1a',
         textLight: '#ffffff',
         dark: '#171f2b',
-        gray: {
-          800: '#2d3542',
+        
+        // 新增主题色彩系统
+        background: {
+          light: '#ffffff',
+          dark: '#0f0f0f',
+          'light-secondary': '#f8f9fa',
+          'dark-secondary': '#1a1a1a'
         },
+        foreground: {
+          light: '#1a1a1a',
+          dark: '#ffffff',
+          'light-secondary': '#6b7280',
+          'dark-secondary': '#9ca3af'
+        },
+        border: {
+          light: '#e5e7eb',
+          dark: '#374151'
+        }
       },
       animation: {
         hueRotate: "hueRotate 5s linear infinite",
