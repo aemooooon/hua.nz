@@ -13,8 +13,17 @@ const sectionsConfig = [
     icon: "home"
   },
   {
-    id: "project", 
+    id: "about",
     index: 1,
+    name: { en: "About", zh: "关于我" },
+    description: { en: "About myself", zh: "个人介绍" },
+    backgroundEffect: "effectlorenz",
+    cubeImage: "/awared-best-programmer.jpeg",
+    icon: "about"
+  },
+  {
+    id: "project", 
+    index: 2,
     name: { en: "Projects", zh: "项目" },
     description: { en: "My development projects", zh: "我的开发项目" },
     backgroundEffect: "effectmonjori",
@@ -22,51 +31,56 @@ const sectionsConfig = [
     icon: "project"
   },
   {
+    id: "projectmap",
+    index: 3,
+    name: { en: "Project Map", zh: "项目地图" },
+    description: { en: "Interactive project map", zh: "交互式项目地图" },
+    backgroundEffect: "effectmonjori",
+    cubeImage: "/data472/datapipeline.png",
+    icon: "map"
+  },
+  {
     id: "gallery",
-    index: 2,
+    index: 4,
     name: { en: "Gallery", zh: "作品展示" },
     description: { en: "Visual showcase", zh: "视觉作品展示" },
-    backgroundEffect: "effectheartbeats",
+    backgroundEffect: "effectmonjori",
     cubeImage: "/fitsgo-team.jpg",
     icon: "gallery"
   },
   {
     id: "contact",
-    index: 3,
+    index: 5,
     name: { en: "Contact", zh: "联系我" },
     description: { en: "Get in touch", zh: "联系方式" },
-    backgroundEffect: "effectlorenz",
+    backgroundEffect: "effectheartbeats",
     cubeImage: "/hua_presentation.jpg",
     icon: "contact"
-  },
-  {
-    id: "about",
-    index: 4,
-    name: { en: "About", zh: "关于我" },
-    description: { en: "About myself", zh: "个人介绍" },
-    backgroundEffect: "effectfuse",
-    cubeImage: "/awared-best-programmer.jpeg",
-    icon: "about"
-  },
-  {
-    id: "blog",
-    index: 5,
-    name: { en: "Blog", zh: "博客" },
-    description: { en: "Thoughts and insights", zh: "思考与见解" },
-    backgroundEffect: "effectmonjori",
-    cubeImage: "/stone.jpg",
-    icon: "blog"
   }
 ];
 
 const contentConfig = {
   en: {
-    navigation: { home: "Home", projects: "Projects", gallery: "Gallery", contact: "Contact", about: "About", blog: "Blog" },
+    navigation: { 
+      home: "Home", 
+      about: "About", 
+      projects: "Projects", 
+      projectmap: "Project Map",
+      gallery: "Gallery", 
+      contact: "Contact" 
+    },
     home: { name: "Hua Wang", title: "Full Stack Engineer", description: "Passionate developer creating innovative web applications." },
     ui: { language: "Language", theme: "Theme", light: "Light", dark: "Dark" }
   },
   zh: {
-    navigation: { home: "首页", projects: "项目", gallery: "画廊", contact: "联系", about: "关于", blog: "博客" },
+    navigation: { 
+      home: "首页", 
+      about: "关于", 
+      projects: "项目", 
+      projectmap: "项目地图",
+      gallery: "画廊", 
+      contact: "联系" 
+    },
     home: { name: "王华", title: "全栈工程师", description: "热衷于创建创新Web应用程序的开发者。" },
     ui: { language: "语言", theme: "主题", light: "浅色", dark: "深色" }
   }

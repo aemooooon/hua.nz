@@ -7,10 +7,10 @@ import BackgroundCanvas from './background/BackgroundCanvas';
 import { lazy, Suspense } from 'react';
 const HomeSection = lazy(() => import('./sections/home/HomeSection'));
 const ProjectSection = lazy(() => import('./sections/project/ProjectSection'));
+const ProjectMapSection = lazy(() => import('./sections/projectmap/ProjectMapSection'));
 const GallerySection = lazy(() => import('./sections/gallery/GallerySection'));
 const ContactSection = lazy(() => import('./sections/contact/ContactSection'));
 const AboutSection = lazy(() => import('./sections/about/AboutSection'));
-const BlogSection = lazy(() => import('./sections/blog/BlogSection'));
 
 const FullPageScrollManager = () => {
     const { 
@@ -31,11 +31,11 @@ const FullPageScrollManager = () => {
     // 组件映射
     const sectionComponents = {
         home: HomeSection,
-        project: ProjectSection,
-        gallery: GallerySection,
-        contact: ContactSection,
         about: AboutSection,
-        blog: BlogSection
+        project: ProjectSection,
+        projectmap: ProjectMapSection,
+        gallery: GallerySection,
+        contact: ContactSection
     };
 
     // 滚轮事件处理（带简单的时间节流）

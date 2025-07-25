@@ -29,18 +29,98 @@ const BackgroundCanvas = ({ effectType = 'effectfuse' }) => {
             canvas.style.height = '100%';
             canvas.style.zIndex = '-10';
             canvas.style.pointerEvents = 'none';
+            
+            // 设置合理的canvas尺寸 - 使用固定尺寸避免高DPI问题
+            const displayWidth = window.innerWidth;
+            const displayHeight = window.innerHeight;
+            
+            // 强制使用合理的canvas分辨率，不考虑设备像素比
+            const maxCanvasWidth = 1280;
+            const maxCanvasHeight = 720;
+            
+            // 根据显示尺寸的比例来计算canvas尺寸，但不超过最大值
+            const aspectRatio = displayWidth / displayHeight;
+            let canvasWidth, canvasHeight;
+            
+            if (aspectRatio > maxCanvasWidth / maxCanvasHeight) {
+                // 宽屏
+                canvasWidth = Math.min(maxCanvasWidth, displayWidth);
+                canvasHeight = Math.floor(canvasWidth / aspectRatio);
+            } else {
+                // 高屏
+                canvasHeight = Math.min(maxCanvasHeight, displayHeight);
+                canvasWidth = Math.floor(canvasHeight * aspectRatio);
+            }
+            
+            // 确保最小尺寸
+            canvasWidth = Math.max(canvasWidth, 800);
+            canvasHeight = Math.max(canvasHeight, 600);
+            
+            canvas.width = canvasWidth;
+            canvas.height = canvasHeight;
+            
+            console.log('Canvas created with size:', {
+                displaySize: `${displayWidth}x${displayHeight}`,
+                canvasSize: `${canvas.width}x${canvas.height}`,
+                aspectRatio: aspectRatio.toFixed(2),
+                devicePixelRatio: window.devicePixelRatio || 1
+            });
+            
+            // 注意：不要对canvas context进行缩放，WebGL会自己处理像素比
+            // 2D context缩放可能会干扰WebGL渲染
+            
             document.body.appendChild(canvas);
             canvasRef.current = canvas;
+            
+            console.log('Canvas created:', {
+                width: canvas.width,
+                height: canvas.height,
+                styleWidth: canvas.style.width,
+                styleHeight: canvas.style.height
+            });
         }
 
         // 设置画布大小
         const resizeCanvas = () => {
             if (canvas) {
                 try {
-                    canvas.width = window.innerWidth;
-                    canvas.height = window.innerHeight;
+                    // 使用固定尺寸策略，避免高DPI导致的巨大canvas
+                    const displayWidth = window.innerWidth;
+                    const displayHeight = window.innerHeight;
+                    
+                    // 强制使用合理的canvas分辨率
+                    const maxCanvasWidth = 1280;
+                    const maxCanvasHeight = 720;
+                    
+                    // 根据显示尺寸的比例来计算canvas尺寸
+                    const aspectRatio = displayWidth / displayHeight;
+                    let canvasWidth, canvasHeight;
+                    
+                    if (aspectRatio > maxCanvasWidth / maxCanvasHeight) {
+                        // 宽屏
+                        canvasWidth = Math.min(maxCanvasWidth, displayWidth);
+                        canvasHeight = Math.floor(canvasWidth / aspectRatio);
+                    } else {
+                        // 高屏
+                        canvasHeight = Math.min(maxCanvasHeight, displayHeight);
+                        canvasWidth = Math.floor(canvasHeight * aspectRatio);
+                    }
+                    
+                    // 确保最小尺寸
+                    canvasWidth = Math.max(canvasWidth, 800);
+                    canvasHeight = Math.max(canvasHeight, 600);
+                    
+                    canvas.width = canvasWidth;
+                    canvas.height = canvasHeight;
+                    
+                    console.log('Canvas resized:', {
+                        displaySize: `${displayWidth}x${displayHeight}`,
+                        canvasSize: `${canvas.width}x${canvas.height}`,
+                        aspectRatio: aspectRatio.toFixed(2)
+                    });
+                    
                     if (effectInstanceRef.current?.onResize) {
-                        effectInstanceRef.current.onResize(window.innerWidth, window.innerHeight);
+                        effectInstanceRef.current.onResize(canvas.width, canvas.height);
                     }
                 } catch (error) {
                     console.error('Error resizing canvas:', error);
@@ -71,57 +151,69 @@ const BackgroundCanvas = ({ effectType = 'effectfuse' }) => {
                 }, 100);
             }
 
-            // 默认参数配置
+            // 默认参数配置 - 使用原始参数值
             const defaultParams = {
-                brightness: 40000,
-                blobiness: 2.0,
-                particles: 20,
+                brightness: 0.6,    // 原始亮度值
+                blobiness: 1.5,     // 原始粘性值
+                particles: 10,      // 原始粒子数量
                 scanlines: false,
-                energy: 0.5
+                energy: 1.01,       // 原始能量值
+                timeScale: 1.0      // 原始时间缩放
             };
 
             try {
+                console.log('Creating background effect:', effectType);
+                
                 // 创建新效果
                 switch (effectType) {
-                    case 'effectfuse':
+                    case 'effectfuse': {
+                        console.log('Creating EffectFuse with canvas:', canvas);
                         effectInstanceRef.current = new EffectFuse(canvas, defaultParams);
                         break;
+                    }
                     case 'effectmonjori':
                         effectInstanceRef.current = EffectMonjori(canvas, defaultParams);
                         break;
                     case 'effectheartbeats':
                         effectInstanceRef.current = new EffectHeartBeats(canvas, defaultParams);
                         break;
-                    case 'effectlorenz':
+                    case 'effectlorenz': {
+                        console.log('Creating EffectLorenzAttractor with canvas:', canvas);
                         effectInstanceRef.current = new EffectLorenzAttractor(canvas, defaultParams);
                         break;
-                    default:
-                        effectInstanceRef.current = new EffectFuse(canvas, defaultParams);
-                }
-
-                // 检查WebGL上下文是否可用
-                if (effectType === 'effectfuse' || effectType === 'effectlorenz') {
-                    const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
-                    if (!gl) {
-                        console.warn('WebGL not supported, falling back to canvas effect');
-                        effectInstanceRef.current = new EffectHeartBeats(canvas, defaultParams);
                     }
+                    default:
+                        console.log('Unknown effect type, using default EffectHeartBeats');
+                        effectInstanceRef.current = new EffectHeartBeats(canvas, defaultParams);
                 }
 
-                // 启动效果
+                // 启动效果 - 注意不同特效的启动方式
                 if (effectInstanceRef.current?.start) {
+                    console.log('Starting effect with start() method:', effectType);
                     effectInstanceRef.current.start();
+                } else if (effectType === 'effectmonjori') {
+                    // EffectMonjori在创建时自动启动，不需要调用start()
+                    console.log('EffectMonjori started automatically');
+                } else {
+                    console.warn('Effect does not have a start method:', effectType);
                 }
             } catch (error) {
                 console.error('Error creating background effect:', error);
-                // 回退到最简单的效果
-                try {
-                    effectInstanceRef.current = new EffectHeartBeats(canvas, defaultParams);
-                    if (effectInstanceRef.current?.start) {
-                        effectInstanceRef.current.start();
+                
+                // 如果是WebGL特效失败，回退到简单特效
+                if (effectType === 'effectfuse' || effectType === 'effectlorenz') {
+                    console.warn(`${effectType} failed, falling back to EffectHeartBeats`);
+                    try {
+                        effectInstanceRef.current = new EffectHeartBeats(canvas, defaultParams);
+                        if (effectInstanceRef.current?.start) {
+                            effectInstanceRef.current.start();
+                        }
+                    } catch (fallbackError) {
+                        console.error('Error creating fallback effect:', fallbackError);
+                        effectInstanceRef.current = null;
                     }
-                } catch (fallbackError) {
-                    console.error('Error creating fallback effect:', fallbackError);
+                } else {
+                    // 对于其他特效失败，设为null
                     effectInstanceRef.current = null;
                 }
             }

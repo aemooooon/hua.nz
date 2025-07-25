@@ -1,16 +1,22 @@
 export class EffectFuse {
     constructor(canvas, params = {}) {
+
         this.canvas = canvas;
-        this.gl = this.canvas.getContext('webgl');
+        this.gl = this.canvas.getContext('webgl') || this.canvas.getContext('experimental-webgl');
         
-        // 设置默认参数
+        if (!this.gl) {
+            console.error('EffectFuse: Unable to get WebGL context');
+            throw new Error('WebGL not supported');
+        }
+        
+        // 设置默认参数 - 使用原始参数值
         this.params = {
-            brightness: 40000,
-            blobiness: 2.0,
-            particles: 20,
+            brightness: 0.6,    // 原始亮度值
+            blobiness: 1.5,     // 原始粘性值
+            particles: 10,      // 原始粒子数量
             scanlines: false,
-            energy: 0.5,
-            timeScale: 0.5,
+            energy: 1.01,       // 原始能量值
+            timeScale: 1.0,     // 原始时间缩放
             ...params
         };
         
@@ -18,7 +24,14 @@ export class EffectFuse {
         this.animationFrameId = null;
         this.startTime = performance.now();
         this.uniformLocations = {};
-        this.initGL();
+        
+        try {
+            this.initGL();
+
+        } catch (error) {
+            console.error('EffectFuse: Failed to initialize WebGL', error);
+            throw error;
+        }
     }
 
     initGL() {
@@ -26,6 +39,10 @@ export class EffectFuse {
             console.error('WebGL not supported.');
             return;
         }
+        
+        // 设置视口
+        this.gl.viewport(0, 0, this.canvas.width, this.canvas.height);
+        
         this.gl.getExtension('OES_texture_float');
 
         const vertexShaderSource = `
@@ -60,23 +77,23 @@ export class EffectFuse {
             }
 
             void main(void) {
-                vec2 position = (gl_FragCoord.xy / u_resolution.x);
+                vec2 position = (gl_FragCoord.xy / u_resolution.x); // 原始的正确计算方式
                 float t = (u_millis * 0.001 * u_energy) * u_timeScale; 
 
                 float a = 0.0;
                 float b = 0.0;
                 float c = 0.0;
 
-                vec2 pos, center = vec2(0.5, 0.5 * (u_resolution.y / u_resolution.x));
+                vec2 pos, center = vec2(0.5, 0.5 * (u_resolution.y / u_resolution.x)); // 原始的长宽比修正
 
                 float na, nb, nc, nd, d;
                 float limit = u_particles / 40.0;
                 float step = 1.0 / u_particles;
                 float n = 0.0;
 
-                for (float i = 0.0; i <= 1.0; i += 0.05) {
+                for (float i = 0.0; i <= 1.0; i += 0.025) { // 原始的更细步长
                     if (i <= limit) {
-                        vec2 np = vec2(n, 1-1);
+                        vec2 np = vec2(n, 1.0);
 
                         na = noise(np * 1.1);
                         nb = noise(np * 2.8);
@@ -84,10 +101,10 @@ export class EffectFuse {
                         nd = noise(np * 3.2);
 
                         pos = center;
-                        pos.x += sin(t * na) * cos(t * nb) * tan(t * na * 0.15) * 0.3;
-                        pos.y += tan(t * nc) * sin(t * nd) * 0.1;
+                        pos.x += sin(t * na) * cos(t * nb) * tan(t * na * 0.15) * 0.3; // 原始的复杂运动
+                        pos.y += tan(t * nc) * sin(t * nd) * 0.1; // 原始的Y轴运动
 
-                        d = pow(1.6 * na / length(pos - position), u_blobiness);
+                        d = pow(1.6 * na / length(pos - position), u_blobiness); // 原始的距离计算
 
                         if (i < limit * 0.3333) a += d;
                         else if (i < limit * 0.6666) b += d;
@@ -97,7 +114,11 @@ export class EffectFuse {
                     }
                 }
 
+                // 原始的颜色计算
                 vec3 col = vec3(a * c, b * c, a * b) * 0.0001 * u_brightness;
+                
+                // 保持颜色在合理范围内
+                col = clamp(col, 0.0, 1.0);
 
                 if (u_scanlines) {
                     col -= mod(gl_FragCoord.y, 2.0) < 1.0 ? 0.5 : 0.0;
@@ -130,7 +151,8 @@ export class EffectFuse {
         this.gl.shaderSource(shader, source);
         this.gl.compileShader(shader);
         if (!this.gl.getShaderParameter(shader, this.gl.COMPILE_STATUS)) {
-            console.error(this.gl.getShaderInfoLog(shader));
+            console.error('Shader compilation error:', this.gl.getShaderInfoLog(shader));
+            console.error('Shader source:', source);
             this.gl.deleteShader(shader);
             return null;
         }
@@ -169,9 +191,11 @@ export class EffectFuse {
     }
 
     start() {
+        
         this.startTime = performance.now();
         this.gl.viewport(0, 0, this.canvas.width, this.canvas.height);
         this.gl.clearColor(0.0, 0.0, 0.0, 1.0);
+        this.gl.clear(this.gl.COLOR_BUFFER_BIT);
         this.render();
     }
 
@@ -241,7 +265,7 @@ export class EffectFuse {
             this.gl.uniform2f(this.uniformLocations.resolution, this.canvas.width, this.canvas.height);
         }
         if (this.uniformLocations.brightness) {
-            this.gl.uniform1f(this.uniformLocations.brightness, this.params.brightness || 40000);
+            this.gl.uniform1f(this.uniformLocations.brightness, this.params.brightness || 15000);
         }
         if (this.uniformLocations.blobiness) {
             this.gl.uniform1f(this.uniformLocations.blobiness, this.params.blobiness || 2.0);
