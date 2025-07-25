@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { FaPlay, FaPause, FaVolumeUp, FaVolumeMute } from 'react-icons/fa';
-import { useApp } from '../contexts/AppContext';
+import { useAppStore } from '../store/useAppStore';
 
 const AudioController = () => {
     const audioRef = useRef(null);
@@ -9,7 +9,7 @@ const AudioController = () => {
     const [volume, setVolume] = useState(0.5);
     const [showControls, setShowControls] = useState(false);
     
-    const { audioEnabled, setAudioEnabled } = useApp();
+    const { audioEnabled, setAudioEnabled } = useAppStore();
 
     useEffect(() => {
         if (audioRef.current) {

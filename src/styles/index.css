@@ -26,24 +26,9 @@ body.light {
 #root {
     position: relative;
     height: 100%;
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    border-radius: 1rem;
-    -webkit-backdrop-filter: blur(2px);
-    backdrop-filter: blur(2px);
     min-width: 375px;
     min-height: 618px;
     @apply transition-all duration-300;
-}
-
-.dark #root {
-    background: rgba(255, 255, 255, 0.03);
-    border-color: rgba(255, 255, 255, 0.15);
-}
-
-.light #root {
-    background: rgba(0, 0, 0, 0.05);
-    border-color: rgba(0, 0, 0, 0.1);
 }
 
 /* 内容区域增强毛玻璃效果 */
@@ -297,4 +282,206 @@ body.light {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1) !important;
     border: 2px solid #afcc8f;
     transform: scaleY(2) rotate(45deg) !important;
+}
+
+/* Landing Page 动画定义 */
+@keyframes slideInLeft {
+    from { 
+        opacity: 0;
+        transform: translateX(-100px) scale(0.8);
+    }
+    to { 
+        opacity: 1;
+        transform: translateX(0) scale(1);
+    }
+}
+
+@keyframes slideInRight {
+    from { 
+        opacity: 0;
+        transform: translateX(100px) scale(0.8);
+    }
+    to { 
+        opacity: 1;
+        transform: translateX(0) scale(1);
+    }
+}
+
+@keyframes fadeInUp {
+    from { 
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to { 
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* 色相旋转动画 - 为头像背景添加彩虹效果 */
+@keyframes hueRotate {
+    0% { 
+        filter: hue-rotate(0deg) brightness(1.1) saturate(1.2);
+    }
+    25% { 
+        filter: hue-rotate(90deg) brightness(1.2) saturate(1.3);
+    }
+    50% { 
+        filter: hue-rotate(180deg) brightness(1.1) saturate(1.2);
+    }
+    75% { 
+        filter: hue-rotate(270deg) brightness(1.2) saturate(1.3);
+    }
+    100% { 
+        filter: hue-rotate(360deg) brightness(1.1) saturate(1.2);
+    }
+}
+
+/* 渐变背景动画 - 更强的视觉效果 */
+@keyframes gradientShift {
+    0% { 
+        background-position: 0% 50%;
+        transform: scale(1.05) rotate(0deg);
+    }
+    25% { 
+        background-position: 100% 50%;
+        transform: scale(1.1) rotate(90deg);
+    }
+    50% { 
+        background-position: 100% 100%;
+        transform: scale(1.05) rotate(180deg);
+    }
+    75% { 
+        background-position: 0% 100%;
+        transform: scale(1.1) rotate(270deg);
+    }
+    100% { 
+        background-position: 0% 50%;
+        transform: scale(1.05) rotate(360deg);
+    }
+}
+
+.animate-slideInLeft {
+    animation: slideInLeft 1.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.animate-slideInRight {
+    animation: slideInRight 1.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    animation-delay: 0.5s;
+    animation-fill-mode: both;
+}
+
+.animate-fadeInUp {
+    animation: fadeInUp 1s ease-out;
+}
+
+/* 色相旋转动画类 */
+.animate-hueRotate {
+    animation: hueRotate 8s linear infinite;
+}
+
+.animate-gradientShift {
+    animation: gradientShift 10s ease-in-out infinite;
+}
+
+/* 动画延迟类 */
+.animation-delay-500 {
+    animation-delay: 0.5s;
+    animation-fill-mode: both;
+}
+
+.animation-delay-1000 {
+    animation-delay: 1s;
+    animation-fill-mode: both;
+}
+
+/* 立方体切换动画 */
+@keyframes cubeToCorner {
+    0% {
+        transform: scale(1) translate(0, 0);
+        opacity: 1;
+    }
+    50% {
+        transform: scale(0.5) translate(100px, -100px);
+        opacity: 0.8;
+    }
+    100% {
+        transform: scale(0.3) translate(200px, -200px);
+        opacity: 1;
+    }
+}
+
+@keyframes cubeToCenter {
+    0% {
+        transform: scale(0.3) translate(200px, -200px);
+        opacity: 1;
+    }
+    50% {
+        transform: scale(0.5) translate(100px, -100px);
+        opacity: 0.8;
+    }
+    100% {
+        transform: scale(1) translate(0, 0);
+        opacity: 1;
+    }
+}
+
+.cube-to-corner {
+    animation: cubeToCorner 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.cube-to-center {
+    animation: cubeToCenter 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+/* 页面切换动画 */
+.page-transition-enter {
+    opacity: 0;
+    transform: translateY(30px);
+}
+
+.page-transition-enter-active {
+    opacity: 1;
+    transform: translateY(0);
+    transition: opacity 0.5s, transform 0.5s;
+}
+
+.page-transition-exit {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.page-transition-exit-active {
+    opacity: 0;
+    transform: translateY(-30px);
+    transition: opacity 0.5s, transform 0.5s;
+}
+
+/* 滚轮提示动画 */
+@keyframes scrollIndicator {
+    0%, 100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    50% {
+        opacity: 0.5;
+        transform: translateY(10px);
+    }
+}
+
+.scroll-indicator {
+    animation: scrollIndicator 2s infinite;
+}
+
+/* 立方体尺寸缩放工具类 */
+.scale-30 {
+    transform: scale(0.3);
+}
+
+.scale-50 {
+    transform: scale(0.5);
+}
+
+.scale-100 {
+    transform: scale(1);
 }

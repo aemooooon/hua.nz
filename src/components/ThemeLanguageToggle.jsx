@@ -1,8 +1,16 @@
 import { FaSun, FaMoon, FaGlobe } from 'react-icons/fa';
-import { useApp } from '../contexts/AppContext';
+import { useAppStore } from '../store/useAppStore';
 
 const ThemeLanguageToggle = () => {
-    const { theme, toggleTheme, language, toggleLanguage, content } = useApp();
+    const { 
+        theme, 
+        toggleTheme, 
+        language, 
+        toggleLanguage, 
+        getContent 
+    } = useAppStore();
+    
+    const content = getContent();
 
     return (
         <div className="fixed bottom-6 right-6 z-50 flex items-center space-x-3">

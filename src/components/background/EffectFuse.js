@@ -1,8 +1,19 @@
 export class EffectFuse {
-    constructor(canvas, params) {
+    constructor(canvas, params = {}) {
         this.canvas = canvas;
         this.gl = this.canvas.getContext('webgl');
-        this.params = params;
+        
+        // 设置默认参数
+        this.params = {
+            brightness: 40000,
+            blobiness: 2.0,
+            particles: 20,
+            scanlines: false,
+            energy: 0.5,
+            timeScale: 0.5,
+            ...params
+        };
+        
         this.program = null;
         this.animationFrameId = null;
         this.startTime = performance.now();
@@ -140,8 +151,8 @@ export class EffectFuse {
     }
 
     setupBuffers() {
-        const positionBuffer = this.gl.createBuffer();
-        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, positionBuffer);
+        this.positionBuffer = this.gl.createBuffer();
+        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.positionBuffer);
         this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array([
             -1.0, -1.0,
             1.0, -1.0,
@@ -153,7 +164,7 @@ export class EffectFuse {
 
         const positionAttributeLocation = this.gl.getAttribLocation(this.program, 'a_position');
         this.gl.enableVertexAttribArray(positionAttributeLocation);
-        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, positionBuffer);
+        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.positionBuffer);
         this.gl.vertexAttribPointer(positionAttributeLocation, 2, this.gl.FLOAT, false, 0, 0);
     }
 
@@ -165,18 +176,38 @@ export class EffectFuse {
     }
 
     stop() {
+        // 停止动画循环
         if (this.animationFrameId) {
             cancelAnimationFrame(this.animationFrameId);
             this.animationFrameId = null;
         }
 
-        // 释放 WebGL 程序和缓冲区
+        // 释放 WebGL 资源
         if (this.gl) {
-            this.gl.deleteProgram(this.program);
-            this.gl.deleteBuffer(this.positionBuffer);  // 确保在 setupBuffers() 中存储 positionBuffer
+            try {
+                if (this.program) {
+                    this.gl.deleteProgram(this.program);
+                    this.program = null;
+                }
+                if (this.positionBuffer) {
+                    this.gl.deleteBuffer(this.positionBuffer);
+                    this.positionBuffer = null;
+                }
+                
+                // 清理 WebGL 上下文
+                const ext = this.gl.getExtension('WEBGL_lose_context');
+                if (ext) {
+                    ext.loseContext();
+                }
+            } catch (error) {
+                console.error('Error cleaning up WebGL resources:', error);
+            }
         }
 
-        this.gl = null;  // 释放 WebGL 上下文
+        // 清理引用
+        this.gl = null;
+        this.canvas = null;
+        this.uniformLocations = {};
     }
 
     onResize(width, height) {
@@ -195,7 +226,7 @@ export class EffectFuse {
     }
 
     render() {
-        if (!this.gl) return;
+        if (!this.gl || !this.program || !this.params) return;
         
         this.animationFrameId = requestAnimationFrame(this.render.bind(this));
 
@@ -205,14 +236,31 @@ export class EffectFuse {
         this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
         this.gl.useProgram(this.program);
 
-        this.gl.uniform2f(this.uniformLocations.resolution, this.canvas.width, this.canvas.height);
-        this.gl.uniform1f(this.uniformLocations.brightness, this.params.brightness);
-        this.gl.uniform1f(this.uniformLocations.blobiness, this.params.blobiness);
-        this.gl.uniform1f(this.uniformLocations.particles, this.params.particles);
-        this.gl.uniform1i(this.uniformLocations.scanlines, this.params.scanlines);
-        this.gl.uniform1f(this.uniformLocations.energy, this.params.energy);
-        this.gl.uniform1f(this.uniformLocations.millis, timeDelta);
-        this.gl.uniform1f(this.uniformLocations.timeScale, 0.5);
+        // 确保所有uniform location存在
+        if (this.uniformLocations.resolution) {
+            this.gl.uniform2f(this.uniformLocations.resolution, this.canvas.width, this.canvas.height);
+        }
+        if (this.uniformLocations.brightness) {
+            this.gl.uniform1f(this.uniformLocations.brightness, this.params.brightness || 40000);
+        }
+        if (this.uniformLocations.blobiness) {
+            this.gl.uniform1f(this.uniformLocations.blobiness, this.params.blobiness || 2.0);
+        }
+        if (this.uniformLocations.particles) {
+            this.gl.uniform1f(this.uniformLocations.particles, this.params.particles || 20);
+        }
+        if (this.uniformLocations.scanlines) {
+            this.gl.uniform1i(this.uniformLocations.scanlines, this.params.scanlines || false);
+        }
+        if (this.uniformLocations.energy) {
+            this.gl.uniform1f(this.uniformLocations.energy, this.params.energy || 0.5);
+        }
+        if (this.uniformLocations.millis) {
+            this.gl.uniform1f(this.uniformLocations.millis, timeDelta);
+        }
+        if (this.uniformLocations.timeScale) {
+            this.gl.uniform1f(this.uniformLocations.timeScale, this.params.timeScale || 0.5);
+        }
 
         this.gl.drawArrays(this.gl.TRIANGLES, 0, 6);
     }
