@@ -59,12 +59,7 @@ const BackgroundCanvas = ({ effectType = 'effectfuse' }) => {
             canvas.width = canvasWidth;
             canvas.height = canvasHeight;
             
-            console.log('Canvas created with size:', {
-                displaySize: `${displayWidth}x${displayHeight}`,
-                canvasSize: `${canvas.width}x${canvas.height}`,
-                aspectRatio: aspectRatio.toFixed(2),
-                devicePixelRatio: window.devicePixelRatio || 1
-            });
+
             
             // 注意：不要对canvas context进行缩放，WebGL会自己处理像素比
             // 2D context缩放可能会干扰WebGL渲染
@@ -72,12 +67,7 @@ const BackgroundCanvas = ({ effectType = 'effectfuse' }) => {
             document.body.appendChild(canvas);
             canvasRef.current = canvas;
             
-            console.log('Canvas created:', {
-                width: canvas.width,
-                height: canvas.height,
-                styleWidth: canvas.style.width,
-                styleHeight: canvas.style.height
-            });
+
         }
 
         // 设置画布大小
@@ -113,11 +103,7 @@ const BackgroundCanvas = ({ effectType = 'effectfuse' }) => {
                     canvas.width = canvasWidth;
                     canvas.height = canvasHeight;
                     
-                    console.log('Canvas resized:', {
-                        displaySize: `${displayWidth}x${displayHeight}`,
-                        canvasSize: `${canvas.width}x${canvas.height}`,
-                        aspectRatio: aspectRatio.toFixed(2)
-                    });
+
                     
                     if (effectInstanceRef.current?.onResize) {
                         effectInstanceRef.current.onResize(canvas.width, canvas.height);
@@ -162,12 +148,12 @@ const BackgroundCanvas = ({ effectType = 'effectfuse' }) => {
             };
 
             try {
-                console.log('Creating background effect:', effectType);
+
                 
                 // 创建新效果
                 switch (effectType) {
                     case 'effectfuse': {
-                        console.log('Creating EffectFuse with canvas:', canvas);
+
                         effectInstanceRef.current = new EffectFuse(canvas, defaultParams);
                         break;
                     }
@@ -178,24 +164,22 @@ const BackgroundCanvas = ({ effectType = 'effectfuse' }) => {
                         effectInstanceRef.current = new EffectHeartBeats(canvas, defaultParams);
                         break;
                     case 'effectlorenz': {
-                        console.log('Creating EffectLorenzAttractor with canvas:', canvas);
+
                         effectInstanceRef.current = new EffectLorenzAttractor(canvas, defaultParams);
                         break;
                     }
                     default:
-                        console.log('Unknown effect type, using default EffectHeartBeats');
+
                         effectInstanceRef.current = new EffectHeartBeats(canvas, defaultParams);
                 }
 
                 // 启动效果 - 注意不同特效的启动方式
                 if (effectInstanceRef.current?.start) {
-                    console.log('Starting effect with start() method:', effectType);
+
                     effectInstanceRef.current.start();
                 } else if (effectType === 'effectmonjori') {
                     // EffectMonjori在创建时自动启动，不需要调用start()
-                    console.log('EffectMonjori started automatically');
-                } else {
-                    console.warn('Effect does not have a start method:', effectType);
+
                 }
             } catch (error) {
                 console.error('Error creating background effect:', error);
