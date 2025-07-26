@@ -28,8 +28,9 @@ const BackgroundCanvas = ({ effectType = 'effectfuse' }) => {
             canvas.style.left = '0';
             canvas.style.width = '100%';
             canvas.style.height = '100%';
-            canvas.style.zIndex = '-10';
+            canvas.style.zIndex = '-10'; // 背景层级
             canvas.style.pointerEvents = 'none';
+            canvas.style.background = 'transparent'; // 确保背景透明
             
             // 设置合理的canvas尺寸 - 使用固定尺寸避免高DPI问题
             const displayWidth = window.innerWidth;
@@ -151,6 +152,7 @@ const BackgroundCanvas = ({ effectType = 'effectfuse' }) => {
             try {
 
                   // 创建新效果
+                console.log(`BackgroundCanvas: Creating effect of type: ${effectType}`);
                 switch (effectType) {
                     case 'effectfuse': {
                         effectInstanceRef.current = new EffectFuse(canvas, defaultParams);
@@ -167,17 +169,17 @@ const BackgroundCanvas = ({ effectType = 'effectfuse' }) => {
                         break;
                     }
                     case 'effectgalaxy': {
-                        // Galaxy 效果的自定义参数
+                        // Galaxy 效果 - 基于测试版本成功参数优化
                         const galaxyParams = {
-                            particleCount: 15000,
+                            particleCount: 15000,  // 适中的粒子数量保证性能
                             branches: 3,
-                            radius: 5,
+                            radius: 8,  // 更大的银河系
                             spin: 1,
-                            randomness: 0.2,
+                            randomness: 0.3,
                             randomnessPower: 3,
-                            size: 0.05,
-                            colorInside: defaultParams.colorInside || '#ffa575', // 橙色内核
-                            colorOutside: defaultParams.colorOutside || '#4c1d95' // 深紫色外围
+                            size: 2.0,  // 大粒子确保可见
+                            colorInside: defaultParams.colorInside || '#ffff00', // 亮黄色
+                            colorOutside: defaultParams.colorOutside || '#ff8800' // 亮橙色
                         };
                         effectInstanceRef.current = new EffectGalaxy(canvas, galaxyParams);
                         break;
@@ -188,11 +190,9 @@ const BackgroundCanvas = ({ effectType = 'effectfuse' }) => {
 
                 // 启动效果 - 注意不同特效的启动方式
                 if (effectInstanceRef.current?.start) {
-
                     effectInstanceRef.current.start();
                 } else if (effectType === 'effectmonjori') {
                     // EffectMonjori在创建时自动启动，不需要调用start()
-
                 }
             } catch (error) {
                 console.error('Error creating background effect:', error);
