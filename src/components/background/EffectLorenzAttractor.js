@@ -135,6 +135,18 @@ export class EffectLorenzAttractor {
         this.pointLight = new THREE.PointLight(0x0088ff, 2.0, 100); // 蓝色点光源
         this.scene.add(this.pointLight);
 
+        // 在 canvas 右上角添加太阳光 - 固定位置的温暖光源
+        this.sunLight = new THREE.DirectionalLight(0xfff8dc, 1.2); // 温暖的奶油色太阳光
+        this.sunLight.position.set(80, 60, 40); // 右上角位置
+        this.sunLight.target.position.set(0, 0, 0); // 照向场景中心
+        this.sunLight.castShadow = false; // 不投射阴影以提高性能
+        this.scene.add(this.sunLight);
+        this.scene.add(this.sunLight.target);
+        
+        // 可选：添加太阳光的辅助可视化（开发时使用，生产环境可以注释掉）
+        // const sunLightHelper = new THREE.DirectionalLightHelper(this.sunLight, 5);
+        // this.scene.add(sunLightHelper);
+
         // 创建类似 Three.js WebGPU Galaxy 的粒子系统
         this.particleGeometry = new THREE.SphereGeometry(0.5, 8, 8); // 先使用简单的球体几何
         

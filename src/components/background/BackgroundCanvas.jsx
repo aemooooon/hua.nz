@@ -4,6 +4,7 @@ import { EffectFuse } from './EffectFuse';
 import { EffectMonjori } from './EffectMonjori';
 import EffectHeartBeats from './EffectHeartBeats';
 import { EffectLorenzAttractor } from './EffectLorenzAttractor';
+import { EffectGalaxy } from './EffectGalaxy';
 import { debounce } from 'lodash';
 
 const BackgroundCanvas = ({ effectType = 'effectfuse' }) => {
@@ -149,11 +150,9 @@ const BackgroundCanvas = ({ effectType = 'effectfuse' }) => {
 
             try {
 
-                
-                // 创建新效果
+                  // 创建新效果
                 switch (effectType) {
                     case 'effectfuse': {
-
                         effectInstanceRef.current = new EffectFuse(canvas, defaultParams);
                         break;
                     }
@@ -164,12 +163,26 @@ const BackgroundCanvas = ({ effectType = 'effectfuse' }) => {
                         effectInstanceRef.current = new EffectHeartBeats(canvas, defaultParams);
                         break;
                     case 'effectlorenz': {
-
                         effectInstanceRef.current = new EffectLorenzAttractor(canvas, defaultParams);
                         break;
                     }
+                    case 'effectgalaxy': {
+                        // Galaxy 效果的自定义参数
+                        const galaxyParams = {
+                            particleCount: 15000,
+                            branches: 3,
+                            radius: 5,
+                            spin: 1,
+                            randomness: 0.2,
+                            randomnessPower: 3,
+                            size: 0.05,
+                            colorInside: defaultParams.colorInside || '#ffa575', // 橙色内核
+                            colorOutside: defaultParams.colorOutside || '#4c1d95' // 深紫色外围
+                        };
+                        effectInstanceRef.current = new EffectGalaxy(canvas, galaxyParams);
+                        break;
+                    }
                     default:
-
                         effectInstanceRef.current = new EffectHeartBeats(canvas, defaultParams);
                 }
 
@@ -185,7 +198,7 @@ const BackgroundCanvas = ({ effectType = 'effectfuse' }) => {
                 console.error('Error creating background effect:', error);
                 
                 // 如果是WebGL特效失败，回退到简单特效
-                if (effectType === 'effectfuse' || effectType === 'effectlorenz') {
+                if (effectType === 'effectfuse' || effectType === 'effectlorenz' || effectType === 'effectgalaxy') {
                     console.warn(`${effectType} failed, falling back to EffectHeartBeats`);
                     try {
                         effectInstanceRef.current = new EffectHeartBeats(canvas, defaultParams);

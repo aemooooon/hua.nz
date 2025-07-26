@@ -8,7 +8,7 @@ const sectionsConfig = [
     index: 0,
     name: { en: "Home", zh: "首页" },
     description: { en: "Welcome to my portfolio", zh: "欢迎来到我的作品集" },
-    backgroundEffect: "effectfuse",
+    backgroundEffect: "effectgalaxy", // 新的 Galaxy 效果
     cubeImage: "/hua.jpeg",
     icon: "home"
   },
@@ -17,7 +17,7 @@ const sectionsConfig = [
     index: 1,
     name: { en: "About", zh: "关于我" },
     description: { en: "About myself", zh: "个人介绍" },
-    backgroundEffect: "effectlorenz",
+    backgroundEffect: "effectlorenz", // Lorenz 背景
     cubeImage: "/awared-best-programmer.jpeg",
     icon: "about"
   },
@@ -26,34 +26,34 @@ const sectionsConfig = [
     index: 2,
     name: { en: "Projects", zh: "项目" },
     description: { en: "My development projects", zh: "我的开发项目" },
-    backgroundEffect: "effectmonjori",
+    backgroundEffect: "effectmonjori", // 保持现有背景
     cubeImage: "/jsjxmm.jpg", 
     icon: "project"
   },
   {
-    id: "projectmap",
-    index: 3,
-    name: { en: "Project Map", zh: "项目地图" },
-    description: { en: "Interactive project map", zh: "交互式项目地图" },
-    backgroundEffect: "effectmonjori",
-    cubeImage: "/data472/datapipeline.png",
-    icon: "map"
-  },
-  {
     id: "gallery",
-    index: 4,
+    index: 3,
     name: { en: "Gallery", zh: "作品展示" },
     description: { en: "Visual showcase", zh: "视觉作品展示" },
-    backgroundEffect: "effectmonjori",
+    backgroundEffect: "effectmonjori", // 保持现有背景
     cubeImage: "/fitsgo-team.jpg",
     icon: "gallery"
+  },
+  {
+    id: "education",
+    index: 4,
+    name: { en: "Education", zh: "教育背景" },
+    description: { en: "Academic background", zh: "学术背景" },
+    backgroundEffect: "effectfuse", // Fuse 背景
+    cubeImage: "/UC_F4.001.jpeg",
+    icon: "education"
   },
   {
     id: "contact",
     index: 5,
     name: { en: "Contact", zh: "联系我" },
     description: { en: "Get in touch", zh: "联系方式" },
-    backgroundEffect: "effectheartbeats",
+    backgroundEffect: "effectheartbeats", // HeartBeats 背景
     cubeImage: "/hua_presentation.jpg",
     icon: "contact"
   }
@@ -65,8 +65,8 @@ const contentConfig = {
       home: "Home", 
       about: "About", 
       projects: "Projects", 
-      projectmap: "Project Map",
-      gallery: "Gallery", 
+      gallery: "Gallery",
+      education: "Education", 
       contact: "Contact" 
     },
     home: { name: "Hua Wang", title: "Full Stack Engineer", description: "Passionate developer creating innovative web applications." },
@@ -77,8 +77,8 @@ const contentConfig = {
       home: "首页", 
       about: "关于", 
       projects: "项目", 
-      projectmap: "项目地图",
-      gallery: "画廊", 
+      gallery: "画廊",
+      education: "教育", 
       contact: "联系" 
     },
     home: { name: "王华", title: "全栈工程师", description: "热衷于创建创新Web应用程序的开发者。" },

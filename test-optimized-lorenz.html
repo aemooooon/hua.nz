@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lorenz Attractor Performance Test</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: #000;
+            overflow: hidden;
+            font-family: Arial, sans-serif;
+        }
+        canvas {
+            display: block;
+        }
+        #stats {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            color: #ffffff;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 14px;
+            z-index: 100;
+        }
+        .button {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            padding: 10px 20px;
+            background: #ff6600;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .button:hover {
+            background: #ff8800;
+        }
+    </style>
+</head>
+<body>
+    <div id="stats">
+        <div>FPS: <span id="fps">60</span></div>
+        <div>Particles: <span id="particles">0</span></div>
+        <div>Max Particles: <span id="maxParticles">800</span></div>
+        <div>Performance: <span id="performance">Excellent</span></div>
+    </div>
+    
+    <button class="button" onclick="toggleEffect()">Reset Effect</button>
+    
+    <canvas id="canvas"></canvas>
+
+    <script type="module">
+        import * as THREE from '/node_modules/three/build/three.module.js';
+        
+        class OptimizedLorenzTest {
+            constructor(canvas) {
+                this.canvas = canvas;
+                this.scene = new THREE.Scene();
+                this.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+                this.renderer = new THREE.WebGLRenderer({ canvas: this.canvas, antialias: true });
+                
+                this.renderer.setSize(window.innerWidth, window.innerHeight);
+                this.renderer.setClearColor(0x000a0a, 1.0);
+                
+                // Lorenz 参数
+                this.sigma = 10;
+                this.rho = 28;
+                this.beta = 8 / 3;
+                this.x = 0.1;
+                this.y = 0;
+                this.z = 0;
+                this.dt = 0.01;
+                this.maxParticles = 800;
+                
+                // 性能监控
+                this.frameCount = 0;
+                this.lastFPSCheck = performance.now();
+                this.currentFPS = 60;
+                
+                this.trailPositions = [];
+                
+                // 相机位置
+                this.camera.position.set(0, 0, 60);
+                this.camera.lookAt(0, 0, 0);
+                
+                // 主球
+                const geometry = new THREE.SphereGeometry(1.5, 16, 16);
+                const material = new THREE.MeshBasicMaterial({ color: 0xff6600 });
+                this.fireball = new THREE.Mesh(geometry, material);
+                this.scene.add(this.fireball);
+                
+                // 优化的实例化粒子系统
+                this.particleGeometry = new THREE.SphereGeometry(0.25, 8, 8);
+                this.particleMaterial = new THREE.MeshBasicMaterial({
+                    transparent: true,
+                    opacity: 0.8,
+                    vertexColors: true
+                });
+                
+                this.instancedMesh = new THREE.InstancedMesh(
+                    this.particleGeometry, 
+                    this.particleMaterial, 
+                    this.maxParticles
+                );
+                this.scene.add(this.instancedMesh);
+                
+                // 光照
+                const ambientLight = new THREE.AmbientLight(0x404040, 0.4);
+                this.scene.add(ambientLight);
+                
+                this.animate();
+                this.updateStats();
+            }
+            
+            animate() {
+                requestAnimationFrame(() => this.animate());
+                
+                // FPS 监控
+                this.frameCount++;
+                const now = performance.now();
+                if (now - this.lastFPSCheck >= 1000) {
+                    this.currentFPS = this.frameCount;
+                    this.frameCount = 0;
+                    this.lastFPSCheck = now;
+                    
+                    // 自适应质量
+                    if (this.currentFPS < 30 && this.maxParticles > 400) {
+                        this.maxParticles = Math.max(400, this.maxParticles - 50);
+                    } else if (this.currentFPS > 50 && this.maxParticles < 800) {
+                        this.maxParticles = Math.min(800, this.maxParticles + 25);
+                    }
+                }
+                
+                // Lorenz 方程
+                const dx = this.sigma * (this.y - this.x) * this.dt;
+                const dy = (this.x * (this.rho - this.z) - this.y) * this.dt;
+                const dz = (this.x * this.y - this.beta * this.z) * this.dt;
+                
+                this.x += dx;
+                this.y += dy;
+                this.z += dz;
+                
+                // 更新主球位置
+                const scale = 0.8;
+                this.fireball.position.set(this.x * scale, this.y * scale, this.z * scale);
+                
+                // 每隔几帧添加粒子
+                if (this.frameCount % 2 === 0) {
+                    this.trailPositions.push({
+                        x: this.x * scale,
+                        y: this.y * scale,
+                        z: this.z * scale
+                    });
+                    
+                    if (this.trailPositions.length > this.maxParticles) {
+                        this.trailPositions.shift();
+                    }
+                }
+                
+                // 更新实例化网格
+                const matrix = new THREE.Matrix4();
+                const position = new THREE.Vector3();
+                const quaternion = new THREE.Quaternion();
+                const scale_vec = new THREE.Vector3();
+                const color = new THREE.Color();
+
+                this.trailPositions.forEach((pos, index) => {
+                    const fadeRate = (index / this.trailPositions.length);
+                    const particleScale = fadeRate * 0.6 + 0.3;
+                    
+                    position.set(pos.x, pos.y, pos.z);
+                    scale_vec.set(particleScale, particleScale, particleScale);
+                    
+                    matrix.compose(position, quaternion, scale_vec);
+                    this.instancedMesh.setMatrixAt(index, matrix);
+                    
+                    // 颜色渐变
+                    const t = fadeRate;
+                    if (t < 0.5) {
+                        color.setHSL(0.05, 0.9, 0.3 + t * 0.4);
+                    } else {
+                        color.setHSL(0.08, 0.9, 0.7 + (t - 0.5) * 0.3);
+                    }
+                    
+                    this.instancedMesh.setColorAt(index, color);
+                });
+
+                // 隐藏未使用的实例
+                for (let i = this.trailPositions.length; i < this.maxParticles; i++) {
+                    scale_vec.set(0, 0, 0);
+                    matrix.compose(position, quaternion, scale_vec);
+                    this.instancedMesh.setMatrixAt(i, matrix);
+                }
+
+                this.instancedMesh.instanceMatrix.needsUpdate = true;
+                if (this.instancedMesh.instanceColor) {
+                    this.instancedMesh.instanceColor.needsUpdate = true;
+                }
+                
+                // 旋转
+                this.scene.rotation.y += 0.005;
+                this.scene.rotation.x += 0.002;
+                
+                this.renderer.render(this.scene, this.camera);
+            }
+            
+            updateStats() {
+                setInterval(() => {
+                    document.getElementById('fps').textContent = this.currentFPS;
+                    document.getElementById('particles').textContent = this.trailPositions.length;
+                    document.getElementById('maxParticles').textContent = this.maxParticles;
+                    
+                    let performance = 'Excellent';
+                    if (this.currentFPS < 30) performance = 'Poor';
+                    else if (this.currentFPS < 45) performance = 'Fair';
+                    else if (this.currentFPS < 55) performance = 'Good';
+                    
+                    document.getElementById('performance').textContent = performance;
+                }, 500);
+            }
+            
+            reset() {
+                this.x = 0.1;
+                this.y = 0;
+                this.z = 0;
+                this.trailPositions = [];
+            }
+        }
+        
+        // 启动测试
+        const canvas = document.getElementById('canvas');
+        window.lorenzTest = new OptimizedLorenzTest(canvas);
+        
+        // 全局函数
+        window.toggleEffect = () => {
+            window.lorenzTest.reset();
+        };
+        
+        // 处理窗口大小变化
+        window.addEventListener('resize', () => {
+            window.lorenzTest.camera.aspect = window.innerWidth / window.innerHeight;
+            window.lorenzTest.camera.updateProjectionMatrix();
+            window.lorenzTest.renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+    </script>
+</body>
+</html>

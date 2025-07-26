@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Canvas Size Fix Test</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            background: #000;
+            color: #fff;
+            overflow: hidden;
+        }
+        #controls {
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            background: rgba(0,0,0,0.9);
+            padding: 15px;
+            border-radius: 5px;
+            z-index: 100;
+            border: 1px solid #333;
+            min-width: 300px;
+        }
+        button {
+            margin: 5px;
+            padding: 8px 12px;
+            background: #333;
+            color: #fff;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        button:hover {
+            background: #555;
+        }
+        .active {
+            background: #0066cc !important;
+        }
+        #info {
+            position: fixed;
+            bottom: 10px;
+            left: 10px;
+            background: rgba(0,0,0,0.9);
+            padding: 15px;
+            border-radius: 5px;
+            z-index: 100;
+            font-size: 12px;
+            border: 1px solid #333;
+            min-width: 400px;
+        }
+        .status {
+            color: #00ff00;
+        }
+        .error {
+            color: #ff4444;
+        }
+        .warning {
+            color: #ffaa00;
+        }
+        .size-info {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 10px;
+            font-family: monospace;
+        }
+    </style>
+</head>
+<body>
+    <div id="controls">
+        <h3>Canvas Size Fix Test</h3>
+        <p>Testing fixed canvas sizing on MacBook Pro M1 13" (High DPI)</p>
+        <button id="testCanvas" class="active">Test Canvas Size</button>
+        <button id="testEffectFuse">Test EffectFuse Simulation</button>
+        <button id="clear">Clear Canvas</button>
+        <div style="margin-top: 10px;">
+            <label>Max Canvas Width: <input type="number" id="maxWidth" value="1280" min="400" max="1920"></label><br>
+            <label>Max Canvas Height: <input type="number" id="maxHeight" value="720" min="300" max="1080"></label>
+        </div>
+    </div>
+
+    <div id="info">
+        <div><strong>Expected vs Actual:</strong></div>
+        <div id="expectation">Expected canvas size should be reasonable (800-1280 width)</div>
+        <div class="size-info">
+            <div>
+                <strong>Display:</strong><br>
+                Window Size: <span id="windowSize">-</span><br>
+                Device Pixel Ratio: <span id="pixelRatio">-</span><br>
+                Aspect Ratio: <span id="aspectRatio">-</span>
+            </div>
+            <div>
+                <strong>Canvas:</strong><br>
+                Canvas Size: <span id="canvasSize">-</span><br>
+                Style Size: <span id="styleSize">-</span><br>
+                Status: <span id="status" class="status">Ready</span>
+            </div>
+        </div>
+        <div id="analysis" style="margin-top: 10px; padding: 10px; background: rgba(255,255,255,0.1); border-radius: 3px;">
+            Analysis will appear here...
+        </div>
+    </div>
+
+    <script>
+        let currentCanvas = null;
+        
+        function updateInfo() {
+            const windowWidth = window.innerWidth;
+            const windowHeight = window.innerHeight;
+            const pixelRatio = window.devicePixelRatio || 1;
+            const aspectRatio = (windowWidth / windowHeight).toFixed(2);
+            
+            document.getElementById('windowSize').textContent = `${windowWidth}x${windowHeight}`;
+            document.getElementById('pixelRatio').textContent = pixelRatio;
+            document.getElementById('aspectRatio').textContent = aspectRatio;
+        }
+
+        function analyzeCanvasSize(canvas) {
+            const windowWidth = window.innerWidth;
+            const windowHeight = window.innerHeight;
+            const pixelRatio = window.devicePixelRatio || 1;
+            
+            const canvasWidth = canvas.width;
+            const canvasHeight = canvas.height;
+            const styleWidth = parseInt(canvas.style.width) || windowWidth;
+            const styleHeight = parseInt(canvas.style.height) || windowHeight;
+            
+            document.getElementById('canvasSize').textContent = `${canvasWidth}x${canvasHeight}`;
+            document.getElementById('styleSize').textContent = `${styleWidth}x${styleHeight}`;
+            
+            let analysis = '';
+            let statusClass = 'status';
+            let statusText = 'Good';
+            
+            // 分析canvas尺寸
+            if (canvasWidth > 2000 || canvasHeight > 1500) {
+                analysis += '❌ Canvas size is too large! This will cause performance issues.<br>';
+                statusClass = 'error';
+                statusText = 'Too Large';
+            } else if (canvasWidth > 1500 || canvasHeight > 1000) {
+                analysis += '⚠️ Canvas size is quite large, but acceptable.<br>';
+                statusClass = 'warning';
+                statusText = 'Large';
+            } else {
+                analysis += '✅ Canvas size is reasonable for performance.<br>';
+            }
+            
+            // 分析像素比影响
+            const expectedSize = Math.min(1280, windowWidth);
+            if (canvasWidth > expectedSize * 2) {
+                analysis += `❌ Canvas width (${canvasWidth}) is much larger than expected (${expectedSize}). High DPI might be causing issues.<br>`;
+            } else {
+                analysis += `✅ Canvas width (${canvasWidth}) is within expected range (max ${expectedSize}).<br>`;
+            }
+            
+            // 内存估算
+            const memoryMB = (canvasWidth * canvasHeight * 4) / (1024 * 1024);
+            analysis += `📊 Estimated memory usage: ${memoryMB.toFixed(1)} MB<br>`;
+            
+            if (memoryMB > 50) {
+                analysis += '❌ Memory usage is very high!<br>';
+                statusClass = 'error';
+                statusText = 'High Memory';
+            } else if (memoryMB > 20) {
+                analysis += '⚠️ Memory usage is moderate.<br>';
+            } else {
+                analysis += '✅ Memory usage is reasonable.<br>';
+            }
+            
+            document.getElementById('analysis').innerHTML = analysis;
+            document.getElementById('status').textContent = statusText;
+            document.getElementById('status').className = statusClass;
+        }
+
+        function createOptimizedCanvas() {
+            // 移除旧画布
+            if (currentCanvas && document.body.contains(currentCanvas)) {
+                document.body.removeChild(currentCanvas);
+            }
+
+            // 创建新画布
+            const canvas = document.createElement('canvas');
+            canvas.style.position = 'fixed';
+            canvas.style.top = '0';
+            canvas.style.left = '0';
+            canvas.style.width = '100%';
+            canvas.style.height = '100%';
+            canvas.style.zIndex = '-10';
+            canvas.style.pointerEvents = 'none';
+            
+            // 使用修复后的尺寸计算逻辑
+            const displayWidth = window.innerWidth;
+            const displayHeight = window.innerHeight;
+            
+            // 从输入框获取最大尺寸
+            const maxCanvasWidth = parseInt(document.getElementById('maxWidth').value);
+            const maxCanvasHeight = parseInt(document.getElementById('maxHeight').value);
+            
+            // 根据显示尺寸的比例来计算canvas尺寸，但不超过最大值
+            const aspectRatio = displayWidth / displayHeight;
+            let canvasWidth, canvasHeight;
+            
+            if (aspectRatio > maxCanvasWidth / maxCanvasHeight) {
+                // 宽屏
+                canvasWidth = Math.min(maxCanvasWidth, displayWidth);
+                canvasHeight = Math.floor(canvasWidth / aspectRatio);
+            } else {
+                // 高屏
+                canvasHeight = Math.min(maxCanvasHeight, displayHeight);
+                canvasWidth = Math.floor(canvasHeight * aspectRatio);
+            }
+            
+            // 确保最小尺寸
+            canvasWidth = Math.max(canvasWidth, 800);
+            canvasHeight = Math.max(canvasHeight, 600);
+            
+            canvas.width = canvasWidth;
+            canvas.height = canvasHeight;
+            
+            document.body.appendChild(canvas);
+            currentCanvas = canvas;
+            
+            return canvas;
+        }
+
+        function testCanvasSize() {
+            const canvas = createOptimizedCanvas();
+            
+            // 绘制测试图案
+            const ctx = canvas.getContext('2d');
+            ctx.fillStyle = '#001122';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // 绘制网格以显示实际分辨率
+            ctx.strokeStyle = '#333';
+            ctx.lineWidth = 1;
+            const gridSize = 50;
+            
+            for (let x = 0; x < canvas.width; x += gridSize) {
+                ctx.beginPath();
+                ctx.moveTo(x, 0);
+                ctx.lineTo(x, canvas.height);
+                ctx.stroke();
+            }
+            
+            for (let y = 0; y < canvas.height; y += gridSize) {
+                ctx.beginPath();
+                ctx.moveTo(0, y);
+                ctx.lineTo(canvas.width, y);
+                ctx.stroke();
+            }
+            
+            // 显示canvas尺寸信息
+            ctx.fillStyle = '#ffffff';
+            ctx.font = '20px Arial';
+            ctx.fillText(`Canvas: ${canvas.width}x${canvas.height}`, 20, 40);
+            ctx.fillText(`Window: ${window.innerWidth}x${window.innerHeight}`, 20, 70);
+            ctx.fillText(`DPR: ${window.devicePixelRatio}`, 20, 100);
+            
+            analyzeCanvasSize(canvas);
+        }
+
+        function testEffectFuse() {
+            const canvas = createOptimizedCanvas();
+            
+            // 模拟EffectFuse的参数 (原始值)
+            const params = {
+                brightness: 0.6,
+                blobiness: 1.5,
+                particles: 10,
+                energy: 1.01
+            };
+            
+            const ctx = canvas.getContext('2d');
+            ctx.fillStyle = '#000510';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // 模拟等离子效果
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+            
+            for (let i = 0; i < params.particles; i++) {
+                const angle = (i / params.particles) * Math.PI * 2;
+                const radius = 50 + Math.sin(Date.now() * 0.001 + i) * 30;
+                
+                const x = centerX + Math.cos(angle) * radius;
+                const y = centerY + Math.sin(angle) * radius;
+                
+                const gradient = ctx.createRadialGradient(x, y, 0, x, y, 40);
+                gradient.addColorStop(0, `rgba(${Math.floor(255 * params.brightness)}, ${Math.floor(128 * params.brightness)}, ${Math.floor(255 * params.brightness)}, 0.8)`);
+                gradient.addColorStop(1, 'rgba(0, 0, 0, 0)');
+                
+                ctx.fillStyle = gradient;
+                ctx.fillRect(x - 40, y - 40, 80, 80);
+            }
+            
+            // 显示参数信息
+            ctx.fillStyle = '#ffffff';
+            ctx.font = '16px Arial';
+            ctx.fillText(`EffectFuse Simulation`, 20, 30);
+            ctx.fillText(`Brightness: ${params.brightness}`, 20, 50);
+            ctx.fillText(`Particles: ${params.particles}`, 20, 70);
+            ctx.fillText(`Canvas: ${canvas.width}x${canvas.height}`, 20, 90);
+            
+            analyzeCanvasSize(canvas);
+        }
+
+        function clearCanvas() {
+            if (currentCanvas && document.body.contains(currentCanvas)) {
+                document.body.removeChild(currentCanvas);
+                currentCanvas = null;
+            }
+            
+            document.getElementById('canvasSize').textContent = '-';
+            document.getElementById('styleSize').textContent = '-';
+            document.getElementById('status').textContent = 'Cleared';
+            document.getElementById('status').className = 'status';
+            document.getElementById('analysis').innerHTML = 'Canvas cleared.';
+        }
+
+        // 事件监听器
+        document.getElementById('testCanvas').addEventListener('click', testCanvasSize);
+        document.getElementById('testEffectFuse').addEventListener('click', testEffectFuse);
+        document.getElementById('clear').addEventListener('click', clearCanvas);
+
+        // 参数变化时重新测试
+        document.getElementById('maxWidth').addEventListener('change', () => {
+            if (currentCanvas) testCanvasSize();
+        });
+        document.getElementById('maxHeight').addEventListener('change', () => {
+            if (currentCanvas) testCanvasSize();
+        });
+
+        // 初始化
+        updateInfo();
+        testCanvasSize();
+        
+        // 窗口大小变化处理
+        window.addEventListener('resize', () => {
+            updateInfo();
+            if (currentCanvas) {
+                testCanvasSize();
+            }
+        });
+    </script>
+</body>
+</html>
