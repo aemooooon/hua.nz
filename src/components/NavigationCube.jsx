@@ -10,7 +10,8 @@ const NavigationCube = ({ isLandingPage = false, onSectionChange, sections = [] 
     const mouseRef = useRef({ x: 0, y: 0 });
     const isDraggingRef = useRef(false);
     const lastMouseRef = useRef({ x: 0, y: 0 });
-    const [isHovering, setIsHovering] = useState(false);
+    const hasBeenDraggedRef = useRef(false); // 跟踪是否已被用户拖拽过
+    // 移除isHovering状态，因为cube现在只是显示指示器
     
     const { getContent } = useAppStore();
     const content = getContent();
@@ -18,11 +19,8 @@ const NavigationCube = ({ isLandingPage = false, onSectionChange, sections = [] 
     // 根据是否在landing page和屏幕大小调整大小
     const getCanvasSize = useCallback(() => {
         if (!isLandingPage) return 120;
-        // 响应式大小 - 与头像保持一致
-        if (typeof window !== 'undefined') {
-            return window.innerWidth < 768 ? 300 : 400;
-        }
-        return 400;
+        // 在landing page时使用300px容器，与头像容器尺寸一致
+        return 300; // 调整canvas尺寸与头像容器一致
     }, [isLandingPage]);
     
     const [canvasSize, setCanvasSize] = useState(getCanvasSize());
@@ -71,9 +69,9 @@ const NavigationCube = ({ isLandingPage = false, onSectionChange, sections = [] 
         // 创建场景
         const scene = new THREE.Scene();
 
-        // 创建相机
-        const camera = new THREE.PerspectiveCamera(75, 1, 0.1, 1000);
-        camera.position.z = isLandingPage ? 4 : 3;
+        // 创建相机 - 在300px画布中渲染合适大小的立方体
+        const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 1000);
+        camera.position.z = isLandingPage ? 5 : 3; // 调整距离使立方体大小与头像相当
 
         // 创建渲染器 - 优化设置以提高性能
         const renderer = new THREE.WebGLRenderer({ 
@@ -84,6 +82,14 @@ const NavigationCube = ({ isLandingPage = false, onSectionChange, sections = [] 
         renderer.setSize(canvasSize, canvasSize);
         renderer.setClearColor(0x000000, 0);
         renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        
+        // 确保canvas完全填满容器
+        if (isLandingPage) {
+            renderer.domElement.style.width = '100%';
+            renderer.domElement.style.height = '100%';
+            renderer.domElement.style.display = 'block';
+            renderer.domElement.style.objectFit = 'fill'; // 确保填充整个容器
+        }
         
         // 简化渲染设置以提高性能
         renderer.shadowMap.enabled = false; // 关闭阴影以提高性能
@@ -103,8 +109,8 @@ const NavigationCube = ({ isLandingPage = false, onSectionChange, sections = [] 
         mainLight.position.set(5, 5, 5);
         scene.add(mainLight);
 
-        // 创建圆角立方体几何体
-        const geometry = new RoundedBoxGeometry(2, 2, 2, 7, 0.1);
+        // 创建圆角立方体几何体 - 调整尺寸让它在300px容器中看起来与头像一样大
+        const geometry = new RoundedBoxGeometry(2.2, 2.2, 2.2, 7, 0.1);
         
         // 为每个面创建不同的材质 - 玻璃透明效果
         const materials = faces.map((face) => {
@@ -149,25 +155,43 @@ const NavigationCube = ({ isLandingPage = false, onSectionChange, sections = [] 
                 const img = new Image();
                 img.crossOrigin = 'anonymous';
                 img.onload = () => {
-                    // 绘制图片作为背景（居中裁剪）
-                    const imgSize = Math.min(textureSize * 0.8, 200);
-                    const x = (textureSize - imgSize) / 2;
-                    const y = (textureSize - imgSize) / 2;
-                    
+                    // 按图片实际尺寸铺满整个面（保持宽高比，裁剪填充）
                     context.save();
-                    context.globalAlpha = 0.8;
-                    context.drawImage(img, x, y, imgSize, imgSize);
+                    
+                    // 计算缩放比例，确保图片能完全覆盖纹理
+                    const scaleX = textureSize / img.width;
+                    const scaleY = textureSize / img.height;
+                    const scale = Math.max(scaleX, scaleY); // 使用较大的缩放比例确保填满
+                    
+                    // 计算缩放后的图片尺寸
+                    const scaledWidth = img.width * scale;
+                    const scaledHeight = img.height * scale;
+                    
+                    // 计算居中位置
+                    const x = (textureSize - scaledWidth) / 2;
+                    const y = (textureSize - scaledHeight) / 2;
+                    
+                    // 绘制图片，完全铺满
+                    context.drawImage(img, x, y, scaledWidth, scaledHeight);
                     context.restore();
                     
-                    // 在图片上绘制文字
-                    const fontSize = isLandingPage ? 24 : 16;
-                    context.font = `bold ${fontSize}px "Helvetica Neue", Arial`;
-                    context.shadowColor = 'rgba(0, 0, 0, 0.8)';
-                    context.shadowBlur = 6;
-                    context.fillStyle = '#ffffff';
-                    context.textAlign = 'center';
-                    context.textBaseline = 'middle';
-                    context.fillText(face.label, textureSize / 2, textureSize - 30);
+                    // 添加轻微的遮罩层让文字更清晰
+                    context.save();
+                    context.fillStyle = 'rgba(0, 0, 0, 0.2)';
+                    context.fillRect(0, 0, textureSize, textureSize);
+                    context.restore();
+                    
+                    // 在图片上绘制文字（可选，如果需要的话）
+                    if (isLandingPage) {
+                        const fontSize = 24;
+                        context.font = `bold ${fontSize}px "Helvetica Neue", Arial`;
+                        context.shadowColor = 'rgba(0, 0, 0, 0.9)';
+                        context.shadowBlur = 8;
+                        context.fillStyle = '#ffffff';
+                        context.textAlign = 'center';
+                        context.textBaseline = 'middle';
+                        context.fillText(face.label, textureSize / 2, textureSize - 30);
+                    }
                     
                     // 更新纹理
                     texture.needsUpdate = true;
@@ -244,7 +268,8 @@ const NavigationCube = ({ isLandingPage = false, onSectionChange, sections = [] 
         cubeRef.current = cube;
 
         // 鼠标交互
-        const raycaster = new THREE.Raycaster();
+        // 移除raycaster，因为不再需要悬停检测
+        // const raycaster = new THREE.Raycaster();
         
         // 全局鼠标移动监听 (只在landing page启用)
         const handleGlobalMouseMove = (event) => {
@@ -258,28 +283,13 @@ const NavigationCube = ({ isLandingPage = false, onSectionChange, sections = [] 
         const handleMouseDown = (event) => {
             if (!isLandingPage) return;
             isDraggingRef.current = true;
+            hasBeenDraggedRef.current = true; // 标记已被拖拽
             lastMouseRef.current = { x: event.clientX, y: event.clientY };
             document.body.style.cursor = 'grabbing';
         };
 
         const handleMouseMove = (event) => {
-            const rect = renderer.domElement.getBoundingClientRect();
-            const mouse = new THREE.Vector2();
-            mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
-            mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
-            
-            raycaster.setFromCamera(mouse, camera);
-            const intersects = raycaster.intersectObject(cube);
-            
-            if (intersects.length > 0) {
-                setIsHovering(true);
-                document.body.style.cursor = isDraggingRef.current ? 'grabbing' : 'grab';
-            } else {
-                setIsHovering(false);
-                document.body.style.cursor = 'default';
-            }
-
-            // 处理拖拽旋转
+            // 只处理拖拽旋转，移除悬停检测
             if (isDraggingRef.current && isLandingPage) {
                 const deltaX = event.clientX - lastMouseRef.current.x;
                 const deltaY = event.clientY - lastMouseRef.current.y;
@@ -293,39 +303,10 @@ const NavigationCube = ({ isLandingPage = false, onSectionChange, sections = [] 
 
         const handleMouseUp = () => {
             isDraggingRef.current = false;
-            document.body.style.cursor = isHovering ? 'grab' : 'default';
-        };
-        
-        const handleClick = (event) => {
-            // 只有在没有拖拽的情况下才触发点击
-            if (isDraggingRef.current) return;
-            
-            const rect = renderer.domElement.getBoundingClientRect();
-            const mouse = new THREE.Vector2();
-            mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
-            mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
-            
-            raycaster.setFromCamera(mouse, camera);
-            const intersects = raycaster.intersectObject(cube);
-            
-            if (intersects.length > 0) {
-                const faceIndex = intersects[0].face.materialIndex;
-                const selectedFace = faces[faceIndex];
-                if (selectedFace) {
-                    // 使用新的回调函数或者回退到原来的方法
-                    if (onSectionChange) {
-                        onSectionChange(selectedFace.name);
-                    } else {
-                        // 通过props回调通知父组件切换section
-                        if (onSectionChange) {
-                            onSectionChange(selectedFace.index);
-                        }
-                    }
-                }
-            }
+            document.body.style.cursor = 'default';
         };
 
-        // 添加事件监听
+        // 添加事件监听 - 只包含拖拽功能，移除点击导航
         if (isLandingPage) {
             window.addEventListener('mousemove', handleGlobalMouseMove);
             renderer.domElement.addEventListener('mousedown', handleMouseDown);
@@ -334,46 +315,40 @@ const NavigationCube = ({ isLandingPage = false, onSectionChange, sections = [] 
         } else {
             renderer.domElement.addEventListener('mousemove', handleMouseMove);
         }
-        renderer.domElement.addEventListener('click', handleClick);
+        // 移除了click事件监听器，因为不再需要点击导航功能
 
         // 动画循环
         const animate = () => {
             requestAnimationFrame(animate);
             
             if (isLandingPage) {
-                // Landing page: 鼠标控制旋转 (仅在非拖拽状态)
-                if (!isDraggingRef.current) {
-                    const targetRotationY = mouseRef.current.x * 0.3;
-                    const targetRotationX = mouseRef.current.y * 0.2;
+                // Landing page: 鼠标控制旋转 (仅在非拖拽状态且未被用户拖拽过)
+                if (!isDraggingRef.current && !hasBeenDraggedRef.current) {
+                    // 初始状态：显示一个好看的角度，微弱跟随鼠标
+                    const targetRotationY = mouseRef.current.x * 0.1 + Math.PI * 0.25; // 默认45度角度
+                    const targetRotationX = mouseRef.current.y * 0.05 - Math.PI * 0.1; // 稍微向下倾斜
                     
-                    cube.rotation.y += (targetRotationY - cube.rotation.y) * 0.03;
-                    cube.rotation.x += (targetRotationX - cube.rotation.x) * 0.03;
+                    cube.rotation.y += (targetRotationY - cube.rotation.y) * 0.02;
+                    cube.rotation.x += (targetRotationX - cube.rotation.x) * 0.02;
                     
-                    // 缓慢的自动旋转作为基础 - 更有趣的旋转模式
-                    cube.rotation.y += 0.002;
-                    cube.rotation.z += 0.001;
+                    // 非常缓慢的自动旋转作为基础
+                    cube.rotation.y += 0.001;
+                } else if (!isDraggingRef.current && hasBeenDraggedRef.current) {
+                    // 用户拖拽后：保持当前旋转，只有轻微的浮动
+                    // 不做任何旋转变化，保持用户最后设置的角度
                 }
                 
-                // 添加浮动效果
-                cube.position.y = Math.sin(Date.now() * 0.001) * 0.1;
+                // 添加浮动效果 (所有状态都有)
+                cube.position.y = Math.sin(Date.now() * 0.001) * 0.05; // 减小浮动幅度
             } else {
-                // 普通页面: 自动旋转
-                if (!isHovering) {
-                    cube.rotation.x += 0.008;
-                    cube.rotation.y += 0.01;
-                    cube.rotation.z += 0.005;
-                } else {
-                    cube.rotation.x += 0.003;
-                    cube.rotation.y += 0.004;
-                    cube.rotation.z += 0.002;
-                }
+                // 普通页面: 简单的自动旋转
+                cube.rotation.x += 0.008;
+                cube.rotation.y += 0.01;
+                cube.rotation.z += 0.005;
             }
             
-            // 缩放效果 - 更平滑的过渡
-            const targetScale = isHovering ? 1.1 : 1;
-            const currentScale = cube.scale.x;
-            const newScale = currentScale + (targetScale - currentScale) * 0.1;
-            cube.scale.setScalar(newScale);
+            // 移除缩放效果，因为不再有悬停检测
+            // cube保持固定尺寸
             
             renderer.render(scene, camera);
         };
@@ -406,7 +381,7 @@ const NavigationCube = ({ isLandingPage = false, onSectionChange, sections = [] 
             } else {
                 renderer.domElement.removeEventListener('mousemove', handleMouseMove);
             }
-            renderer.domElement.removeEventListener('click', handleClick);
+            // 移除了click事件监听器，因为不再需要点击导航功能
             geometry.dispose();
             materials.forEach(material => {
                 if (material.map) material.map.dispose();
@@ -415,7 +390,7 @@ const NavigationCube = ({ isLandingPage = false, onSectionChange, sections = [] 
             renderer.dispose();
             document.body.style.cursor = 'default';
         };
-    }, [isHovering, faces, isLandingPage, canvasSize, onSectionChange]);
+    }, [faces, isLandingPage, canvasSize, onSectionChange]); // 移除isHovering依赖
 
     return (
         <div 
@@ -426,10 +401,8 @@ const NavigationCube = ({ isLandingPage = false, onSectionChange, sections = [] 
                     : 'fixed top-6 right-6 z-50'
             }`}
             style={!isLandingPage ? {
-                filter: isHovering 
-                    ? 'drop-shadow(0 0 20px rgba(175, 204, 143, 0.6))' 
-                    : 'drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3))',
-                transform: isHovering ? 'scale(1.05)' : 'scale(1)'
+                filter: 'drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3))', // 移除悬停效果
+                transform: 'scale(1)' // 固定缩放
             } : {}}
         />
     );

@@ -473,6 +473,144 @@ body.light {
     animation: scrollIndicator 2s infinite;
 }
 
+/* 从光源诞生的动画 - 天圆地方概念 */
+@keyframes birthFromLight {
+    0% {
+        transform: translate(50%, 100%) scale(0);
+        opacity: 0;
+        filter: brightness(5) blur(20px);
+    }
+    30% {
+        transform: translate(25%, 50%) scale(0.3);
+        opacity: 0.5;
+        filter: brightness(3) blur(10px);
+    }
+    60% {
+        transform: translate(10%, 20%) scale(0.7);
+        opacity: 0.8;
+        filter: brightness(1.5) blur(5px);
+    }
+    100% {
+        transform: translate(0%, 0%) scale(1);
+        opacity: 1;
+        filter: brightness(1) blur(0px);
+    }
+}
+
+/* 从Galaxy中心光源向左上移动的动画（头像） */
+@keyframes birthFromGalaxyCenterToLeft {
+    0% {
+        /* 从屏幕中心底部开始（Galaxy光源位置） */
+        transform: translate(0vw, calc(50vh)) translateY(-50%) scale(0.1);
+        opacity: 0;
+        filter: brightness(10) blur(30px);
+    }
+    20% {
+        /* 开始向左上移动并放大 */
+        transform: translate(calc(-20vw), calc(20vh)) translateY(-50%) scale(0.3);
+        opacity: 0.3;
+        filter: brightness(5) blur(20px);
+    }
+    50% {
+        /* 继续向左上，接近目标位置 */
+        transform: translate(calc(-35vw), calc(-5vh)) translateY(-50%) scale(0.6);
+        opacity: 0.6;
+        filter: brightness(2) blur(10px);
+    }
+    80% {
+        /* 接近最终位置 */
+        transform: translate(calc(-45vw), calc(-15vh)) translateY(-50%) scale(0.9);
+        opacity: 0.9;
+        filter: brightness(1.2) blur(2px);
+    }
+    100% {
+        /* 到达最终位置 */
+        transform: translateY(-50%) scale(1);
+        opacity: 1;
+        filter: brightness(1) blur(0px);
+    }
+}
+
+/* 从Galaxy中心光源向右上移动的动画（cube） - 修复轨迹版本 */
+@keyframes birthFromGalaxyCenterToRight {
+    0% {
+        /* 从屏幕中心底部开始（Galaxy光源位置） - 与头像同一起点 */
+        transform: translate(0vw, calc(50vh)) translateY(-50%) scale(0.1);
+        opacity: 0;
+        filter: brightness(10) blur(30px);
+    }
+    20% {
+        /* 开始向右上移动并放大 */
+        transform: translate(calc(20vw), calc(20vh)) translateY(-50%) scale(0.3);
+        opacity: 0.3;
+        filter: brightness(5) blur(20px);
+    }
+    50% {
+        /* 继续向右上，接近目标位置 */
+        transform: translate(calc(35vw), calc(-5vh)) translateY(-50%) scale(0.6);
+        opacity: 0.6;
+        filter: brightness(2) blur(10px);
+    }
+    80% {
+        /* 接近最终位置 */
+        transform: translate(calc(45vw), calc(-15vh)) translateY(-50%) scale(0.9);
+        opacity: 0.9;
+        filter: brightness(1.2) blur(2px);
+    }
+    100% {
+        /* 到达最终位置 */
+        transform: translateY(-50%) scale(1);
+        opacity: 1;
+        filter: brightness(1) blur(0px);
+    }
+}
+
+/* 电影片头风格的姓名标题动画 - 从远到近，旋转1080度 */
+@keyframes movieTitleEntrance {
+    0% {
+        /* 从极远处开始，极小尺寸 */
+        transform: translate(-50%, -50%) perspective(1000px) rotateY(0deg) scale(0.05);
+        opacity: 0;
+        filter: blur(20px) brightness(5);
+        text-shadow: 0 0 50px rgba(255, 255, 255, 0.8);
+    }
+    25% {
+        /* 开始靠近，开始旋转 */
+        transform: translate(-50%, -50%) perspective(1000px) rotateY(270deg) scale(0.2);
+        opacity: 0.3;
+        filter: blur(15px) brightness(3);
+        text-shadow: 0 0 30px rgba(255, 255, 255, 0.6);
+    }
+    50% {
+        /* 继续靠近，继续旋转 */
+        transform: translate(-50%, -50%) perspective(1000px) rotateY(540deg) scale(0.5);
+        opacity: 0.6;
+        filter: blur(8px) brightness(2);
+        text-shadow: 0 0 20px rgba(255, 255, 255, 0.4);
+    }
+    75% {
+        /* 接近最终位置，继续旋转 */
+        transform: translate(-50%, -50%) perspective(1000px) rotateY(810deg) scale(0.8);
+        opacity: 0.85;
+        filter: blur(3px) brightness(1.5);
+        text-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+    }
+    90% {
+        /* 完成旋转，稍微过冲 */
+        transform: translate(-50%, -50%) perspective(1000px) rotateY(1080deg) scale(1.1);
+        opacity: 0.95;
+        filter: blur(1px) brightness(1.2);
+        text-shadow: 0 0 5px rgba(255, 255, 255, 0.1);
+    }
+    100% {
+        /* 最终位置，稳定下来 */
+        transform: translate(-50%, -50%) perspective(1000px) rotateY(1080deg) scale(1);
+        opacity: 1;
+        filter: blur(0px) brightness(1);
+        text-shadow: none;
+    }
+}
+
 /* 立方体尺寸缩放工具类 */
 .scale-30 {
     transform: scale(0.3);

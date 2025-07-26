@@ -11,11 +11,11 @@ export class EffectGalaxy {
         this.animationFrameId = null;
         this.time = 0;
 
-        // 官方示例的参数
-        this.particleCount = 20000;
-        this.branches = 3; // 保留用于某些计算，但实际使用连续分布
-        this.radius = 5;
-        this.size = 0.12; // 稍微增大粒子
+        // 优化后的参数 - 下半部分半圆效果
+        this.particleCount = 12000; // 稍微减少粒子数量
+        this.branches = 3;
+        this.radius = 8; // 增大半径以覆盖更大范围
+        this.size = 0.1; // 稍微增大粒子
         this.colorInside = new THREE.Color('#ffa575');
         this.colorOutside = new THREE.Color('#311599');
 
@@ -28,10 +28,10 @@ export class EffectGalaxy {
     }
 
     init() {
-        // 设置相机确保Galaxy在画布中心
-        this.camera = new THREE.PerspectiveCamera(50, this.canvas.width / this.canvas.height, 0.1, 100);
-        this.camera.position.set(0, 3, 8);  // 调整相机位置：正上方一点，向后退一些
-        this.camera.lookAt(0, 0, 0); // 确保相机朝向Galaxy中心
+        // 设置相机为下半部分的半圆效果
+        this.camera = new THREE.PerspectiveCamera(60, this.canvas.width / this.canvas.height, 0.1, 100);
+        this.camera.position.set(0, 2, 8);  // 稍微抬高，看到下半部分的半圆
+        this.camera.lookAt(0, -2, 0); // 朝向下方
 
         this.scene = new THREE.Scene();
         this.scene.background = new THREE.Color(0x201919);
@@ -70,10 +70,10 @@ export class EffectGalaxy {
             const branchRatio = Math.random(); // 0到1的连续值
             const branchAngle = branchRatio * Math.PI * 2; // 完整的圆周分布
             
-            // 随机偏移 - 增强云层效果
-            const randomX = Math.pow(Math.random() * 2 - 1, 3) * radiusRatio * 0.3;
-            const randomY = Math.pow(Math.random() * 2 - 1, 3) * radiusRatio * 0.1; // Y轴较小，保持扁平
-            const randomZ = Math.pow(Math.random() * 2 - 1, 3) * radiusRatio * 0.3;
+            // 随机偏移 - 减少散布，更紧密的云层效果
+            const randomX = Math.pow(Math.random() * 2 - 1, 3) * radiusRatio * 0.2; // 降低从0.3到0.2
+            const randomY = Math.pow(Math.random() * 2 - 1, 3) * radiusRatio * 0.05; // 降低从0.1到0.05
+            const randomZ = Math.pow(Math.random() * 2 - 1, 3) * radiusRatio * 0.2; // 降低从0.3到0.2
             
             this.particleData.push({
                 radiusRatio,
@@ -99,15 +99,34 @@ export class EffectGalaxy {
         geometry.setAttribute('position', new THREE.BufferAttribute(this.positions, 3));
         geometry.setAttribute('color', new THREE.BufferAttribute(this.colors, 3));
         
-        // 创建材质 - 增加粒子大小和透明度
+        // 创建圆形纹理让粒子看起来像气泡
+        const canvas = document.createElement('canvas');
+        canvas.width = 64;
+        canvas.height = 64;
+        const context = canvas.getContext('2d');
+        
+        // 绘制渐变圆形
+        const gradient = context.createRadialGradient(32, 32, 0, 32, 32, 32);
+        gradient.addColorStop(0, 'rgba(255, 255, 255, 1)');
+        gradient.addColorStop(0.2, 'rgba(255, 255, 255, 1)');
+        gradient.addColorStop(0.4, 'rgba(255, 255, 255, 0.8)');
+        gradient.addColorStop(1, 'rgba(255, 255, 255, 0)');
+        
+        context.fillStyle = gradient;
+        context.fillRect(0, 0, 64, 64);
+        
+        const texture = new THREE.CanvasTexture(canvas);
+        
+        // 创建材质 - 增强光源扩散效果
         const material = new THREE.PointsMaterial({
-            size: this.size * 1.5, // 增大粒子
+            size: this.size * 1.2, // 稍微增大粒子
             sizeAttenuation: true,
             depthWrite: false,
             blending: THREE.AdditiveBlending,
             vertexColors: true,
             transparent: true,
-            opacity: 0.8
+            opacity: 0.7, // 提高透明度让光源更明显
+            map: texture // 使用圆形纹理
         });
         
         this.mesh = new THREE.Points(geometry, material);
@@ -123,26 +142,26 @@ export class EffectGalaxy {
     }
 
     createCentralLight() {
-        // 创建中央发光球体 - 模拟星系核心
-        const centralGeometry = new THREE.SphereGeometry(0.1, 16, 16);
-        const centralMaterial = new THREE.MeshBasicMaterial({
-            color: this.colorInside,
-            transparent: true,
-            opacity: 0.8
-        });
-        this.centralSphere = new THREE.Mesh(centralGeometry, centralMaterial);
-        this.scene.add(this.centralSphere);
-        
-        // 添加强烈的点光源
-        this.centralLight = new THREE.PointLight(this.colorInside, 3.0, 20);
-        this.centralLight.position.set(0, 0, 0);
+        // 创建中心光源 - 位于屏幕中央稍下
+        this.centralLight = new THREE.PointLight(new THREE.Color('#ffffff'), 2.0, 50);
+        this.centralLight.position.set(0, -1, 0); // 中心位置稍下
         this.scene.add(this.centralLight);
         
-        // 添加环境光
-        this.ambientLight = new THREE.AmbientLight(0x404040, 0.3);
+        // 添加橙色光源增强效果
+        const orangeLight = new THREE.PointLight(this.colorInside, 1.5, 40);
+        orangeLight.position.set(0, -1, 0);
+        this.scene.add(orangeLight);
+        
+        // 添加蓝色光源
+        const blueLight = new THREE.PointLight(this.colorOutside, 1.0, 35);
+        blueLight.position.set(0, -1, 0);
+        this.scene.add(blueLight);
+        
+        // 柔和的环境光
+        this.ambientLight = new THREE.AmbientLight(0x404040, 0.25);
         this.scene.add(this.ambientLight);
         
-        console.log('EffectGalaxy: Created central light source');
+        console.log('EffectGalaxy: Created central light for bottom half galaxy');
     }
 
     updatePositions() {
@@ -154,14 +173,14 @@ export class EffectGalaxy {
             // 官方示例的动画算法：angle = branchAngle + time * (1 - radiusRatio)
             const angle = particle.branchAngle + this.time * (1 - particle.radiusRatio);
             
-            // 基础位置
+            // 基础位置 - 只在下半部分显示
             const x = Math.cos(angle) * particle.radius;
             const z = Math.sin(angle) * particle.radius;
-            const y = 0;
+            const y = -Math.abs(particle.radius * 0.3); // 强制向下偏移，形成下半部分效果
             
             // 应用随机偏移
             this.positions[i3] = x + particle.randomX;
-            this.positions[i3 + 1] = y + particle.randomY;
+            this.positions[i3 + 1] = y + particle.randomY - 2; // 整体下移
             this.positions[i3 + 2] = z + particle.randomZ;
         }
         
@@ -214,16 +233,6 @@ export class EffectGalaxy {
             }
             if (this.mesh.material) {
                 this.mesh.material.dispose();
-            }
-        }
-        
-        // 清理中央光源
-        if (this.centralSphere) {
-            if (this.centralSphere.geometry) {
-                this.centralSphere.geometry.dispose();
-            }
-            if (this.centralSphere.material) {
-                this.centralSphere.material.dispose();
             }
         }
         

@@ -119,6 +119,11 @@ const FullPageScrollManager = () => {
                 <SectionComponent 
                     section={currentSectionConfig}
                     language={language}
+                    // 为HomeSection传递额外的props
+                    {...(currentSectionConfig.id === 'home' ? {
+                        sections: sections,
+                        onSectionChange: navigateToSection
+                    } : {})}
                 />
             </Suspense>
         );
@@ -126,8 +131,8 @@ const FullPageScrollManager = () => {
 
     // 渲染栏目指示器
     const renderSectionIndicators = () => (
-        <div className="fixed right-8 top-1/2 transform -translate-y-1/2 z-40">
-            <div className="flex flex-col space-y-3">
+        <div className="fixed left-8 bottom-8 z-40">
+            <div className="flex space-x-3">
                 {sections.map((section, index) => (
                     <button
                         key={section.id}
@@ -155,11 +160,13 @@ const FullPageScrollManager = () => {
                 effectType={currentSectionConfig?.backgroundEffect || 'effectfuse'}
             />
 
-            {/* 导航立方体 */}
-            <NavigationCube 
-                sections={sections}
-                onSectionChange={navigateToSection}
-            />
+            {/* 导航立方体 - 只在非首页显示 */}
+            {currentSectionConfig?.id !== 'home' && (
+                <NavigationCube 
+                    sections={sections}
+                    onSectionChange={navigateToSection}
+                />
+            )}
 
             {/* 当前栏目内容 */}
             <div className="absolute inset-0 z-20">

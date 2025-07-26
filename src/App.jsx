@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import FullPageScrollManager from "./components/FullPageScrollManager";
 import AudioController from "./components/AudioController";
 import ThemeLanguageToggle from "./components/ThemeLanguageToggle";
+import CustomCursor from "./components/CustomCursor";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { useAppStore } from "./store/useAppStore";
 
@@ -26,12 +27,15 @@ const App = () => {
     return (
         <ErrorBoundary>
             <div className="App min-h-screen">
+                {/* 自定义鼠标cursor */}
+                <CustomCursor />
+                
                 {/* 全屏滚动管理器 */}
                 <FullPageScrollManager />
 
-                {/* 控制按钮组 */}
-                <div className={`fixed bottom-6 right-6 z-50 transition-opacity duration-1000 ${controlsVisible ? 'opacity-100' : 'opacity-0'}`}>
-                    <div className="flex flex-col space-y-4">
+                {/* 控制按钮组 - 移动到右边，与主题语言切换按钮相邻 */}
+                <div className={`fixed bottom-6 right-20 z-50 transition-opacity duration-1000 ${controlsVisible ? 'opacity-100' : 'opacity-0'}`}>
+                    <div className="flex items-center space-x-4">
                         {/* 音频控制器 */}
                         <AudioController />
                     </div>
