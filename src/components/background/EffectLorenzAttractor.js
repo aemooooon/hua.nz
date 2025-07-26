@@ -93,16 +93,30 @@ export class EffectLorenzAttractor {
         const outputPass = new OutputPass();
         this.composer.addPass(outputPass);
 
-        // 更大更明显的主球 - 蓝色星星效果
-        const fireballGeometry = new THREE.SphereGeometry(1.5, 16, 16);
+        // Galaxy 风格的发光主球 - 在 Lorenz 轨迹起点
+        const fireballGeometry = new THREE.SphereGeometry(2.0, 32, 32);
         const fireballMaterial = new THREE.MeshBasicMaterial({
-            color: this.fireballColor, // 明亮蓝色
+            color: new THREE.Color('#ffa575'), // Galaxy 内核橙色
             transparent: true,
-            opacity: 0.9
+            opacity: 0.8,
+            blending: THREE.AdditiveBlending, // 加法混合增强发光效果
         });
 
         this.fireball = new THREE.Mesh(fireballGeometry, fireballMaterial);
         this.scene.add(this.fireball);
+        
+        // 在主球周围添加额外的发光光环
+        const haloGeometry = new THREE.SphereGeometry(3.5, 32, 32);
+        const haloMaterial = new THREE.MeshBasicMaterial({
+            color: new THREE.Color('#ff8844'), // 稍暗的橙色光环
+            transparent: true,
+            opacity: 0.3,
+            blending: THREE.AdditiveBlending,
+            side: THREE.BackSide, // 内部渲染
+        });
+        
+        this.halo = new THREE.Mesh(haloGeometry, haloMaterial);
+        this.scene.add(this.halo);
 
         // 更强的光照系统以照亮粒子轨迹
         const ambientLight = new THREE.AmbientLight(0x404040, 0.8); // 增强环境光
@@ -121,37 +135,86 @@ export class EffectLorenzAttractor {
         this.pointLight = new THREE.PointLight(0x0088ff, 2.0, 100); // 蓝色点光源
         this.scene.add(this.pointLight);
 
-        // 创建高效的粒子系统 - 使用 InstancedMesh 并支持颜色渐变
-        this.particleGeometry = new THREE.SphereGeometry(0.4, 8, 8); // 增大粒子大小
+        // 创建类似 Three.js WebGPU Galaxy 的粒子系统
+        this.particleGeometry = new THREE.SphereGeometry(0.5, 8, 8); // 先使用简单的球体几何
         
-        // 创建专为发光后处理优化的材质 - 深海蓝色
+        // 创建材质，支持 AdditiveBlending 和渐变效果
         this.particleMaterial = new THREE.MeshBasicMaterial({
-            color: new THREE.Color(0.0, 0.5, 1.0), // 明亮的深海蓝色
+            color: 0xffffff,
             transparent: true,
             opacity: 1.0,
+            blending: THREE.AdditiveBlending, // 加法混合，创造发光效果
+            depthWrite: false,
         });
         
-        // 创建实例化网格以提高性能
+        // 创建粒子纹理 - 类似 Galaxy 的圆形粒子
+        this.createParticleTexture();
+        // 暂时不使用纹理，避免 SpriteMaterial 的问题
+        // this.particleMaterial.map = this.particleTexture;
+        
+        // 使用 InstancedMesh 来渲染大量粒子
         this.instancedMesh = new THREE.InstancedMesh(
             this.particleGeometry, 
             this.particleMaterial, 
             this.maxParticles
         );
         
+        // 为实例化网格添加颜色属性 - 确保支持实例颜色
+        if (this.instancedMesh.geometry.attributes.color === undefined) {
+            this.instancedMesh.instanceColor = new THREE.InstancedBufferAttribute(
+                new Float32Array(this.maxParticles * 3), 3
+            );
+        }
+        
         this.scene.add(this.instancedMesh);
         
-        // 初始化实例矩阵
+        // 初始化实例矩阵和颜色
         const matrix = new THREE.Matrix4();
         const position = new THREE.Vector3();
         const scale = new THREE.Vector3(0, 0, 0); // 初始为不可见
         
+        // 定义渐变颜色 - 类似 Galaxy 的内外颜色
+        this.colorInside = new THREE.Color('#ffa575'); // 橙色内核
+        this.colorOutside = new THREE.Color('#0088ff'); // 蓝色外围
+        
         for (let i = 0; i < this.maxParticles; i++) {
             matrix.compose(position, new THREE.Quaternion(), scale);
             this.instancedMesh.setMatrixAt(i, matrix);
+            
+            // 只有在支持实例颜色时才设置
+            if (this.instancedMesh.instanceColor) {
+                this.instancedMesh.setColorAt(i, new THREE.Color(0, 0, 0));
+            }
         }
         this.instancedMesh.instanceMatrix.needsUpdate = true;
+        if (this.instancedMesh.instanceColor) {
+            this.instancedMesh.instanceColor.needsUpdate = true;
+        }
 
         window.addEventListener("resize", this.onResize.bind(this));
+    }
+
+    // 创建粒子纹理 - 类似 Galaxy 示例的圆形发光纹理
+    createParticleTexture() {
+        const size = 32;
+        const canvas = document.createElement('canvas');
+        canvas.width = size;
+        canvas.height = size;
+        
+        const context = canvas.getContext('2d');
+        const center = size / 2;
+        
+        // 创建径向渐变
+        const gradient = context.createRadialGradient(center, center, 0, center, center, center);
+        gradient.addColorStop(0, 'rgba(255, 255, 255, 1)');
+        gradient.addColorStop(0.2, 'rgba(255, 255, 255, 0.8)');
+        gradient.addColorStop(0.4, 'rgba(255, 255, 255, 0.4)');
+        gradient.addColorStop(1, 'rgba(255, 255, 255, 0)');
+        
+        context.fillStyle = gradient;
+        context.fillRect(0, 0, size, size);
+        
+        this.particleTexture = new THREE.CanvasTexture(canvas);
     }
 
     getRandomParticleColor() {
@@ -197,6 +260,10 @@ export class EffectLorenzAttractor {
         const scale = 0.8;
         this.fireball.position.set(this.x * scale, this.y * scale, this.z * scale);
         
+        // 光环跟随主球，但有轻微的延迟和缩放动画
+        this.halo.position.copy(this.fireball.position);
+        this.halo.scale.setScalar(1.0 + Math.sin(this.time * 2) * 0.1); // 轻微的脉动效果
+        
         // 更新点光源位置跟随主球
         this.pointLight.position.copy(this.fireball.position);
 
@@ -215,7 +282,7 @@ export class EffectLorenzAttractor {
             }
         }
 
-        // 更新实例化网格 - 简化为统一发光材质
+        // 更新实例化网格 - 简化版本以确保稳定性
         const matrix = new THREE.Matrix4();
         const position = new THREE.Vector3();
         const quaternion = new THREE.Quaternion();
@@ -223,8 +290,16 @@ export class EffectLorenzAttractor {
 
         this.trailPositions.forEach((pos, index) => {
             const fadeRate = (index / this.trailPositions.length);
-            const particleScale = fadeRate * 0.8 + 0.4; // 0.4 到 1.2
             
+            // 计算距离比率用于大小调整
+            const distance = Math.sqrt(pos.x * pos.x + pos.y * pos.y + pos.z * pos.z);
+            const maxDistance = 40;
+            const radiusRatio = Math.min(distance / maxDistance, 1.0);
+            
+            // 基于距离和时间的粒子大小
+            const particleScale = (1.0 - radiusRatio * 0.5) * fadeRate * 1.2 + 0.3;
+            
+            // 添加轻微的随机扰动
             position.set(
                 pos.x + (Math.random() - 0.5) * 0.08,
                 pos.y + (Math.random() - 0.5) * 0.08,
@@ -234,6 +309,20 @@ export class EffectLorenzAttractor {
             
             matrix.compose(position, quaternion, scale_vec);
             this.instancedMesh.setMatrixAt(index, matrix);
+            
+            // 只有在支持实例颜色时才设置颜色
+            if (this.instancedMesh.instanceColor) {
+                // 设置渐变颜色 - 中心橙色，外围蓝色
+                const mixFactor = Math.pow(1.0 - radiusRatio, 2);
+                const tempColor = new THREE.Color();
+                tempColor.lerpColors(this.colorOutside, this.colorInside, mixFactor);
+                
+                // 基于生命周期调整透明度
+                const alpha = fadeRate * (1.0 - radiusRatio * 0.3);
+                tempColor.multiplyScalar(alpha);
+                
+                this.instancedMesh.setColorAt(index, tempColor);
+            }
         });
 
         // 隐藏未使用的实例
@@ -241,9 +330,17 @@ export class EffectLorenzAttractor {
             scale_vec.set(0, 0, 0);
             matrix.compose(position, quaternion, scale_vec);
             this.instancedMesh.setMatrixAt(i, matrix);
+            
+            // 只有在支持实例颜色时才设置颜色
+            if (this.instancedMesh.instanceColor) {
+                this.instancedMesh.setColorAt(i, new THREE.Color(0, 0, 0));
+            }
         }
 
         this.instancedMesh.instanceMatrix.needsUpdate = true;
+        if (this.instancedMesh.instanceColor) {
+            this.instancedMesh.instanceColor.needsUpdate = true;
+        }
 
         // 更快的场景旋转
         this.scene.rotation.y += 0.005;
@@ -288,6 +385,11 @@ export class EffectLorenzAttractor {
             this.scene.remove(this.instancedMesh);
             this.instancedMesh.geometry.dispose();
             this.instancedMesh.material.dispose();
+        }
+        
+        // 清理粒子纹理
+        if (this.particleTexture) {
+            this.particleTexture.dispose();
         }
         
         // 清理轨迹数组
