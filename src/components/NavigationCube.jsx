@@ -19,8 +19,8 @@ const NavigationCube = ({ isLandingPage = false, onSectionChange, sections = [] 
     // 根据是否在landing page和屏幕大小调整大小
     const getCanvasSize = useCallback(() => {
         if (!isLandingPage) return 120;
-        // 在landing page时使用300px容器，与头像容器尺寸一致
-        return 300; // 调整canvas尺寸与头像容器一致
+        // 在landing page时使用360px大尺寸
+        return 360; // 调整canvas尺寸为360px
     }, [isLandingPage]);
     
     const [canvasSize, setCanvasSize] = useState(getCanvasSize());
@@ -69,9 +69,9 @@ const NavigationCube = ({ isLandingPage = false, onSectionChange, sections = [] 
         // 创建场景
         const scene = new THREE.Scene();
 
-        // 创建相机 - 在300px画布中渲染合适大小的立方体
+        // 创建相机 - 在360px画布中渲染合适大小的立方体
         const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 1000);
-        camera.position.z = isLandingPage ? 5 : 3; // 调整距离使立方体大小与头像相当
+        camera.position.z = isLandingPage ? 6 : 3; // 360px容器使用较远的距离
 
         // 创建渲染器 - 优化设置以提高性能
         const renderer = new THREE.WebGLRenderer({ 
@@ -109,8 +109,8 @@ const NavigationCube = ({ isLandingPage = false, onSectionChange, sections = [] 
         mainLight.position.set(5, 5, 5);
         scene.add(mainLight);
 
-        // 创建圆角立方体几何体 - 调整尺寸让它在300px容器中看起来与头像一样大
-        const geometry = new RoundedBoxGeometry(2.2, 2.2, 2.2, 7, 0.1);
+        // 创建圆角立方体几何体 - 调整尺寸让它在360px容器中看起来合适
+        const geometry = new RoundedBoxGeometry(2.8, 2.8, 2.8, 7, 0.1);
         
         // 为每个面创建不同的材质 - 玻璃透明效果
         const materials = faces.map((face) => {
@@ -121,30 +121,30 @@ const NavigationCube = ({ isLandingPage = false, onSectionChange, sections = [] 
             canvas.height = textureSize;
             const context = canvas.getContext('2d');
             
-            // 绘制透明背景
+            // 绘制背景色彩
             context.clearRect(0, 0, textureSize, textureSize);
             
-            // 绘制极轻微的背景色彩，主要靠材质透明
+            // 绘制适度的背景
             const gradient = context.createRadialGradient(
                 textureSize / 2, textureSize / 2, 0,
                 textureSize / 2, textureSize / 2, textureSize / 2
             );
-            gradient.addColorStop(0, `${face.color}15`); // 降低到15% opacity
-            gradient.addColorStop(0.7, `${face.color}08`); // 降低到8% opacity
-            gradient.addColorStop(1, `${face.color}03`); // 降低到3% opacity
+            gradient.addColorStop(0, `${face.color}25`); // 适中的不透明度
+            gradient.addColorStop(0.6, `${face.color}15`);
+            gradient.addColorStop(1, `${face.color}08`);
             context.fillStyle = gradient;
             context.fillRect(0, 0, textureSize, textureSize);
             
-            // 绘制精细边框（更轻微）
-            context.strokeStyle = '#ffffff15'; // 更透明的边框
+            // 绘制简单边框
+            context.strokeStyle = `${face.color}60`;
             context.lineWidth = 2;
             const border = textureSize * 0.05;
             context.strokeRect(border, border, textureSize - border * 2, textureSize - border * 2);
             
-            // 添加轻微的玻璃反光效果
+            // 添加轻微的反光效果
             const reflectGradient = context.createLinearGradient(0, 0, textureSize, textureSize);
-            reflectGradient.addColorStop(0, 'rgba(255, 255, 255, 0.1)');
-            reflectGradient.addColorStop(0.5, 'rgba(255, 255, 255, 0.05)');
+            reflectGradient.addColorStop(0, 'rgba(255, 255, 255, 0.15)');
+            reflectGradient.addColorStop(0.5, 'rgba(255, 255, 255, 0.08)');
             reflectGradient.addColorStop(1, 'rgba(255, 255, 255, 0)');
             context.fillStyle = reflectGradient;
             context.fillRect(0, 0, textureSize / 3, textureSize);
@@ -240,23 +240,23 @@ const NavigationCube = ({ isLandingPage = false, onSectionChange, sections = [] 
             return new THREE.MeshPhysicalMaterial({ 
                 map: texture,
                 transparent: true,
-                opacity: 0.4, // 更透明，像图片中的效果
-                transmission: 0.95, // 极高的透射效果
-                roughness: 0.02, // 极光滑的表面
-                metalness: 0.0,
-                reflectivity: 1.0, // 完美反射
-                clearcoat: 1.0,
-                clearcoatRoughness: 0.02, // 极光滑的清漆
-                ior: 1.52, // 玻璃的折射率
-                thickness: 1.0, // 增加厚度感
+                opacity: 0.85, // 大幅增加不透明度，让贴图更清晰
+                transmission: 0.3, // 大幅降低透射效果
+                roughness: 0.1,
+                metalness: 0.05,
+                reflectivity: 0.8,
+                clearcoat: 0.8,
+                clearcoatRoughness: 0.1,
+                ior: 1.52,
+                thickness: 1.0,
                 side: THREE.DoubleSide,
-                iridescence: 0.2, // 轻微彩虹效果
+                iridescence: 0.1, // 降低彩虹效果
                 iridescenceIOR: 1.3,
-                iridescenceThicknessRange: [100, 800],
-                envMapIntensity: 2.0, // 强化环境反射
-                // 增加更多物理属性
-                attenuationColor: new THREE.Color(face.color),
-                attenuationDistance: 0.5,
+                iridescenceThicknessRange: [100, 400],
+                envMapIntensity: 1.5,
+                // 移除发光效果
+                // emissive: new THREE.Color(face.color),
+                // emissiveIntensity: 0.1,
                 specularIntensity: 1.0,
                 specularColor: new THREE.Color(0xffffff)
             });
@@ -324,9 +324,9 @@ const NavigationCube = ({ isLandingPage = false, onSectionChange, sections = [] 
             if (isLandingPage) {
                 // Landing page: 鼠标控制旋转 (仅在非拖拽状态且未被用户拖拽过)
                 if (!isDraggingRef.current && !hasBeenDraggedRef.current) {
-                    // 初始状态：显示一个好看的角度，微弱跟随鼠标
-                    const targetRotationY = mouseRef.current.x * 0.1 + Math.PI * 0.25; // 默认45度角度
-                    const targetRotationX = mouseRef.current.y * 0.05 - Math.PI * 0.1; // 稍微向下倾斜
+                    // 初始状态：显示3个面的角度（前面、右面、顶面），微弱跟随鼠标
+                    const targetRotationY = mouseRef.current.x * 0.1 + Math.PI * 0.6; // 调整到约108度角度
+                    const targetRotationX = mouseRef.current.y * 0.05 - Math.PI * 0.35; // 向下倾斜约63度显示顶面
                     
                     cube.rotation.y += (targetRotationY - cube.rotation.y) * 0.02;
                     cube.rotation.x += (targetRotationX - cube.rotation.x) * 0.02;

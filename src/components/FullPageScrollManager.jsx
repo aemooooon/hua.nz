@@ -129,26 +129,26 @@ const FullPageScrollManager = () => {
         );
     };
 
-    // 渲染栏目指示器
-    const renderSectionIndicators = () => (
-        <div className="fixed left-8 bottom-8 z-40">
-            <div className="flex space-x-3">
-                {sections.map((section, index) => (
-                    <button
-                        key={section.id}
-                        onClick={() => navigateToSection(index)}
-                        className={`w-3 h-3 rounded-full border-2 transition-all duration-300 ${
-                            index === currentSection
-                                ? 'bg-blue-400 border-blue-400 scale-125'
-                                : 'bg-transparent border-white/50 hover:border-white hover:scale-110'
-                        }`}
-                        title={section.name[language]}
-                        disabled={isScrolling}
-                    />
-                ))}
-            </div>
-        </div>
-    );
+    // 渲染栏目指示器 - 暂时注释掉，根据用户要求移除
+    // const renderSectionIndicators = () => (
+    //     <div className="fixed left-8 bottom-8 z-40">
+    //         <div className="flex space-x-3">
+    //             {sections.map((section, index) => (
+    //                 <button
+    //                     key={section.id}
+    //                     onClick={() => navigateToSection(index)}
+    //                     className={`w-3 h-3 rounded-full border-2 transition-all duration-300 ${
+    //                         index === currentSection
+    //                             ? 'bg-blue-400 border-blue-400 scale-125'
+    //                             : 'bg-transparent border-white/50 hover:border-white hover:scale-110'
+    //                     }`}
+    //                     title={section.name[language]}
+    //                     disabled={isScrolling}
+    //                 />
+    //             ))}
+    //         </div>
+    //     </div>
+    // );
 
     return (
         <div 
@@ -173,8 +173,8 @@ const FullPageScrollManager = () => {
                 {renderCurrentSection()}
             </div>
 
-            {/* 栏目指示器 */}
-            {renderSectionIndicators()}
+            {/* 栏目指示器 - 隐藏，根据用户要求移除 */}
+            {/* {renderSectionIndicators()} */}
 
             {/* 过渡遮罩 */}
             {isScrolling && (

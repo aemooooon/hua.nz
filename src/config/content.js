@@ -10,7 +10,7 @@ export const contentConfig = {
     },
     home: {
       name: "Hua Wang",
-      title: "Full Stack Engineer",
+      title: "Full Stack Software Engineer",
       shortBio: "Passionate developer creating innovative web applications with cutting-edge technology and exceptional user experiences.",
       description: "I'm a full-stack developer with a strong focus on frontend, especially building interactive web applications and visualisation dashboards. I have experience with modern frontend frameworks such as React, Next.js, and TypeScript, as well as working with libraries such as Three.js and ECharts.",
       location: "New Zealand"

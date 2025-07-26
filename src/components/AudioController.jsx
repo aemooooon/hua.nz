@@ -1,6 +1,10 @@
 import { useState, useRef, useEffect } from 'react';
-import { FaPlay, FaPause, FaVolumeUp, FaVolumeMute } from 'react-icons/fa';
+import { FaPlay, FaPause, FaVolumeUp, FaVolumeMute, FaStepForward, FaStepBackward } from 'react-icons/fa';
 import { useAppStore } from '../store/useAppStore';
+
+// 导入音频文件
+import huiseguijiSrc from '../assets/Beyond-huiseguiji.mp3';
+import shibanwochuangdangSrc from '../assets/Beyond-sheibanwochuangdang.mp3';
 
 const AudioController = () => {
     const audioRef = useRef(null);
@@ -8,8 +12,25 @@ const AudioController = () => {
     const [isMuted, setIsMuted] = useState(false);
     const [volume, setVolume] = useState(0.5);
     const [showControls, setShowControls] = useState(false);
+    const [currentTrackIndex, setCurrentTrackIndex] = useState(0);
     
-    const { audioEnabled, setAudioEnabled } = useAppStore();
+    const { setAudioEnabled } = useAppStore();
+
+    // 播放列表 - 按指定顺序：先灰色轨迹，后十般若传当
+    const playlist = [
+        {
+            src: huiseguijiSrc,
+            title: '灰色轨迹',
+            artist: 'Beyond'
+        },
+        {
+            src: shibanwochuangdangSrc,
+            title: '十般若传当',
+            artist: 'Beyond'
+        }
+    ];
+
+    const currentTrack = playlist[currentTrackIndex];
 
     useEffect(() => {
         if (audioRef.current) {
@@ -18,16 +39,44 @@ const AudioController = () => {
         }
     }, [volume, isMuted]);
 
+    // 当切换歌曲时，重新加载音频源
+    useEffect(() => {
+        if (audioRef.current) {
+            const wasPlaying = isPlaying;
+            if (wasPlaying) {
+                audioRef.current.pause();
+            }
+            audioRef.current.src = currentTrack.src;
+            audioRef.current.load();
+            
+            if (wasPlaying) {
+                audioRef.current.play().catch(console.error);
+            }
+        }
+    }, [currentTrackIndex, currentTrack.src, isPlaying]);
+
     const togglePlay = () => {
         if (audioRef.current) {
             if (isPlaying) {
                 audioRef.current.pause();
             } else {
-                audioRef.current.play();
+                audioRef.current.play().catch(console.error);
                 setAudioEnabled(true);
             }
             setIsPlaying(!isPlaying);
         }
+    };
+
+    const nextTrack = () => {
+        setCurrentTrackIndex((prevIndex) => 
+            prevIndex < playlist.length - 1 ? prevIndex + 1 : 0
+        );
+    };
+
+    const prevTrack = () => {
+        setCurrentTrackIndex((prevIndex) => 
+            prevIndex > 0 ? prevIndex - 1 : playlist.length - 1
+        );
     };
 
     const toggleMute = () => {
@@ -40,7 +89,13 @@ const AudioController = () => {
     };
 
     const handleAudioEnd = () => {
-        setIsPlaying(false);
+        // 自动播放下一首歌曲
+        if (currentTrackIndex < playlist.length - 1) {
+            nextTrack();
+        } else {
+            // 播放完所有歌曲后，停止播放
+            setIsPlaying(false);
+        }
     };
 
     return (
@@ -55,11 +110,33 @@ const AudioController = () => {
                 onEnded={handleAudioEnd}
                 onPlay={() => setIsPlaying(true)}
                 onPause={() => setIsPlaying(false)}
-                loop
+                preload="metadata"
             >
-                <source src="/audio.mp3" type="audio/mpeg" />
+                <source src={currentTrack.src} type="audio/mpeg" />
                 Your browser does not support the audio element.
             </audio>
+
+            {/* 歌曲信息显示 */}
+            {showControls && (
+                <div className="bg-green-500/20 border border-green-500/50 rounded-lg px-3 py-2 backdrop-blur-sm">
+                    <div className="text-green-400 text-xs font-mono">
+                        <div className="font-semibold">{currentTrack.title}</div>
+                        <div className="opacity-75">{currentTrack.artist}</div>
+                        <div className="opacity-50">{currentTrackIndex + 1}/{playlist.length}</div>
+                    </div>
+                </div>
+            )}
+
+            {/* 上一首按钮 */}
+            {showControls && (
+                <button
+                    onClick={prevTrack}
+                    className="w-8 h-8 bg-green-500/20 border border-green-500/50 rounded-full flex items-center justify-center hover:bg-green-500/30 transition-all duration-300 backdrop-blur-sm"
+                    title="Previous Track"
+                >
+                    <FaStepBackward className="text-green-400 text-sm" />
+                </button>
+            )}
 
             {/* 主播放按钮 */}
             <button
@@ -73,6 +150,17 @@ const AudioController = () => {
                     <FaPlay className="text-green-400 text-lg ml-1" />
                 )}
             </button>
+
+            {/* 下一首按钮 */}
+            {showControls && (
+                <button
+                    onClick={nextTrack}
+                    className="w-8 h-8 bg-green-500/20 border border-green-500/50 rounded-full flex items-center justify-center hover:bg-green-500/30 transition-all duration-300 backdrop-blur-sm"
+                    title="Next Track"
+                >
+                    <FaStepForward className="text-green-400 text-sm" />
+                </button>
+            )}
 
             {/* 扩展控件 */}
             <div className={`flex items-center space-x-2 transition-all duration-300 ${

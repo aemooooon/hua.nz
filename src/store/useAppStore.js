@@ -1,16 +1,16 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
-// 应用配置数据（内联以简化架构）
+// 统一的应用数据配置 - 集中管理所有内容
 const sectionsConfig = [
   {
     id: "home",
     index: 0,
     name: { en: "Home", zh: "首页" },
     description: { en: "Welcome to my portfolio", zh: "欢迎来到我的作品集" },
-    backgroundEffect: "effectgalaxy", // 新的 Galaxy 效果
+    backgroundEffect: "effectgalaxy", // Galaxy 效果
     cubeImage: "/hua.jpeg",
-    icon: "home"
+    icon: "🏠"
   },
   {
     id: "about",
@@ -19,25 +19,25 @@ const sectionsConfig = [
     description: { en: "About myself", zh: "个人介绍" },
     backgroundEffect: "effectlorenz", // Lorenz 背景
     cubeImage: "/awared-best-programmer.jpeg",
-    icon: "about"
+    icon: "👤"
   },
   {
-    id: "project", 
+    id: "projects", 
     index: 2,
     name: { en: "Projects", zh: "项目" },
     description: { en: "My development projects", zh: "我的开发项目" },
-    backgroundEffect: "effectmonjori", // 保持现有背景
+    backgroundEffect: "effectmonjori", // Monjori 背景
     cubeImage: "/jsjxmm.jpg", 
-    icon: "project"
+    icon: "💼"
   },
   {
     id: "gallery",
     index: 3,
     name: { en: "Gallery", zh: "作品展示" },
     description: { en: "Visual showcase", zh: "视觉作品展示" },
-    backgroundEffect: "effectmonjori", // 保持现有背景
+    backgroundEffect: "effectheartbeats", // HeartBeats 背景
     cubeImage: "/fitsgo-team.jpg",
-    icon: "gallery"
+    icon: "🖼️"
   },
   {
     id: "education",
@@ -46,43 +46,190 @@ const sectionsConfig = [
     description: { en: "Academic background", zh: "学术背景" },
     backgroundEffect: "effectfuse", // Fuse 背景
     cubeImage: "/UC_F4.001.jpeg",
-    icon: "education"
+    icon: "🎓"
   },
   {
     id: "contact",
     index: 5,
     name: { en: "Contact", zh: "联系我" },
     description: { en: "Get in touch", zh: "联系方式" },
-    backgroundEffect: "effectheartbeats", // HeartBeats 背景
+    backgroundEffect: "effectpixeldistortion", // PixelDistortion 背景
     cubeImage: "/hua_presentation.jpg",
-    icon: "contact"
+    icon: "📧"
   }
 ];
 
+// 统一的内容配置 - 包含完整的国际化内容
 const contentConfig = {
   en: {
-    navigation: { 
-      home: "Home", 
-      about: "About", 
-      projects: "Projects", 
+    navigation: {
+      home: "Home",
+      about: "About",
+      projects: "Projects",
       gallery: "Gallery",
-      education: "Education", 
-      contact: "Contact" 
+      education: "Education",
+      contact: "Contact",
+      blog: "Blog"
     },
-    home: { name: "Hua Wang", title: "Full Stack Engineer", description: "Passionate developer creating innovative web applications." },
-    ui: { language: "Language", theme: "Theme", light: "Light", dark: "Dark" }
+    home: {
+      name: "Hua Wang",
+      title: "Full Stack Software Engineer", // 更新后的title
+      shortBio: "Passionate developer creating innovative web applications with cutting-edge technology and exceptional user experiences.",
+      description: "I'm a full-stack developer with a strong focus on frontend, especially building interactive web applications and visualisation dashboards. I have experience with modern frontend frameworks such as React, Next.js, and TypeScript, as well as working with libraries such as Three.js and ECharts.",
+      location: "New Zealand",
+      slogan: {
+        chinese: "从混沌中寻找秩序，在中庸中构建未来",
+        english: "From Chaos to Order, Through Balance to Innovation"
+      }
+    },
+    projects: {
+      title: "My Projects",
+      subtitle: "Explore my portfolio of innovative applications",
+      description: "A collection of web applications and development projects showcasing modern technologies and creative solutions.",
+      viewProject: "View Project",
+      learnMore: "Learn more →",
+      technologies: "Technologies"
+    },
+    gallery: {
+      title: "Photo Gallery",
+      subtitle: "Visual journey through my work and experiences",
+      description: "A curated collection of visual projects and creative works.",
+      viewImage: "View Image"
+    },
+    contact: {
+      title: "Get In Touch",
+      subtitle: "Let's discuss your next project",
+      description: "Get in touch for opportunities, collaborations, or just to say hello.",
+      name: "Your Name",
+      email: "Your Email",
+      message: "Your Message",
+      send: "Send Message",
+      info: "Contact Information",
+      location: "Auckland, New Zealand",
+      emailAddress: "contact@example.com",
+      phone: "+64 xxx xxx xxx"
+    },
+    about: {
+      title: "About Me",
+      subtitle: "My journey as a developer",
+      description: "Learn more about my background, skills, and passion for technology.",
+      background: "Background",
+      education: "Education",
+      interests: "Interests"
+    },
+    education: {
+      title: "Education",
+      subtitle: "Academic journey and achievements",
+      description: "My educational background and continuous learning path."
+    },
+    blog: {
+      title: "Blog & Insights",
+      subtitle: "Sharing thoughts on technology and development",
+      description: "Articles and thoughts on technology, development, and innovation.",
+      readMore: "Read More",
+      comingSoon: "Coming Soon"
+    },
+    ui: {
+      language: "Language",
+      theme: "Theme",
+      light: "Light",
+      dark: "Dark",
+      audio: "Audio",
+      play: "Play",
+      pause: "Pause",
+      mute: "Mute",
+      unmute: "Unmute",
+      loading: "Loading...",
+      backToHome: "Back to Home",
+      darkMode: "Dark Mode",
+      lightMode: "Light Mode",
+      toggleTheme: "Toggle Theme"
+    }
   },
   zh: {
-    navigation: { 
-      home: "首页", 
-      about: "关于", 
-      projects: "项目", 
+    navigation: {
+      home: "首页",
+      about: "关于",
+      projects: "项目",
       gallery: "画廊",
-      education: "教育", 
-      contact: "联系" 
+      education: "教育",
+      contact: "联系",
+      blog: "博客"
     },
-    home: { name: "王华", title: "全栈工程师", description: "热衷于创建创新Web应用程序的开发者。" },
-    ui: { language: "语言", theme: "主题", light: "浅色", dark: "深色" }
+    home: {
+      name: "王华",
+      title: "全栈软件工程师", // 更新后的title
+      shortBio: "热衷于使用前沿技术创建创新Web应用程序，提供卓越用户体验的开发者。",
+      description: "我是一名全栈开发者，专注于前端开发，特别是构建交互式Web应用程序和可视化仪表板。我有使用现代前端框架如React、Next.js和TypeScript的经验，以及使用Three.js和ECharts等库的经验。",
+      location: "新西兰",
+      slogan: {
+        chinese: "从混沌中寻找秩序，在中庸中构建未来",
+        english: "From Chaos to Order, Through Balance to Innovation"
+      }
+    },
+    projects: {
+      title: "我的项目",
+      subtitle: "探索我的创新应用程序作品集",
+      description: "展示现代技术和创意解决方案的Web应用程序和开发项目集合。",
+      viewProject: "查看项目",
+      learnMore: "了解更多 →",
+      technologies: "技术栈"
+    },
+    gallery: {
+      title: "照片画廊",
+      subtitle: "通过视觉展示我的工作和经历",
+      description: "精心策划的视觉项目和创意作品集合。",
+      viewImage: "查看图片"
+    },
+    contact: {
+      title: "联系我",
+      subtitle: "让我们讨论您的下一个项目",
+      description: "如有机会、合作或只是想打个招呼，请与我联系。",
+      name: "您的姓名",
+      email: "您的邮箱",
+      message: "您的信息",
+      send: "发送信息",
+      info: "联系信息",
+      location: "新西兰奥克兰",
+      emailAddress: "contact@example.com",
+      phone: "+64 xxx xxx xxx"
+    },
+    about: {
+      title: "关于我",
+      subtitle: "我的开发者之路",
+      description: "了解更多关于我的背景、技能和对技术的热情。",
+      background: "背景",
+      education: "教育经历",
+      interests: "兴趣爱好"
+    },
+    education: {
+      title: "教育背景",
+      subtitle: "学术历程与成就",
+      description: "我的教育背景和持续学习之路。"
+    },
+    blog: {
+      title: "博客与见解",
+      subtitle: "分享技术和开发思考",
+      description: "关于技术、开发和创新的文章和思考。",
+      readMore: "阅读更多",
+      comingSoon: "敬请期待"
+    },
+    ui: {
+      language: "语言",
+      theme: "主题",
+      light: "浅色",
+      dark: "深色",
+      audio: "音频",
+      play: "播放",
+      pause: "暂停",
+      mute: "静音",
+      unmute: "取消静音",
+      loading: "加载中...",
+      backToHome: "返回首页",
+      darkMode: "深色模式",
+      lightMode: "浅色模式",
+      toggleTheme: "切换主题"
+    }
   }
 };
 

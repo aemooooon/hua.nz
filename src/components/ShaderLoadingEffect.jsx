@@ -6,7 +6,7 @@ const ShaderLoadingEffect = ({ imageSrc, hoverImageSrc }) => {
     const canvasRef = useRef(null);
     const hoverImgRef = useRef(null);
     const [isHovered, setIsHovered] = useState(false);
-    const [aspectRatio, setAspectRatio] = useState(1);
+    // const [aspectRatio, setAspectRatio] = useState(1); // 暂时不使用，但保留以备后用
     const workerRef = useRef(null);
     const particlesRef = useRef([]);
 
@@ -37,7 +37,7 @@ const ShaderLoadingEffect = ({ imageSrc, hoverImageSrc }) => {
             const canvas = canvasRef.current;
             canvas.width = png.width * 2;
             canvas.height = png.height * 2;
-            setAspectRatio(png.width / png.height);
+            // setAspectRatio(png.width / png.height); // 暂时不使用
 
             const offscreen = new OffscreenCanvas(png.width, png.height);
             const offscreenCtx = offscreen.getContext("2d");
@@ -66,31 +66,19 @@ const ShaderLoadingEffect = ({ imageSrc, hoverImageSrc }) => {
         requestAnimationFrame(render);
     }, [particlesRef]);
 
-    // 监听浏览器缩放事件
+    // 监听浏览器缩放事件和容器大小变化
     useEffect(() => {
         const handleResize = () => {
             const canvas = canvasRef.current;
             if (!canvas) return;
 
-            // 获取父容器的宽度
+            // 获取父容器的宽度和高度
             const parentWidth = canvas.parentElement.clientWidth;
             const parentHeight = canvas.parentElement.clientHeight;
 
-            // 根据宽高比计算 canvas 的新宽度和高度
-            let newWidth, newHeight;
-            if (parentWidth / parentHeight > aspectRatio) {
-                // 父容器宽度过大，以高度为基准
-                newHeight = parentHeight;
-                newWidth = newHeight * aspectRatio;
-            } else {
-                // 父容器高度过大，以宽度为基准
-                newWidth = parentWidth;
-                newHeight = newWidth / aspectRatio;
-            }
-
-            // 设置 canvas 的宽度和高度
-            canvas.style.width = `${newWidth}px`;
-            canvas.style.height = `${newHeight}px`;
+            // 对于圆形容器，确保画布填满整个容器
+            canvas.style.width = `${parentWidth}px`;
+            canvas.style.height = `${parentHeight}px`;
         };
 
         // 初始化时调用一次
@@ -99,11 +87,24 @@ const ShaderLoadingEffect = ({ imageSrc, hoverImageSrc }) => {
         // 监听 resize 事件
         window.addEventListener("resize", handleResize);
 
+        // 使用 ResizeObserver 监听父容器大小变化
+        const canvas = canvasRef.current;
+        const parentElement = canvas?.parentElement;
+        let resizeObserver;
+        
+        if (parentElement && window.ResizeObserver) {
+            resizeObserver = new ResizeObserver(handleResize);
+            resizeObserver.observe(parentElement);
+        }
+
         // 清理事件监听器
         return () => {
             window.removeEventListener("resize", handleResize);
+            if (resizeObserver) {
+                resizeObserver.disconnect();
+            }
         };
-    }, [aspectRatio]);
+    }, []);
 
     // 鼠标悬停时显示图片并重新触发动画
     const handleMouseEnter = () => {
@@ -154,7 +155,8 @@ const ShaderLoadingEffect = ({ imageSrc, hoverImageSrc }) => {
                     position: "absolute",
                     top: "50%",
                     left: "50%",
-                    transform: "translate(-50%, -30%) scale(1.5)", // 初始状态
+                    transform: "translate(-50%, -50%) scale(1.1)", // 确保完全填充圆形容器
+                    borderRadius: "50%", // 确保图片也是圆形
                 }}
             />
 
@@ -164,10 +166,14 @@ const ShaderLoadingEffect = ({ imageSrc, hoverImageSrc }) => {
                 src={hoverImageSrc}
                 alt="Hover Image"
                 style={{
+                    width: "100%",
+                    height: "100%",
+                    objectFit: "cover",
                     position: "absolute",
                     top: "50%",
                     left: "50%",
-                    transform: "translate(-50%, -40%)", // 初始状态
+                    transform: "translate(-50%, -50%) scale(1.1)", // 确保完全填充圆形容器
+                    borderRadius: "50%", // 确保图片也是圆形
                     opacity: 0, // 初始状态
                     visibility: isHovered ? "visible" : "hidden", // 控制可见性
                     transition: "opacity 0.8s ease, transform 0.8s ease", // 添加过渡效果
