@@ -1,11 +1,3 @@
-import { Suspense, lazy } from 'react';
-import PropTypes from 'prop-types';
-import imageSrc from '../../hua_icon_base64';
-import hoverImageSrc from '../../../assets/images/hua_500w1.jpg';
-import { FaSpinner } from 'react-icons/fa';
-
-const ShaderLoadingEffect = lazy(() => import('../../ShaderLoadingEffect'));
-
 import { Suspense, lazy, useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import imageSrc from '../../hua_icon_base64';
@@ -14,7 +6,7 @@ import { FaSpinner, FaChevronDown } from 'react-icons/fa';
 
 const ShaderLoadingEffect = lazy(() => import('../../ShaderLoadingEffect'));
 
-const AboutSection = ({ section, language, onPageChange, currentPage = 0 }) => {
+const AboutSection = ({ language, onPageChange, currentPage = 0 }) => {
     const [localPage, setLocalPage] = useState(currentPage);
     
     // About页面的内容配置
@@ -25,7 +17,7 @@ const AboutSection = ({ section, language, onPageChange, currentPage = 0 }) => {
             content: {
                 en: (
                     <div className="space-y-6">
-                        <h2 className="text-3xl font-bold text-blue-400 mb-4">Hello, I'm Hua Wang</h2>
+                        <h2 className="text-3xl font-bold text-blue-400 mb-4">Hello, I&apos;m Hua Wang</h2>
                         <p className="text-lg leading-relaxed text-gray-200">
                             A passionate full-stack developer with expertise in modern web technologies. 
                             I specialize in creating beautiful, functional, and user-centric digital experiences 
@@ -218,7 +210,7 @@ const AboutSection = ({ section, language, onPageChange, currentPage = 0 }) => {
                                 <h3 className="text-xl font-semibold text-white mb-4">Education</h3>
                                 <div className="space-y-4">
                                     <div className="bg-white/5 rounded-lg p-4">
-                                        <h4 className="font-semibold text-blue-400">Master's Degree</h4>
+                                        <h4 className="font-semibold text-blue-400">Master&apos;s Degree</h4>
                                         <p className="text-gray-200">Computer Science</p>
                                         <p className="text-gray-300 text-sm">University of Canterbury, 2018</p>
                                     </div>
@@ -310,38 +302,27 @@ const AboutSection = ({ section, language, onPageChange, currentPage = 0 }) => {
     const currentPageData = aboutPages[localPage] || aboutPages[0];
 
     // 页面变化时通知父组件
+    const aboutPagesLength = aboutPages.length;
     useEffect(() => {
         if (onPageChange) {
-            onPageChange(localPage, aboutPages.length);
+            onPageChange(localPage, aboutPagesLength);
         }
-    }, [localPage, onPageChange]);
+    }, [localPage, onPageChange, aboutPagesLength]);
 
     // 监听外部页面变化
     useEffect(() => {
         setLocalPage(currentPage);
     }, [currentPage]);
 
-    const nextPage = () => {
-        if (localPage < aboutPages.length - 1) {
-            setLocalPage(localPage + 1);
-        }
-    };
-
-    const prevPage = () => {
-        if (localPage > 0) {
-            setLocalPage(localPage - 1);
-        }
-    };
-
     return (
-        <div className="flex h-screen w-full relative">
+        <div className="flex h-screen w-full relative overflow-hidden">
             {/* 左侧固定头像区域 */}
             <div className="w-1/3 flex items-center justify-center relative z-20">
                 <div className="avatar-container relative transition-all duration-500 ease-out group">
                     {/* 背景动画层 */}
                     <div className="absolute inset-0 rounded-full -z-10 transition-all duration-500 ease-out w-[300px] h-[300px] group-hover:w-[320px] group-hover:h-[320px]">
                         {/* 外层旋转渐变 */}
-                        <div className="absolute inset-0 rounded-full animate-gradientShift opacity-70 group-hover:opacity-90 transition-opacity duration-500" 
+                        <div className="absolute inset-0 rounded-full opacity-70 group-hover:opacity-90 transition-opacity duration-500" 
                              style={{
                                  background: 'linear-gradient(45deg, #afcc8f, #7ca65c, #5d7d4b, #768e90, #afcc8f)',
                                  backgroundSize: '400% 400%',
@@ -350,7 +331,7 @@ const AboutSection = ({ section, language, onPageChange, currentPage = 0 }) => {
                              }}>
                         </div>
                         {/* 中层hue-rotate */}
-                        <div className="absolute inset-1 rounded-full animate-hueRotate opacity-50 group-hover:opacity-70 transition-opacity duration-500" 
+                        <div className="absolute inset-1 rounded-full opacity-50 group-hover:opacity-70 transition-opacity duration-500" 
                              style={{
                                  background: 'conic-gradient(from 0deg, #afcc8f, #7ca65c, #5d7d4b, #768e90, #afcc8f)',
                                  filter: 'blur(6px)',
@@ -368,7 +349,7 @@ const AboutSection = ({ section, language, onPageChange, currentPage = 0 }) => {
                     </div>
                     
                     {/* 头像主体 */}
-                    <div className="relative rounded-full shadow-2xl overflow-hidden bg-gray-900 border-4 border-white/30 backdrop-blur-sm transition-all duration-500 ease-out w-[300px] h-[300px] group-hover:w-[320px] group-hover:h-[320px] group-hover:border-4 cursor-pointer">
+                    <div className="relative rounded-full shadow-2xl overflow-hidden bg-gray-900 border-4 border-white/30 backdrop-blur-sm transition-all duration-500 ease-out w-[300px] h-[300px] group-hover:w-[320px] group-hover:h-[320px] cursor-pointer">
                         <Suspense 
                             fallback={
                                 <div className="w-full h-full flex items-center justify-center bg-gray-800">
@@ -423,7 +404,7 @@ const AboutSection = ({ section, language, onPageChange, currentPage = 0 }) => {
             </div>
 
             {/* CSS动画样式 */}
-            <style jsx>{`
+            <style>{`
                 @keyframes gradientShift {
                     0%, 100% { background-position: 0% 50%; }
                     50% { background-position: 100% 50%; }
@@ -437,64 +418,11 @@ const AboutSection = ({ section, language, onPageChange, currentPage = 0 }) => {
         </div>
     );
 };
-                    
-                    {/* 头像主体 - 响应式大小 */}
-                    <div className="relative rounded-full shadow-2xl overflow-hidden bg-gray-900 border-2 border-white/30 backdrop-blur-sm transition-all duration-500 ease-out w-16 h-16 group-hover:w-[300px] group-hover:h-[300px] group-hover:border-4 cursor-pointer">
-                        <Suspense 
-                            fallback={
-                                <div className="w-full h-full flex items-center justify-center bg-gray-800">
-                                    <FaSpinner className="animate-spin text-green-500 text-xl group-hover:text-4xl transition-all duration-500" />
-                                </div>
-                            }
-                        >
-                            <ShaderLoadingEffect imageSrc={imageSrc} hoverImageSrc={hoverImageSrc} />
-                        </Suspense>
-                    </div>
-                </div>
-            </div>
-
-            <div className="max-w-4xl mx-auto">
-                <h1 className="text-5xl font-bold mb-8 text-center">
-                    {section.name[language]}
-                </h1>
-                <p className="text-xl text-center text-gray-300 mb-12">
-                    {section.description[language]}
-                </p>
-                
-                {/* 个人信息 */}
-                <div className="bg-white/10 backdrop-blur-sm rounded-lg p-8">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                        <div>
-                            <h3 className="text-2xl font-semibold mb-4">Skills</h3>
-                            <div className="space-y-2">
-                                {['React', 'TypeScript', 'Node.js', 'Python', 'Three.js'].map(skill => (
-                                    <div key={skill} className="flex items-center">
-                                        <span className="w-2 h-2 bg-green-400 rounded-full mr-3"></span>
-                                        <span>{skill}</span>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-                        <div>
-                            <h3 className="text-2xl font-semibold mb-4">Experience</h3>
-                            <p className="text-gray-300 leading-relaxed">
-                                Full-stack developer with expertise in modern web technologies 
-                                and a passion for creating beautiful, functional user experiences.
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    );
-};
 
 AboutSection.propTypes = {
-    section: PropTypes.shape({
-        name: PropTypes.object.isRequired,
-        description: PropTypes.object.isRequired
-    }).isRequired,
-    language: PropTypes.string.isRequired
+    language: PropTypes.string.isRequired,
+    onPageChange: PropTypes.func,
+    currentPage: PropTypes.number
 };
 
 export default AboutSection;

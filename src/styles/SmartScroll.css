@@ -1,0 +1,54 @@
+/* 智能滚动管理器的自定义样式 */
+
+/* 自定义滚动条样式 */
+.smart-scroll-container::-webkit-scrollbar {
+    width: 8px;
+}
+
+.smart-scroll-container::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.smart-scroll-container::-webkit-scrollbar-thumb {
+    background: rgba(59, 130, 246, 0.5);
+    border-radius: 4px;
+}
+
+.smart-scroll-container::-webkit-scrollbar-thumb:hover {
+    background: rgba(59, 130, 246, 0.7);
+}
+
+/* Firefox */
+.smart-scroll-container {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(59, 130, 246, 0.5) transparent;
+}
+
+/* 滚动行为 */
+.smooth-scroll {
+    scroll-behavior: smooth;
+}
+
+/* 滚动指示器动画 */
+.scroll-indicator {
+    transition: height 0.3s ease-out;
+}
+
+/* 滚动提示动画 */
+.scroll-hint {
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.7;
+    }
+}
+
+/* 模式切换过渡 */
+.scroll-mode-transition {
+    transition: all 0.3s ease-in-out;
+}
