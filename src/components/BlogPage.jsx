@@ -1,7 +1,8 @@
-import { useApp } from '../contexts/AppContext';
+import { useAppStore } from '../store/useAppStore';
 
 const BlogPage = () => {
-    const { content } = useApp();
+    const { getContent } = useAppStore();
+    const content = getContent();
 
     return (
         <div className="w-full h-full overflow-auto p-8">

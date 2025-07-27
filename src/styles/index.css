@@ -653,37 +653,59 @@ body.light {
     }
 }
 
-/* 打字机效果动画 */
+/* 打字机效果动画 - 高性能CSS版本 */
 @keyframes typewriter {
     0% {
         width: 0;
-        opacity: 0;
-    }
-    1% {
-        opacity: 1;
     }
     100% {
         width: 100%;
-        opacity: 1;
+    }
+}
+
+/* 优化的打字机效果 - 使用transform代替width变化 */
+@keyframes typewriterOptimized {
+    0% {
+        clip-path: inset(0 100% 0 0);
+    }
+    100% {
+        clip-path: inset(0 0 0 0);
     }
 }
 
 /* 打字机效果样式 */
 .typewriter-text {
+    display: inline-block;
     overflow: hidden;
     white-space: nowrap;
-    width: 0;
-    border-right: 2px solid #afcc8f;
+    will-change: clip-path; /* 优化GPU加速 */
+    contain: layout style; /* 限制重排影响范围 */
+    opacity: 1; /* 文字始终不透明 */
 }
 
-.typewriter-text.animate {
-    animation: typewriter 2s steps(20) forwards,
-               blink-cursor 0.8s infinite;
+/* 性能优化的打字机动画 */
+.typewriter-optimized {
+    animation: typewriterOptimized 2s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+/* 光标闪烁 - 独立动画，只让光标闪烁 */
+.cursor-blink::after {
+    content: '';
+    display: inline-block;
+    width: 2px;
+    height: 1.2em;
+    background-color: #afcc8f;
+    margin-left: 2px;
+    animation: blink-cursor 1s infinite;
 }
 
 @keyframes blink-cursor {
-    0%, 50% { border-color: #afcc8f; }
-    51%, 100% { border-color: transparent; }
+    0%, 50% { 
+        opacity: 1;
+    }
+    51%, 100% { 
+        opacity: 0;
+    }
 }
 
 /* 立方体尺寸缩放工具类 */

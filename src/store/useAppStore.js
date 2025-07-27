@@ -1,7 +1,11 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
-// 统一的应用数据配置 - 集中管理所有内容
+// ========================================================================================
+// 统一数据存储配置 - 集中管理所有数据、语言、文本配置
+// ========================================================================================
+
+// 栏目配置 - 定义网站的主要栏目结构
 const sectionsConfig = [
   {
     id: "home",
@@ -59,7 +63,77 @@ const sectionsConfig = [
   }
 ];
 
-// 统一的内容配置 - 包含完整的国际化内容
+// 项目数据配置 - 项目地理位置和详细信息
+const projectsData = {
+  locations: [
+    {
+      id: 1,
+      name: "AQI Monitoring System",
+      description: "Real-time air quality monitoring dashboard with data visualization",
+      location: [-43.5321, 172.6362], // Christchurch
+      category: "Data Science",
+      technologies: ["Python", "React", "D3.js", "PostgreSQL"],
+      image: "/aqi/Overview.png",
+      status: "completed"
+    },
+    {
+      id: 2,
+      name: "DATA472 Fuel Price Analysis",
+      description: "Comprehensive fuel price analysis and prediction system",
+      location: [-43.5321, 172.6362], // Christchurch
+      category: "Analytics",
+      technologies: ["Python", "Pandas", "Scikit-learn", "Plotly"],
+      image: "/data472/472.png",
+      status: "completed"
+    },
+    {
+      id: 3,
+      name: "UC Programming Competition",
+      description: "Algorithmic problem solving and competitive programming",
+      location: [-43.5321, 172.6362], // Christchurch
+      category: "Algorithm",
+      technologies: ["C++", "Python", "Algorithms"],
+      image: "/UC_F4.001.jpeg",
+      status: "completed"
+    },
+    {
+      id: 4,
+      name: "FitsGo Fitness Platform",
+      description: "Full-stack fitness tracking and social platform",
+      location: [-36.8485, 174.7633], // Auckland
+      category: "Full Stack",
+      technologies: ["React", "Node.js", "MongoDB", "Express"],
+      image: "/fitsgo.gif",
+      status: "in-progress"
+    },
+    {
+      id: 5,
+      name: "Zespri Digital Solutions",
+      description: "Agricultural technology and supply chain optimization",
+      location: [-37.7870, 176.0677], // Tauranga
+      category: "AgTech",
+      technologies: ["Vue.js", "Python", "AWS", "IoT"],
+      image: "/zespri.png",
+      status: "completed"
+    }
+  ],
+  mapConfig: {
+    center: [-41.2865, 174.7762], // New Zealand center
+    zoom: 6,
+    minZoom: 5,
+    maxZoom: 15,
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+  },
+  categoryColors: {
+    "Data Science": "#3b82f6", // Blue
+    "Analytics": "#8b5cf6",    // Purple
+    "Algorithm": "#f59e0b",    // Amber
+    "Full Stack": "#10b981",   // Emerald
+    "AgTech": "#ef4444"        // Red
+  }
+};
+
+// 国际化内容配置 - 完整的多语言文本内容
 const contentConfig = {
   en: {
     navigation: {
@@ -73,13 +147,13 @@ const contentConfig = {
     },
     home: {
       name: "Hua Wang",
-      title: "Full Stack Software Engineer", // 更新后的title
+      title: "Full Stack Software Engineer",
       shortBio: "Passionate developer creating innovative web applications with cutting-edge technology and exceptional user experiences.",
       description: "I'm a full-stack developer with a strong focus on frontend, especially building interactive web applications and visualisation dashboards. I have experience with modern frontend frameworks such as React, Next.js, and TypeScript, as well as working with libraries such as Three.js and ECharts.",
       location: "New Zealand",
       slogan: {
-        chinese: "从混沌中寻找秩序，在中庸中构建未来",
-        english: "From Chaos to Order, Through Balance to Innovation"
+        chinese: "于混沌中立秩序，以中庸而开新境...",
+        english: "Order from Chaos. Innovation through Tradeoffs."
       }
     },
     projects: {
@@ -158,13 +232,13 @@ const contentConfig = {
     },
     home: {
       name: "王华",
-      title: "全栈软件工程师", // 更新后的title
+      title: "全栈软件工程师",
       shortBio: "热衷于使用前沿技术创建创新Web应用程序，提供卓越用户体验的开发者。",
       description: "我是一名全栈开发者，专注于前端开发，特别是构建交互式Web应用程序和可视化仪表板。我有使用现代前端框架如React、Next.js和TypeScript的经验，以及使用Three.js和ECharts等库的经验。",
       location: "新西兰",
       slogan: {
-        chinese: "从混沌中寻找秩序，在中庸中构建未来",
-        english: "From Chaos to Order, Through Balance to Innovation"
+        chinese: "于混沌中立秩序，以中庸而开新境...",
+        english: "Order from Chaos. Innovation through Tradeoffs."
       }
     },
     projects: {
@@ -252,6 +326,10 @@ export const useAppStore = create(
       currentSection: 0,
       setCurrentSection: (index) => set({ currentSection: index }),
       
+      // 当前背景效果
+      currentEffect: 'effectgalaxy',
+      setCurrentEffect: (effect) => set({ currentEffect: effect }),
+      
       // 音频状态
       audioEnabled: false,
       setAudioEnabled: (enabled) => set({ audioEnabled: enabled }),
@@ -262,6 +340,9 @@ export const useAppStore = create(
 
       // 配置数据
       sections: sectionsConfig,
+      
+      // 项目数据
+      projects: projectsData,
       
       // 获取当前语言的内容
       getContent: () => {
@@ -287,6 +368,31 @@ export const useAppStore = create(
         const { language, sections } = get();
         const section = sections.find(s => s.id === sectionId);
         return section ? section.description[language] : '';
+      },
+
+      // 获取项目位置数据
+      getProjectLocations: () => {
+        return get().projects.locations;
+      },
+
+      // 获取地图配置
+      getMapConfig: () => {
+        return get().projects.mapConfig;
+      },
+
+      // 获取项目类别颜色
+      getCategoryColors: () => {
+        return get().projects.categoryColors;
+      },
+
+      // 根据类别获取项目
+      getProjectsByCategory: (category) => {
+        return get().projects.locations.filter(project => project.category === category);
+      },
+
+      // 根据状态获取项目
+      getProjectsByStatus: (status) => {
+        return get().projects.locations.filter(project => project.status === status);
       },
 
       // 导航到指定区块

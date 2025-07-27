@@ -1,19 +1,33 @@
 import { Suspense, lazy, useEffect, useState, useCallback, useMemo } from "react";
-import { useApp } from "../contexts/AppContext";
+import { useAppStore } from "../store/useAppStore";
 import imageSrc from "./hua_icon_base64";
-import hoverImageSrc from "../assets/images/hua_500w1.jpg";
+// 延迟加载hover图片以优化首屏性能
+// import hoverImageSrc from "../assets/images/hua_500w1.jpg"; 
 import { FaSpinner } from "react-icons/fa";
 import NavigationCube from "./NavigationCube";
 
 const ShaderLoadingEffect = lazy(() => import("./ShaderLoadingEffect"));
 
 const HomePage = () => {
-    const { content, activeSection, setActiveSection, switchEffect } = useApp();
+    const { getContent, currentSection, setCurrentSection } = useAppStore();
+    const content = getContent();
     const [animationComplete, setAnimationComplete] = useState(false);
     const [isTransitioning, setIsTransitioning] = useState(false);
+    const [hoverImageSrc, setHoverImageSrc] = useState(null);
 
     // 页面顺序
-    const pageOrder = useMemo(() => ['home', 'project', 'gallery', 'contact', 'about', 'blog'], []);
+    const pageOrder = useMemo(() => ['home', 'about', 'project', 'gallery', 'education', 'contact'], []);
+
+    // 延迟加载hover图片
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            import("../assets/images/hua_500w1.jpg").then(module => {
+                setHoverImageSrc(module.default);
+            });
+        }, 1000); // 1秒后加载hover图片
+        
+        return () => clearTimeout(timer);
+    }, []);
 
     useEffect(() => {
         // 动画完成后显示控制按钮
@@ -32,36 +46,23 @@ const HomePage = () => {
         event.preventDefault();
         setIsTransitioning(true);
         
-        const currentIndex = pageOrder.indexOf(activeSection);
         let nextIndex;
         
         if (event.deltaY > 0) {
             // 向下滚动
-            nextIndex = (currentIndex + 1) % pageOrder.length;
+            nextIndex = (currentSection + 1) % pageOrder.length;
         } else {
             // 向上滚动
-            nextIndex = (currentIndex - 1 + pageOrder.length) % pageOrder.length;
+            nextIndex = (currentSection - 1 + pageOrder.length) % pageOrder.length;
         }
         
-        const nextPage = pageOrder[nextIndex];
-        setActiveSection(nextPage);
-        
-        // 设置对应的背景效果
-        const effects = {
-            home: 'effectfuse',
-            project: 'effectmonjori', 
-            gallery: 'effectheartbeats',
-            contact: 'effectlorenz',
-            about: 'effectfuse',
-            blog: 'effectmonjori'
-        };
-        switchEffect(effects[nextPage]);
+        setCurrentSection(nextIndex);
         
         // 增加防抖时间以提高性能
         setTimeout(() => {
             setIsTransitioning(false);
         }, 1200);
-    }, [activeSection, isTransitioning, setActiveSection, switchEffect, pageOrder]);
+    }, [currentSection, isTransitioning, setCurrentSection, pageOrder]);
 
     useEffect(() => {
         let throttleTimer;
@@ -77,7 +78,7 @@ const HomePage = () => {
         };
         
         // 只在Home页面添加滚轮监听
-        if (activeSection === 'home') {
+        if (currentSection === 0) { // 0 对应 home
             window.addEventListener('wheel', throttledWheelHandler, { passive: false });
         }
         
@@ -87,7 +88,7 @@ const HomePage = () => {
                 clearTimeout(throttleTimer);
             }
         };
-    }, [handleWheel, activeSection]);
+    }, [handleWheel, currentSection]);
 
     return (
         <>

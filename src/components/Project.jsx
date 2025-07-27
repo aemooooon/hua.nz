@@ -15,6 +15,7 @@ import L from "leaflet";
 import "leaflet-extra-markers/dist/css/leaflet.extra-markers.min.css";
 import "leaflet/dist/leaflet.css";
 import locationData from "../assets/locations";
+import { useAppStore } from '../store/useAppStore';
 import MarkerClusterGroup from "react-leaflet-cluster";
 import ImageWithLoader from "./ImageWithLoader";
 import {
@@ -34,7 +35,8 @@ const customMarkerIcon = L.divIcon({
     iconAnchor: [20, 40],
 });
 
-const Project = ({ setActiveSection = () => {}, setCurrentEffect = () => {} }) => {
+const Project = () => {
+    const { setCurrentSection, setCurrentEffect } = useAppStore();
     const mapRef = useRef(null);
     const [activeCategory, setActiveCategory] = useState("All");
     const [selectedLocation, setSelectedLocation] = useState(null);
@@ -153,7 +155,7 @@ const Project = ({ setActiveSection = () => {}, setCurrentEffect = () => {} }) =
                 <span className="text-2xl">No locations found.</span>{" "}
                 <span
                     onClick={() => {
-                        setActiveSection("home");
+                        setCurrentSection(0); // home is index 0
                         setCurrentEffect("effectfuse");
                     }}
                     className="ml-10 text-xl rounded-full border-2 w-10 h-10 flex justify-center items-center border-red-500 cursor-pointer text-red-500 font-bold group-hover:scale-110 group-hover:rotate-90 transition-all duration-300 ease-in-out"
@@ -168,7 +170,7 @@ const Project = ({ setActiveSection = () => {}, setCurrentEffect = () => {} }) =
         <>
             <div
                 onClick={() => {
-                    setActiveSection("home");
+                    setCurrentSection(0); // home is index 0
                     setCurrentEffect("effectfuse");
                 }}
                 className="absolute z-[2000] w-10 h-10 flex justify-center items-center rounded-full top-[-25px] right-[-25px] bg-red-600 hover:bg-accent transition-colors duration-300 cursor-pointer group shadow-lg"
@@ -344,11 +346,6 @@ MapInstanceSetter.propTypes = {
     mapRef: PropTypes.shape({
         current: PropTypes.object,
     }).isRequired,
-};
-
-Project.propTypes = {
-    setActiveSection: PropTypes.func,
-    setCurrentEffect: PropTypes.func,
 };
 
 export default Project;

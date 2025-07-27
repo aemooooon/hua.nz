@@ -11,6 +11,14 @@ const NavigationCube = ({ isLandingPage = false, onSectionChange, sections = [] 
     const isDraggingRef = useRef(false);
     const lastMouseRef = useRef({ x: 0, y: 0 });
     const hasBeenDraggedRef = useRef(false); // 跟踪是否已被用户拖拽过
+    
+    // 鼠标轨迹和旋转晃动状态
+    const mouseVelocityRef = useRef({ x: 0, y: 0 });
+    const lastMousePosRef = useRef({ x: 0, y: 0 });
+    const cubeRotationVelocityRef = useRef({ x: 0, y: 0, z: 0 });
+    const cubeRotationOffsetRef = useRef({ x: 0, y: 0, z: 0 });
+    const lastFrameTimeRef = useRef(performance.now());
+    
     // 移除isHovering状态，因为cube现在只是显示指示器
     
     const { getContent } = useAppStore();
@@ -73,27 +81,33 @@ const NavigationCube = ({ isLandingPage = false, onSectionChange, sections = [] 
         const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 1000);
         camera.position.z = isLandingPage ? 6 : 3; // 360px容器使用较远的距离
 
-        // 创建渲染器 - 优化设置以提高性能
+        // 创建渲染器 - 恢复高质量设置
         const renderer = new THREE.WebGLRenderer({ 
             alpha: true, 
-            antialias: false, // 关闭抗锯齿以提高性能
-            powerPreference: "high-performance"
+            antialias: true, // 恢复抗锯齿
+            powerPreference: "high-performance",
+            precision: "mediump", // 中等精度
+            stencil: false,
+            depth: true,
+            premultipliedAlpha: false
         });
         renderer.setSize(canvasSize, canvasSize);
         renderer.setClearColor(0x000000, 0);
+        // 恢复正常像素比
         renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
         
-        // 确保canvas完全填满容器
+        // 确保canvas完全填满容器 - 恢复高质量显示
         if (isLandingPage) {
             renderer.domElement.style.width = '100%';
             renderer.domElement.style.height = '100%';
             renderer.domElement.style.display = 'block';
-            renderer.domElement.style.objectFit = 'fill'; // 确保填充整个容器
+            renderer.domElement.style.objectFit = 'contain'; // 保持比例，高质量显示
         }
         
-        // 简化渲染设置以提高性能
-        renderer.shadowMap.enabled = false; // 关闭阴影以提高性能
-        renderer.toneMapping = THREE.ACESFilmicToneMapping;
+        // 恢复渲染质量
+        renderer.shadowMap.enabled = false; // 保持关闭阴影以平衡性能
+        renderer.physicallyCorrectLights = false;
+        renderer.toneMapping = THREE.ACESFilmicToneMapping; // 恢复色调映射
         renderer.toneMappingExposure = 1.0;
         renderer.outputColorSpace = THREE.SRGBColorSpace;
         
@@ -109,14 +123,14 @@ const NavigationCube = ({ isLandingPage = false, onSectionChange, sections = [] 
         mainLight.position.set(5, 5, 5);
         scene.add(mainLight);
 
-        // 创建圆角立方体几何体 - 调整尺寸让它在360px容器中看起来合适
-        const geometry = new RoundedBoxGeometry(2.8, 2.8, 2.8, 7, 0.1);
+        // 创建圆角立方体几何体 - 恢复高质量
+        const geometry = new RoundedBoxGeometry(2.8, 2.8, 2.8, 6, 0.08); // 恢复较高的segments和radius
         
-        // 为每个面创建不同的材质 - 玻璃透明效果
+        // 为每个面创建材质 - 恢复高质量纹理
         const materials = faces.map((face) => {
-            // 创建canvas纹理
+            // 创建canvas纹理 - 恢复较高分辨率
             const canvas = document.createElement('canvas');
-            const textureSize = isLandingPage ? 512 : 256;
+            const textureSize = isLandingPage ? 256 : 128; // 适中的分辨率
             canvas.width = textureSize;
             canvas.height = textureSize;
             const context = canvas.getContext('2d');
@@ -236,12 +250,15 @@ const NavigationCube = ({ isLandingPage = false, onSectionChange, sections = [] 
             
             const texture = new THREE.CanvasTexture(canvas);
             texture.needsUpdate = true;
+            texture.generateMipmaps = true; // 恢复mipmap生成
+            texture.minFilter = THREE.LinearMipmapLinearFilter;
+            texture.magFilter = THREE.LinearFilter;
             
-            return new THREE.MeshPhysicalMaterial({ 
+            return new THREE.MeshPhysicalMaterial({ // 恢复高质量材质
                 map: texture,
                 transparent: true,
-                opacity: 0.85, // 大幅增加不透明度，让贴图更清晰
-                transmission: 0.3, // 大幅降低透射效果
+                opacity: 0.85,
+                transmission: 0.3, // 恢复透射效果
                 roughness: 0.1,
                 metalness: 0.05,
                 reflectivity: 0.8,
@@ -249,14 +266,11 @@ const NavigationCube = ({ isLandingPage = false, onSectionChange, sections = [] 
                 clearcoatRoughness: 0.1,
                 ior: 1.52,
                 thickness: 1.0,
-                side: THREE.DoubleSide,
-                iridescence: 0.1, // 降低彩虹效果
+                side: THREE.DoubleSide, // 恢复双面渲染
+                iridescence: 0.1, // 恢复彩虹效果
                 iridescenceIOR: 1.3,
                 iridescenceThicknessRange: [100, 400],
                 envMapIntensity: 1.5,
-                // 移除发光效果
-                // emissive: new THREE.Color(face.color),
-                // emissiveIntensity: 0.1,
                 specularIntensity: 1.0,
                 specularColor: new THREE.Color(0xffffff)
             });
@@ -275,8 +289,26 @@ const NavigationCube = ({ isLandingPage = false, onSectionChange, sections = [] 
         const handleGlobalMouseMove = (event) => {
             if (!isLandingPage) return;
             
-            mouseRef.current.x = (event.clientX / window.innerWidth) * 2 - 1;
-            mouseRef.current.y = -(event.clientY / window.innerHeight) * 2 + 1;
+            // 更新鼠标位置
+            const newMouseX = (event.clientX / window.innerWidth) * 2 - 1;
+            const newMouseY = -(event.clientY / window.innerHeight) * 2 + 1;
+            
+            // 计算鼠标移动速度
+            const currentTime = performance.now();
+            const deltaTime = Math.max(currentTime - lastFrameTimeRef.current, 1);
+            
+            const mouseDeltaX = newMouseX - lastMousePosRef.current.x;
+            const mouseDeltaY = newMouseY - lastMousePosRef.current.y;
+            
+            // 计算速度 (像素/秒)
+            mouseVelocityRef.current.x = mouseDeltaX / (deltaTime * 0.001);
+            mouseVelocityRef.current.y = mouseDeltaY / (deltaTime * 0.001);
+            
+            // 更新位置记录
+            mouseRef.current.x = newMouseX;
+            mouseRef.current.y = newMouseY;
+            lastMousePosRef.current = { x: newMouseX, y: newMouseY };
+            lastFrameTimeRef.current = currentTime;
         };
 
         // 拖拽相关的事件处理
@@ -322,24 +354,81 @@ const NavigationCube = ({ isLandingPage = false, onSectionChange, sections = [] 
             requestAnimationFrame(animate);
             
             if (isLandingPage) {
+                // 物理参数
+                const currentTime = performance.now();
+                const deltaTime = Math.min((currentTime - lastFrameTimeRef.current) * 0.001, 0.02); // 限制最大时间步长
+                lastFrameTimeRef.current = currentTime;
+                
                 // Landing page: 鼠标控制旋转 (仅在非拖拽状态且未被用户拖拽过)
                 if (!isDraggingRef.current && !hasBeenDraggedRef.current) {
-                    // 初始状态：显示3个面的角度（前面、右面、顶面），微弱跟随鼠标
-                    const targetRotationY = mouseRef.current.x * 0.1 + Math.PI * 0.6; // 调整到约108度角度
-                    const targetRotationX = mouseRef.current.y * 0.05 - Math.PI * 0.35; // 向下倾斜约63度显示顶面
+                    // 初始状态：让一个角正对摄像机，并向上旋转135度显示顶面
+                    const baseTargetRotationY = mouseRef.current.x * 0.1 + Math.PI * 0.25; // 45度让角正对摄像机
+                    const baseTargetRotationX = mouseRef.current.y * 0.05 - Math.PI * 0.81; // 135度向上旋转显示顶面
                     
-                    cube.rotation.y += (targetRotationY - cube.rotation.y) * 0.02;
-                    cube.rotation.x += (targetRotationX - cube.rotation.x) * 0.02;
+                    // 结合基础旋转和物理晃动旋转
+                    const finalRotationX = baseTargetRotationX + cubeRotationOffsetRef.current.x;
+                    const finalRotationY = baseTargetRotationY + cubeRotationOffsetRef.current.y;
+                    const finalRotationZ = cubeRotationOffsetRef.current.z;
+                    
+                    cube.rotation.x += (finalRotationX - cube.rotation.x) * 0.02;
+                    cube.rotation.y += (finalRotationY - cube.rotation.y) * 0.02;
+                    cube.rotation.z += (finalRotationZ - cube.rotation.z) * 0.02;
                     
                     // 非常缓慢的自动旋转作为基础
                     cube.rotation.y += 0.001;
                 } else if (!isDraggingRef.current && hasBeenDraggedRef.current) {
-                    // 用户拖拽后：保持当前旋转，只有轻微的浮动
-                    // 不做任何旋转变化，保持用户最后设置的角度
+                    // 用户拖拽后：保持当前旋转，但仍然应用物理晃动的旋转
+                    cube.rotation.x += cubeRotationOffsetRef.current.x * 0.02;
+                    cube.rotation.y += cubeRotationOffsetRef.current.y * 0.02;
+                    cube.rotation.z += cubeRotationOffsetRef.current.z * 0.02;
                 }
                 
-                // 添加浮动效果 (所有状态都有)
-                cube.position.y = Math.sin(Date.now() * 0.001) * 0.05; // 减小浮动幅度
+                // 旋转晃动效果 - 立方体保持中心位置固定
+                if (deltaTime > 0) {
+                    // 物理常数 - 专注于旋转晃动
+                    const springStrength = 12.0;    // 增强弹簧强度
+                    const damping = 0.88;           // 稍微增加阻尼系数
+                    const rotationSensitivity = 2.5; // 大幅增强旋转灵敏度
+                    const maxRotationOffset = 1.2;   // 增大最大旋转偏移 (约70度)
+                    
+                    // 基于鼠标移动方向的旋转力 - 增强效果
+                    const rotationForceX = mouseVelocityRef.current.y * rotationSensitivity; // 上下移动影响X轴旋转
+                    const rotationForceY = -mouseVelocityRef.current.x * rotationSensitivity; // 左右移动影响Y轴旋转 (反向更自然)
+                    const rotationForceZ = (mouseVelocityRef.current.x + mouseVelocityRef.current.y) * rotationSensitivity * 0.4; // 混合影响Z轴旋转
+                    
+                    // 旋转弹簧力 - 回到中心旋转状态
+                    const rotationSpringForceX = -cubeRotationOffsetRef.current.x * springStrength;
+                    const rotationSpringForceY = -cubeRotationOffsetRef.current.y * springStrength;
+                    const rotationSpringForceZ = -cubeRotationOffsetRef.current.z * springStrength;
+                    
+                    // 更新旋转速度
+                    cubeRotationVelocityRef.current.x += (rotationForceX + rotationSpringForceX) * deltaTime;
+                    cubeRotationVelocityRef.current.y += (rotationForceY + rotationSpringForceY) * deltaTime;
+                    cubeRotationVelocityRef.current.z += (rotationForceZ + rotationSpringForceZ) * deltaTime;
+                    
+                    // 应用阻尼
+                    cubeRotationVelocityRef.current.x *= damping;
+                    cubeRotationVelocityRef.current.y *= damping;
+                    cubeRotationVelocityRef.current.z *= damping;
+                    
+                    // 更新旋转偏移
+                    cubeRotationOffsetRef.current.x += cubeRotationVelocityRef.current.x * deltaTime;
+                    cubeRotationOffsetRef.current.y += cubeRotationVelocityRef.current.y * deltaTime;
+                    cubeRotationOffsetRef.current.z += cubeRotationVelocityRef.current.z * deltaTime;
+                    
+                    // 限制最大旋转偏移
+                    cubeRotationOffsetRef.current.x = Math.max(-maxRotationOffset, Math.min(maxRotationOffset, cubeRotationOffsetRef.current.x));
+                    cubeRotationOffsetRef.current.y = Math.max(-maxRotationOffset, Math.min(maxRotationOffset, cubeRotationOffsetRef.current.y));
+                    cubeRotationOffsetRef.current.z = Math.max(-maxRotationOffset, Math.min(maxRotationOffset, cubeRotationOffsetRef.current.z));
+                    
+                    // 只应用基础浮动效果，不改变XZ位置
+                    const floatY = Math.sin(currentTime * 0.001) * 0.05; // 基础浮动
+                    cube.position.set(0, floatY, 0); // 立方体保持在中心位置
+                    
+                    // 减慢鼠标速度 (自然衰减)
+                    mouseVelocityRef.current.x *= 0.92;
+                    mouseVelocityRef.current.y *= 0.92;
+                }
             } else {
                 // 普通页面: 简单的自动旋转
                 cube.rotation.x += 0.008;

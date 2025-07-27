@@ -1,5 +1,5 @@
 import { useEffect, useState, Suspense, lazy } from 'react';
-import { useApp } from '../contexts/AppContext';
+import { useAppStore } from '../store/useAppStore';
 import NavigationCube from './NavigationCube';
 import { FaSpinner } from 'react-icons/fa';
 
@@ -12,17 +12,26 @@ const AboutPage = lazy(() => import('./AboutPage'));
 const BlogPage = lazy(() => import('./BlogPage'));
 
 const PageManager = () => {
-    const { activeSection, setActiveSection, setCurrentEffect } = useApp();
+    const { currentSection, setCurrentSection } = useAppStore();
     const [cubePosition, setCubePosition] = useState('center');
     const [isTransitioning, setIsTransitioning] = useState(false);
+
+    // 将 section index 转换为 section name
+    const getSectionName = (index) => {
+        const sections = ['home', 'about', 'project', 'gallery', 'education', 'contact'];
+        return sections[index] || 'home';
+    };
+
+    const activeSection = getSectionName(currentSection);
 
     // 页面组件映射
     const pageComponents = {
         home: HomePage,
+        about: AboutPage,
         project: Project,
         gallery: Gallery,
+        education: AboutPage, // 暂时使用 AboutPage 作为教育页面
         contact: ContactPage,
-        about: AboutPage,
         blog: BlogPage
     };
 
@@ -55,10 +64,7 @@ const PageManager = () => {
                     </div>
                 }
             >
-                <CurrentPageComponent 
-                    setActiveSection={setActiveSection}
-                    setCurrentEffect={setCurrentEffect}
-                />
+                <CurrentPageComponent />
             </Suspense>
         );
     }
@@ -75,10 +81,7 @@ const PageManager = () => {
                         </div>
                     }
                 >
-                    <CurrentPageComponent 
-                        setActiveSection={setActiveSection}
-                        setCurrentEffect={setCurrentEffect}
-                    />
+                    <CurrentPageComponent />
                 </Suspense>
             </div>
 

@@ -1,0 +1,100 @@
+{
+  "metadata": {
+    "version": "1.0.0",
+    "description": "Website sections configuration - All data has been migrated to useAppStore.js",
+    "migrationDate": "2025-07-27",
+    "note": "This file serves as documentation. All active configuration is now in src/store/useAppStore.js"
+  },
+  "sections": [
+    {
+      "id": "home",
+      "index": 0,
+      "name": {
+        "en": "Home",
+        "zh": "首页"
+      },
+      "description": {
+        "en": "Welcome to my portfolio",
+        "zh": "欢迎来到我的作品集"
+      },
+      "backgroundEffect": "effectgalaxy",
+      "cubeImage": "/hua.jpeg",
+      "icon": "🏠"
+    },
+    {
+      "id": "about",
+      "index": 1,
+      "name": {
+        "en": "About",
+        "zh": "关于我"
+      },
+      "description": {
+        "en": "About myself",
+        "zh": "个人介绍"
+      },
+      "backgroundEffect": "effectlorenz",
+      "cubeImage": "/awared-best-programmer.jpeg",
+      "icon": "👤"
+    },
+    {
+      "id": "projects",
+      "index": 2,
+      "name": {
+        "en": "Projects",
+        "zh": "项目"
+      },
+      "description": {
+        "en": "My development projects",
+        "zh": "我的开发项目"
+      },
+      "backgroundEffect": "effectmonjori",
+      "cubeImage": "/jsjxmm.jpg",
+      "icon": "💼"
+    },
+    {
+      "id": "gallery",
+      "index": 3,
+      "name": {
+        "en": "Gallery",
+        "zh": "作品展示"
+      },
+      "description": {
+        "en": "Visual showcase",
+        "zh": "视觉作品展示"
+      },
+      "backgroundEffect": "effectheartbeats",
+      "cubeImage": "/fitsgo-team.jpg",
+      "icon": "🖼️"
+    },
+    {
+      "id": "education",
+      "index": 4,
+      "name": {
+        "en": "Education",
+        "zh": "教育背景"
+      },
+      "description": {
+        "en": "Academic background",
+        "zh": "学术背景"
+      },
+      "backgroundEffect": "effectfuse",
+      "cubeImage": "/UC_F4.001.jpeg",
+      "icon": "🎓"
+    },
+    {
+      "id": "contact",
+      "index": 5,
+      "name": {
+        "en": "Contact",
+        "zh": "联系我"
+      },
+      "description": {
+        "en": "Get in touch",
+        "zh": "联系方式"
+      },
+      "backgroundEffect": "effectpixeldistortion",
+      "cubeImage": "/hua_presentation.jpg",
+      "icon": "📧"
+    }
+  ]
+}

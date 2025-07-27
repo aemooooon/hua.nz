@@ -1,9 +1,10 @@
 import { useState } from 'react';
-import { useApp } from '../contexts/AppContext';
+import { useAppStore } from '../store/useAppStore';
 import { FaEnvelope, FaLinkedin, FaGithub, FaMapMarkerAlt, FaPaperPlane } from 'react-icons/fa';
 
 const ContactPage = () => {
-    const { content } = useApp();
+    const { getContent } = useAppStore();
+    const content = getContent();
     const [formData, setFormData] = useState({
         name: '',
         email: '',

@@ -2,7 +2,6 @@ import { useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import { projectLocations, mapConfig, categoryColors } from '../../../data/projectLocations';
 import useAppStore from '../../../store/useAppStore';
 
 // 修复 Leaflet 默认图标问题
@@ -17,7 +16,17 @@ const ProjectMapModal = ({ isOpen, onClose }) => {
   const mapRef = useRef(null);
   const mapInstanceRef = useRef(null);
   const markersRef = useRef([]);
-  const { language } = useAppStore();
+  const { 
+    language, 
+    getProjectLocations, 
+    getMapConfig, 
+    getCategoryColors 
+  } = useAppStore();
+  
+  // 获取项目数据
+  const projectLocations = getProjectLocations();
+  const mapConfig = getMapConfig();
+  const categoryColors = getCategoryColors();
 
   useEffect(() => {
     if (isOpen && mapRef.current && !mapInstanceRef.current) {

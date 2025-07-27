@@ -16,8 +16,8 @@ const HomeSection = ({ section, language, sections, onSectionChange }) => {
 
     return (
         <div className="flex items-center justify-center h-screen w-full relative overflow-hidden">
-            {/* 姓名和职位 - 电影片头风格动画 */}
-            <div className="absolute top-1/4 left-1/2 text-center text-white z-10" style={{
+            {/* 姓名和职位 - 电影片头风格动画，向上移动更多 */}
+            <div className="absolute top-32 left-1/2 text-center text-white z-10" style={{
                 animation: 'movieTitleEntrance 4s ease-out forwards 1s',
                 animationFillMode: 'both'
             }}>
@@ -50,25 +50,25 @@ const HomeSection = ({ section, language, sections, onSectionChange }) => {
                 </div>
             </div>
 
-            {/* Slogan - 哲学性标语，底部中央位置 */}
+            {/* Slogan - 哲学性标语，底部中央位置 - 优化版本 */}
             <div className="absolute bottom-0 left-1/2 text-center text-white z-10" style={{
                 animation: 'sloganEntrance 3s ease-out forwards 5s',
                 animationFillMode: 'both',
                 transform: 'translateX(-50%)',
-                paddingBottom: '8vh' // 距离底部8vh
+                paddingBottom: '8vh'
             }}>
                 <div className="space-y-4">
-                    <p className="text-xl font-light text-white/90 tracking-wider" style={{
-                        animation: 'typewriter 2s steps(20) forwards 6s',
+                    <p className="text-xl font-light text-white/90 tracking-wider typewriter-text typewriter-optimized cursor-blink" style={{
+                        animationDelay: '6s',
                         animationFillMode: 'both'
                     }}>
-                        从混沌中寻找秩序，在中庸中构建未来
+                        {content.home.slogan.english}
                     </p>
-                    <p className="text-lg font-light text-green-300/80 tracking-wide italic" style={{
-                        animation: 'typewriter 2.5s steps(35) forwards 8s',
+                    <p className="text-lg font-light text-green-300/80 tracking-wide typewriter-text typewriter-optimized" style={{
+                        animationDelay: '8s',
                         animationFillMode: 'both'
                     }}>
-                        From Chaos to Order, Through Balance to Innovation
+                        {content.home.slogan.chinese}
                     </p>
                 </div>
             </div>

@@ -2,52 +2,101 @@ import { useEffect, useRef, useState } from "react";
 import PropTypes from "prop-types";
 import { gsap } from "gsap";
 
+// 性能检测
+const detectPerformance = () => {
+    const canvas = document.createElement('canvas');
+    const gl = canvas.getContext('webgl');
+    const memory = navigator.deviceMemory || 4; // GB, 默认4GB
+    const cores = navigator.hardwareConcurrency || 4;
+    
+    // 简单的性能评分
+    let score = 0;
+    if (memory >= 8) score += 3;
+    else if (memory >= 4) score += 2;
+    else score += 1;
+    
+    if (cores >= 8) score += 2;
+    else if (cores >= 4) score += 1;
+    
+    if (gl) score += 1;
+    
+    return score >= 5 ? 'high' : score >= 3 ? 'medium' : 'low';
+};
+
 const ShaderLoadingEffect = ({ imageSrc, hoverImageSrc }) => {
     const canvasRef = useRef(null);
     const hoverImgRef = useRef(null);
     const [isHovered, setIsHovered] = useState(false);
-    // const [aspectRatio, setAspectRatio] = useState(1); // 暂时不使用，但保留以备后用
+    const [performanceMode] = useState(detectPerformance());
+    const [isLoaded, setIsLoaded] = useState(false);
     const workerRef = useRef(null);
     const particlesRef = useRef([]);
 
+    // 延迟加载粒子效果
     useEffect(() => {
-        workerRef.current = new Worker(new URL("/particleWorker.js?worker_file&type=classic", import.meta.url));
-        workerRef.current.onmessage = (event) => {
-            const particles = event.data;
-            particles.forEach((particle) => {
-                gsap.to(particle, {
-                    duration: particle.speed,
-                    x1: particle.x0,
-                    y1: particle.y0,
-                    delay: particle.y0 / 130,
-                    ease: "elastic.out",
+        // 低性能设备不加载粒子效果
+        if (performanceMode === 'low') {
+            setIsLoaded(true);
+            return;
+        }
+        
+        // 延迟加载粒子效果以优化首屏性能
+        const timer = setTimeout(() => {
+            workerRef.current = new Worker(new URL("/particleWorker.js?worker_file&type=classic", import.meta.url));
+            workerRef.current.onmessage = (event) => {
+                const particles = event.data;
+                // 根据性能模式调整粒子数量
+                const maxParticles = performanceMode === 'high' ? particles.length : 
+                                   performanceMode === 'medium' ? Math.min(particles.length, 800) : 400;
+                
+                const limitedParticles = particles.slice(0, maxParticles);
+                
+                limitedParticles.forEach((particle) => {
+                    gsap.to(particle, {
+                        duration: particle.speed,
+                        x1: particle.x0,
+                        y1: particle.y0,
+                        delay: particle.y0 / 130,
+                        ease: "elastic.out",
+                    });
                 });
-            });
-            particlesRef.current = particles;
-        };
+                particlesRef.current = limitedParticles;
+            };
+            setIsLoaded(true);
+        }, 800); // 延迟800ms加载
 
         return () => {
-            workerRef.current.terminate();
+            clearTimeout(timer);
+            if (workerRef.current) {
+                workerRef.current.terminate();
+            }
         };
-    }, []);
+    }, [performanceMode]);
 
     useEffect(() => {
+        if (!isLoaded || performanceMode === 'low') return;
+        
         const png = new Image();
         png.onload = () => {
             const canvas = canvasRef.current;
-            canvas.width = png.width * 2;
-            canvas.height = png.height * 2;
-            // setAspectRatio(png.width / png.height); // 暂时不使用
+            if (!canvas) return;
+            
+            // 根据性能模式调整画布尺寸
+            const scale = performanceMode === 'high' ? 2 : performanceMode === 'medium' ? 1.5 : 1;
+            canvas.width = png.width * scale;
+            canvas.height = png.height * scale;
 
             const offscreen = new OffscreenCanvas(png.width, png.height);
             const offscreenCtx = offscreen.getContext("2d");
             offscreenCtx.drawImage(png, 0, 0);
 
             const imageBitmap = offscreen.transferToImageBitmap();
-            workerRef.current.postMessage({ imageBitmap, width: png.width, height: png.height }, [imageBitmap]);
+            if (workerRef.current) {
+                workerRef.current.postMessage({ imageBitmap, width: png.width, height: png.height }, [imageBitmap]);
+            }
         };
         png.src = imageSrc;
-    }, [imageSrc]);
+    }, [imageSrc, isLoaded, performanceMode]);
 
     // 渲染粒子
     useEffect(() => {
