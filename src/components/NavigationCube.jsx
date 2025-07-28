@@ -50,7 +50,7 @@ const NavigationCube = ({ isLandingPage = false, onSectionChange, sections = [] 
         if (!sections || sections.length === 0) {
             // 如果没有传入sections，使用默认配置
             return [
-                { name: 'home', label: content.navigation?.home || 'Home', color: '#afcc8f', effect: 'effectfuse', icon: '🏠' },
+                { name: 'home', label: content.navigation?.home || 'Home', color: '#afcc8f', effect: 'effectfuse', icon: '🏠', video: '/video.mp4' },
                 { name: 'projects', label: content.navigation?.projects || 'Projects', color: '#7ca65c', effect: 'effectmonjori', icon: '💼' },
                 { name: 'gallery', label: content.navigation?.gallery || 'Gallery', color: '#5d7d4b', effect: 'effectheartbeats', icon: '🖼️' },
                 { name: 'contact', label: content.navigation?.contact || 'Contact', color: '#768e90', effect: 'effectlorenz', icon: '📧' },
@@ -126,11 +126,119 @@ const NavigationCube = ({ isLandingPage = false, onSectionChange, sections = [] 
         // 创建圆角立方体几何体 - 恢复高质量
         const geometry = new RoundedBoxGeometry(2.8, 2.8, 2.8, 6, 0.08); // 恢复较高的segments和radius
         
+        // 创建棋盘格默认纹理的函数
+        const createCheckerboardTexture = (size = 256) => {
+            const canvas = document.createElement('canvas');
+            canvas.width = size;
+            canvas.height = size;
+            const context = canvas.getContext('2d');
+            
+            const squareSize = size / 8; // 8x8 棋盘格
+            
+            for (let i = 0; i < 8; i++) {
+                for (let j = 0; j < 8; j++) {
+                    // 交替黑白色
+                    context.fillStyle = (i + j) % 2 === 0 ? '#333333' : '#666666';
+                    context.fillRect(i * squareSize, j * squareSize, squareSize, squareSize);
+                }
+            }
+            
+            // 添加一个简单的"VIDEO ERROR"文本
+            context.fillStyle = '#ff4444';
+            context.font = `bold ${size / 16}px Arial`;
+            context.textAlign = 'center';
+            context.textBaseline = 'middle';
+            context.fillText('VIDEO', size / 2, size / 2 - size / 32);
+            context.fillText('ERROR', size / 2, size / 2 + size / 32);
+            
+            const texture = new THREE.CanvasTexture(canvas);
+            texture.needsUpdate = true;
+            return texture;
+        };
+
         // 为每个面创建材质 - 恢复高质量纹理
         const materials = faces.map((face) => {
-            // 创建canvas纹理 - 恢复较高分辨率
+            // 如果是视频贴图
+            if (face.video) {
+                // 创建默认的棋盘格纹理作为备用
+                const fallbackTexture = createCheckerboardTexture(isLandingPage ? 256 : 128);
+                
+                const video = document.createElement('video');
+                video.src = face.video;
+                video.crossOrigin = 'anonymous';
+                video.loop = true;
+                video.muted = true;
+                video.autoplay = true;
+                video.playsInline = true;
+                
+                // 创建材质，初始使用棋盘格纹理
+                const material = new THREE.MeshPhysicalMaterial({
+                    map: fallbackTexture,
+                    transparent: true,
+                    opacity: 0.9,
+                    transmission: 0.2,
+                    roughness: 0.1,
+                    metalness: 0.05,
+                    reflectivity: 0.8,
+                    clearcoat: 0.8,
+                    clearcoatRoughness: 0.1,
+                    ior: 1.52,
+                    thickness: 1.0,
+                    side: THREE.DoubleSide,
+                    iridescence: 0.1,
+                    iridescenceIOR: 1.3,
+                    iridescenceThicknessRange: [100, 400],
+                    envMapIntensity: 1.5,
+                    specularIntensity: 1.0,
+                    specularColor: new THREE.Color(0xffffff)
+                });
+                
+                // 视频加载成功后切换到视频纹理
+                const switchToVideoTexture = () => {
+                    try {
+                        const videoTexture = new THREE.VideoTexture(video);
+                        videoTexture.minFilter = THREE.LinearFilter;
+                        videoTexture.magFilter = THREE.LinearFilter;
+                        videoTexture.format = THREE.RGBFormat;
+                        
+                        // 替换材质贴图
+                        if (material.map && material.map !== fallbackTexture) {
+                            material.map.dispose();
+                        }
+                        material.map = videoTexture;
+                        material.needsUpdate = true;
+                        
+                        console.log('✅ Video texture loaded successfully for home face');
+                    } catch (error) {
+                        console.warn('❌ Failed to create video texture, using fallback:', error);
+                        // 保持使用棋盘格纹理
+                    }
+                };
+                
+                // 视频加载事件监听
+                video.addEventListener('loadeddata', switchToVideoTexture);
+                video.addEventListener('canplay', switchToVideoTexture);
+                
+                // 错误处理
+                video.addEventListener('error', (e) => {
+                    console.warn('❌ Video loading failed, using checkerboard fallback:', e);
+                    // 保持使用棋盘格纹理，不做任何操作
+                });
+                
+                // 尝试播放视频
+                video.play().then(() => {
+                    console.log('🎬 Video playback started');
+                }).catch((error) => {
+                    console.warn('❌ Video autoplay failed, using fallback:', error);
+                    // 即使播放失败，如果视频数据已加载，纹理仍然可以工作
+                });
+                
+                return material;
+            }
+            
+            // 原有的Canvas纹理逻辑
             const canvas = document.createElement('canvas');
-            const textureSize = isLandingPage ? 256 : 128; // 适中的分辨率
+            const textureSize = isLandingPage ? 256 : 128;
             canvas.width = textureSize;
             canvas.height = textureSize;
             const context = canvas.getContext('2d');
@@ -473,7 +581,15 @@ const NavigationCube = ({ isLandingPage = false, onSectionChange, sections = [] 
             // 移除了click事件监听器，因为不再需要点击导航功能
             geometry.dispose();
             materials.forEach(material => {
-                if (material.map) material.map.dispose();
+                if (material.map) {
+                    // 如果是视频纹理，停止视频播放
+                    if (material.map.image && material.map.image.tagName === 'VIDEO') {
+                        material.map.image.pause();
+                        material.map.image.src = '';
+                        material.map.image.load();
+                    }
+                    material.map.dispose();
+                }
                 material.dispose();
             });
             renderer.dispose();

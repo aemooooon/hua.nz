@@ -1,11 +1,3 @@
-import { Suspense, lazy } from 'react';
-import PropTypes from 'prop-types';
-import imageSrc from '../../hua_icon_base64';
-import hoverImageSrc from '../../../assets/images/hua_500w1.jpg';
-import { FaSpinner } from 'react-icons/fa';
-
-const ShaderLoadingEffect = lazy(() => import('../../ShaderLoadingEffect'));
-
 import { Suspense, lazy, useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import imageSrc from '../../hua_icon_base64';
@@ -14,7 +6,7 @@ import { FaSpinner, FaChevronDown } from 'react-icons/fa';
 
 const ShaderLoadingEffect = lazy(() => import('../../ShaderLoadingEffect'));
 
-const AboutSection = ({ section, language, onPageChange, currentPage = 0 }) => {
+const AboutSection = ({ language, onPageChange, currentPage = 0 }) => {
     const [localPage, setLocalPage] = useState(currentPage);
     
     // About页面的内容配置
@@ -25,42 +17,30 @@ const AboutSection = ({ section, language, onPageChange, currentPage = 0 }) => {
             content: {
                 en: (
                     <div className="space-y-6">
-                        <h2 className="text-3xl font-bold text-blue-400 mb-4">Hello, I'm Hua Wang</h2>
+                        <h2 className="text-3xl font-bold text-blue-400 mb-4">Kia ora, I&apos;m Hua Wang</h2>
                         <p className="text-lg leading-relaxed text-gray-200">
-                            A passionate full-stack developer with expertise in modern web technologies. 
-                            I specialize in creating beautiful, functional, and user-centric digital experiences 
-                            that bridge the gap between design and technology.
+                            I&apos;m a versatile full-stack developer with expertise in computer/data science, building and integrating interactive web applications, data pipelines and visualisation dashboards.
                         </p>
                         <p className="text-lg leading-relaxed text-gray-200">
-                            My journey in software development spans across frontend frameworks like React and Vue, 
-                            backend technologies including Node.js and Python, and emerging fields like WebGL, 
-                            Three.js, and AI integration.
+                            I have experience with modern frontend frameworks such as React, Next.js, and TypeScript, as well as working with libraries such as Three.js and ECharts. On the backend side, I am skilled in developing RESTful APIs and data-driven apps using Java, Python, Node.js, and C# ASP.NET.
                         </p>
-                        <div className="flex items-center space-x-4 pt-4">
-                            <div className="flex items-center space-x-2">
-                                <span className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></span>
-                                <span className="text-green-400">Available for opportunities</span>
-                            </div>
-                        </div>
+                        <p className="text-lg leading-relaxed text-gray-200">
+                            I have also been working with containerised environments (Docker, Kubernetes), GitHub Actions, GitLab CI/CD pipelines, and cloud platforms such as AWS and Azure. Recently, I earned a Master of Applied Data Science, which has strengthened my skills in data-driven and AI-powered development.
+                        </p>
                     </div>
                 ),
                 zh: (
                     <div className="space-y-6">
                         <h2 className="text-3xl font-bold text-blue-400 mb-4">你好，我是王华</h2>
                         <p className="text-lg leading-relaxed text-gray-200">
-                            一位充满热情的全栈开发者，精通现代Web技术。我专注于创建美观、实用且以用户为中心的数字体验，
-                            在设计与技术之间架起桥梁。
+                            我是一名多技能全栈开发者，在计算机/数据科学方面具有专业知识，专注于构建和集成交互式Web应用程序、数据管道和可视化仪表板。
                         </p>
                         <p className="text-lg leading-relaxed text-gray-200">
-                            我的软件开发之旅涵盖了React和Vue等前端框架、Node.js和Python等后端技术，
-                            以及WebGL、Three.js和AI集成等新兴领域。
+                            我有使用现代前端框架（如React、Next.js和TypeScript）的经验，以及使用Three.js和ECharts等库的经验。在后端方面，我擅长使用Java、Python、Node.js和C# ASP.NET开发RESTful API和数据驱动的应用程序。
                         </p>
-                        <div className="flex items-center space-x-4 pt-4">
-                            <div className="flex items-center space-x-2">
-                                <span className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></span>
-                                <span className="text-green-400">开放工作机会</span>
-                            </div>
-                        </div>
+                        <p className="text-lg leading-relaxed text-gray-200">
+                            我还在容器化环境（Docker、Kubernetes）、GitHub Actions、GitLab CI/CD管道以及AWS和Azure等云平台方面有丰富经验。最近，我获得了应用数据科学硕士学位，这进一步强化了我在数据驱动和AI驱动开发方面的技能。
+                        </p>
                     </div>
                 )
             }
@@ -70,93 +50,167 @@ const AboutSection = ({ section, language, onPageChange, currentPage = 0 }) => {
             title: { en: 'Professional Experience', zh: '工作经历' },
             content: {
                 en: (
-                    <div className="space-y-8">
-                        <h2 className="text-3xl font-bold text-blue-400 mb-6">Professional Journey</h2>
+                    <div className="space-y-6">
+                        <h2 className="text-3xl font-bold text-blue-400 mb-8">Professional Journey</h2>
                         
-                        <div className="space-y-6">
-                            <div className="bg-white/5 rounded-lg p-6 border-l-4 border-blue-500">
-                                <div className="flex justify-between items-start mb-3">
-                                    <h3 className="text-xl font-semibold text-white">Senior Full-Stack Developer</h3>
-                                    <span className="text-blue-400 text-sm">2022 - Present</span>
-                                </div>
-                                <p className="text-gray-300 mb-2">Tech Innovation Company</p>
-                                <ul className="text-gray-200 space-y-1">
-                                    <li>• Led development of AI-powered web applications</li>
-                                    <li>• Implemented real-time data visualization systems</li>
-                                    <li>• Mentored junior developers and established coding standards</li>
-                                </ul>
-                            </div>
+                        <div className="relative max-w-4xl">
+                            <div className="absolute left-6 top-0 bottom-0 w-0.5 bg-gradient-to-b from-blue-400 via-purple-400 to-orange-400 hidden md:block"></div>
                             
-                            <div className="bg-white/5 rounded-lg p-6 border-l-4 border-green-500">
-                                <div className="flex justify-between items-start mb-3">
-                                    <h3 className="text-xl font-semibold text-white">Frontend Developer</h3>
-                                    <span className="text-green-400 text-sm">2020 - 2022</span>
+                            <div className="space-y-6">
+                                <div className="relative md:flex md:items-center md:pl-16 bg-gray-800/60 rounded-lg p-4 md:p-6 border border-gray-700 backdrop-blur-sm hover:bg-gray-800/80 transition-all duration-300">
+                                    <div className="absolute left-4 w-4 h-4 bg-blue-400 rounded-full border-4 border-gray-900 shadow-lg hidden md:block"></div>
+                                    <div className="flex flex-col md:flex-row md:items-center md:justify-between w-full space-y-3 md:space-y-0">
+                                        <div className="flex items-center space-x-4">
+                                            <div className="w-12 h-12 bg-blue-500/20 rounded-lg flex items-center justify-center border border-blue-500/30 flex-shrink-0">
+                                                <span className="text-blue-400 text-xs font-bold">ZI</span>
+                                            </div>
+                                            <div className="min-w-0 flex-1">
+                                                <h3 className="text-lg font-bold text-white">Zespri International</h3>
+                                                <p className="text-blue-400 font-medium">Full Stack Developer (Internship)</p>
+                                            </div>
+                                        </div>
+                                        <span className="bg-blue-500/20 text-blue-300 px-3 py-1 rounded-full text-xs font-medium whitespace-nowrap">
+                                            Nov 2024 - Feb 2025
+                                        </span>
+                                    </div>
                                 </div>
-                                <p className="text-gray-300 mb-2">Digital Agency</p>
-                                <ul className="text-gray-200 space-y-1">
-                                    <li>• Developed responsive web applications using React</li>
-                                    <li>• Collaborated with UX/UI designers on user interfaces</li>
-                                    <li>• Optimized application performance and accessibility</li>
-                                </ul>
-                            </div>
-                            
-                            <div className="bg-white/5 rounded-lg p-6 border-l-4 border-purple-500">
-                                <div className="flex justify-between items-start mb-3">
-                                    <h3 className="text-xl font-semibold text-white">Junior Developer</h3>
-                                    <span className="text-purple-400 text-sm">2019 - 2020</span>
+
+                                <div className="relative md:flex md:items-center md:pl-16 bg-gray-800/60 rounded-lg p-4 md:p-6 border border-gray-700 backdrop-blur-sm hover:bg-gray-800/80 transition-all duration-300">
+                                    <div className="absolute left-4 w-4 h-4 bg-purple-400 rounded-full border-4 border-gray-900 shadow-lg hidden md:block"></div>
+                                    <div className="flex flex-col md:flex-row md:items-center md:justify-between w-full space-y-3 md:space-y-0">
+                                        <div className="flex items-center space-x-4">
+                                            <div className="w-12 h-12 bg-purple-500/20 rounded-lg flex items-center justify-center border border-purple-500/30 flex-shrink-0">
+                                                <span className="text-purple-400 text-xs font-bold">RB</span>
+                                            </div>
+                                            <div className="min-w-0 flex-1">
+                                                <h3 className="text-lg font-bold text-white">Realibox, GuangZhou</h3>
+                                                <p className="text-purple-400 font-medium">Frontend Developer</p>
+                                            </div>
+                                        </div>
+                                        <span className="bg-purple-500/20 text-purple-300 px-3 py-1 rounded-full text-xs font-medium whitespace-nowrap">
+                                            Aug 2021 - Feb 2023
+                                        </span>
+                                    </div>
                                 </div>
-                                <p className="text-gray-300 mb-2">Startup Company</p>
-                                <ul className="text-gray-200 space-y-1">
-                                    <li>• Built interactive web components and features</li>
-                                    <li>• Participated in agile development processes</li>
-                                    <li>• Learned modern development frameworks and tools</li>
-                                </ul>
+
+                                <div className="relative md:flex md:items-center md:pl-16 bg-gray-800/60 rounded-lg p-4 md:p-6 border border-gray-700 backdrop-blur-sm hover:bg-gray-800/80 transition-all duration-300">
+                                    <div className="absolute left-4 w-4 h-4 bg-green-400 rounded-full border-4 border-gray-900 shadow-lg hidden md:block"></div>
+                                    <div className="flex flex-col md:flex-row md:items-center md:justify-between w-full space-y-3 md:space-y-0">
+                                        <div className="flex items-center space-x-4">
+                                            <div className="w-12 h-12 bg-green-500/20 rounded-lg flex items-center justify-center border border-green-500/30 flex-shrink-0">
+                                                <span className="text-green-400 text-xs font-bold">NS</span>
+                                            </div>
+                                            <div className="min-w-0 flex-1">
+                                                <h3 className="text-lg font-bold text-white">Nuclear Stone Technology</h3>
+                                                <p className="text-green-400 font-medium">Frontend Developer</p>
+                                            </div>
+                                        </div>
+                                        <span className="bg-green-500/20 text-green-300 px-3 py-1 rounded-full text-xs font-medium whitespace-nowrap">
+                                            Aug 2020 - Jul 2021
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <div className="relative md:flex md:items-center md:pl-16 bg-gray-800/60 rounded-lg p-4 md:p-6 border border-gray-700 backdrop-blur-sm hover:bg-gray-800/80 transition-all duration-300">
+                                    <div className="absolute left-4 w-4 h-4 bg-orange-400 rounded-full border-4 border-gray-900 shadow-lg hidden md:block"></div>
+                                    <div className="flex flex-col md:flex-row md:items-center md:justify-between w-full space-y-3 md:space-y-0">
+                                        <div className="flex items-center space-x-4">
+                                            <div className="w-12 h-12 bg-orange-500/20 rounded-lg flex items-center justify-center border border-orange-500/30 flex-shrink-0">
+                                                <span className="text-orange-400 text-xs font-bold">ES</span>
+                                            </div>
+                                            <div className="min-w-0 flex-1">
+                                                <h3 className="text-lg font-bold text-white">Enshi Environmental Agency</h3>
+                                                <p className="text-orange-400 font-medium">Full Stack Developer (Contract)</p>
+                                            </div>
+                                        </div>
+                                        <span className="bg-orange-500/20 text-orange-300 px-3 py-1 rounded-full text-xs font-medium whitespace-nowrap">
+                                            Feb 2020 - Jul 2021
+                                        </span>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
                 ),
                 zh: (
-                    <div className="space-y-8">
-                        <h2 className="text-3xl font-bold text-blue-400 mb-6">职业历程</h2>
+                    <div className="space-y-6">
+                        <h2 className="text-3xl font-bold text-blue-400 mb-8">职业历程</h2>
                         
-                        <div className="space-y-6">
-                            <div className="bg-white/5 rounded-lg p-6 border-l-4 border-blue-500">
-                                <div className="flex justify-between items-start mb-3">
-                                    <h3 className="text-xl font-semibold text-white">高级全栈开发工程师</h3>
-                                    <span className="text-blue-400 text-sm">2022 - 至今</span>
-                                </div>
-                                <p className="text-gray-300 mb-2">科技创新公司</p>
-                                <ul className="text-gray-200 space-y-1">
-                                    <li>• 领导AI驱动的Web应用程序开发</li>
-                                    <li>• 实施实时数据可视化系统</li>
-                                    <li>• 指导初级开发者并建立编码标准</li>
-                                </ul>
-                            </div>
+                        <div className="relative max-w-4xl">
+                            <div className="absolute left-6 top-0 bottom-0 w-0.5 bg-gradient-to-b from-blue-400 via-purple-400 to-orange-400 hidden md:block"></div>
                             
-                            <div className="bg-white/5 rounded-lg p-6 border-l-4 border-green-500">
-                                <div className="flex justify-between items-start mb-3">
-                                    <h3 className="text-xl font-semibold text-white">前端开发工程师</h3>
-                                    <span className="text-green-400 text-sm">2020 - 2022</span>
+                            <div className="space-y-6">
+                                <div className="relative md:flex md:items-center md:pl-16 bg-gray-800/60 rounded-lg p-4 md:p-6 border border-gray-700 backdrop-blur-sm hover:bg-gray-800/80 transition-all duration-300">
+                                    <div className="absolute left-4 w-4 h-4 bg-blue-400 rounded-full border-4 border-gray-900 shadow-lg hidden md:block"></div>
+                                    <div className="flex flex-col md:flex-row md:items-center md:justify-between w-full space-y-3 md:space-y-0">
+                                        <div className="flex items-center space-x-4">
+                                            <div className="w-12 h-12 bg-blue-500/20 rounded-lg flex items-center justify-center border border-blue-500/30 flex-shrink-0">
+                                                <span className="text-blue-400 text-xs font-bold">ZI</span>
+                                            </div>
+                                            <div className="min-w-0 flex-1">
+                                                <h3 className="text-lg font-bold text-white">Zespri International</h3>
+                                                <p className="text-blue-400 font-medium">全栈开发工程师（实习）</p>
+                                            </div>
+                                        </div>
+                                        <span className="bg-blue-500/20 text-blue-300 px-3 py-1 rounded-full text-xs font-medium whitespace-nowrap">
+                                            2024年11月 - 2025年2月
+                                        </span>
+                                    </div>
                                 </div>
-                                <p className="text-gray-300 mb-2">数字代理公司</p>
-                                <ul className="text-gray-200 space-y-1">
-                                    <li>• 使用React开发响应式Web应用程序</li>
-                                    <li>• 与UX/UI设计师合作设计用户界面</li>
-                                    <li>• 优化应用程序性能和可访问性</li>
-                                </ul>
-                            </div>
-                            
-                            <div className="bg-white/5 rounded-lg p-6 border-l-4 border-purple-500">
-                                <div className="flex justify-between items-start mb-3">
-                                    <h3 className="text-xl font-semibold text-white">初级开发工程师</h3>
-                                    <span className="text-purple-400 text-sm">2019 - 2020</span>
+
+                                <div className="relative md:flex md:items-center md:pl-16 bg-gray-800/60 rounded-lg p-4 md:p-6 border border-gray-700 backdrop-blur-sm hover:bg-gray-800/80 transition-all duration-300">
+                                    <div className="absolute left-4 w-4 h-4 bg-purple-400 rounded-full border-4 border-gray-900 shadow-lg hidden md:block"></div>
+                                    <div className="flex flex-col md:flex-row md:items-center md:justify-between w-full space-y-3 md:space-y-0">
+                                        <div className="flex items-center space-x-4">
+                                            <div className="w-12 h-12 bg-purple-500/20 rounded-lg flex items-center justify-center border border-purple-500/30 flex-shrink-0">
+                                                <span className="text-purple-400 text-xs font-bold">RB</span>
+                                            </div>
+                                            <div className="min-w-0 flex-1">
+                                                <h3 className="text-lg font-bold text-white">Realibox，广州</h3>
+                                                <p className="text-purple-400 font-medium">前端开发工程师</p>
+                                            </div>
+                                        </div>
+                                        <span className="bg-purple-500/20 text-purple-300 px-3 py-1 rounded-full text-xs font-medium whitespace-nowrap">
+                                            2021年8月 - 2023年2月
+                                        </span>
+                                    </div>
                                 </div>
-                                <p className="text-gray-300 mb-2">创业公司</p>
-                                <ul className="text-gray-200 space-y-1">
-                                    <li>• 构建交互式Web组件和功能</li>
-                                    <li>• 参与敏捷开发流程</li>
-                                    <li>• 学习现代开发框架和工具</li>
-                                </ul>
+
+                                <div className="relative md:flex md:items-center md:pl-16 bg-gray-800/60 rounded-lg p-4 md:p-6 border border-gray-700 backdrop-blur-sm hover:bg-gray-800/80 transition-all duration-300">
+                                    <div className="absolute left-4 w-4 h-4 bg-green-400 rounded-full border-4 border-gray-900 shadow-lg hidden md:block"></div>
+                                    <div className="flex flex-col md:flex-row md:items-center md:justify-between w-full space-y-3 md:space-y-0">
+                                        <div className="flex items-center space-x-4">
+                                            <div className="w-12 h-12 bg-green-500/20 rounded-lg flex items-center justify-center border border-green-500/30 flex-shrink-0">
+                                                <span className="text-green-400 text-xs font-bold">NS</span>
+                                            </div>
+                                            <div className="min-w-0 flex-1">
+                                                <h3 className="text-lg font-bold text-white">Nuclear Stone Technology，重庆</h3>
+                                                <p className="text-green-400 font-medium">前端开发工程师</p>
+                                            </div>
+                                        </div>
+                                        <span className="bg-green-500/20 text-green-300 px-3 py-1 rounded-full text-xs font-medium whitespace-nowrap">
+                                            2020年8月 - 2021年7月
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <div className="relative md:flex md:items-center md:pl-16 bg-gray-800/60 rounded-lg p-4 md:p-6 border border-gray-700 backdrop-blur-sm hover:bg-gray-800/80 transition-all duration-300">
+                                    <div className="absolute left-4 w-4 h-4 bg-orange-400 rounded-full border-4 border-gray-900 shadow-lg hidden md:block"></div>
+                                    <div className="flex flex-col md:flex-row md:items-center md:justify-between w-full space-y-3 md:space-y-0">
+                                        <div className="flex items-center space-x-4">
+                                            <div className="w-12 h-12 bg-orange-500/20 rounded-lg flex items-center justify-center border border-orange-500/30 flex-shrink-0">
+                                                <span className="text-orange-400 text-xs font-bold">ES</span>
+                                            </div>
+                                            <div className="min-w-0 flex-1">
+                                                <h3 className="text-lg font-bold text-white">恩施环境保护局</h3>
+                                                <p className="text-orange-400 font-medium">全栈开发工程师（合同）</p>
+                                            </div>
+                                        </div>
+                                        <span className="bg-orange-500/20 text-orange-300 px-3 py-1 rounded-full text-xs font-medium whitespace-nowrap">
+                                            2020年2月 - 2021年7月
+                                        </span>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -165,140 +219,219 @@ const AboutSection = ({ section, language, onPageChange, currentPage = 0 }) => {
         },
         {
             id: 'skills',
-            title: { en: 'Skills & Education', zh: '技能与教育' },
+            title: { en: 'Philosophy & Mastery', zh: '哲学与精通' },
             content: {
                 en: (
                     <div className="space-y-8">
-                        <h2 className="text-3xl font-bold text-blue-400 mb-6">Skills & Education</h2>
+                        <h2 className="text-3xl font-bold text-blue-400 mb-6">Philosophy & Mastery</h2>
                         
+                        <div className="bg-gradient-to-r from-blue-900/30 to-purple-900/30 rounded-xl p-8 border border-blue-500/30 mb-8">
+                            <h3 className="text-2xl font-semibold text-white mb-4 flex items-center">
+                                <span className="mr-3">💭</span>
+                                Core Philosophy
+                            </h3>
+                            <p className="text-gray-200 text-lg leading-relaxed italic">
+                                &ldquo;Technology is not the end, but the means. True mastery lies not in the tools we wield, 
+                                but in the architectures we conceive and the problems we solve. Language-agnostic thinking 
+                                enables platform-transcendent solutions.&rdquo;
+                            </p>
+                        </div>
+
                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                            <div>
-                                <h3 className="text-xl font-semibold text-white mb-4">Technical Skills</h3>
-                                <div className="space-y-4">
-                                    <div>
-                                        <div className="flex justify-between mb-1">
-                                            <span className="text-gray-200">Frontend Development</span>
-                                            <span className="text-blue-400">95%</span>
-                                        </div>
-                                        <div className="w-full bg-gray-700 rounded-full h-2">
-                                            <div className="bg-blue-500 h-2 rounded-full" style={{width: '95%'}}></div>
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <div className="flex justify-between mb-1">
-                                            <span className="text-gray-200">Backend Development</span>
-                                            <span className="text-green-400">90%</span>
-                                        </div>
-                                        <div className="w-full bg-gray-700 rounded-full h-2">
-                                            <div className="bg-green-500 h-2 rounded-full" style={{width: '90%'}}></div>
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <div className="flex justify-between mb-1">
-                                            <span className="text-gray-200">3D Graphics & WebGL</span>
-                                            <span className="text-purple-400">85%</span>
-                                        </div>
-                                        <div className="w-full bg-gray-700 rounded-full h-2">
-                                            <div className="bg-purple-500 h-2 rounded-full" style={{width: '85%'}}></div>
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <div className="flex justify-between mb-1">
-                                            <span className="text-gray-200">AI/ML Integration</span>
-                                            <span className="text-orange-400">80%</span>
-                                        </div>
-                                        <div className="w-full bg-gray-700 rounded-full h-2">
-                                            <div className="bg-orange-500 h-2 rounded-full" style={{width: '80%'}}></div>
-                                        </div>
-                                    </div>
+                            <div className="bg-gray-800/60 rounded-xl p-6 border border-gray-700 backdrop-blur-sm">
+                                <h3 className="text-xl font-semibold text-blue-400 mb-4 flex items-center">
+                                    <span className="mr-3">🏗️</span>
+                                    Architecture Mindset
+                                </h3>
+                                <div className="space-y-3">
+                                    <p className="text-gray-300 leading-relaxed">
+                                        <strong className="text-white">Systems Thinking:</strong> Every component is part of a greater whole. 
+                                        I design with scalability, maintainability, and resilience at the core.
+                                    </p>
+                                    <p className="text-gray-300 leading-relaxed">
+                                        <strong className="text-white">Pattern Recognition:</strong> Identifying universal patterns across 
+                                        domains allows for elegant, reusable solutions.
+                                    </p>
                                 </div>
                             </div>
-                            
-                            <div>
-                                <h3 className="text-xl font-semibold text-white mb-4">Education</h3>
-                                <div className="space-y-4">
-                                    <div className="bg-white/5 rounded-lg p-4">
-                                        <h4 className="font-semibold text-blue-400">Master's Degree</h4>
-                                        <p className="text-gray-200">Computer Science</p>
-                                        <p className="text-gray-300 text-sm">University of Canterbury, 2018</p>
-                                    </div>
-                                    <div className="bg-white/5 rounded-lg p-4">
-                                        <h4 className="font-semibold text-green-400">Certifications</h4>
-                                        <ul className="text-gray-200 text-sm space-y-1">
-                                            <li>• AWS Certified Developer</li>
-                                            <li>• Google Cloud Professional</li>
-                                            <li>• React Advanced Certification</li>
-                                        </ul>
-                                    </div>
+
+                            <div className="bg-gray-800/60 rounded-xl p-6 border border-gray-700 backdrop-blur-sm">
+                                <h3 className="text-xl font-semibold text-green-400 mb-4 flex items-center">
+                                    <span className="mr-3">🌱</span>
+                                    Perpetual Learning
+                                </h3>
+                                <div className="space-y-3">
+                                    <p className="text-gray-300 leading-relaxed">
+                                        <strong className="text-white">First Principles:</strong> Understanding fundamentals enables 
+                                        rapid mastery of new technologies and paradigms.
+                                    </p>
+                                    <p className="text-gray-300 leading-relaxed">
+                                        <strong className="text-white">Adaptive Intelligence:</strong> The ability to synthesize knowledge 
+                                        across disciplines and apply it contextually.
+                                    </p>
                                 </div>
+                            </div>
+
+                            <div className="bg-gray-800/60 rounded-xl p-6 border border-gray-700 backdrop-blur-sm">
+                                <h3 className="text-xl font-semibold text-purple-400 mb-4 flex items-center">
+                                    <span className="mr-3">🌐</span>
+                                    Platform Agnosticism
+                                </h3>
+                                <div className="space-y-3">
+                                    <p className="text-gray-300 leading-relaxed">
+                                        <strong className="text-white">Language Independence:</strong> Concepts transcend syntax. 
+                                        I focus on problem-solving over tool attachment.
+                                    </p>
+                                    <p className="text-gray-300 leading-relaxed">
+                                        <strong className="text-white">Technology Neutrality:</strong> The best solution emerges from 
+                                        objective evaluation, not preference.
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div className="bg-gray-800/60 rounded-xl p-6 border border-gray-700 backdrop-blur-sm">
+                                <h3 className="text-xl font-semibold text-orange-400 mb-4 flex items-center">
+                                    <span className="mr-3">⚡</span>
+                                    Innovation Driver
+                                </h3>
+                                <div className="space-y-3">
+                                    <p className="text-gray-300 leading-relaxed">
+                                        <strong className="text-white">Creative Problem Solving:</strong> Combining technical excellence 
+                                        with creative thinking to forge novel solutions.
+                                    </p>
+                                    <p className="text-gray-300 leading-relaxed">
+                                        <strong className="text-white">Future-Forward Thinking:</strong> Anticipating technological 
+                                        evolution and preparing for tomorrow&apos;s challenges.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="mt-8">
+                            <h3 className="text-2xl font-semibold text-white mb-6">Technical Mastery Domains</h3>
+                            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                                {[
+                                    { name: 'Full-Stack Architecture', icon: '🏛️', color: 'blue' },
+                                    { name: 'Cloud & DevOps', icon: '☁️', color: 'green' },
+                                    { name: 'Data Science & AI', icon: '🧠', color: 'purple' },
+                                    { name: 'System Design', icon: '⚙️', color: 'orange' },
+                                    { name: 'Financial Systems', icon: '💳', color: 'yellow' },
+                                    { name: 'Real-time Graphics', icon: '🎮', color: 'red' },
+                                    { name: 'Mobile & Web', icon: '📱', color: 'indigo' },
+                                    { name: 'Blockchain & DeFi', icon: '⛓️', color: 'pink' }
+                                ].map((domain, index) => (
+                                    <div key={index} className={`bg-${domain.color}-900/20 border border-${domain.color}-500/30 rounded-lg p-4 text-center hover:bg-${domain.color}-900/30 transition-all duration-300`}>
+                                        <div className="text-2xl mb-2">{domain.icon}</div>
+                                        <div className={`text-${domain.color}-400 text-sm font-medium`}>{domain.name}</div>
+                                    </div>
+                                ))}
                             </div>
                         </div>
                     </div>
                 ),
                 zh: (
                     <div className="space-y-8">
-                        <h2 className="text-3xl font-bold text-blue-400 mb-6">技能与教育</h2>
+                        <h2 className="text-3xl font-bold text-blue-400 mb-6">哲学与精通</h2>
                         
+                        <div className="bg-gradient-to-r from-blue-900/30 to-purple-900/30 rounded-xl p-8 border border-blue-500/30 mb-8">
+                            <h3 className="text-2xl font-semibold text-white mb-4 flex items-center">
+                                <span className="mr-3">💭</span>
+                                核心理念
+                            </h3>
+                            <p className="text-gray-200 text-lg leading-relaxed italic">
+                                &ldquo;技术非目的，而为手段。真正的精通不在于我们掌握的工具，
+                                而在于我们构想的架构和解决的问题。语言无关的思维方式成就跨平台的解决方案。&rdquo;
+                            </p>
+                        </div>
+
                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                            <div>
-                                <h3 className="text-xl font-semibold text-white mb-4">技术技能</h3>
-                                <div className="space-y-4">
-                                    <div>
-                                        <div className="flex justify-between mb-1">
-                                            <span className="text-gray-200">前端开发</span>
-                                            <span className="text-blue-400">95%</span>
-                                        </div>
-                                        <div className="w-full bg-gray-700 rounded-full h-2">
-                                            <div className="bg-blue-500 h-2 rounded-full" style={{width: '95%'}}></div>
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <div className="flex justify-between mb-1">
-                                            <span className="text-gray-200">后端开发</span>
-                                            <span className="text-green-400">90%</span>
-                                        </div>
-                                        <div className="w-full bg-gray-700 rounded-full h-2">
-                                            <div className="bg-green-500 h-2 rounded-full" style={{width: '90%'}}></div>
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <div className="flex justify-between mb-1">
-                                            <span className="text-gray-200">3D图形与WebGL</span>
-                                            <span className="text-purple-400">85%</span>
-                                        </div>
-                                        <div className="w-full bg-gray-700 rounded-full h-2">
-                                            <div className="bg-purple-500 h-2 rounded-full" style={{width: '85%'}}></div>
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <div className="flex justify-between mb-1">
-                                            <span className="text-gray-200">AI/ML集成</span>
-                                            <span className="text-orange-400">80%</span>
-                                        </div>
-                                        <div className="w-full bg-gray-700 rounded-full h-2">
-                                            <div className="bg-orange-500 h-2 rounded-full" style={{width: '80%'}}></div>
-                                        </div>
-                                    </div>
+                            <div className="bg-gray-800/60 rounded-xl p-6 border border-gray-700 backdrop-blur-sm">
+                                <h3 className="text-xl font-semibold text-blue-400 mb-4 flex items-center">
+                                    <span className="mr-3">🏗️</span>
+                                    架构思维
+                                </h3>
+                                <div className="space-y-3">
+                                    <p className="text-gray-300 leading-relaxed">
+                                        <strong className="text-white">系统性思维：</strong> 每个组件都是更大整体的一部分。
+                                        我以可扩展性、可维护性和弹性为核心进行设计。
+                                    </p>
+                                    <p className="text-gray-300 leading-relaxed">
+                                        <strong className="text-white">模式识别：</strong> 识别跨领域的通用模式，
+                                        构建优雅且可复用的解决方案。
+                                    </p>
                                 </div>
                             </div>
-                            
-                            <div>
-                                <h3 className="text-xl font-semibold text-white mb-4">教育背景</h3>
-                                <div className="space-y-4">
-                                    <div className="bg-white/5 rounded-lg p-4">
-                                        <h4 className="font-semibold text-blue-400">硕士学位</h4>
-                                        <p className="text-gray-200">计算机科学</p>
-                                        <p className="text-gray-300 text-sm">坎特伯雷大学，2018</p>
-                                    </div>
-                                    <div className="bg-white/5 rounded-lg p-4">
-                                        <h4 className="font-semibold text-green-400">专业认证</h4>
-                                        <ul className="text-gray-200 text-sm space-y-1">
-                                            <li>• AWS认证开发者</li>
-                                            <li>• 谷歌云专业认证</li>
-                                            <li>• React高级认证</li>
-                                        </ul>
-                                    </div>
+
+                            <div className="bg-gray-800/60 rounded-xl p-6 border border-gray-700 backdrop-blur-sm">
+                                <h3 className="text-xl font-semibold text-green-400 mb-4 flex items-center">
+                                    <span className="mr-3">🌱</span>
+                                    持续学习
+                                </h3>
+                                <div className="space-y-3">
+                                    <p className="text-gray-300 leading-relaxed">
+                                        <strong className="text-white">第一性原理：</strong> 理解基础原理使我能够
+                                        快速掌握新技术和新范式。
+                                    </p>
+                                    <p className="text-gray-300 leading-relaxed">
+                                        <strong className="text-white">适应性智慧：</strong> 跨学科综合知识
+                                        并根据情境灵活应用的能力。
+                                    </p>
                                 </div>
+                            </div>
+
+                            <div className="bg-gray-800/60 rounded-xl p-6 border border-gray-700 backdrop-blur-sm">
+                                <h3 className="text-xl font-semibold text-purple-400 mb-4 flex items-center">
+                                    <span className="mr-3">🌐</span>
+                                    平台无关性
+                                </h3>
+                                <div className="space-y-3">
+                                    <p className="text-gray-300 leading-relaxed">
+                                        <strong className="text-white">语言独立性：</strong> 概念超越语法。
+                                        我专注于解决问题而非工具依赖。
+                                    </p>
+                                    <p className="text-gray-300 leading-relaxed">
+                                        <strong className="text-white">技术中立性：</strong> 最佳解决方案来自
+                                        客观评估，而非个人偏好。
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div className="bg-gray-800/60 rounded-xl p-6 border border-gray-700 backdrop-blur-sm">
+                                <h3 className="text-xl font-semibold text-orange-400 mb-4 flex items-center">
+                                    <span className="mr-3">⚡</span>
+                                    创新驱动
+                                </h3>
+                                <div className="space-y-3">
+                                    <p className="text-gray-300 leading-relaxed">
+                                        <strong className="text-white">创造性问题解决：</strong> 结合技术卓越
+                                        与创新思维，打造全新解决方案。
+                                    </p>
+                                    <p className="text-gray-300 leading-relaxed">
+                                        <strong className="text-white">前瞻性思维：</strong> 预见技术演进，
+                                        为未来挑战做好准备。
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="mt-8">
+                            <h3 className="text-2xl font-semibold text-white mb-6">技术精通领域</h3>
+                            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                                {[
+                                    { name: '全栈架构', icon: '🏛️', color: 'blue' },
+                                    { name: '云计算与DevOps', icon: '☁️', color: 'green' },
+                                    { name: '数据科学与AI', icon: '🧠', color: 'purple' },
+                                    { name: '系统设计', icon: '⚙️', color: 'orange' },
+                                    { name: '金融系统', icon: '💳', color: 'yellow' },
+                                    { name: '实时图形', icon: '🎮', color: 'red' },
+                                    { name: '移动与Web', icon: '📱', color: 'indigo' },
+                                    { name: '区块链与DeFi', icon: '⛓️', color: 'pink' }
+                                ].map((domain, index) => (
+                                    <div key={index} className={`bg-${domain.color}-900/20 border border-${domain.color}-500/30 rounded-lg p-4 text-center hover:bg-${domain.color}-900/30 transition-all duration-300`}>
+                                        <div className="text-2xl mb-2">{domain.icon}</div>
+                                        <div className={`text-${domain.color}-400 text-sm font-medium`}>{domain.name}</div>
+                                    </div>
+                                ))}
                             </div>
                         </div>
                     </div>
@@ -310,38 +443,27 @@ const AboutSection = ({ section, language, onPageChange, currentPage = 0 }) => {
     const currentPageData = aboutPages[localPage] || aboutPages[0];
 
     // 页面变化时通知父组件
+    const aboutPagesLength = aboutPages.length;
     useEffect(() => {
         if (onPageChange) {
-            onPageChange(localPage, aboutPages.length);
+            onPageChange(localPage, aboutPagesLength);
         }
-    }, [localPage, onPageChange]);
+    }, [localPage, onPageChange, aboutPagesLength]);
 
     // 监听外部页面变化
     useEffect(() => {
         setLocalPage(currentPage);
     }, [currentPage]);
 
-    const nextPage = () => {
-        if (localPage < aboutPages.length - 1) {
-            setLocalPage(localPage + 1);
-        }
-    };
-
-    const prevPage = () => {
-        if (localPage > 0) {
-            setLocalPage(localPage - 1);
-        }
-    };
-
     return (
-        <div className="flex h-screen w-full relative">
+        <div className="flex h-screen w-full relative overflow-hidden">
             {/* 左侧固定头像区域 */}
             <div className="w-1/3 flex items-center justify-center relative z-20">
                 <div className="avatar-container relative transition-all duration-500 ease-out group">
-                    {/* 背景动画层 */}
-                    <div className="absolute inset-0 rounded-full -z-10 transition-all duration-500 ease-out w-[300px] h-[300px] group-hover:w-[320px] group-hover:h-[320px]">
+                    {/* 背景动画层 - 临时禁用以解决多个圆环问题 */}
+                    <div className="absolute inset-0 rounded-full -z-10 transition-all duration-500 ease-out w-[300px] h-[300px] group-hover:w-[320px] group-hover:h-[320px]" style={{ display: 'none' }}>
                         {/* 外层旋转渐变 */}
-                        <div className="absolute inset-0 rounded-full animate-gradientShift opacity-70 group-hover:opacity-90 transition-opacity duration-500" 
+                        <div className="absolute inset-0 rounded-full opacity-70 group-hover:opacity-90 transition-opacity duration-500" 
                              style={{
                                  background: 'linear-gradient(45deg, #afcc8f, #7ca65c, #5d7d4b, #768e90, #afcc8f)',
                                  backgroundSize: '400% 400%',
@@ -350,7 +472,7 @@ const AboutSection = ({ section, language, onPageChange, currentPage = 0 }) => {
                              }}>
                         </div>
                         {/* 中层hue-rotate */}
-                        <div className="absolute inset-1 rounded-full animate-hueRotate opacity-50 group-hover:opacity-70 transition-opacity duration-500" 
+                        <div className="absolute inset-1 rounded-full opacity-50 group-hover:opacity-70 transition-opacity duration-500" 
                              style={{
                                  background: 'conic-gradient(from 0deg, #afcc8f, #7ca65c, #5d7d4b, #768e90, #afcc8f)',
                                  filter: 'blur(6px)',
@@ -368,7 +490,7 @@ const AboutSection = ({ section, language, onPageChange, currentPage = 0 }) => {
                     </div>
                     
                     {/* 头像主体 */}
-                    <div className="relative rounded-full shadow-2xl overflow-hidden bg-gray-900 border-4 border-white/30 backdrop-blur-sm transition-all duration-500 ease-out w-[300px] h-[300px] group-hover:w-[320px] group-hover:h-[320px] group-hover:border-4 cursor-pointer">
+                    <div className="relative rounded-full shadow-2xl overflow-hidden bg-gray-900 border-4 border-white/30 backdrop-blur-sm transition-all duration-500 ease-out w-[300px] h-[300px] group-hover:w-[320px] group-hover:h-[320px] cursor-pointer">
                         <Suspense 
                             fallback={
                                 <div className="w-full h-full flex items-center justify-center bg-gray-800">
@@ -423,7 +545,7 @@ const AboutSection = ({ section, language, onPageChange, currentPage = 0 }) => {
             </div>
 
             {/* CSS动画样式 */}
-            <style jsx>{`
+            <style>{`
                 @keyframes gradientShift {
                     0%, 100% { background-position: 0% 50%; }
                     50% { background-position: 100% 50%; }
@@ -437,64 +559,11 @@ const AboutSection = ({ section, language, onPageChange, currentPage = 0 }) => {
         </div>
     );
 };
-                    
-                    {/* 头像主体 - 响应式大小 */}
-                    <div className="relative rounded-full shadow-2xl overflow-hidden bg-gray-900 border-2 border-white/30 backdrop-blur-sm transition-all duration-500 ease-out w-16 h-16 group-hover:w-[300px] group-hover:h-[300px] group-hover:border-4 cursor-pointer">
-                        <Suspense 
-                            fallback={
-                                <div className="w-full h-full flex items-center justify-center bg-gray-800">
-                                    <FaSpinner className="animate-spin text-green-500 text-xl group-hover:text-4xl transition-all duration-500" />
-                                </div>
-                            }
-                        >
-                            <ShaderLoadingEffect imageSrc={imageSrc} hoverImageSrc={hoverImageSrc} />
-                        </Suspense>
-                    </div>
-                </div>
-            </div>
-
-            <div className="max-w-4xl mx-auto">
-                <h1 className="text-5xl font-bold mb-8 text-center">
-                    {section.name[language]}
-                </h1>
-                <p className="text-xl text-center text-gray-300 mb-12">
-                    {section.description[language]}
-                </p>
-                
-                {/* 个人信息 */}
-                <div className="bg-white/10 backdrop-blur-sm rounded-lg p-8">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                        <div>
-                            <h3 className="text-2xl font-semibold mb-4">Skills</h3>
-                            <div className="space-y-2">
-                                {['React', 'TypeScript', 'Node.js', 'Python', 'Three.js'].map(skill => (
-                                    <div key={skill} className="flex items-center">
-                                        <span className="w-2 h-2 bg-green-400 rounded-full mr-3"></span>
-                                        <span>{skill}</span>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-                        <div>
-                            <h3 className="text-2xl font-semibold mb-4">Experience</h3>
-                            <p className="text-gray-300 leading-relaxed">
-                                Full-stack developer with expertise in modern web technologies 
-                                and a passion for creating beautiful, functional user experiences.
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    );
-};
 
 AboutSection.propTypes = {
-    section: PropTypes.shape({
-        name: PropTypes.object.isRequired,
-        description: PropTypes.object.isRequired
-    }).isRequired,
-    language: PropTypes.string.isRequired
+    language: PropTypes.string.isRequired,
+    onPageChange: PropTypes.func,
+    currentPage: PropTypes.number
 };
 
 export default AboutSection;

@@ -98,8 +98,8 @@ const HomePage = () => {
                 <div className="w-full lg:w-1/2 h-full lg:h-full flex flex-col items-center justify-center relative p-4">
                     {/* 头像容器 - 有hue-rotate背景动画 */}
                     <div className="avatar-container relative mb-8">
-                        {/* 背景动画层 - 多层动画效果 */}
-                        <div className="absolute inset-0 w-[300px] h-[300px] md:w-[400px] md:h-[400px] rounded-full -z-10">
+                        {/* 背景动画层 - 临时禁用以解决多个圆环问题 */}
+                        <div className="absolute inset-0 w-[300px] h-[300px] md:w-[400px] md:h-[400px] rounded-full -z-10" style={{ display: 'none' }}>
                             {/* 外层旋转渐变 */}
                             <div className="absolute inset-0 rounded-full animate-gradientShift opacity-80" 
                                  style={{

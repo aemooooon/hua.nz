@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import SmartScrollManagerFixed from "./components/SmartScrollManagerFixed";
+import SmartScrollManager from "./components/SmartScrollManager";
 import AudioController from "./components/AudioController";
 import ThemeLanguageToggle from "./components/ThemeLanguageToggle";
 import SmartDirectionalCursor from "./components/SmartDirectionalCursor";
@@ -31,7 +31,7 @@ const App = () => {
                 <SmartDirectionalCursor />
                 
                 {/* 智能滚动管理器（已优化：降低敏感度，禁止轮播） */}
-                <SmartScrollManagerFixed />
+                <SmartScrollManager />
 
                 {/* 控制按钮组 - 移动到右边，与主题语言切换按钮相邻 */}
                 <div className={`fixed bottom-6 right-20 z-50 transition-opacity duration-1000 ${controlsVisible ? 'opacity-100' : 'opacity-0'}`}>
