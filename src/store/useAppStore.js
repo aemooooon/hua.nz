@@ -198,9 +198,9 @@ const contentConfig = {
           content: {
             greeting: "Kia ora, I'm Hua Wang",
             paragraphs: [
-              "I am a full-stack developer with a strong focus on data engineering and building scalable, data-driven systems. I recently completed a Master of Applied Data Science with Distinction, where I designed and implemented real-world ETL pipelines, API integrations, and cloud deployments.",
-              "My experience includes collecting and processing geospatial and agricultural data for Zespri and building an air quality data platform using Spring Boot, MySQL, Redis, and ECS. I'm skilled in Python, SQL, Flask, Docker, and workflow automation using GitHub Actions and CI/CD pipelines.",
-              "I have hands-on experience with data bricks and cloud infrastructure on AWS and Azure, and I enjoy designing clean data architectures that can support business decisions."
+              "I am a versatile full-stack developer with expertise in computer/data science, building and integrating interactive web applications, data pipelines and visualisation dashboards.",
+              "I have experience with modern frontend frameworks such as React, Next.js, and TypeScript, as well as working with libraries such as Three.js and ECharts. On the backend side, I am skilled in developing RESTful APIs and data-driven apps using Java, Python, Node.js, and C# ASP.NET.",
+              "I have also been working with containerised environments (Docker, Kubernetes), GitHub Actions, GitLab CI/CD pipelines, and cloud platforms such as AWS and Azure."
             ]
           }
         },

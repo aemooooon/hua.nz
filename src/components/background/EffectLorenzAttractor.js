@@ -22,8 +22,8 @@ export class EffectLorenzAttractor {
         this.x = 0.1;  // 初始位置
         this.y = 0;
         this.z = 0;
-        this.dt = 0.01; // 增加时间步长，让动画更快
-        this.maxParticles = 2000; // 大幅增加粒子数量到2000，创造更密集的轨迹
+        this.dt = 0.02; // 恢复到0.02
+        this.maxParticles = 1200; // 大幅增加粒子数量到2000，创造更密集的轨迹
 
         // 更明亮的颜色配置 - 改为深海/夜空蓝色主题
         this.fireballColor = params.fireballColor || new THREE.Color(0x0088ff); // 明亮蓝色主球
@@ -58,7 +58,7 @@ export class EffectLorenzAttractor {
 
         // 优化的相机设置
         this.camera = new THREE.PerspectiveCamera(75, this.canvas.width / this.canvas.height, 0.1, 1000);
-        this.camera.position.set(0, 0, 60); // 更近的相机位置
+        this.camera.position.set(0, 0, 48); // 更近的相机位置
         this.camera.lookAt(0, 0, 0);
 
         // 渲染器设置 - 优化高DPI屏幕支持
@@ -93,24 +93,26 @@ export class EffectLorenzAttractor {
         const outputPass = new OutputPass();
         this.composer.addPass(outputPass);
 
-        // Galaxy 风格的发光主球 - 在 Lorenz 轨迹起点
-        const fireballGeometry = new THREE.SphereGeometry(2.0, 32, 32);
+        // 太阳风格的发光主球 - 在 Lorenz 轨迹起点
+        const fireballGeometry = new THREE.SphereGeometry(1.5, 32, 32); // 减小尺寸，从2.0到1.5
+        
+        // 创建太阳材质 - 使用渐变纹理和发光效果
         const fireballMaterial = new THREE.MeshBasicMaterial({
-            color: new THREE.Color('#ffa575'), // Galaxy 内核橙色
+            color: new THREE.Color('#ffaa33'), // 更像太阳的橙黄色
             transparent: true,
-            opacity: 0.8,
+            opacity: 0.9,
             blending: THREE.AdditiveBlending, // 加法混合增强发光效果
         });
 
         this.fireball = new THREE.Mesh(fireballGeometry, fireballMaterial);
         this.scene.add(this.fireball);
         
-        // 在主球周围添加额外的发光光环
-        const haloGeometry = new THREE.SphereGeometry(3.5, 32, 32);
+        // 在主球周围添加太阳风格的光环 - 多层次发光
+        const haloGeometry = new THREE.SphereGeometry(2.5, 32, 32); // 调整光环大小
         const haloMaterial = new THREE.MeshBasicMaterial({
-            color: new THREE.Color('#ff8844'), // 稍暗的橙色光环
+            color: new THREE.Color('#ff6611'), // 更深的橙红色光环
             transparent: true,
-            opacity: 0.3,
+            opacity: 0.4, // 稍微增加不透明度
             blending: THREE.AdditiveBlending,
             side: THREE.BackSide, // 内部渲染
         });
@@ -257,7 +259,7 @@ export class EffectLorenzAttractor {
             }
         }
 
-        this.time += 0.016;
+        this.time += 0.025; // 恢复到0.025
 
         // Lorenz 吸引子方程计算 - 更快的速度
         const dx = this.sigma * (this.y - this.x) * this.dt;
@@ -274,7 +276,7 @@ export class EffectLorenzAttractor {
         
         // 光环跟随主球，但有轻微的延迟和缩放动画
         this.halo.position.copy(this.fireball.position);
-        this.halo.scale.setScalar(1.0 + Math.sin(this.time * 2) * 0.1); // 轻微的脉动效果
+        this.halo.scale.setScalar(1.0 + Math.sin(this.time * 2) * 0.1); // 恢复原来的脉动效果
         
         // 更新点光源位置跟随主球
         this.pointLight.position.copy(this.fireball.position);
@@ -354,7 +356,7 @@ export class EffectLorenzAttractor {
             this.instancedMesh.instanceColor.needsUpdate = true;
         }
 
-        // 更快的场景旋转
+        // 恢复原来的场景旋转速度
         this.scene.rotation.y += 0.005;
         this.scene.rotation.x += 0.002;
 
