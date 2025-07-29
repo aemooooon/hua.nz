@@ -70,23 +70,15 @@ const HomeSection = ({
                 animationFillMode: 'both'
             } : {}}>
                 <div className="space-y-2 sm:space-y-4">
-                    {/* 英文slogan - 宽屏一行，窄屏两行 */}
-                    <div className="flex flex-col sm:flex-row sm:justify-center sm:items-center sm:space-x-2 space-y-1 sm:space-y-0">
-                        <p className={`text-base sm:text-lg md:text-xl lg:text-2xl font-light text-white/90 tracking-wider leading-relaxed ${
-                            enableOpeningAnimation ? '' : 'typewriter-text typewriter-optimized cursor-blink'
+                    {/* 英文slogan - 使用统一的打字机效果解决对齐问题 */}
+                    <div className="text-center">
+                        <p className={`text-base sm:text-lg md:text-xl lg:text-2xl font-light text-white/90 tracking-wider leading-relaxed inline-block ${
+                            enableOpeningAnimation ? '' : 'typewriter-text typewriter-optimized'
                         }`} style={!enableOpeningAnimation ? {
                             animationDelay: '6s',
                             animationFillMode: 'both'
                         } : {}}>
-                            Order from Chaos,
-                        </p>
-                        <p className={`text-base sm:text-lg md:text-xl lg:text-2xl font-light text-white/90 tracking-wider leading-relaxed ${
-                            enableOpeningAnimation ? '' : 'typewriter-text typewriter-optimized'
-                        }`} style={!enableOpeningAnimation ? {
-                            animationDelay: '7s',
-                            animationFillMode: 'both'
-                        } : {}}>
-                            Innovation through Tradeoffs.
+                            Order from Chaos, Innovation through Tradeoffs.
                             <span className="inline-block ml-1 w-px h-5 sm:h-6 md:h-7 lg:h-8 bg-white input-cursor"></span>
                         </p>
                     </div>

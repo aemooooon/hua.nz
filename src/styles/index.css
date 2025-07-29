@@ -691,7 +691,7 @@ body.light {
 
 /* 性能优化的打字机动画 */
 .typewriter-optimized {
-    animation: typewriterOptimized 2s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    animation: typewriterOptimized 3.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
 }
 
 /* 光标闪烁 - 独立动画，只让光标闪烁 */
