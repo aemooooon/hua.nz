@@ -144,9 +144,24 @@ const SmartDirectionalCursor = () => {
         const glowIntensity = glowIntensityRef.current;
         const pulseScale = 1 + Math.sin(animationFrame * 0.15) * 0.06 * glowIntensity; // 减小脉冲幅度
         
-        // 动态颜色基于滚动力度
+        // 动态颜色基于滚动力度 - 从绿色到红色的渐变
         const baseColor = '#00f5ff'; // 科技蓝
-        const forceColor = `hsl(${180 + scrollIntensity * 60}, 100%, ${50 + scrollIntensity * 30}%)`; // 蓝到青到白
+        // 根据滚动强度从绿色(120)到红色(0)渐变
+        // 0% = 绿色(120度), 100% = 红色(0度)
+        // 更细腻的颜色渐变：使用平滑的曲线过渡
+        // 使用easeInOut曲线让过渡更自然，避免鼠标敏感导致的突变
+        const smoothIntensity = scrollIntensity * scrollIntensity * (3 - 2 * scrollIntensity); // 平滑曲线
+        const hue = 120 * (1 - smoothIntensity); // 120度(绿色) -> 0度(红色)，使用平滑强度
+        
+        // 更细腻的饱和度和亮度控制
+        const saturation = 80 + smoothIntensity * 20; // 从80%逐渐到100%饱和度
+        const lightness = smoothIntensity < 0.3 
+            ? 60 - smoothIntensity * 20  // 早期阶段：从绿色(60%)缓慢降低
+            : smoothIntensity < 0.7
+            ? 50 - smoothIntensity * 15  // 中期阶段：继续降低但更缓慢
+            : 40 - smoothIntensity * 10; // 后期阶段：红色区域，但保持细腻
+        
+        const forceColor = `hsl(${hue}, ${saturation}%, ${lightness}%)`; // 细腻的绿到红渐变
         const shadowIntensity = 15 + scrollIntensity * 60; // 减少阴影强度
         const shadowBlur = 8 + scrollIntensity * 30; // 减少模糊半径
         
@@ -216,7 +231,7 @@ const SmartDirectionalCursor = () => {
 
         return (
             <div style={containerStyle}>
-                {/* 外圈能量环 - 更轻盈 */}
+                {/* 外圈能量环 - 根据百分比显示绿到红渐变 */}
                 <div
                     style={{
                         position: 'absolute',
@@ -225,11 +240,11 @@ const SmartDirectionalCursor = () => {
                         borderRadius: '50%',
                         background: `conic-gradient(from ${animationFrame * 2}deg, 
                             ${forceColor}00 0deg, 
-                            ${forceColor}30 ${scrollIntensity * 180}deg, 
-                            ${forceColor}60 ${scrollIntensity * 360}deg, 
+                            ${forceColor}60 ${scrollIntensity * 180}deg, 
+                            ${forceColor}80 ${scrollIntensity * 360}deg, 
                             ${forceColor}00 360deg)`,
                         animation: scrollIntensity > 0.1 ? 'spin 2s linear infinite' : 'none',
-                        opacity: glowIntensity * 0.6, // 降低外圈透明度
+                        opacity: glowIntensity * 0.8, // 稍微提高透明度让颜色更明显
                     }}
                 />
                 
@@ -297,20 +312,24 @@ const SmartDirectionalCursor = () => {
                     />
                 )}
 
-                {/* 滚动力度数值显示 - 减小字体 */}
+                {/* 滚动力度数值显示 - 在两个圆环的正中间 */}
                 {scrollIntensity > 0.25 && ( // 提高显示阈值
                     <div
                         style={{
                             position: 'absolute',
-                            bottom: `-${size * 0.15}px`, // 调整位置
+                            top: `${size * 0.65}px`, // 移动到两个圆环的正中间
                             left: '50%',
                             transform: 'translateX(-50%)',
                             color: forceColor,
-                            fontSize: '14px', // 减小字体
-                            fontWeight: '500', // 减轻字重
-                            textShadow: `0 0 10px ${forceColor}`, // 减少文字发光
+                            fontSize: '16px', // 稍微增大字体
+                            fontWeight: '600', // 加粗字体
+                            textShadow: `0 0 12px ${forceColor}`, // 增强文字发光
                             fontFamily: 'monospace',
-                            opacity: scrollIntensity * 0.8, // 降低透明度
+                            opacity: scrollIntensity * 0.9, // 稍微提高透明度
+                            background: `rgba(0, 0, 0, 0.3)`, // 添加半透明背景
+                            padding: '2px 8px', // 添加内边距
+                            borderRadius: '12px', // 圆角
+                            border: `1px solid ${forceColor}30`, // 添加边框
                         }}
                     >
                         {Math.round(scrollIntensity * 100)}%
