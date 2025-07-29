@@ -1,12 +1,20 @@
 import PropTypes from 'prop-types';
 import { useAppStore } from '../../../store/useAppStore';
 import NavigationCube from '../../NavigationCube';
+import '../../../styles/OpeningAnimations.css';
 
 // import { Suspense, lazy } from 'react'; // 移动到About页面
 // import { FaSpinner } from 'react-icons/fa'; // 移动到About页面
 // const ShaderLoadingEffect = lazy(() => import('../../ShaderLoadingEffect')); // 移动到About页面
 
-const HomeSection = ({ section, language, sections, onSectionChange }) => {
+const HomeSection = ({ 
+    section, 
+    language, 
+    sections, 
+    onSectionChange, 
+    // 开场动画相关属性
+    enableOpeningAnimation = false
+}) => {
     const { getContent } = useAppStore();
     const content = getContent();
 
@@ -15,60 +23,82 @@ const HomeSection = ({ section, language, sections, onSectionChange }) => {
     console.log('Section data:', section);
 
     return (
-        <div className="flex items-center justify-center h-screen w-full relative overflow-hidden">
-            {/* 姓名和职位 - 电影片头风格动画，向上移动更多 */}
-            <div className="absolute top-32 left-1/2 text-center text-white z-10" style={{
+        <div className="h-screen w-screen relative overflow-hidden" style={{ margin: 0, padding: 0, position: 'relative' }}>
+            {/* 全屏NavigationCube - z-index: 10 */}
+            <NavigationCube 
+                isLandingPage={true}
+                sections={sections}
+                onSectionChange={onSectionChange}
+                currentSectionId="home"
+                enableOpeningAnimation={enableOpeningAnimation}
+            />
+
+            {/* 姓名和职位 - 屏幕上方，避免挡住cube，确保title完全居中 */}
+            <div className={`absolute top-8 left-1/2 transform -translate-x-1/2 text-center text-white z-20 w-full px-4 ${
+                enableOpeningAnimation ? 'grand-title-entrance' : ''
+            }`} style={!enableOpeningAnimation ? {
                 animation: 'movieTitleEntrance 4s ease-out forwards 1s',
                 animationFillMode: 'both'
-            }}>
-                <h1 className="text-6xl font-bold mb-8 text-white font-beauRivage hover:text-green-300 transition-colors duration-300">
-                    {content.home.name}
-                </h1>
-                <h2 className="text-3xl font-mono text-green-300">
-                    {content.home.title}
-                </h2>
-            </div>
-
-            {/* 导航立方体区域 - 上下居中位置 */}
-            <div className="absolute z-20" style={{ 
-                top: '50%', // 上下居中
-                left: '50%', // 水平居中
-                transform: 'translate(-50%, -50%)' // 修正居中对齐
-            }}>
-                <div className="cube-container relative" style={{
-                    animation: 'cubeEntrance 2s ease-out forwards 0.5s',
-                    animationFillMode: 'both'
-                }}>
-                    {/* 导航立方体 - 360px容器 */}
-                    <div className="w-[360px] h-[360px] flex items-center justify-center overflow-visible">
-                        <NavigationCube 
-                            isLandingPage={true}
-                            sections={sections}
-                            onSectionChange={onSectionChange}
-                        />
-                    </div>
+            } : {}}>
+                <div className="flex flex-col items-center justify-center w-full relative">
+                    {/* 姓名 */}
+                    <h1 className={`text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-white font-beauRivage hover:text-green-300 transition-colors duration-300 mb-2 sm:mb-4 leading-tight text-center w-full mt-12 ${
+                        enableOpeningAnimation ? 'shimmer-text' : ''
+                    }`}>
+                        {content.home.name}
+                    </h1>
+                    {/* Title - 绝对定位强制居中 */}
+                    <h2 className={`text-lg sm:text-xl md:text-2xl lg:text-3xl font-mono text-green-300 mt-48 ${
+                        enableOpeningAnimation ? 'grand-subtitle-entrance' : ''
+                    }`} style={{ 
+                        position: 'absolute',
+                        left: '50%',
+                        transform: 'translateX(-50%)',
+                        width: 'max-content',
+                        whiteSpace: 'nowrap'
+                    }}>
+                        {content.home.title}
+                    </h2>
                 </div>
             </div>
 
-            {/* Slogan - 哲学性标语，底部中央位置 - 优化版本 */}
-            <div className="absolute bottom-0 left-1/2 text-center text-white z-10" style={{
+            {/* Slogan - 屏幕下方，宽屏一行显示，窄屏两行，闪烁光标 */}
+            <div className={`absolute bottom-16 left-1/2 transform -translate-x-1/2 text-center text-white z-20 w-full px-4 ${
+                enableOpeningAnimation ? 'grand-slogan-entrance' : ''
+            }`} style={!enableOpeningAnimation ? {
                 animation: 'sloganEntrance 3s ease-out forwards 5s',
-                animationFillMode: 'both',
-                transform: 'translateX(-50%)',
-                paddingBottom: '8vh'
-            }}>
-                <div className="space-y-4">
-                    <p className="text-xl font-light text-white/90 tracking-wider typewriter-text typewriter-optimized cursor-blink" style={{
-                        animationDelay: '6s',
-                        animationFillMode: 'both'
-                    }}>
-                        {content.home.slogan.english}
-                    </p>
-                    <p className="text-lg font-light text-green-300/80 tracking-wide typewriter-text typewriter-optimized" style={{
+                animationFillMode: 'both'
+            } : {}}>
+                <div className="space-y-2 sm:space-y-4">
+                    {/* 英文slogan - 宽屏一行，窄屏两行 */}
+                    <div className="flex flex-col sm:flex-row sm:justify-center sm:items-center sm:space-x-2 space-y-1 sm:space-y-0">
+                        <p className={`text-base sm:text-lg md:text-xl lg:text-2xl font-light text-white/90 tracking-wider leading-relaxed ${
+                            enableOpeningAnimation ? '' : 'typewriter-text typewriter-optimized cursor-blink'
+                        }`} style={!enableOpeningAnimation ? {
+                            animationDelay: '6s',
+                            animationFillMode: 'both'
+                        } : {}}>
+                            Order from Chaos,
+                        </p>
+                        <p className={`text-base sm:text-lg md:text-xl lg:text-2xl font-light text-white/90 tracking-wider leading-relaxed ${
+                            enableOpeningAnimation ? '' : 'typewriter-text typewriter-optimized'
+                        }`} style={!enableOpeningAnimation ? {
+                            animationDelay: '7s',
+                            animationFillMode: 'both'
+                        } : {}}>
+                            Innovation through Tradeoffs.
+                            <span className="inline-block ml-1 w-px h-5 sm:h-6 md:h-7 lg:h-8 bg-white input-cursor"></span>
+                        </p>
+                    </div>
+                    
+                    {/* 中文slogan */}
+                    <p className={`text-sm sm:text-base md:text-lg lg:text-xl font-light text-green-300/80 tracking-wide leading-relaxed mt-4 ${
+                        enableOpeningAnimation ? '' : 'typewriter-text typewriter-optimized'
+                    }`} style={!enableOpeningAnimation ? {
                         animationDelay: '8s',
                         animationFillMode: 'both'
-                    }}>
-                        {content.home.slogan.chinese}
+                    } : {}}>
+                        观混沌之纷，立秩序之象；权诸技之衡，启创新之变！
                     </p>
                 </div>
             </div>
@@ -82,7 +112,8 @@ HomeSection.propTypes = {
     }).isRequired,
     language: PropTypes.string.isRequired,
     sections: PropTypes.array,
-    onSectionChange: PropTypes.func
+    onSectionChange: PropTypes.func,
+    enableOpeningAnimation: PropTypes.bool
 };
 
 export default HomeSection;

@@ -11,7 +11,9 @@
 
 body {
     height: 100vh;
-    padding: 2%;
+    margin: 0;
+    padding: 0;
+    overflow: hidden; /* 防止滚动条 */
     @apply transition-colors duration-300;
 }
 
@@ -25,7 +27,11 @@ body.light {
 
 #root {
     position: relative;
-    height: 100%;
+    height: 100vh;
+    width: 100vw;
+    margin: 0;
+    padding: 0;
+    overflow: hidden; /* 防止滚动条 */
     min-width: 375px;
     min-height: 618px;
     @apply transition-all duration-300;
@@ -705,6 +711,24 @@ body.light {
     }
     51%, 100% { 
         opacity: 0;
+    }
+}
+
+/* 专用的输入光标动画 - 更像真实的文本输入光标 */
+.input-cursor {
+    animation: inputCursorBlink 1.2s ease-in-out infinite;
+    opacity: 1;
+}
+
+@keyframes inputCursorBlink {
+    0%, 45% { 
+        opacity: 1;
+    }
+    50%, 95% { 
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
     }
 }
 

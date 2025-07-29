@@ -5,11 +5,19 @@ import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.j
 import { useAppStore } from '../store/useAppStore';
 import { gsap } from 'gsap';
 
-const NavigationCube = ({ isLandingPage = false, onSectionChange, sections = [], currentSectionId }) => {
+const NavigationCube = ({ 
+    isLandingPage = false, 
+    onSectionChange, 
+    sections = [], 
+    currentSectionId, 
+    enableOpeningAnimation = false,
+    onAnimationComplete
+}) => {
     const mountRef = useRef();
     const cubeRef = useRef();
     const rotationAnimationRef = useRef(); // 用于存储3D旋转动画实例
     const entryAnimationRef = useRef(); // 用于存储入场动画实例
+    const openingAnimationRef = useRef(); // 用于存储开场震撼动画实例
     const previousSectionIdRef = useRef(currentSectionId); // 跟踪前一个section
     const mouseRef = useRef({ x: 0, y: 0 });
     const isDraggingRef = useRef(false);
@@ -28,9 +36,9 @@ const NavigationCube = ({ isLandingPage = false, onSectionChange, sections = [],
 
     // 根据是否在landing page和屏幕大小调整大小
     const getCanvasSize = useCallback(() => {
-        if (!isLandingPage) return 240; // 非首页时增大到240px，确保旋转后的对角线不被裁剪
-        // 在landing page时使用360px大尺寸
-        return 360; // 调整canvas尺寸为360px
+        if (!isLandingPage) return 240; // 非首页时保持240px
+        // 在landing page时使用全屏尺寸
+        return Math.max(window.innerWidth, window.innerHeight); // 使用屏幕的最大尺寸确保完全覆盖
     }, [isLandingPage]);
     
     const [canvasSize, setCanvasSize] = useState(getCanvasSize());
@@ -67,6 +75,12 @@ const NavigationCube = ({ isLandingPage = false, onSectionChange, sections = [],
         
         const handleResize = () => {
             setCanvasSize(getCanvasSize());
+            // 如果是首页，同时更新渲染器尺寸
+            if (mountRef.current?.firstChild) {
+                const canvas = mountRef.current.firstChild;
+                canvas.style.width = '100vw';
+                canvas.style.height = '100vh';
+            }
         };
         
         window.addEventListener('resize', handleResize);
@@ -146,7 +160,7 @@ const NavigationCube = ({ isLandingPage = false, onSectionChange, sections = [],
 
         // 创建相机 - 调整视角以获得更好的立体感
         const camera = new THREE.PerspectiveCamera(50, 1, 0.1, 1000); // 增加FOV到50度
-        camera.position.z = isLandingPage ? 6 : 8.5; // 非首页调远摄像机，让cube显示更小
+        camera.position.z = isLandingPage ? 10 : 8.5; // 首页摄像机调得更远，让cube显示更小
 
         // 创建渲染器 - 恢复高质量设置
         const renderer = new THREE.WebGLRenderer({ 
@@ -165,12 +179,20 @@ const NavigationCube = ({ isLandingPage = false, onSectionChange, sections = [],
         // 恢复正常像素比
         renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
         
-        // 确保canvas完全填满容器 - 恢复高质量显示
+        // 确保canvas完全填满容器 - 在首页时全屏显示
         if (isLandingPage) {
-            renderer.domElement.style.width = '100%';
-            renderer.domElement.style.height = '100%';
+            renderer.domElement.style.position = 'fixed';
+            renderer.domElement.style.top = '0';
+            renderer.domElement.style.left = '0';
+            renderer.domElement.style.width = '100vw';
+            renderer.domElement.style.height = '100vh';
             renderer.domElement.style.display = 'block';
-            renderer.domElement.style.objectFit = 'contain'; // 保持比例，高质量显示
+            renderer.domElement.style.zIndex = '10'; // 在背景之上，文字之下
+            renderer.domElement.style.pointerEvents = 'auto';
+            // 更新渲染器尺寸为全屏
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
         }
         
         // 恢复渲染质量
@@ -483,6 +505,208 @@ const NavigationCube = ({ isLandingPage = false, onSectionChange, sections = [],
         const wireframe = new THREE.LineSegments(edges, lineMaterial);
         cube.add(wireframe); // 将线框作为cube的子对象
 
+        // 震撼开场动画 (仅首页且开启开场动画)
+        if (isLandingPage && enableOpeningAnimation) {
+            // 设置cube初始状态 - 从远处快速飞入
+            cube.position.set(0, 0, -80); // 从更远处开始
+            cube.scale.set(0.05, 0.05, 0.05); // 从更小开始
+            cube.rotation.set(0, 0, 0);
+            
+            // 创建震撼开场动画序列 - 摄像机穿越每个面版本
+            openingAnimationRef.current = gsap.timeline({
+                onComplete: () => {
+                    if (onAnimationComplete) {
+                        onAnimationComplete();
+                    }
+                }
+            })
+                // 阶段1: 从远处快速飞入 (0-2s)
+                .to(cube.position, {
+                    z: 0,
+                    duration: 2.0,
+                    ease: "power3.out",
+                    delay: 0.5
+                })
+                .to(cube.scale, {
+                    x: 1.5,
+                    y: 1.5,
+                    z: 1.5,
+                    duration: 2.0,
+                    ease: "back.out(1.7)"
+                }, 0.5)
+                
+                // 阶段2: 摄像机穿越展示每个面 (2.5-8s)
+                // 面1: Home面 (正面) - 2.5-3.4s
+                .to(cube.rotation, {
+                    x: 0,
+                    y: 0,
+                    z: 0,
+                    duration: 0.6,
+                    ease: "power2.inOut"
+                }, 2.5)
+                .to(camera.position, {
+                    z: 4, // 摄像机靠近
+                    duration: 0.3,
+                    ease: "power2.out"
+                }, 2.8)
+                
+                // 面2: About面 (右面) - 3.4-4.3s
+                .to(cube.rotation, {
+                    x: 0,
+                    y: -Math.PI * 0.5, // 90度显示右面
+                    z: 0,
+                    duration: 0.6,
+                    ease: "power2.inOut"
+                })
+                .to(camera.position, {
+                    z: 3.5, // 更近距离特写
+                    duration: 0.3,
+                    ease: "power2.out"
+                }, 3.7)
+                
+                // 面3: Projects面 (背面) - 4.3-5.2s
+                .to(cube.rotation, {
+                    x: 0,
+                    y: -Math.PI, // 180度显示背面
+                    z: 0,
+                    duration: 0.6,
+                    ease: "power2.inOut"
+                })
+                .to(camera.position, {
+                    z: 4,
+                    duration: 0.3,
+                    ease: "power2.out"
+                }, 4.6)
+                
+                // 面4: Gallery面 (左面) - 5.2-6.1s
+                .to(cube.rotation, {
+                    x: 0,
+                    y: -Math.PI * 1.5, // 270度显示左面
+                    z: 0,
+                    duration: 0.6,
+                    ease: "power2.inOut"
+                })
+                .to(camera.position, {
+                    z: 3.5,
+                    duration: 0.3,
+                    ease: "power2.out"
+                }, 5.5)
+                
+                // 面5: Education面 (底面) - 6.1-7s
+                .to(cube.rotation, {
+                    x: Math.PI * 0.5, // 向上翻转显示底面
+                    y: -Math.PI * 1.5,
+                    z: 0,
+                    duration: 0.6,
+                    ease: "power2.inOut"
+                })
+                .to(camera.position, {
+                    z: 4,
+                    duration: 0.3,
+                    ease: "power2.out"
+                }, 6.4)
+                
+                // 面6: Contact面 (顶面) - 7-7.9s
+                .to(cube.rotation, {
+                    x: -Math.PI * 0.5, // 向下翻转显示顶面
+                    y: -Math.PI * 1.5,
+                    z: 0,
+                    duration: 0.6,
+                    ease: "power2.inOut"
+                })
+                .to(camera.position, {
+                    z: 3.5,
+                    duration: 0.3,
+                    ease: "power2.out"
+                }, 7.3)
+                
+                // 阶段3: 疯狂旋转放大 (8-10s)
+                .to(camera.position, {
+                    z: 10, // 摄像机拉远
+                    duration: 0.5,
+                    ease: "power2.in"
+                }, 8)
+                .to(cube.scale, {
+                    x: 12, // 大幅放大
+                    y: 12,
+                    z: 12,
+                    duration: 2.0,
+                    ease: "power3.in"
+                }, 8)
+                .to(cube.rotation, {
+                    x: cube.rotation.x + Math.PI * 4, // 疯狂旋转
+                    y: cube.rotation.y + Math.PI * 6,
+                    z: cube.rotation.z + Math.PI * 3,
+                    duration: 2.0,
+                    ease: "power2.out"
+                }, 8)
+                
+                // 阶段4: 平滑回缩，对角线旋转开始 (10-12.5s)
+                .to(cube.scale, {
+                    x: 1.2,
+                    y: 1.2,
+                    z: 1.2,
+                    duration: 2.5,
+                    ease: "power3.out" // 更平滑的缓出
+                }, 10)
+                .to(camera.position, {
+                    z: 10, // 保持远距离
+                    duration: 2.5,
+                    ease: "power2.out"
+                }, 10)
+                // 开始对角线旋转 - 丝滑过渡
+                .to(cube.rotation, {
+                    x: cube.rotation.x + Math.PI * 1.5, // 对角线转动
+                    y: cube.rotation.y + Math.PI * 1.8,
+                    z: cube.rotation.z + Math.PI * 1.2,
+                    duration: 2.5,
+                    ease: "sine.inOut" // 正弦曲线，最丝滑的过渡
+                }, 10)
+                
+                // 阶段5: 继续平滑旋转，逐步到位 (12.5-14.5s)
+                .to(cube.scale, {
+                    x: 1.05,
+                    y: 1.05,
+                    z: 1.05,
+                    duration: 2.0,
+                    ease: "power2.out"
+                })
+                .to(cube.rotation, {
+                    x: -Math.PI * 0.81, // 最终角度：135度向上旋转显示顶面
+                    y: Math.PI * 0.25,  // 45度让角正对摄像机
+                    z: 0,
+                    duration: 2.0,
+                    ease: "power1.inOut" // 更加线性平滑的过渡
+                })
+                
+                // 阶段6: 最终丝滑弹跳 (14.5-15.5s)
+                .to(cube.scale, {
+                    x: 1,
+                    y: 1,
+                    z: 1,
+                    duration: 0.6,
+                    ease: "power2.out"
+                })
+                .to(cube.scale, {
+                    x: 1.08,
+                    y: 1.08,
+                    z: 1.08,
+                    duration: 0.2,
+                    ease: "power2.out"
+                })
+                .to(cube.scale, {
+                    x: 1,
+                    y: 1,
+                    z: 1,
+                    duration: 0.3,
+                    ease: "elastic.out(1.2, 0.4)" // 更柔和的弹性
+                });
+                
+        } else if (isLandingPage) {
+            // 普通首页显示 - 设置默认角度
+            cube.rotation.set(-Math.PI * 0.81, Math.PI * 0.25, 0);
+        }
+
         // 入场动画：720°旋转 (仅非首页)
         if (!isLandingPage) {
             // 设置初始旋转状态
@@ -733,6 +957,9 @@ const NavigationCube = ({ isLandingPage = false, onSectionChange, sections = [],
             if (entryAnimationRef.current) {
                 entryAnimationRef.current.kill();
             }
+            if (openingAnimationRef.current) {
+                openingAnimationRef.current.kill();
+            }
             
             if (mountElement && renderer.domElement) {
                 mountElement.removeChild(renderer.domElement);
@@ -761,14 +988,14 @@ const NavigationCube = ({ isLandingPage = false, onSectionChange, sections = [],
             renderer.dispose();
             document.body.style.cursor = 'default';
         };
-    }, [faces, isLandingPage, canvasSize, onSectionChange, currentSectionId]); // 添加currentSectionId依赖
+    }, [faces, isLandingPage, canvasSize, onSectionChange, currentSectionId, enableOpeningAnimation, onAnimationComplete]); // 添加所有依赖项
 
     return (
         <div 
             ref={mountRef}
-            className={`transition-all duration-300 ${
+            className={`transition-all duration-300 m-0 p-0 ${
                 isLandingPage 
-                    ? 'w-full h-full flex items-center justify-center' 
+                    ? 'fixed inset-0 z-10 w-full h-full overflow-hidden' // 首页时固定全屏，z-index 10
                     : 'w-full h-full flex items-center justify-center'
             }`}
             style={!isLandingPage ? {
@@ -776,7 +1003,9 @@ const NavigationCube = ({ isLandingPage = false, onSectionChange, sections = [],
                 overflow: 'visible',
                 zIndex: 9999,
                 pointerEvents: 'auto'
-            } : {}}
+            } : {
+                pointerEvents: 'auto'
+            }}
         />
     );
 };
@@ -785,7 +1014,9 @@ NavigationCube.propTypes = {
     isLandingPage: PropTypes.bool,
     onSectionChange: PropTypes.func,
     sections: PropTypes.array,
-    currentSectionId: PropTypes.string
+    currentSectionId: PropTypes.string,
+    enableOpeningAnimation: PropTypes.bool,
+    onAnimationComplete: PropTypes.func
 };
 
 export default NavigationCube;

@@ -22,7 +22,9 @@ const SmartScrollManager = () => {
         navigatePrev,
         isScrolling,
         getCurrentSection,
-        language
+        language,
+        // 开场动画相关状态
+        enableOpeningAnimation
     } = useAppStore();
     
     const containerRef = useRef(null);
@@ -355,7 +357,9 @@ const SmartScrollManager = () => {
                     // 为HomeSection传递额外的props
                     {...(currentSectionConfig.id === 'home' ? {
                         sections: sections,
-                        onSectionChange: navigateToSection
+                        onSectionChange: navigateToSection,
+                        // 开场动画相关属性
+                        enableOpeningAnimation: enableOpeningAnimation
                     } : {})}
                     // 为AboutSection传递分页相关的props
                     {...(currentSectionConfig.id === 'about' ? {
@@ -418,7 +422,7 @@ const SmartScrollManager = () => {
     return (
         <div 
             ref={containerRef}
-            className="relative w-full h-screen"
+            className="relative w-full h-screen m-0 p-0"
             style={{ overflow: 'hidden' }}
         >
             {/* 背景画布 */}
@@ -443,6 +447,7 @@ const SmartScrollManager = () => {
                         sections={sections}
                         onSectionChange={navigateToSection}
                         currentSectionId={currentSectionConfig?.id}
+                        enableOpeningAnimation={enableOpeningAnimation && currentSectionConfig?.id === 'home'}
                     />
                 </div>
             )}

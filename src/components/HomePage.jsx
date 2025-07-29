@@ -5,6 +5,7 @@ import imageSrc from "./hua_icon_base64";
 // import hoverImageSrc from "../assets/images/hua_500w1.jpg"; 
 import { FaSpinner } from "react-icons/fa";
 import NavigationCube from "./NavigationCube";
+import "../styles/OpeningAnimations.css";
 
 const ShaderLoadingEffect = lazy(() => import("./ShaderLoadingEffect"));
 
@@ -14,6 +15,8 @@ const HomePage = () => {
     const [animationComplete, setAnimationComplete] = useState(false);
     const [isTransitioning, setIsTransitioning] = useState(false);
     const [hoverImageSrc, setHoverImageSrc] = useState(null);
+    const [enableGrandEntrance, setEnableGrandEntrance] = useState(true); // 默认启用震撼开场
+    const [animationKey, setAnimationKey] = useState(0); // 用于重新触发动画
 
     // 页面顺序
     const pageOrder = useMemo(() => ['home', 'about', 'project', 'gallery', 'education', 'contact'], []);
@@ -139,17 +142,23 @@ const HomePage = () => {
                         </div>
                     </div>
 
-                    {/* 名字和职位 - 简洁版 */}
-                    <div className="text-center text-white animate-fadeInUp animation-delay-1000">
-                        <h1 className="text-4xl md:text-5xl font-bold mb-4 text-white font-beauRivage">
+                    {/* 名字和职位 - 震撼开场版本 */}
+                    <div className={`text-center text-white ${
+                        enableGrandEntrance ? 'grand-title-entrance' : 'animate-fadeInUp animation-delay-1000'
+                    }`}>
+                        <h1 className={`text-4xl md:text-5xl font-bold mb-4 text-white font-beauRivage ${
+                            enableGrandEntrance ? 'shimmer-text' : ''
+                        }`}>
                             {content.home.name}
                         </h1>
-                        <h2 className="text-xl md:text-2xl font-mono text-green-300">
+                        <h2 className={`text-xl md:text-2xl font-mono text-green-300 ${
+                            enableGrandEntrance ? 'grand-subtitle-entrance' : ''
+                        }`}>
                             {content.home.title}
                         </h2>
                         
                         {/* 滚轮提示 */}
-                        <div className="mt-8 animate-bounce">
+                        <div className={`mt-8 ${enableGrandEntrance ? 'grand-slogan-entrance' : 'animate-bounce'}`}>
                             <p className="text-sm text-gray-400 mb-2">Scroll to explore</p>
                             <div className="w-6 h-10 border-2 border-gray-400 rounded-full mx-auto relative">
                                 <div className="w-1 h-2 bg-gray-400 rounded-full absolute left-1/2 top-2 transform -translate-x-1/2 animate-ping"></div>
@@ -158,12 +167,42 @@ const HomePage = () => {
                     </div>
                 </div>
 
-                {/* 导航立方体区域 */}
+                {/* 导航立方体区域 - 震撼开场版本 */}
                 <div className="w-full lg:w-1/2 h-full lg:h-full flex items-center justify-center p-4">
-                    <div className="cube-container animate-slideInRight">
-                        <NavigationCube isLandingPage={true} />
+                    <div className={`cube-container ${
+                        enableGrandEntrance ? 'cube-grand-entrance' : 'animate-slideInRight'
+                    }`}>
+                        <NavigationCube 
+                            key={animationKey} // 用于重新触发动画
+                            isLandingPage={true} 
+                            enableOpeningAnimation={enableGrandEntrance}
+                        />
                     </div>
                 </div>
+
+                {/* 震撼开场控制按钮 */}
+                {animationComplete && (
+                    <div className="fixed top-4 right-4 z-50 space-y-2">
+                        <button
+                            onClick={() => setEnableGrandEntrance(!enableGrandEntrance)}
+                            className="block w-full bg-black/50 text-white px-4 py-2 rounded-lg border border-white/20 hover:bg-white/10 transition-colors"
+                        >
+                            {enableGrandEntrance ? '🎬 震撼开场' : '🎭 标准模式'}
+                        </button>
+                        {enableGrandEntrance && (
+                            <button
+                                onClick={() => {
+                                    setAnimationKey(prev => prev + 1);
+                                    // 重新加载页面来重新触发动画
+                                    window.location.reload();
+                                }}
+                                className="block w-full bg-green-600/50 text-white px-4 py-2 rounded-lg border border-green-400/30 hover:bg-green-500/50 transition-colors text-sm"
+                            >
+                                🔄 重播动画
+                            </button>
+                        )}
+                    </div>
+                )}
             </section>
 
             {/* 滚轮切换提示 */}

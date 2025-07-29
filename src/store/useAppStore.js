@@ -433,6 +433,10 @@ export const useAppStore = create(
       isScrolling: false,
       setIsScrolling: (scrolling) => set({ isScrolling: scrolling }),
 
+      // 开场动画状态
+      enableOpeningAnimation: true,
+      setEnableOpeningAnimation: (enabled) => set({ enableOpeningAnimation: enabled }),
+
       // 配置数据
       sections: sectionsConfig,
       
