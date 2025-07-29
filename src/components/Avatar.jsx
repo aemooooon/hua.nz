@@ -2,101 +2,52 @@ import { useEffect, useRef, useState } from "react";
 import PropTypes from "prop-types";
 import { gsap } from "gsap";
 
-// 性能检测
-const detectPerformance = () => {
-    const canvas = document.createElement('canvas');
-    const gl = canvas.getContext('webgl');
-    const memory = navigator.deviceMemory || 4; // GB, 默认4GB
-    const cores = navigator.hardwareConcurrency || 4;
-    
-    // 简单的性能评分
-    let score = 0;
-    if (memory >= 8) score += 3;
-    else if (memory >= 4) score += 2;
-    else score += 1;
-    
-    if (cores >= 8) score += 2;
-    else if (cores >= 4) score += 1;
-    
-    if (gl) score += 1;
-    
-    return score >= 5 ? 'high' : score >= 3 ? 'medium' : 'low';
-};
-
-const ShaderLoadingEffect = ({ imageSrc, hoverImageSrc }) => {
+const Avatar = ({ imageSrc, hoverImageSrc }) => {
     const canvasRef = useRef(null);
     const hoverImgRef = useRef(null);
     const [isHovered, setIsHovered] = useState(false);
-    const [performanceMode] = useState(detectPerformance());
-    const [isLoaded, setIsLoaded] = useState(false);
+    const [aspectRatio, setAspectRatio] = useState(1);
     const workerRef = useRef(null);
     const particlesRef = useRef([]);
 
-    // 延迟加载粒子效果
     useEffect(() => {
-        // 低性能设备不加载粒子效果
-        if (performanceMode === 'low') {
-            setIsLoaded(true);
-            return;
-        }
-        
-        // 延迟加载粒子效果以优化首屏性能
-        const timer = setTimeout(() => {
-            workerRef.current = new Worker(new URL("/particleWorker.js?worker_file&type=classic", import.meta.url));
-            workerRef.current.onmessage = (event) => {
-                const particles = event.data;
-                // 根据性能模式调整粒子数量
-                const maxParticles = performanceMode === 'high' ? particles.length : 
-                                   performanceMode === 'medium' ? Math.min(particles.length, 800) : 400;
-                
-                const limitedParticles = particles.slice(0, maxParticles);
-                
-                limitedParticles.forEach((particle) => {
-                    gsap.to(particle, {
-                        duration: particle.speed,
-                        x1: particle.x0,
-                        y1: particle.y0,
-                        delay: particle.y0 / 130,
-                        ease: "elastic.out",
-                    });
+        workerRef.current = new Worker(new URL("../workers/particleWorker.js?worker", import.meta.url));
+        workerRef.current.onmessage = (event) => {
+            const particles = event.data;
+            particles.forEach((particle) => {
+                gsap.to(particle, {
+                    duration: particle.speed,
+                    x1: particle.x0,
+                    y1: particle.y0,
+                    delay: particle.y0 / 130,
+                    ease: "elastic.out",
                 });
-                particlesRef.current = limitedParticles;
-            };
-            setIsLoaded(true);
-        }, 800); // 延迟800ms加载
+            });
+            particlesRef.current = particles;
+        };
 
         return () => {
-            clearTimeout(timer);
-            if (workerRef.current) {
-                workerRef.current.terminate();
-            }
+            workerRef.current.terminate();
         };
-    }, [performanceMode]);
+    }, []);
 
     useEffect(() => {
-        if (!isLoaded || performanceMode === 'low') return;
-        
         const png = new Image();
         png.onload = () => {
             const canvas = canvasRef.current;
-            if (!canvas) return;
-            
-            // 根据性能模式调整画布尺寸
-            const scale = performanceMode === 'high' ? 2 : performanceMode === 'medium' ? 1.5 : 1;
-            canvas.width = png.width * scale;
-            canvas.height = png.height * scale;
+            canvas.width = png.width * 2;
+            canvas.height = png.height * 2;
+            setAspectRatio(png.width / png.height);
 
             const offscreen = new OffscreenCanvas(png.width, png.height);
             const offscreenCtx = offscreen.getContext("2d");
             offscreenCtx.drawImage(png, 0, 0);
 
             const imageBitmap = offscreen.transferToImageBitmap();
-            if (workerRef.current) {
-                workerRef.current.postMessage({ imageBitmap, width: png.width, height: png.height }, [imageBitmap]);
-            }
+            workerRef.current.postMessage({ imageBitmap, width: png.width, height: png.height }, [imageBitmap]);
         };
         png.src = imageSrc;
-    }, [imageSrc, isLoaded, performanceMode]);
+    }, [imageSrc]);
 
     // 渲染粒子
     useEffect(() => {
@@ -115,19 +66,31 @@ const ShaderLoadingEffect = ({ imageSrc, hoverImageSrc }) => {
         requestAnimationFrame(render);
     }, [particlesRef]);
 
-    // 监听浏览器缩放事件和容器大小变化
+    // 监听浏览器缩放事件
     useEffect(() => {
         const handleResize = () => {
             const canvas = canvasRef.current;
             if (!canvas) return;
 
-            // 获取父容器的宽度和高度
+            // 获取父容器的宽度
             const parentWidth = canvas.parentElement.clientWidth;
             const parentHeight = canvas.parentElement.clientHeight;
 
-            // 对于圆形容器，确保画布填满整个容器
-            canvas.style.width = `${parentWidth}px`;
-            canvas.style.height = `${parentHeight}px`;
+            // 根据宽高比计算 canvas 的新宽度和高度
+            let newWidth, newHeight;
+            if (parentWidth / parentHeight > aspectRatio) {
+                // 父容器宽度过大，以高度为基准
+                newHeight = parentHeight;
+                newWidth = newHeight * aspectRatio;
+            } else {
+                // 父容器高度过大，以宽度为基准
+                newWidth = parentWidth;
+                newHeight = newWidth / aspectRatio;
+            }
+
+            // 设置 canvas 的宽度和高度
+            canvas.style.width = `${newWidth}px`;
+            canvas.style.height = `${newHeight}px`;
         };
 
         // 初始化时调用一次
@@ -136,24 +99,11 @@ const ShaderLoadingEffect = ({ imageSrc, hoverImageSrc }) => {
         // 监听 resize 事件
         window.addEventListener("resize", handleResize);
 
-        // 使用 ResizeObserver 监听父容器大小变化
-        const canvas = canvasRef.current;
-        const parentElement = canvas?.parentElement;
-        let resizeObserver;
-        
-        if (parentElement && window.ResizeObserver) {
-            resizeObserver = new ResizeObserver(handleResize);
-            resizeObserver.observe(parentElement);
-        }
-
         // 清理事件监听器
         return () => {
             window.removeEventListener("resize", handleResize);
-            if (resizeObserver) {
-                resizeObserver.disconnect();
-            }
         };
-    }, []);
+    }, [aspectRatio]);
 
     // 鼠标悬停时显示图片并重新触发动画
     const handleMouseEnter = () => {
@@ -204,8 +154,7 @@ const ShaderLoadingEffect = ({ imageSrc, hoverImageSrc }) => {
                     position: "absolute",
                     top: "50%",
                     left: "50%",
-                    transform: "translate(-50%, -50%) scale(1.1)", // 确保完全填充圆形容器
-                    borderRadius: "50%", // 确保图片也是圆形
+                    transform: "translate(-50%, -30%) scale(1.5)", // 初始状态
                 }}
             />
 
@@ -215,14 +164,10 @@ const ShaderLoadingEffect = ({ imageSrc, hoverImageSrc }) => {
                 src={hoverImageSrc}
                 alt="Hover Image"
                 style={{
-                    width: "100%",
-                    height: "100%",
-                    objectFit: "cover",
                     position: "absolute",
                     top: "50%",
                     left: "50%",
-                    transform: "translate(-50%, -50%) scale(1.1)", // 确保完全填充圆形容器
-                    borderRadius: "50%", // 确保图片也是圆形
+                    transform: "translate(-50%, -40%)", // 初始状态
                     opacity: 0, // 初始状态
                     visibility: isHovered ? "visible" : "hidden", // 控制可见性
                     transition: "opacity 0.8s ease, transform 0.8s ease", // 添加过渡效果
@@ -232,9 +177,10 @@ const ShaderLoadingEffect = ({ imageSrc, hoverImageSrc }) => {
         </div>
     );
 };
-ShaderLoadingEffect.propTypes = {
+
+Avatar.propTypes = {
     imageSrc: PropTypes.string.isRequired,
     hoverImageSrc: PropTypes.string.isRequired,
 };
 
-export default ShaderLoadingEffect;
+export default Avatar;

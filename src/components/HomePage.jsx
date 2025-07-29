@@ -7,7 +7,7 @@ import { FaSpinner } from "react-icons/fa";
 import NavigationCube from "./NavigationCube";
 import "../styles/OpeningAnimations.css";
 
-const ShaderLoadingEffect = lazy(() => import("./ShaderLoadingEffect"));
+const Avatar = lazy(() => import("./Avatar"));
 
 const HomePage = () => {
     const { getContent, currentSection, setCurrentSection } = useAppStore();
@@ -137,7 +137,7 @@ const HomePage = () => {
                                     </div>
                                 }
                             >
-                                <ShaderLoadingEffect imageSrc={imageSrc} hoverImageSrc={hoverImageSrc} />
+                                <Avatar imageSrc={imageSrc} hoverImageSrc={hoverImageSrc} />
                             </Suspense>
                         </div>
                     </div>

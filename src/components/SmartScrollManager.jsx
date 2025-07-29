@@ -34,10 +34,8 @@ const SmartScrollManager = () => {
     const scrollAccumulatorRef = useRef(0); // 滚动累积器
     
     // 滚动状态管理
-    const [scrollMode, setScrollMode] = useState('slide'); // 'slide' | 'content' | 'page'
+    const [scrollMode, setScrollMode] = useState('slide'); // 'slide' | 'content'
     const [isContentOverflowing, setIsContentOverflowing] = useState(false);
-    const [currentPageIndex, setCurrentPageIndex] = useState(0);
-    const [totalPages, setTotalPages] = useState(1);
 
     // 滚动敏感度配置
     const SCROLL_THRESHOLD = 240; // 滚动阈值 - 需要累积240px才触发（提高一倍）
@@ -52,28 +50,6 @@ const SmartScrollManager = () => {
         education: EducationSection,
         contact: ContactSection
     };
-
-    // About页面回调
-    const handleAboutPageChange = useCallback((pageIndex, totalPagesCount) => {
-        setCurrentPageIndex(pageIndex);
-        setTotalPages(totalPagesCount);
-        setScrollMode('page');
-    }, []);
-
-    // 检查是否可以导航
-    const canNavigateUp = useCallback(() => {
-        if (scrollMode === 'page') {
-            return currentPageIndex > 0 || currentSection > 0;
-        }
-        return currentSection > 0;
-    }, [scrollMode, currentPageIndex, currentSection]);
-
-    const canNavigateDown = useCallback(() => {
-        if (scrollMode === 'page') {
-            return currentPageIndex < totalPages - 1 || currentSection < sections.length - 1;
-        }
-        return currentSection < sections.length - 1;
-    }, [scrollMode, currentPageIndex, totalPages, currentSection, sections.length]);
 
     // 检测内容是否超出视窗
     const checkContentOverflow = useCallback(() => {
@@ -97,17 +73,13 @@ const SmartScrollManager = () => {
     const resetScrollState = useCallback(() => {
         scrollAccumulatorRef.current = 0; // 重置累积器
         
-        if (currentSectionConfig?.id === 'about') {
-            setScrollMode('page');
-            setCurrentPageIndex(0);
-        } else {
-            setScrollMode('slide');
-        }
+        // About页面现在使用标准滚动模式
+        setScrollMode('slide');
         
         if (contentRef.current) {
             contentRef.current.scrollTop = 0;
         }
-    }, [currentSectionConfig?.id]);
+    }, []);
 
     // 智能滚轮处理 - 降低敏感度
     const handleWheel = useCallback((event) => {
@@ -139,30 +111,7 @@ const SmartScrollManager = () => {
         const isScrollingDown = event.deltaY > 0;
         const isScrollingUp = event.deltaY < 0;
 
-        if (scrollMode === 'page') {
-            // About页面分页模式
-            if (isScrollingDown && canNavigateDown()) {
-                if (currentPageIndex >= totalPages - 1) {
-                    // 最后一页，切换到下一个section
-                    if (currentSection < sections.length - 1) {
-                        navigateNext();
-                    }
-                } else {
-                    // 下一页
-                    setCurrentPageIndex(prev => Math.min(prev + 1, totalPages - 1));
-                }
-            } else if (isScrollingUp && canNavigateUp()) {
-                if (currentPageIndex <= 0) {
-                    // 第一页，切换到上一个section
-                    if (currentSection > 0) {
-                        navigatePrev();
-                    }
-                } else {
-                    // 上一页
-                    setCurrentPageIndex(prev => Math.max(prev - 1, 0));
-                }
-            }
-        } else if (scrollMode === 'content' && isContentOverflowing) {
+        if (scrollMode === 'content' && isContentOverflowing) {
             // 内容滚动模式（无滚动条）
             const currentScrollTop = container.scrollTop;
             const maxScrollTop = container.scrollHeight - container.clientHeight;
@@ -198,7 +147,7 @@ const SmartScrollManager = () => {
                 navigatePrev();
             }
         }
-    }, [isScrolling, scrollMode, isContentOverflowing, currentPageIndex, totalPages, currentSection, sections.length, navigateNext, navigatePrev, canNavigateUp, canNavigateDown]);
+    }, [isScrolling, scrollMode, isContentOverflowing, currentSection, sections.length, navigateNext, navigatePrev]);
 
     // 键盘事件处理（增强版）
     const handleKeyDown = useCallback((event) => {
@@ -209,15 +158,7 @@ const SmartScrollManager = () => {
         switch (event.key) {
             case 'ArrowDown':
                 event.preventDefault();
-                if (scrollMode === 'page') {
-                    if (currentPageIndex >= totalPages - 1) {
-                        if (currentSection < sections.length - 1) {
-                            navigateNext();
-                        }
-                    } else {
-                        setCurrentPageIndex(prev => Math.min(prev + 1, totalPages - 1));
-                    }
-                } else if (scrollMode === 'content' && isContentOverflowing && container) {
+                if (scrollMode === 'content' && isContentOverflowing && container) {
                     const maxScrollTop = container.scrollHeight - container.clientHeight;
                     if (container.scrollTop >= maxScrollTop - 10) {
                         if (currentSection < sections.length - 1) {
@@ -236,15 +177,7 @@ const SmartScrollManager = () => {
                 
             case 'ArrowUp':
                 event.preventDefault();
-                if (scrollMode === 'page') {
-                    if (currentPageIndex <= 0) {
-                        if (currentSection > 0) {
-                            navigatePrev();
-                        }
-                    } else {
-                        setCurrentPageIndex(prev => Math.max(prev - 1, 0));
-                    }
-                } else if (scrollMode === 'content' && isContentOverflowing && container) {
+                if (scrollMode === 'content' && isContentOverflowing && container) {
                     if (container.scrollTop <= 10) {
                         if (currentSection > 0) {
                             navigatePrev();
@@ -277,9 +210,7 @@ const SmartScrollManager = () => {
                 
             case 'Home':
                 event.preventDefault();
-                if (scrollMode === 'page') {
-                    setCurrentPageIndex(0);
-                } else if (scrollMode === 'content' && container) {
+                if (scrollMode === 'content' && container) {
                     container.scrollTop = 0;
                 } else {
                     navigateToSection(0);
@@ -288,9 +219,7 @@ const SmartScrollManager = () => {
                 
             case 'End':
                 event.preventDefault();
-                if (scrollMode === 'page') {
-                    setCurrentPageIndex(totalPages - 1);
-                } else if (scrollMode === 'content' && container) {
+                if (scrollMode === 'content' && container) {
                     const maxScrollTop = container.scrollHeight - container.clientHeight;
                     container.scrollTop = maxScrollTop;
                 } else {
@@ -308,7 +237,7 @@ const SmartScrollManager = () => {
                 break;
             }
         }
-    }, [isScrolling, scrollMode, isContentOverflowing, currentPageIndex, totalPages, currentSection, sections.length, navigateNext, navigatePrev, navigateToSection]);
+    }, [isScrolling, scrollMode, isContentOverflowing, currentSection, sections.length, navigateNext, navigatePrev, navigateToSection]);
 
     // 监听section变化，重置滚动状态
     useEffect(() => {
@@ -361,11 +290,7 @@ const SmartScrollManager = () => {
                         // 开场动画相关属性
                         enableOpeningAnimation: enableOpeningAnimation
                     } : {})}
-                    // 为AboutSection传递分页相关的props
-                    {...(currentSectionConfig.id === 'about' ? {
-                        onPageChange: handleAboutPageChange,
-                        currentPage: currentPageIndex
-                    } : {})}
+                    // About页面不再需要分页props
                 />
             </Suspense>
         );
@@ -373,29 +298,7 @@ const SmartScrollManager = () => {
 
     // 渲染滚动指示器
     const renderScrollIndicator = () => {
-        if (scrollMode === 'page') {
-            // About页面分页指示器
-            return (
-                <div className="fixed right-4 top-1/2 transform -translate-y-1/2 z-40">
-                    <div className="flex flex-col space-y-2">
-                        {Array.from({ length: totalPages }, (_, index) => (
-                            <button
-                                key={index}
-                                onClick={() => setCurrentPageIndex(index)}
-                                className={`w-3 h-3 rounded-full transition-all duration-300 ${
-                                    index === currentPageIndex
-                                        ? 'bg-blue-400 scale-125'
-                                        : 'bg-white/30 hover:bg-white/50'
-                                }`}
-                            />
-                        ))}
-                    </div>
-                    <div className="text-xs text-white/60 mt-2 text-center">
-                        {currentPageIndex + 1}/{totalPages}
-                    </div>
-                </div>
-            );
-        } else if (scrollMode === 'content' && isContentOverflowing) {
+        if (scrollMode === 'content' && isContentOverflowing) {
             // 内容滚动指示器
             const container = contentRef.current;
             if (!container) return null;
