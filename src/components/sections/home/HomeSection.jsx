@@ -1,4 +1,5 @@
 import PropTypes from 'prop-types';
+import React, { useState, useEffect } from 'react';
 import { useAppStore } from '../../../store/useAppStore';
 import NavigationCube from '../../NavigationCube';
 import '../../../styles/OpeningAnimations.css';
@@ -22,18 +23,18 @@ const HomeSection = ({
     console.log('HomeSection rendered for language:', language);
     console.log('Section data:', section);
 
+    // 控制Cube延迟加载
+    const [showCube, setShowCube] = useState(false);
+
+    useEffect(() => {
+        // 600ms后再加载Cube，主内容优先
+        const timer = setTimeout(() => setShowCube(true), 600);
+        return () => clearTimeout(timer);
+    }, []);
+
     return (
         <div className="h-screen w-screen relative overflow-hidden" style={{ margin: 0, padding: 0, position: 'relative' }}>
-            {/* 全屏NavigationCube - z-index: 10 */}
-            <NavigationCube 
-                isLandingPage={true}
-                sections={sections}
-                onSectionChange={onSectionChange}
-                currentSectionId="home"
-                enableOpeningAnimation={enableOpeningAnimation}
-            />
-
-            {/* 姓名和职位 - 屏幕上方，避免挡住cube，确保title完全居中 */}
+            {/* 主内容优先渲染 */}
             <div className={`absolute top-8 left-1/2 transform -translate-x-1/2 text-center text-white z-20 w-full px-4 ${
                 enableOpeningAnimation ? 'grand-title-entrance' : ''
             }`} style={!enableOpeningAnimation ? {
@@ -94,6 +95,17 @@ const HomeSection = ({
                     </p>
                 </div>
             </div>
+
+            {/* Cube延迟加载 */}
+            {showCube && (
+                <NavigationCube 
+                    isLandingPage={true}
+                    sections={sections}
+                    onSectionChange={onSectionChange}
+                    currentSectionId="home"
+                    enableOpeningAnimation={enableOpeningAnimation}
+                />
+            )}
         </div>
     );
 };
