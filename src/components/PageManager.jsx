@@ -1,6 +1,7 @@
 import { useEffect, useState, Suspense, lazy } from 'react';
 import { useAppStore } from '../store/useAppStore';
 import NavigationCube from './NavigationCube';
+import AboutSection from './sections/about/AboutSection';
 import { FaSpinner } from 'react-icons/fa';
 
 // 懒加载页面组件
@@ -8,17 +9,16 @@ const HomePage = lazy(() => import('./HomePage'));
 const Project = lazy(() => import('./Project'));
 const Gallery = lazy(() => import('./Gallery'));
 const ContactPage = lazy(() => import('./ContactPage'));
-const AboutPage = lazy(() => import('./AboutPage'));
 const BlogPage = lazy(() => import('./BlogPage'));
 
 const PageManager = () => {
-    const { currentSection, setCurrentSection } = useAppStore();
+    const { currentSection } = useAppStore();
     const [cubePosition, setCubePosition] = useState('center');
     const [isTransitioning, setIsTransitioning] = useState(false);
 
     // 将 section index 转换为 section name
     const getSectionName = (index) => {
-        const sections = ['home', 'about', 'project', 'gallery', 'education', 'contact'];
+        const sections = ['home', 'about', 'projects', 'gallery', 'education', 'contact'];
         return sections[index] || 'home';
     };
 
@@ -27,10 +27,10 @@ const PageManager = () => {
     // 页面组件映射
     const pageComponents = {
         home: HomePage,
-        about: AboutPage,
-        project: Project,
+        about: AboutSection,
+        projects: Project,
         gallery: Gallery,
-        education: AboutPage, // 暂时使用 AboutPage 作为教育页面
+        education: AboutSection, // 使用 AboutSection 作为教育页面
         contact: ContactPage,
         blog: BlogPage
     };
@@ -97,6 +97,7 @@ const PageManager = () => {
             >
                 <NavigationCube
                     isLandingPage={false}
+                    currentSectionId={activeSection}
                 />
             </div>
         </>

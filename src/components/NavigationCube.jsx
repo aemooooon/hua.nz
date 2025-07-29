@@ -3,10 +3,14 @@ import PropTypes from 'prop-types';
 import * as THREE from 'three';
 import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
 import { useAppStore } from '../store/useAppStore';
+import { gsap } from 'gsap';
 
-const NavigationCube = ({ isLandingPage = false, onSectionChange, sections = [] }) => {
+const NavigationCube = ({ isLandingPage = false, onSectionChange, sections = [], currentSectionId }) => {
     const mountRef = useRef();
     const cubeRef = useRef();
+    const rotationAnimationRef = useRef(); // 用于存储3D旋转动画实例
+    const entryAnimationRef = useRef(); // 用于存储入场动画实例
+    const previousSectionIdRef = useRef(currentSectionId); // 跟踪前一个section
     const mouseRef = useRef({ x: 0, y: 0 });
     const isDraggingRef = useRef(false);
     const lastMouseRef = useRef({ x: 0, y: 0 });
@@ -19,19 +23,43 @@ const NavigationCube = ({ isLandingPage = false, onSectionChange, sections = [] 
     const cubeRotationOffsetRef = useRef({ x: 0, y: 0, z: 0 });
     const lastFrameTimeRef = useRef(performance.now());
     
-    // 移除isHovering状态，因为cube现在只是显示指示器
-    
     const { getContent } = useAppStore();
     const content = getContent();
 
     // 根据是否在landing page和屏幕大小调整大小
     const getCanvasSize = useCallback(() => {
-        if (!isLandingPage) return 120;
+        if (!isLandingPage) return 240; // 非首页时增大到240px，确保旋转后的对角线不被裁剪
         // 在landing page时使用360px大尺寸
         return 360; // 调整canvas尺寸为360px
     }, [isLandingPage]);
     
     const [canvasSize, setCanvasSize] = useState(getCanvasSize());
+
+    // 使用useMemo缓存faces配置 - 基于传入的sections
+    const faces = useMemo(() => {
+        if (!sections || sections.length === 0) {
+            // 如果没有传入sections，使用默认配置 - 确保包含所有6个section
+            return [
+                { name: 'home', label: content.navigation?.home || 'Home', color: '#afcc8f', effect: 'effectgalaxy', icon: '🏠', video: '/video.mp4' },
+                { name: 'about', label: content.navigation?.about || 'About', color: '#7ca65c', effect: 'effectlorenz', icon: '👤' },
+                { name: 'projects', label: content.navigation?.projects || 'Projects', color: '#5d7d4b', effect: 'effectmonjori', icon: '💼' },
+                { name: 'gallery', label: content.navigation?.gallery || 'Gallery', color: '#768e90', effect: 'effectheartbeats', icon: '🖼️' },
+                { name: 'education', label: content.navigation?.education || 'Education', color: '#1d2012', effect: 'effectfuse', icon: '🎓' },
+                { name: 'contact', label: content.navigation?.contact || 'Contact', color: '#94a3b8', effect: 'effectpixeldistortion', icon: '📧' }
+            ];
+        }
+        
+        // 使用传入的sections数据
+        return sections.map(section => ({
+            name: section.id,
+            label: section.name.en,
+            color: '#afcc8f',
+            effect: section.backgroundEffect,
+            icon: section.icon,
+            video: section.cubeVideo, // 优先使用视频
+            image: section.cubeImage  // 备用图片
+        }));
+    }, [sections, content.navigation]);
 
     // 监听窗口大小变化
     useEffect(() => {
@@ -45,30 +73,69 @@ const NavigationCube = ({ isLandingPage = false, onSectionChange, sections = [] 
         return () => window.removeEventListener('resize', handleResize);
     }, [isLandingPage, getCanvasSize]);
 
-    // 使用useMemo缓存faces配置 - 基于传入的sections
-    const faces = useMemo(() => {
-        if (!sections || sections.length === 0) {
-            // 如果没有传入sections，使用默认配置
-            return [
-                { name: 'home', label: content.navigation?.home || 'Home', color: '#afcc8f', effect: 'effectfuse', icon: '🏠', video: '/video.mp4' },
-                { name: 'projects', label: content.navigation?.projects || 'Projects', color: '#7ca65c', effect: 'effectmonjori', icon: '💼' },
-                { name: 'gallery', label: content.navigation?.gallery || 'Gallery', color: '#5d7d4b', effect: 'effectheartbeats', icon: '🖼️' },
-                { name: 'contact', label: content.navigation?.contact || 'Contact', color: '#768e90', effect: 'effectlorenz', icon: '📧' },
-                { name: 'about', label: content.navigation?.about || 'About', color: '#1d2012', effect: 'effectfuse', icon: '👤' },
-                { name: 'blog', label: content.navigation?.blog || 'Blog', color: '#94a3b8', effect: 'effectmonjori', icon: '✍️' }
-            ];
+    // 添加页面切换时的3D旋转动画效果
+    useEffect(() => {
+        if (isLandingPage || !cubeRef.current) return;
+        
+        // 检查是否真的发生了切换
+        if (previousSectionIdRef.current !== currentSectionId && previousSectionIdRef.current !== undefined) {
+            // 停止之前的动画
+            if (rotationAnimationRef.current) {
+                rotationAnimationRef.current.kill();
+            }
+            
+            const cube = cubeRef.current;
+            
+            // 计算当前页面对应的面索引
+            const currentFaceIndex = faces.findIndex(face => face.name === currentSectionId);
+            if (currentFaceIndex !== -1) {
+                // 使用128度向上旋转角度，更加倾斜的戏剧性角度
+                const baseRotationX = -Math.PI * 0.711; // 128° 向上旋转
+                const baseRotationY = Math.PI * 0.25;  // 45° 对角显示
+                
+                // 修正面映射，确保每个section对应的面都显示在top部分（128度向上倾斜）
+                // 基础角度：X轴向上倾斜128度，然后通过Y轴旋转来让不同面显示在顶部
+                const faceRotations = [
+                    { x: baseRotationX, y: baseRotationY, z: 0 },                          // home (index 0) - 正面在顶部
+                    { x: baseRotationX, y: baseRotationY + Math.PI * 0.5, z: 0 },         // about (index 1) - 右面在顶部
+                    { x: baseRotationX, y: baseRotationY + Math.PI, z: 0 },               // projects (index 2) - 背面在顶部  
+                    { x: baseRotationX, y: baseRotationY - Math.PI * 0.5, z: 0 },         // gallery (index 3) - 左面在顶部
+                    { x: baseRotationX, y: baseRotationY + Math.PI * 1.5, z: 0 },         // education (index 4) - 底面翻转到顶部 (270度)
+                    { x: baseRotationX + Math.PI, y: baseRotationY, z: 0 }                // contact (index 5) - 顶面翻转到顶部 (180度X轴翻转)
+                ];
+                
+                const targetRotation = faceRotations[currentFaceIndex] || faceRotations[0];
+                
+                // 获取当前旋转角度
+                const currentRotation = {
+                    x: cube.rotation.x,
+                    y: cube.rotation.y,
+                    z: cube.rotation.z
+                };
+                
+                // 创建更自然的旋转动画：旋转2-3圈然后落到目标角度
+                const spinCount = 2; // 旋转圈数
+                rotationAnimationRef.current = gsap.timeline()
+                    .to(cube.rotation, {
+                        x: currentRotation.x + Math.PI * 2 * spinCount, // X轴旋转
+                        y: currentRotation.y + Math.PI * 2 * spinCount, // Y轴旋转  
+                        z: currentRotation.z + Math.PI * spinCount,     // Z轴旋转少一点
+                        duration: 1.5,
+                        ease: "power2.out"
+                    })
+                    .to(cube.rotation, {
+                        x: targetRotation.x,
+                        y: targetRotation.y,
+                        z: targetRotation.z,
+                        duration: 0.8,
+                        ease: "back.out(1.7)" // 更强的回弹效果
+                    });
+            }
         }
         
-        // 使用传入的sections数据
-        return sections.map(section => ({
-            name: section.id,
-            label: section.name.en,
-            color: '#afcc8f',
-            effect: section.backgroundEffect,
-            icon: section.icon,
-            image: section.cubeImage
-        }));
-    }, [sections, content.navigation]);
+        // 更新前一个section记录
+        previousSectionIdRef.current = currentSectionId;
+    }, [currentSectionId, isLandingPage, faces]);
 
     useEffect(() => {
         const mountElement = mountRef.current;
@@ -77,9 +144,9 @@ const NavigationCube = ({ isLandingPage = false, onSectionChange, sections = [] 
         // 创建场景
         const scene = new THREE.Scene();
 
-        // 创建相机 - 在360px画布中渲染合适大小的立方体
-        const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 1000);
-        camera.position.z = isLandingPage ? 6 : 3; // 360px容器使用较远的距离
+        // 创建相机 - 调整视角以获得更好的立体感
+        const camera = new THREE.PerspectiveCamera(50, 1, 0.1, 1000); // 增加FOV到50度
+        camera.position.z = isLandingPage ? 6 : 8.5; // 非首页调远摄像机，让cube显示更小
 
         // 创建渲染器 - 恢复高质量设置
         const renderer = new THREE.WebGLRenderer({ 
@@ -91,6 +158,8 @@ const NavigationCube = ({ isLandingPage = false, onSectionChange, sections = [] 
             depth: true,
             premultipliedAlpha: false
         });
+        // 设置透明背景，确保不遮挡其他元素
+        renderer.setClearColor(0x000000, 0); // 透明背景
         renderer.setSize(canvasSize, canvasSize);
         renderer.setClearColor(0x000000, 0);
         // 恢复正常像素比
@@ -113,18 +182,32 @@ const NavigationCube = ({ isLandingPage = false, onSectionChange, sections = [] 
         
         mountElement.appendChild(renderer.domElement);
 
-        // 简化光照系统以提高性能
+        // 简化光照系统以提高性能，但为非首页增强立体感
         // 环境光 - 提供基础照明
-        const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+        const ambientLightIntensity = isLandingPage ? 0.5 : 0.4; // 非首页降低环境光，增强对比
+        const ambientLight = new THREE.AmbientLight(0xffffff, ambientLightIntensity);
         scene.add(ambientLight);
         
         // 主要方向光
-        const mainLight = new THREE.DirectionalLight(0xffffff, 0.8);
+        const mainLightIntensity = isLandingPage ? 0.8 : 1.0; // 非首页增强主光源
+        const mainLight = new THREE.DirectionalLight(0xffffff, mainLightIntensity);
         mainLight.position.set(5, 5, 5);
         scene.add(mainLight);
+        
+        // 为非首页添加额外的侧面光源增强立体感
+        if (!isLandingPage) {
+            const sideLight = new THREE.DirectionalLight(0xffffff, 0.6);
+            sideLight.position.set(-3, 2, 3);
+            scene.add(sideLight);
+            
+            const backLight = new THREE.DirectionalLight(0xffffff, 0.3);
+            backLight.position.set(0, -2, -3);
+            scene.add(backLight);
+        }
 
-        // 创建圆角立方体几何体 - 恢复高质量
-        const geometry = new RoundedBoxGeometry(2.8, 2.8, 2.8, 6, 0.08); // 恢复较高的segments和radius
+        // 创建圆角立方体几何体 - 根据页面类型调整尺寸
+        const cubeSize = isLandingPage ? 2.8 : 3.0; // 非首页使用更大的cube尺寸
+        const geometry = new RoundedBoxGeometry(cubeSize, cubeSize, cubeSize, 8, 0.1); // 增加segments和圆角半径提高质量
         
         // 创建棋盘格默认纹理的函数
         const createCheckerboardTexture = (size = 256) => {
@@ -238,7 +321,7 @@ const NavigationCube = ({ isLandingPage = false, onSectionChange, sections = [] 
             
             // 原有的Canvas纹理逻辑
             const canvas = document.createElement('canvas');
-            const textureSize = isLandingPage ? 256 : 128;
+            const textureSize = isLandingPage ? 256 : 192; // 非首页提高纹理质量到192px
             canvas.width = textureSize;
             canvas.height = textureSize;
             const context = canvas.getContext('2d');
@@ -389,9 +472,75 @@ const NavigationCube = ({ isLandingPage = false, onSectionChange, sections = [] 
         scene.add(cube);
         cubeRef.current = cube;
 
+        // 添加边缘线框增强立体感
+        const edges = new THREE.EdgesGeometry(geometry);
+        const lineMaterial = new THREE.LineBasicMaterial({ 
+            color: 0xffffff, 
+            opacity: 0.3, 
+            transparent: true,
+            linewidth: 2
+        });
+        const wireframe = new THREE.LineSegments(edges, lineMaterial);
+        cube.add(wireframe); // 将线框作为cube的子对象
+
+        // 入场动画：720°旋转 (仅非首页)
+        if (!isLandingPage) {
+            // 设置初始旋转状态
+            cube.rotation.set(0, 0, 0);
+            
+            // 创建720°旋转入场动画
+            entryAnimationRef.current = gsap.timeline()
+                .to(cube.rotation, {
+                    x: Math.PI * 4, // 720°旋转
+                    y: Math.PI * 4, // 720°旋转
+                    z: Math.PI * 2, // 360°旋转
+                    duration: 1.5,
+                    ease: "power2.out"
+                })
+                .to(cube.rotation, {
+                    // 旋转完成后，设置到当前section对应的正确角度
+                    x: (() => {
+                        const currentFaceIndex = faces.findIndex(face => face.name === currentSectionId);
+                        if (currentFaceIndex !== -1) {
+                            const baseRotationX = -Math.PI * 0.711; // 128° 向上旋转
+                            const baseRotationY = Math.PI * 0.25;  // 45° 对角显示
+                            const faceRotations = [
+                                { x: baseRotationX, y: baseRotationY, z: 0 },                          // home (index 0) - 正面在顶部
+                                { x: baseRotationX, y: baseRotationY + Math.PI * 0.5, z: 0 },         // about (index 1) - 右面在顶部
+                                { x: baseRotationX, y: baseRotationY + Math.PI, z: 0 },               // projects (index 2) - 背面在顶部  
+                                { x: baseRotationX, y: baseRotationY - Math.PI * 0.5, z: 0 },         // gallery (index 3) - 左面在顶部
+                                { x: baseRotationX, y: baseRotationY + Math.PI * 1.5, z: 0 },         // education (index 4) - 底面翻转到顶部 (270度)
+                                { x: baseRotationX + Math.PI, y: baseRotationY, z: 0 }                // contact (index 5) - 顶面翻转到顶部 (180度X轴翻转)
+                            ];
+                            return faceRotations[currentFaceIndex]?.x || baseRotationX;
+                        }
+                        return -Math.PI * 0.711;
+                    })(),
+                    y: (() => {
+                        const currentFaceIndex = faces.findIndex(face => face.name === currentSectionId);
+                        if (currentFaceIndex !== -1) {
+                            const baseRotationX = -Math.PI * 0.711; // 128° 向上旋转
+                            const baseRotationY = Math.PI * 0.25;  // 45° 对角显示
+                            const faceRotations = [
+                                { x: baseRotationX, y: baseRotationY, z: 0 },                          // home (index 0) - 正面在顶部
+                                { x: baseRotationX, y: baseRotationY + Math.PI * 0.5, z: 0 },         // about (index 1) - 右面在顶部
+                                { x: baseRotationX, y: baseRotationY + Math.PI, z: 0 },               // projects (index 2) - 背面在顶部  
+                                { x: baseRotationX, y: baseRotationY - Math.PI * 0.5, z: 0 },         // gallery (index 3) - 左面在顶部
+                                { x: baseRotationX, y: baseRotationY + Math.PI * 1.5, z: 0 },         // education (index 4) - 底面翻转到顶部 (270度)
+                                { x: baseRotationX + Math.PI, y: baseRotationY, z: 0 }                // contact (index 5) - 顶面翻转到顶部 (180度X轴翻转)
+                            ];
+                            return faceRotations[currentFaceIndex]?.y || baseRotationY;
+                        }
+                        return Math.PI * 0.25;
+                    })(),
+                    z: 0,
+                    duration: 0.8,
+                    ease: "back.out(1.7)"
+                });
+        }
+
         // 鼠标交互
         // 移除raycaster，因为不再需要悬停检测
-        // const raycaster = new THREE.Raycaster();
         
         // 全局鼠标移动监听 (只在landing page启用)
         const handleGlobalMouseMove = (event) => {
@@ -455,7 +604,6 @@ const NavigationCube = ({ isLandingPage = false, onSectionChange, sections = [] 
         } else {
             renderer.domElement.addEventListener('mousemove', handleMouseMove);
         }
-        // 移除了click事件监听器，因为不再需要点击导航功能
 
         // 动画循环
         const animate = () => {
@@ -538,35 +686,54 @@ const NavigationCube = ({ isLandingPage = false, onSectionChange, sections = [] 
                     mouseVelocityRef.current.y *= 0.92;
                 }
             } else {
-                // 普通页面: 简单的自动旋转
-                cube.rotation.x += 0.008;
-                cube.rotation.y += 0.01;
-                cube.rotation.z += 0.005;
+                // 非首页: 作为静态页面指示器，显示当前页面对应的面
+                if (currentSectionId) {
+                    // 计算当前页面对应的面索引
+                    const currentFaceIndex = faces.findIndex(face => face.name === currentSectionId);
+                    if (currentFaceIndex !== -1) {
+                        // 使用128度向上旋转角度，更加倾斜的戏剧性角度
+                        const baseRotationX = -Math.PI * 0.711; // 128° 向上旋转
+                        const baseRotationY = Math.PI * 0.25;  // 45° 对角显示
+                        
+                        // 修正面映射，确保每个section对应的面都显示在top部分（128度向上倾斜）
+                        // 基础角度：X轴向上倾斜128度，然后通过Y轴旋转来让不同面显示在顶部
+                        const faceRotations = [
+                            { x: baseRotationX, y: baseRotationY, z: 0 },                          // home (index 0) - 正面在顶部
+                            { x: baseRotationX, y: baseRotationY + Math.PI * 0.5, z: 0 },         // about (index 1) - 右面在顶部
+                            { x: baseRotationX, y: baseRotationY + Math.PI, z: 0 },               // projects (index 2) - 背面在顶部  
+                            { x: baseRotationX, y: baseRotationY - Math.PI * 0.5, z: 0 },         // gallery (index 3) - 左面在顶部
+                            { x: baseRotationX, y: baseRotationY + Math.PI * 1.5, z: 0 },         // education (index 4) - 底面翻转到顶部 (270度)
+                            { x: baseRotationX + Math.PI, y: baseRotationY, z: 0 }                // contact (index 5) - 顶面翻转到顶部 (180度X轴翻转)
+                        ];
+                        
+                        const targetRotation = faceRotations[currentFaceIndex] || faceRotations[0];
+                        
+                        // 立即设置到目标旋转，不使用过渡动画
+                        cube.rotation.x = targetRotation.x;
+                        cube.rotation.y = targetRotation.y;
+                        cube.rotation.z = targetRotation.z;
+                    }
+                }
+                
+                // 保持cube在canvas中心位置
+                cube.position.set(0, 0, 0);
             }
-            
-            // 移除缩放效果，因为不再有悬停检测
-            // cube保持固定尺寸
             
             renderer.render(scene, camera);
         };
         
         animate();
 
-        // 可选：添加光源可视化辅助器（仅在开发环境显示）
-        // 注释掉以提高性能
-        /*
-        if (isLandingPage) {
-            // 临时启用光源辅助器来查看效果
-            const lightHelper = new THREE.DirectionalLightHelper(leftTopLight, 2);
-            scene.add(lightHelper);
-            
-            const spotLightHelper = new THREE.SpotLightHelper(leftTopSpotLight);
-            scene.add(spotLightHelper);
-        }
-        */
-
         // 清理函数
         return () => {
+            // 停止所有GSAP动画
+            if (rotationAnimationRef.current) {
+                rotationAnimationRef.current.kill();
+            }
+            if (entryAnimationRef.current) {
+                entryAnimationRef.current.kill();
+            }
+            
             if (mountElement && renderer.domElement) {
                 mountElement.removeChild(renderer.domElement);
             }
@@ -578,7 +745,6 @@ const NavigationCube = ({ isLandingPage = false, onSectionChange, sections = [] 
             } else {
                 renderer.domElement.removeEventListener('mousemove', handleMouseMove);
             }
-            // 移除了click事件监听器，因为不再需要点击导航功能
             geometry.dispose();
             materials.forEach(material => {
                 if (material.map) {
@@ -595,7 +761,7 @@ const NavigationCube = ({ isLandingPage = false, onSectionChange, sections = [] 
             renderer.dispose();
             document.body.style.cursor = 'default';
         };
-    }, [faces, isLandingPage, canvasSize, onSectionChange]); // 移除isHovering依赖
+    }, [faces, isLandingPage, canvasSize, onSectionChange, currentSectionId]); // 添加currentSectionId依赖
 
     return (
         <div 
@@ -603,11 +769,13 @@ const NavigationCube = ({ isLandingPage = false, onSectionChange, sections = [] 
             className={`transition-all duration-300 ${
                 isLandingPage 
                     ? 'w-full h-full flex items-center justify-center' 
-                    : 'fixed top-6 right-6 z-50'
+                    : 'w-full h-full flex items-center justify-center'
             }`}
             style={!isLandingPage ? {
-                filter: 'drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3))', // 移除悬停效果
-                transform: 'scale(1)' // 固定缩放
+                filter: 'drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3))', // 适度阴影
+                overflow: 'visible',
+                zIndex: 9999,
+                pointerEvents: 'auto'
             } : {}}
         />
     );
@@ -616,7 +784,8 @@ const NavigationCube = ({ isLandingPage = false, onSectionChange, sections = [] 
 NavigationCube.propTypes = {
     isLandingPage: PropTypes.bool,
     onSectionChange: PropTypes.func,
-    sections: PropTypes.array
+    sections: PropTypes.array,
+    currentSectionId: PropTypes.string
 };
 
 export default NavigationCube;

@@ -14,6 +14,7 @@ const sectionsConfig = [
     description: { en: "Welcome to my portfolio", zh: "欢迎来到我的作品集" },
     backgroundEffect: "effectgalaxy", // Galaxy 效果
     cubeImage: "/hua.jpeg",
+    cubeVideo: "/video.mp4", // 添加视频属性
     icon: "🏠"
   },
   {
@@ -147,7 +148,7 @@ const contentConfig = {
     },
     home: {
       name: "Hua Wang",
-      title: "Full Stack Software Engineer",
+      title: "Full Stack Developer",
       shortBio: "Passionate developer creating innovative web applications with cutting-edge technology and exceptional user experiences.",
       description: "I'm a full-stack developer with a strong focus on frontend, especially building interactive web applications and visualisation dashboards. I have experience with modern frontend frameworks such as React, Next.js, and TypeScript, as well as working with libraries such as Three.js and ECharts.",
       location: "New Zealand",
@@ -187,9 +188,56 @@ const contentConfig = {
       title: "About Me",
       subtitle: "My journey as a developer",
       description: "Learn more about my background, skills, and passion for technology.",
-      background: "Background",
+      background: "Background", 
       education: "Education",
-      interests: "Interests"
+      interests: "Interests",
+      pages: [
+        {
+          id: 'statement',
+          title: 'Personal Statement',
+          content: {
+            greeting: "Kia ora, I'm Hua Wang",
+            paragraphs: [
+              "A passionate full-stack developer crafting innovative digital experiences through the perfect fusion of technology and design.",
+              "Specializing in modern web applications with React, Next.js, and AI-powered data solutions. Recently completed a Master of Applied Data Science to bring cutting-edge insights to every project."
+            ]
+          }
+        },
+        {
+          id: 'experience',
+          title: 'Professional Experience',
+          experiences: [
+            {
+              company: "Zespri International",
+              position: "Full Stack Developer (Internship)",
+              period: "Nov 2024 - Feb 2025",
+              color: "blue",
+              icon: "ZI"
+            },
+            {
+              company: "Realibox, GuangZhou", 
+              position: "Frontend Developer",
+              period: "Aug 2021 - Feb 2023",
+              color: "purple",
+              icon: "RB"
+            },
+            {
+              company: "Nuclear Stone Technology",
+              position: "Frontend Developer", 
+              period: "Aug 2020 - Jul 2021",
+              color: "green",
+              icon: "NS"
+            },
+            {
+              company: "Enshi Environmental Agency",
+              position: "Full Stack Developer (Contract)",
+              period: "Feb 2020 - Jul 2021",
+              color: "orange", 
+              icon: "ES"
+            }
+          ]
+        }
+      ]
     },
     education: {
       title: "Education",
@@ -232,7 +280,7 @@ const contentConfig = {
     },
     home: {
       name: "王华",
-      title: "全栈软件工程师",
+      title: "全栈工程师",
       shortBio: "热衷于使用前沿技术创建创新Web应用程序，提供卓越用户体验的开发者。",
       description: "我是一名全栈开发者，专注于前端开发，特别是构建交互式Web应用程序和可视化仪表板。我有使用现代前端框架如React、Next.js和TypeScript的经验，以及使用Three.js和ECharts等库的经验。",
       location: "新西兰",
@@ -273,8 +321,55 @@ const contentConfig = {
       subtitle: "我的开发者之路",
       description: "了解更多关于我的背景、技能和对技术的热情。",
       background: "背景",
-      education: "教育经历",
-      interests: "兴趣爱好"
+      education: "教育经历", 
+      interests: "兴趣爱好",
+      pages: [
+        {
+          id: 'statement',
+          title: '个人陈述',
+          content: {
+            greeting: "你好，我是王华",
+            paragraphs: [
+              "一名充满创意的全栈开发者，专注于通过技术与设计的完美融合创造创新的数字体验。",
+              "专精于使用 React、Next.js 和 AI 驱动的数据解决方案构建现代化 Web 应用。最近完成应用数据科学硕士学位，为每个项目带来前沿洞察。"
+            ]
+          }
+        },
+        {
+          id: 'experience',
+          title: '职业历程',
+          experiences: [
+            {
+              company: "Zespri International",
+              position: "全栈开发工程师（实习）",
+              period: "2024年11月 - 2025年2月",
+              color: "blue",
+              icon: "ZI"
+            },
+            {
+              company: "Realibox，广州",
+              position: "前端开发工程师", 
+              period: "2021年8月 - 2023年2月",
+              color: "purple",
+              icon: "RB"
+            },
+            {
+              company: "Nuclear Stone Technology，重庆",
+              position: "前端开发工程师",
+              period: "2020年8月 - 2021年7月", 
+              color: "green",
+              icon: "NS"
+            },
+            {
+              company: "恩施环境保护局",
+              position: "全栈开发工程师（合同）",
+              period: "2020年2月 - 2021年7月",
+              color: "orange",
+              icon: "ES"
+            }
+          ]
+        }
+      ]
     },
     education: {
       title: "教育背景",

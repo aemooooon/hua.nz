@@ -8,7 +8,11 @@ import { useAppStore } from "./store/useAppStore";
 
 const App = () => {
     const [controlsVisible, setControlsVisible] = useState(false);
-    const theme = useAppStore((state) => state.theme);
+    const { theme, getCurrentSection } = useAppStore();
+    const currentSection = getCurrentSection();
+    
+    // 只在首页显示控制按钮
+    const isHomePage = currentSection?.id === 'home';
 
     // 控制按钮显示时机
     useEffect(() => {
@@ -33,16 +37,18 @@ const App = () => {
                 {/* 智能滚动管理器（已优化：降低敏感度，禁止轮播） */}
                 <SmartScrollManager />
 
-                {/* 控制按钮组 - 移动到右边，与主题语言切换按钮相邻 */}
-                <div className={`fixed bottom-6 right-20 z-50 transition-opacity duration-1000 ${controlsVisible ? 'opacity-100' : 'opacity-0'}`}>
-                    <div className="flex items-center space-x-4">
-                        {/* 音频控制器 */}
-                        <AudioController />
+                {/* 控制按钮组 - 只在首页显示 */}
+                {isHomePage && (
+                    <div className={`fixed bottom-6 right-20 z-50 transition-opacity duration-1000 ${controlsVisible ? 'opacity-100' : 'opacity-0'}`}>
+                        <div className="flex items-center space-x-4">
+                            {/* 音频控制器 */}
+                            <AudioController />
+                        </div>
                     </div>
-                </div>
+                )}
 
-                {/* 主题和语言切换 */}
-                <ThemeLanguageToggle />
+                {/* 主题和语言切换 - 只在首页显示 */}
+                {isHomePage && <ThemeLanguageToggle />}
             </div>
         </ErrorBoundary>
     );

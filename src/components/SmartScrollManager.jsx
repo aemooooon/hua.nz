@@ -418,19 +418,33 @@ const SmartScrollManager = () => {
     return (
         <div 
             ref={containerRef}
-            className="relative w-full h-screen overflow-hidden"
+            className="relative w-full h-screen"
+            style={{ overflow: 'hidden' }}
         >
             {/* 背景画布 */}
             <BackgroundCanvas 
                 effectType={currentSectionConfig?.backgroundEffect || 'effectfuse'}
             />
 
-            {/* 导航立方体 - 只在非首页显示 */}
+            {/* 导航立方体 - 只在非首页显示，确保不被裁剪 */}
             {currentSectionConfig?.id !== 'home' && (
-                <NavigationCube 
-                    sections={sections}
-                    onSectionChange={navigateToSection}
-                />
+                <div 
+                    className="absolute z-50" 
+                    style={{ 
+                        top: '16px',      // 距离顶部16px
+                        right: '16px',    // 距离右边16px
+                        width: '240px',   // Canvas尺寸增大到240px
+                        height: '240px',
+                        overflow: 'visible',
+                        pointerEvents: 'none' // 防止阻挡其他元素的交互
+                    }}
+                >
+                    <NavigationCube 
+                        sections={sections}
+                        onSectionChange={navigateToSection}
+                        currentSectionId={currentSectionConfig?.id}
+                    />
+                </div>
             )}
 
             {/* 当前栏目内容 - 智能滚动容器 */}
@@ -451,22 +465,19 @@ const SmartScrollManager = () => {
                 <div className="fixed inset-0 bg-black/20 z-30 transition-opacity duration-300" />
             )}
 
-            {/* 滚动提示 */}
-            {(scrollMode === 'content' && isContentOverflowing) || scrollMode === 'page' ? (
+            {/* 滚动提示 - 只在内容溢出时显示 */}
+            {scrollMode === 'content' && isContentOverflowing && (
                 <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 z-40">
                     <div className="bg-black/80 text-white text-sm px-4 py-2 rounded-full backdrop-blur-sm scroll-hint">
                         <div className="flex items-center space-x-2">
                             <span>↕️</span>
                             <span>
-                                {scrollMode === 'page' 
-                                    ? (language === 'en' ? 'Scroll through pages' : '滚动浏览页面')
-                                    : (language === 'en' ? 'Scroll to explore content' : '滚动浏览内容')
-                                }
+                                {language === 'en' ? 'Scroll to explore content' : '滚动浏览内容'}
                             </span>
                         </div>
                     </div>
                 </div>
-            ) : null}
+            )}
         </div>
     );
 };
