@@ -1,7 +1,9 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
+
+import locations from '../../../store/locations';
 
 // 修复 Leaflet 默认图标问题
 delete L.Icon.Default.prototype._getIconUrl;
@@ -15,49 +17,48 @@ const ProjectMapSection = ({ section, language }) => {
     const mapRef = useRef(null);
     const mapInstanceRef = useRef(null);
 
-    // 项目数据
-    const projects = [
-        {
-            id: 1,
-            name: { en: "Data 472 Project", zh: "数据472项目" },
-            description: { en: "Full-stack data pipeline and visualization platform", zh: "全栈数据管道和可视化平台" },
-            coordinates: [-43.5321, 172.6362], // 新西兰基督城
-            tech: ["React", "Node.js", "PostgreSQL", "Docker"],
-            status: "completed"
-        },
-        {
-            id: 2,
-            name: { en: "FitsGo Platform", zh: "FitsGo平台" },
-            description: { en: "Health and fitness tracking application", zh: "健康和健身追踪应用" },
-            coordinates: [-36.8485, 174.7633], // 新西兰奥克兰
-            tech: ["React Native", "Firebase", "Express"],
-            status: "in-progress"
-        },
-        {
-            id: 3,
-            name: { en: "AQI Monitor", zh: "空气质量监测" },
-            description: { en: "Real-time air quality monitoring system", zh: "实时空气质量监测系统" },
-            coordinates: [-41.2865, 174.7762], // 新西兰惠灵顿
-            tech: ["Python", "IoT", "Time Series DB"],
-            status: "completed"
-        },
-        {
-            id: 4,
-            name: { en: "E-commerce Platform", zh: "电商平台" },
-            description: { en: "Modern e-commerce solution with microservices", zh: "基于微服务的现代电商解决方案" },
-            coordinates: [-45.0312, 168.6626], // 新西兰皇后镇
-            tech: ["Vue.js", "Spring Boot", "MongoDB"],
-            status: "planning"
-        }
+
+    // 筛选和分类功能
+    const [activeCategory, setActiveCategory] = useState('all');
+    const [selectedLocation, setSelectedLocation] = useState(null);
+    const [filteredLocations, setFilteredLocations] = useState(locations.locations);
+
+    const filterButtons = [
+        { label: "All", value: "all" },
+        { label: "Projects", value: "project" },
+        { label: "Work", value: "work" },
+        { label: "Education", value: "education" },
+        { label: "Activities", value: "activity" },
     ];
 
-    useEffect(() => {
-        if (!mapRef.current || mapInstanceRef.current) return;
+    const handleFilterChange = (value) => {
+        setActiveCategory(value);
+        setSelectedLocation(null);
+        const newFilteredLocations = locations.locations.filter((loc) => {
+            return (loc.type === value || value === "all") && loc.coordinates;
+        });
+        setFilteredLocations(newFilteredLocations);
+    };
 
-        // 初始化地图
+    useEffect(() => {
+        if (!mapRef.current) return;
+        // 清理旧地图
+        if (mapInstanceRef.current) {
+            mapInstanceRef.current.remove();
+            mapInstanceRef.current = null;
+        }
+
+        // 计算所有点的中心
+        const getCentroid = (locs) => {
+            if (!locs.length) return [30, 110]; // fallback: China
+            const sumLat = locs.reduce((acc, loc) => acc + loc.coordinates[0], 0);
+            const sumLon = locs.reduce((acc, loc) => acc + loc.coordinates[1], 0);
+            return [sumLat / locs.length, sumLon / locs.length];
+        };
+
         const map = L.map(mapRef.current, {
-            center: [-41.0, 173.0], // 新西兰中心
-            zoom: 6,
+            center: getCentroid(filteredLocations),
+            zoom: filteredLocations.length > 1 ? 4 : 7,
             zoomControl: true,
             scrollWheelZoom: true,
             doubleClickZoom: true,
@@ -70,80 +71,25 @@ const ProjectMapSection = ({ section, language }) => {
             maxZoom: 20
         }).addTo(map);
 
-        // 添加项目标记
-        projects.forEach(project => {
-            const statusColor = {
-                completed: '#10B981', // 绿色
-                'in-progress': '#F59E0B', // 橙色
-                planning: '#6B7280' // 灰色
-            };
-
-            // 创建自定义图标
+        // 添加标记
+        filteredLocations.forEach((loc) => {
             const customIcon = L.divIcon({
                 className: 'custom-marker',
-                html: `
-                    <div style="
-                        width: 20px;
-                        height: 20px;
-                        background-color: ${statusColor[project.status]};
-                        border: 2px solid white;
-                        border-radius: 50%;
-                        box-shadow: 0 2px 4px rgba(0,0,0,0.3);
-                    "></div>
-                `,
-                iconSize: [20, 20],
-                iconAnchor: [10, 10]
+                html: `<div style="width: 24px; height: 24px; background: #10B981; border: 2px solid white; border-radius: 50%; box-shadow: 0 2px 4px rgba(0,0,0,0.3);"></div>`,
+                iconSize: [24, 24],
+                iconAnchor: [12, 24]
             });
-
-            const marker = L.marker(project.coordinates, { icon: customIcon }).addTo(map);
-
-            // 创建弹出窗口内容
+            const marker = L.marker(loc.coordinates, { icon: customIcon }).addTo(map);
             const popupContent = `
-                <div style="
-                    color: white;
-                    background: linear-gradient(135deg, #1f2937 0%, #374151 100%);
-                    padding: 12px;
-                    border-radius: 8px;
-                    min-width: 200px;
-                    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-                ">
-                    <h3 style="margin: 0 0 8px 0; color: #10B981; font-size: 16px; font-weight: 600;">
-                        ${project.name[language]}
-                    </h3>
-                    <p style="margin: 0 0 8px 0; color: #D1D5DB; font-size: 13px; line-height: 1.4;">
-                        ${project.description[language]}
-                    </p>
-                    <div style="margin: 8px 0;">
-                        <div style="display: flex; flex-wrap: wrap; gap: 4px;">
-                            ${project.tech.map(tech => 
-                                `<span style="
-                                    background: rgba(16, 185, 129, 0.2);
-                                    color: #10B981;
-                                    padding: 2px 6px;
-                                    border-radius: 4px;
-                                    font-size: 11px;
-                                    font-weight: 500;
-                                ">${tech}</span>`
-                            ).join('')}
-                        </div>
-                    </div>
-                    <div style="margin-top: 8px; display: flex; align-items: center;">
-                        <div style="
-                            width: 8px;
-                            height: 8px;
-                            background-color: ${statusColor[project.status]};
-                            border-radius: 50%;
-                            margin-right: 6px;
-                        "></div>
-                        <span style="
-                            color: #9CA3AF;
-                            font-size: 12px;
-                            text-transform: capitalize;
-                        ">${project.status.replace('-', ' ')}</span>
-                    </div>
+                <div style="color: white; background: linear-gradient(135deg, #1f2937 0%, #374151 100%); padding: 12px; border-radius: 8px; min-width: 200px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+                    <h3 style="margin: 0 0 8px 0; color: #10B981; font-size: 16px; font-weight: 600;">${loc.title || loc.name}</h3>
+                    <p style="margin: 0 0 8px 0; color: #D1D5DB; font-size: 13px; line-height: 1.4;">${loc.description || ''}</p>
+                    <div style="margin: 8px 0; color: #9CA3AF; font-size: 12px;">${loc.location || ''}</div>
+                    <div style="margin: 8px 0; color: #9CA3AF; font-size: 12px;">${loc.year || ''}</div>
+                    ${loc.link ? `<a href='${loc.link}' target='_blank' style='color:#3B82F6;text-decoration:underline;'>Learn more</a>` : ''}
+                    ${loc.img ? `<div style='margin-top:8px;'>${Array.isArray(loc.img) ? loc.img.map(imgSrc => `<img src='${imgSrc}' style='max-width:100px;max-height:80px;margin-right:4px;border-radius:6px;' />`).join('') : `<img src='${loc.img}' style='max-width:100px;max-height:80px;border-radius:6px;' />`}</div>` : ''}
                 </div>
             `;
-
             marker.bindPopup(popupContent, {
                 className: 'custom-popup',
                 closeButton: true,
@@ -184,34 +130,26 @@ const ProjectMapSection = ({ section, language }) => {
                 style.parentNode.removeChild(style);
             }
         };
-    }, [language]);
+    }, [filteredLocations]);
 
     return (
         <div className="flex flex-col h-screen w-full text-white">
             {/* 标题区域 */}
             <div className="absolute top-8 left-8 z-[1000] bg-black/50 backdrop-blur-sm rounded-lg p-6">
-                <h1 className="text-4xl font-bold mb-2">
-                    {section.name[language]}
-                </h1>
-                <p className="text-lg text-gray-300 mb-4">
-                    {section.description[language]}
-                </p>
-                <div className="flex space-x-4 text-sm">
-                    <div className="flex items-center">
-                        <div className="w-3 h-3 bg-green-500 rounded-full mr-2"></div>
-                        <span>Completed</span>
-                    </div>
-                    <div className="flex items-center">
-                        <div className="w-3 h-3 bg-yellow-500 rounded-full mr-2"></div>
-                        <span>In Progress</span>
-                    </div>
-                    <div className="flex items-center">
-                        <div className="w-3 h-3 bg-gray-500 rounded-full mr-2"></div>
-                        <span>Planning</span>
-                    </div>
+                <h1 className="text-4xl font-bold mb-2">Project Map</h1>
+                <p className="text-lg text-gray-300 mb-4">Explore my work, education, and projects geographically.</p>
+                <div className="flex space-x-2 mt-2">
+                    {filterButtons.map((category) => (
+                        <button
+                            key={category.value}
+                            onClick={() => handleFilterChange(category.value)}
+                            className={`px-3 py-1 rounded-lg text-sm font-medium transition-all duration-200 ${activeCategory === category.value ? 'bg-green-600 text-white' : 'bg-gray-800 text-gray-300 hover:bg-gray-700'}`}
+                        >
+                            {category.label}
+                        </button>
+                    ))}
                 </div>
             </div>
-
             {/* 地图区域 */}
             <div 
                 ref={mapRef} 

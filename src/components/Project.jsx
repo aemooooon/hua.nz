@@ -14,7 +14,7 @@ import {
 import L from "leaflet";
 import "leaflet-extra-markers/dist/css/leaflet.extra-markers.min.css";
 import "leaflet/dist/leaflet.css";
-import locationData from "../assets/locations";
+import locations from "../store/locations";
 import { useAppStore } from '../store/useAppStore';
 import MarkerClusterGroup from "react-leaflet-cluster";
 import ImageWithLoader from "./ImageWithLoader";
@@ -40,7 +40,7 @@ const Project = () => {
     const mapRef = useRef(null);
     const [activeCategory, setActiveCategory] = useState("All");
     const [selectedLocation, setSelectedLocation] = useState(null);
-    const [filteredLocations, setFilteredLocations] = useState(locationData.locations);
+    const [filteredLocations, setFilteredLocations] = useState(locations.locations);
 
     // Function to calculate centroid of filtered locations
     const calculateCentroid = (locations) => {
@@ -62,7 +62,7 @@ const Project = () => {
     const handleFilterChange = (value) => {
         setActiveCategory(value);
         setSelectedLocation(null);
-        const newFilteredLocations = locationData.locations.filter((loc) => {
+        const newFilteredLocations = locations.locations.filter((loc) => {
             return (loc.type === value || value === "all") && loc.coordinates;
         });
         setFilteredLocations(newFilteredLocations);
@@ -222,7 +222,7 @@ const Project = () => {
 
                     <MapContainer
                         ref={mapRef}
-                        center={calculateCentroid(locationData.locations)}
+                        center={calculateCentroid(locations.locations)}
                         zoom={3}
                         scrollWheelZoom
                         style={{ width: "100%", height: "100%" }}
@@ -280,18 +280,16 @@ const Project = () => {
                                     >
                                         <div className="p-6 bg-gradient-to-br from-blue-50 to-purple-50 rounded-lg shadow-xl border border-gray-200">
                                             <h3 className="font-bold text-xl font-audiowide capitalize text-gray-800 mb-2">
-                                                {loc.type}
+                                                {loc.title || loc.type}
                                             </h3>
                                             {loc.name && (
                                                 <h3 className="text-xl mt-2 text-gray-700 font-poppins">{loc.name}</h3>
                                             )}
-
                                             {loc.description && (
                                                 <p className="text-gray-600 leading-relaxed text-base">
                                                     {loc.description}
                                                 </p>
                                             )}
-
                                             <div className="flex items-center justify-between mb-2">
                                                 <div className="flex items-center space-x-2">
                                                     <FaMapMarkerAlt className="text-blue-500 text-base font-mono" />{" "}
@@ -302,6 +300,27 @@ const Project = () => {
                                                     <span className="text-gray-700 text-sm">{loc.year}</span>
                                                 </div>
                                             </div>
+                                            {/* 图片展示 */}
+                                            {loc.img && (
+                                                <div className="flex flex-wrap gap-2 mt-2">
+                                                    {Array.isArray(loc.img)
+                                                        ? loc.img.map((imgSrc, idx) => (
+                                                            <ImageWithLoader key={idx} src={imgSrc} alt={`Location ${idx + 1}`} />
+                                                        ))
+                                                        : <ImageWithLoader src={loc.img} alt="Location" />}
+                                                </div>
+                                            )}
+                                            {/* 链接展示 */}
+                                            {loc.link && (
+                                                <a
+                                                    href={loc.link}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="mt-2 text-blue-400 hover:underline block"
+                                                >
+                                                    Learn more →
+                                                </a>
+                                            )}
                                         </div>
                                     </Popup>
                                 </Marker>

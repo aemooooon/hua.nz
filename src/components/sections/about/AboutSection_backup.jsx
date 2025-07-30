@@ -22,53 +22,49 @@ const AboutSection = ({ language = 'en' }) => {
     }, []);
 
     return (
-        <div className="min-h-screen w-full relative overflow-hidden golden-ratio-container">
+        <div className="min-h-screen w-full relative overflow-hidden">
             {/* 主要内容容器 - 按黄金分割比例布局 */}
-            <div className="flex flex-col lg:flex-row items-center lg:items-stretch min-h-screen p-4 lg:p-6 xl:p-8 about-section-spacing">
+            <div className="flex flex-col lg:flex-row items-center lg:items-stretch min-h-screen p-4 lg:p-6 xl:p-8">
                 {/* 卡片区域 - 黄金分割的较大部分 (约62%) */}
-                <div className="w-full about-content-area flex flex-col justify-center order-2 lg:order-1">
+                <div className="w-full lg:w-[62%] flex flex-col justify-center order-2 lg:order-1 lg:pr-6 xl:pr-8">
                     {/* 内容容器 - 内部也应用黄金比例的留白 */}
-                    <div className="about-card-container">
+                    <div className="w-full max-w-none lg:max-w-[85%] xl:max-w-[80%] lg:ml-auto lg:mr-6">
                         {/* 增强毛玻璃背景卡片 */}
                         <div className="bg-black/40 backdrop-blur-xl rounded-xl border border-white/20 shadow-2xl p-6 lg:p-8 xl:p-10 w-full relative">
-                            {/* 额外的内层毛玻璃效果 */}
-                            <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-black/20 rounded-xl backdrop-blur-sm"></div>
-                            {/* 内容层 */}
-                            <div className="relative z-10 about-card-content">
-                                {/* 个人陈述内容 */}
-                                <div className="space-y-6">
-                                    <h2 className="text-2xl lg:text-3xl font-bold text-blue-400 font-beauRivage">{greeting}</h2>
-                                    {paragraphs.map((paragraph, index) => (
-                                        <p key={index} className="text-base lg:text-lg leading-relaxed text-gray-200" style={{ fontFamily: 'Figtree, sans-serif', fontWeight: '400' }}>
-                                            {paragraph}
-                                        </p>
-                                    ))}
-                                
-                                {/* Resume 链接 - 简化版本 */}
-                                <div className="resume-section text-right">
-                                    <a 
-                                        href="/Hua_Wang_Full_Stack_Engineer.pdf" 
-                                        target="_blank" 
-                                        rel="noopener noreferrer"
-                                        className="inline-block text-green-400 hover:text-green-300 font-medium transition-all duration-300 hover:scale-105 border-b border-green-400/50 hover:border-green-300 pb-1"
-                                        style={{ fontFamily: 'Figtree, sans-serif', fontWeight: '500' }}
-                                    >
-                                        {language === 'en' ? 'Resume' : '简历'}
-                                    </a>
-                                </div>
-                            </div>
+                        {/* 额外的内层毛玻璃效果 */}
+                        <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-black/20 rounded-xl backdrop-blur-sm"></div>
+                        {/* 内容层 */}
+                        <div className="relative z-10">
+                            {/* 个人陈述内容 */}
+                            <div className="space-y-6">
+                                <h2 className="text-2xl lg:text-3xl font-bold text-blue-400 mb-6 font-beauRivage">{greeting}</h2>
+                                {paragraphs.map((paragraph, index) => (
+                                    <p key={index} className="text-base lg:text-lg leading-relaxed text-gray-200" style={{ fontFamily: 'Figtree, sans-serif', fontWeight: '400' }}>
+                                        {paragraph}
+                                    </p>
+                                ))}
+                            
+                            {/* Resume 链接 - 简化版本 */}
+                            <div className="mt-8 pt-6">
+                                <a 
+                                    href="/Hua_Wang_Full_Stack_Engineer.pdf" 
+                                    target="_blank" 
+                                    rel="noopener noreferrer"
+                                    className="inline-block text-green-400 hover:text-green-300 font-medium transition-all duration-300 hover:scale-105 border-b border-green-400/50 hover:border-green-300 pb-1"
+                                    style={{ fontFamily: 'Figtree, sans-serif', fontWeight: '500' }}
+                                >
+                                    {language === 'en' ? 'Resume' : '简历'}
+                                </a>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                {/* 头像区域 - 黄金分割的较小部分 (约42%) */}
-                <div className="w-full about-avatar-area flex items-center justify-center mb-8 lg:mb-0 order-1 lg:order-2 avatar-cube-alignment">
-                    {/* 头像包装器 - 向左移动以与cube对齐 */}
-                    <div className="about-avatar-wrapper">
-                        <div className="relative">
-                            {/* 头像容器 - 圆形镜子外围绿色灯带效果 */}
-                            <div className="about-avatar-container relative rounded-full overflow-hidden bg-gray-900/50 backdrop-blur-sm border-4 border-green-300"
+                {/* 头像区域 - 黄金分割的较小部分 (约38%) */}
+                <div className="w-full lg:w-[38%] flex items-center justify-center mb-8 lg:mb-0 order-1 lg:order-2 lg:pl-6 xl:pl-8">
+                    <div className="relative">
+                        {/* 头像容器 - 圆形镜子外围绿色灯带效果 */}
+                        <div className="w-72 h-72 sm:w-80 sm:h-80 lg:w-96 lg:h-96 relative rounded-full overflow-hidden bg-gray-900/50 backdrop-blur-sm border-4 border-green-300"
                              style={{
                                  filter: `
                                      drop-shadow(0 0 5px rgba(134, 239, 172, 0.8))
@@ -127,7 +123,6 @@ const AboutSection = ({ language = 'en' }) => {
                                     <FaSpinner className="animate-spin text-green-500 text-4xl" />
                                 </div>
                             )}
-                        </div>
                         </div>
                     </div>
                 </div>

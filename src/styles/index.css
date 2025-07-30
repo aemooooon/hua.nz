@@ -103,12 +103,7 @@ body.light {
     background: #1d2012; /* 滚动条交叉角的颜色 */
 }
 
-/* 为滚动条在 Firefox 中启用 */
-/* Fallback for browsers that do not support scrollbar-width */
-::-webkit-scrollbar {
-    width: 6px; /* 滚动条宽度 */
-}
-
+/* Leaflet 地图标记样式 */
 .leaflet-marker-icon.custom-marker {
     background-color: #afcc8f;
     border-radius: 50%;
@@ -161,16 +156,12 @@ body.light {
 .custom-cluster::before {
     content: "";
     position: absolute;
-    top: -37%;
-    left: -37%;
-    width: 50px;
-    height: 50px;
+    width: 80px;
+    height: 80px;
     border-radius: 50%;
     background: rgba(124, 166, 92, 0.3);
-    border: 1px solid white;
-    transform: translate(-50%, -50%);
     z-index: 1;
-    animation: ring 2s infinite ease-in-out;
+    animation: ring 1s infinite ease-in-out;
 }
 
 /* 让 cluster 在 hover 时放大 */
@@ -202,18 +193,6 @@ body.light {
     100% {
         transform: scale(1);
     }
-}
-
-/* 🔥 添加外圈扩散动画 */
-.custom-cluster::before {
-    content: "";
-    position: absolute;
-    width: 80px;
-    height: 80px;
-    border-radius: 50%;
-    background: rgba(124, 166, 92, 0.3);
-    z-index: 1;
-    animation: ring 1s infinite ease-in-out;
 }
 
 /* 🔥 外圈缓慢扩散 */
@@ -264,6 +243,7 @@ body.light {
     }
 }
 
+/* Leaflet 弹窗样式 */
 .leaflet-popup-close-button {
     font-size: 40px !important;
     padding-right: 40px !important;
@@ -288,6 +268,467 @@ body.light {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1) !important;
     border: 2px solid #afcc8f;
     transform: scaleY(2) rotate(45deg) !important;
+}
+
+/* 滚动进度指示器 */
+.scroll-progress-indicator {
+    position: fixed;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 4px;
+    height: 200px;
+    background: rgba(175, 204, 143, 0.2);
+    border-radius: 2px;
+    z-index: 1000;
+}
+
+.scroll-progress-indicator::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: var(--scroll-progress, 0%);
+    background: linear-gradient(to bottom, #afcc8f, #7ca65c);
+    border-radius: 2px;
+    transition: height 0.3s ease;
+}
+
+/* Scroll Percentage Indicator */
+.scroll-indicator {
+    position: fixed;
+    right: 1.5rem;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 50;
+    opacity: 0.8;
+    transition: opacity 0.3s ease;
+}
+
+.scroll-indicator:hover {
+    opacity: 1;
+}
+
+.scroll-track {
+    width: 4px;
+    height: 8rem;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 9999px;
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
+    position: relative;
+    overflow: hidden;
+}
+
+.scroll-progress {
+    width: 100%;
+    background: linear-gradient(to top, #3b82f6, #8b5cf6);
+    border-radius: 9999px;
+    transition: height 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 0 8px rgba(59, 130, 246, 0.4);
+}
+
+.scroll-percentage {
+    position: absolute;
+    right: -3rem;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(0, 0, 0, 0.6);
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
+    border-radius: 0.5rem;
+    padding: 0.25rem 0.5rem;
+    color: white;
+    font-size: 0.75rem;
+    font-weight: 500;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    white-space: nowrap;
+}
+
+/* Enhanced Map View Button */
+.map-view-button {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
+    border-radius: 12px;
+    padding: 12px 24px;
+    color: white;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+}
+
+.map-view-button::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.6s ease;
+}
+
+.map-view-button:hover::before {
+    left: 100%;
+}
+
+.map-view-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+    background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+}
+
+.map-view-button:active {
+    transform: translateY(0);
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+}
+
+.map-view-button-icon {
+    width: 18px;
+    height: 18px;
+    margin-right: 8px;
+    transition: transform 0.3s ease;
+}
+
+.map-view-button:hover .map-view-button-icon {
+    transform: scale(1.1) rotate(5deg);
+}
+
+/* Project Section Layout Enhancements */
+.project-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 3rem;
+    padding: 1rem;
+    background: rgba(0, 0, 0, 0.2);
+    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.project-title-container {
+    flex: 1;
+    text-align: left;
+}
+
+.project-main-title {
+    font-size: 3rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.project-subtitle {
+    font-size: 1.125rem;
+    color: rgba(255, 255, 255, 0.7);
+    font-weight: 300;
+    letter-spacing: 0.05em;
+}
+
+.project-controls {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-left: 2rem;
+}
+
+/* Enhanced Project Cards with Better Contrast */
+.project-card {
+    background: rgba(0, 0, 0, 0.4);
+    -webkit-backdrop-filter: blur(20px);
+    backdrop-filter: blur(20px);
+    border-radius: 16px;
+    padding: 1.5rem;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+.project-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+    opacity: 0;
+    transition: opacity 0.4s ease;
+    pointer-events: none;
+    border-radius: 16px;
+}
+
+.project-card:hover::before {
+    opacity: 1;
+}
+
+.project-card:hover {
+    transform: translateY(-8px) scale(1.02);
+    background: rgba(0, 0, 0, 0.6);
+    border-color: rgba(255, 255, 255, 0.25);
+    box-shadow: 
+        0 25px 50px -12px rgba(0, 0, 0, 0.5),
+        0 0 0 1px rgba(255, 255, 255, 0.1),
+        0 0 20px rgba(59, 130, 246, 0.2);
+}
+
+.project-image-container {
+    width: 100%;
+    height: 12rem;
+    background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
+    border-radius: 12px;
+    margin-bottom: 1.5rem;
+    overflow: hidden;
+    position: relative;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.project-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.project-card:hover .project-image {
+    transform: scale(1.1);
+}
+
+.project-status-badge {
+    position: absolute;
+    top: 0.75rem;
+    right: 0.75rem;
+    padding: 0.375rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    border-width: 1px;
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
+}
+
+.project-category-badge {
+    position: absolute;
+    top: 0.75rem;
+    left: 0.75rem;
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    background: rgba(0, 0, 0, 0.7);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
+}
+
+.project-content {
+    position: relative;
+    z-index: 2;
+}
+
+.project-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin-bottom: 0.75rem;
+    color: #ffffff;
+    transition: color 0.3s ease;
+    line-height: 1.4;
+}
+
+.project-card:hover .project-title {
+    color: #60a5fa;
+}
+
+.project-description {
+    color: rgba(255, 255, 255, 0.8);
+    margin-bottom: 1.5rem;
+    line-height: 1.6;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.project-tech-stack {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.tech-badge {
+    background: rgba(59, 130, 246, 0.2);
+    color: #93c5fd;
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.875rem;
+    border: 1px solid rgba(59, 130, 246, 0.3);
+    -webkit-backdrop-filter: blur(4px);
+    backdrop-filter: blur(4px);
+}
+
+.project-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-bottom: 0.5rem;
+    font-size: 0.875rem;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.project-link {
+    color: #60a5fa;
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.project-link:hover {
+    color: #93c5fd;
+    text-decoration: underline;
+}
+
+.project-actions {
+    display: flex;
+    gap: 0.75rem;
+    margin-top: 1rem;
+}
+
+.btn-primary {
+    flex: 1;
+    background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    border: none;
+    font-size: 0.875rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.btn-primary:hover {
+    background: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+}
+
+.btn-secondary {
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    font-size: 0.875rem;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.3);
+    transform: translateY(-1px);
+}
+
+/* Dynamic Stats Cards */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 3rem;
+}
+
+.stat-card {
+    background: rgba(255, 255, 255, 0.05);
+    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
+    border-radius: 12px;
+    padding: 1.5rem;
+    text-align: center;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.stat-card:hover {
+    transform: translateY(-4px);
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+.stat-number {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    display: block;
+}
+
+.stat-label {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.875rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .project-header {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 1rem;
+    }
+    
+    .project-controls {
+        margin-left: 0;
+        justify-content: center;
+    }
+    
+    .project-main-title {
+        font-size: 2.5rem;
+        text-align: center;
+    }
+    
+    .project-title-container {
+        text-align: center;
+    }
+    
+    .scroll-indicator {
+        right: 1rem;
+    }
+    
+    .scroll-percentage {
+        right: -2.5rem;
+        font-size: 0.625rem;
+        padding: 0.125rem 0.375rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .scroll-indicator {
+        right: 0.5rem;
+    }
+    
+    .scroll-track {
+        width: 3px;
+        height: 6rem;
+    }
+    
+    .scroll-percentage {
+        right: -2rem;
+    }
 }
 
 /* Landing Page 动画定义 */
@@ -768,4 +1209,232 @@ body.light {
             drop-shadow(0 0 15px rgba(134, 239, 172, 0.8))
             drop-shadow(0 0 22px rgba(134, 239, 172, 0.6));
     }
+}
+
+/* Additional enhancements for better visual hierarchy */
+.project-grid-container {
+    animation: fadeInUp 0.8s ease-out;
+}
+
+.project-card {
+    animation: fadeInUp 0.6s ease-out forwards;
+    opacity: 0;
+    transform: translateY(20px);
+}
+
+.project-card:nth-child(1) { animation-delay: 0.1s; }
+.project-card:nth-child(2) { animation-delay: 0.2s; }
+.project-card:nth-child(3) { animation-delay: 0.3s; }
+.project-card:nth-child(4) { animation-delay: 0.4s; }
+.project-card:nth-child(5) { animation-delay: 0.5s; }
+.project-card:nth-child(6) { animation-delay: 0.6s; }
+
+@keyframes fadeInUp {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Improved backdrop styling to prevent cube overlap */
+.backdrop-protection {
+    position: relative;
+    z-index: 10;
+}
+
+/* Enhanced glow effects */
+.project-card:hover {
+    box-shadow: 
+        0 25px 50px -12px rgba(0, 0, 0, 0.5),
+        0 0 0 1px rgba(255, 255, 255, 0.1),
+        0 0 20px rgba(59, 130, 246, 0.2);
+}
+
+/* Better contrast for dark backgrounds */
+.project-section-bg {
+    background: 
+        radial-gradient(circle at 20% 50%, rgba(59, 130, 246, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(139, 92, 246, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 40% 80%, rgba(16, 185, 129, 0.1) 0%, transparent 50%);
+}
+
+/* Smooth transitions for all interactive elements */
+.stat-card,
+.map-view-button,
+.btn-primary,
+.btn-secondary {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Enhanced scroll indicator styling */
+.scroll-indicator-enhanced {
+    position: fixed;
+    right: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 1000;
+    pointer-events: none;
+}
+
+@media (max-width: 768px) {
+    .scroll-indicator-enhanced {
+        right: 0.5rem;
+    }
+}
+
+/* Golden Ratio Layout for About Section - 更宽松的版本 */
+.golden-ratio-container {
+    /* 调整黄金分割比例，增加留白 */
+    --golden-ratio: 1.618;
+    --content-ratio: 58%; /* 从61.8%减少到58% */
+    --avatar-ratio: 42%;  /* 从38.2%增加到42% */
+}
+
+/* 响应式黄金分割布局 */
+@media (min-width: 1024px) {
+    .about-content-area {
+        flex: 0 0 var(--content-ratio);
+        max-width: var(--content-ratio);
+    }
+    
+    .about-avatar-area {
+        flex: 0 0 var(--avatar-ratio);
+        max-width: var(--avatar-ratio);
+    }
+    
+    /* 内容区域的内部黄金比例留白 - 增加更多留白 */
+    .about-card-container {
+        /* 内容占据75%，左右留白更多 */
+        max-width: 75%;
+        margin-left: auto;
+        margin-right: 12.5%;
+    }
+    
+    /* 中等屏幕的优化 */
+    @media (min-width: 1150px) {
+        .about-card-container {
+            max-width: 72%;
+            margin-right: 14%;
+        }
+    }
+    
+    /* 超大屏幕的优化 */
+    @media (min-width: 1280px) {
+        .about-card-container {
+            max-width: 70%;
+            margin-right: 15%;
+        }
+    }
+    
+    /* 更大屏幕的优化 */
+    @media (min-width: 1440px) {
+        .about-card-container {
+            max-width: 68%;
+            margin-right: 16%;
+        }
+    }
+    
+    /* 4K及更大屏幕的优化 */
+    @media (min-width: 1536px) {
+        .about-card-container {
+            max-width: 65%;
+            margin-right: 17.5%;
+        }
+    }
+}
+
+/* 移动设备保持垂直堆叠，无黄金比例限制 */
+@media (max-width: 1023px) {
+    .about-content-area,
+    .about-avatar-area {
+        width: 100%;
+        max-width: 100%;
+    }
+    
+    .about-card-container {
+        max-width: 100%;
+        margin: 0;
+    }
+}
+
+/* 头像尺寸的响应式调整 - 保持与内容区域的比例协调 */
+.about-avatar-container {
+    /* 基础尺寸：18rem (288px) */
+    width: 18rem;
+    height: 18rem;
+}
+
+@media (min-width: 640px) {
+    .about-avatar-container {
+        width: 20rem; /* 320px */
+        height: 20rem;
+    }
+}
+
+@media (min-width: 1024px) {
+    .about-avatar-container {
+        width: 20rem; /* lg: 适应38.2%的空间 */
+        height: 20rem;
+    }
+}
+
+@media (min-width: 1280px) {
+    .about-avatar-container {
+        width: 24rem; /* xl: 384px */
+        height: 24rem;
+    }
+}
+
+@media (min-width: 1536px) {
+    .about-avatar-container {
+        width: 26rem; /* 2xl: 416px */
+        height: 26rem;
+    }
+}
+
+/* 卡片内容的黄金比例排版 */
+.about-card-content {
+    /* 标题占据较小比例，内容占据较大比例 */
+    & h2 {
+        margin-bottom: 1.618rem; /* 使用黄金比例的间距 */
+    }
+    
+    & .space-y-6 > * + * {
+        margin-top: 1.5rem; /* 约为黄金比例的间距 */
+    }
+    
+    & .resume-section {
+        margin-top: 2.618rem; /* 黄金比例 * 1.618 */
+        padding-top: 1.618rem;
+    }
+}
+
+/* 精确的cube对齐 - 让头像右边与cube左边完全对齐 */
+.avatar-cube-alignment {
+    position: relative;
+}
+
+/* 根据cube的典型位置计算精确对齐 */
+@media (min-width: 1024px) {
+    .about-avatar-wrapper {
+        /* 使用精确计算的位置，确保与cube对齐 */
+        padding-right: 6rem; /* 为cube留出空间 */
+    }
+}
+
+@media (min-width: 1280px) {
+    .about-avatar-wrapper {
+        padding-right: 7rem; /* xl屏幕cube可能更大 */
+    }
+}
+
+@media (min-width: 1536px) {
+    .about-avatar-wrapper {
+        padding-right: 8rem; /* 2xl屏幕给更多空间 */
+    }
+}
+
+/* 头像容器在包装器内的精确定位 */
+.about-avatar-container {
+    margin-left: 0; /* 确保头像在容器内靠左对齐 */
 }

@@ -1,8 +1,8 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useMemo, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import useAppStore from '../../../store/useAppStore';
+import locations from '../../../store/locations';
 
 // 修复 Leaflet 默认图标问题
 delete L.Icon.Default.prototype._getIconUrl;
@@ -12,127 +12,158 @@ L.Icon.Default.mergeOptions({
   shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
 });
 
-const ProjectMapModal = ({ isOpen, onClose }) => {
+const ProjectMapModal = ({ isOpen, onClose, language = 'en' }) => {
   const mapRef = useRef(null);
   const mapInstanceRef = useRef(null);
   const markersRef = useRef([]);
-  const { 
-    language, 
-    getProjectLocations, 
-    getMapConfig, 
-    getCategoryColors 
-  } = useAppStore();
   
   // 获取项目数据
-  const projectLocations = getProjectLocations();
-  const mapConfig = getMapConfig();
-  const categoryColors = getCategoryColors();
+  const projects = locations.locations.filter(loc => loc.type === 'project');
+
+  // 类型颜色映射 - 使用 useMemo 避免每次渲染都重新创建
+  const typeColors = useMemo(() => ({
+    'project': '#3b82f6',
+    'work': '#10b981',
+    'education': '#f59e0b',
+    'activity': '#8b5cf6'
+  }), []);
+
+  // 获取双语文本的辅助函数 - 使用 useCallback 避免每次渲染都重新创建
+  const getBilingualText = useCallback((field) => {
+    if (typeof field === 'object' && field !== null) {
+      return field[language] || field.en || field.zh || '';
+    }
+    return field || '';
+  }, [language]);
 
   useEffect(() => {
     if (isOpen && mapRef.current && !mapInstanceRef.current) {
       // 初始化地图
-      mapInstanceRef.current = L.map(mapRef.current).setView(mapConfig.center, mapConfig.zoom);
+      mapInstanceRef.current = L.map(mapRef.current).setView([0, 0], 2);
 
       // 添加图层
       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: mapConfig.attribution,
-        minZoom: mapConfig.minZoom,
-        maxZoom: mapConfig.maxZoom,
+        attribution: '© OpenStreetMap contributors',
+        minZoom: 1,
+        maxZoom: 18,
       }).addTo(mapInstanceRef.current);
 
       // 添加项目标记
-      projectLocations.forEach(project => {
-        // 创建自定义图标
-        const customIcon = L.divIcon({
-          className: 'custom-marker',
-          html: `
-            <div style="
-              background-color: ${categoryColors[project.category]};
-              width: 20px;
-              height: 20px;
-              border-radius: 50%;
-              border: 3px solid white;
-              box-shadow: 0 2px 4px rgba(0,0,0,0.3);
-              display: flex;
-              align-items: center;
-              justify-content: center;
-            ">
+      projects.forEach(project => {
+        if (project.coordinates && Array.isArray(project.coordinates)) {
+          // 创建自定义图标
+          const customIcon = L.divIcon({
+            className: 'custom-marker',
+            html: `
               <div style="
-                width: 8px;
-                height: 8px;
-                background-color: white;
+                background-color: ${typeColors[project.type] || '#6b7280'};
+                width: 20px;
+                height: 20px;
                 border-radius: 50%;
-              "></div>
-            </div>
-          `,
-          iconSize: [26, 26],
-          iconAnchor: [13, 13],
-        });
-
-        // 创建标记
-        const marker = L.marker(project.location, { icon: customIcon })
-          .addTo(mapInstanceRef.current);
-
-        // 创建弹出窗口内容
-        const popupContent = `
-          <div style="min-width: 250px; font-family: Arial, sans-serif;">
-            <div style="margin-bottom: 10px;">
-              <img src="${project.image}" alt="${project.name}" style="width: 100%; height: 120px; object-fit: cover; border-radius: 4px;" />
-            </div>
-            <h3 style="margin: 0 0 8px 0; color: #1f2937; font-size: 16px; font-weight: bold;">
-              ${project.name}
-            </h3>
-            <p style="margin: 0 0 8px 0; color: #6b7280; font-size: 14px; line-height: 1.4;">
-              ${project.description}
-            </p>
-            <div style="margin-bottom: 8px;">
-              <span style="
-                background-color: ${categoryColors[project.category]};
-                color: white;
-                padding: 2px 8px;
-                border-radius: 12px;
-                font-size: 12px;
-                font-weight: 500;
+                border: 3px solid white;
+                box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+                display: flex;
+                align-items: center;
+                justify-content: center;
               ">
-                ${project.category}
-              </span>
-              <span style="
-                background-color: ${project.status === 'completed' ? '#10b981' : '#f59e0b'};
-                color: white;
-                padding: 2px 8px;
-                border-radius: 12px;
-                font-size: 12px;
-                font-weight: 500;
-                margin-left: 4px;
-              ">
-                ${project.status === 'completed' ? (language === 'en' ? 'Completed' : '已完成') : (language === 'en' ? 'In Progress' : '进行中')}
-              </span>
-            </div>
-            <div style="margin-top: 8px;">
-              <p style="margin: 0 0 4px 0; color: #374151; font-size: 12px; font-weight: 500;">
-                ${language === 'en' ? 'Technologies:' : '技术栈:'}
-              </p>
-              <div style="display: flex; flex-wrap: wrap; gap: 4px;">
-                ${project.technologies.map(tech => `
-                  <span style="
-                    background-color: #e5e7eb;
-                    color: #374151;
-                    padding: 1px 6px;
-                    border-radius: 8px;
-                    font-size: 11px;
-                  ">${tech}</span>
-                `).join('')}
+                <div style="
+                  width: 8px;
+                  height: 8px;
+                  background-color: white;
+                  border-radius: 50%;
+                "></div>
               </div>
+            `,
+            iconSize: [26, 26],
+            iconAnchor: [13, 13],
+          });
+
+          // 创建标记
+          const marker = L.marker(project.coordinates, { icon: customIcon })
+            .addTo(mapInstanceRef.current);
+
+          // 获取项目图片
+          const getProjectImage = () => {
+            if (!project.img) return '';
+            if (Array.isArray(project.img)) {
+              return project.img[0] || '';
+            }
+            return project.img;
+          };
+
+          const projectImage = getProjectImage();
+          const projectName = getBilingualText(project.name) || getBilingualText(project.title);
+          const projectDescription = getBilingualText(project.description);
+          const projectLocation = getBilingualText(project.location);
+
+          // 创建弹出窗口内容
+          const popupContent = `
+            <div style="min-width: 250px; font-family: Arial, sans-serif;">
+              ${projectImage ? `
+                <div style="margin-bottom: 10px;">
+                  <img src="${projectImage}" alt="${projectName}" style="width: 100%; height: 120px; object-fit: cover; border-radius: 4px;" />
+                </div>
+              ` : ''}
+              <h3 style="margin: 0 0 8px 0; color: #1f2937; font-size: 16px; font-weight: bold;">
+                ${projectName}
+              </h3>
+              <p style="margin: 0 0 8px 0; color: #6b7280; font-size: 14px; line-height: 1.4;">
+                ${projectDescription}
+              </p>
+              <div style="margin-bottom: 8px;">
+                <span style="
+                  background-color: ${typeColors[project.type] || '#6b7280'};
+                  color: white;
+                  padding: 2px 8px;
+                  border-radius: 12px;
+                  font-size: 12px;
+                  font-weight: 500;
+                ">
+                  ${project.type}
+                </span>
+                ${project.year ? `
+                  <span style="
+                    background-color: #10b981;
+                    color: white;
+                    padding: 2px 8px;
+                    border-radius: 12px;
+                    font-size: 12px;
+                    font-weight: 500;
+                    margin-left: 4px;
+                  ">
+                    ${project.year}
+                  </span>
+                ` : ''}
+              </div>
+              ${projectLocation ? `
+                <div style="margin-top: 8px;">
+                  <p style="margin: 0 0 4px 0; color: #374151; font-size: 12px; font-weight: 500;">
+                    📍 ${projectLocation}
+                  </p>
+                </div>
+              ` : ''}
+              ${project.link ? `
+                <div style="margin-top: 8px;">
+                  <a href="${project.link}" target="_blank" style="
+                    color: #3b82f6;
+                    text-decoration: none;
+                    font-size: 12px;
+                    font-weight: 500;
+                  ">
+                    ${language === 'en' ? '🔗 View Project' : '🔗 查看项目'}
+                  </a>
+                </div>
+              ` : ''}
             </div>
-          </div>
-        `;
+          `;
 
-        marker.bindPopup(popupContent, {
-          maxWidth: 300,
-          className: 'custom-popup'
-        });
+          marker.bindPopup(popupContent, {
+            maxWidth: 300,
+            className: 'custom-popup'
+          });
 
-        markersRef.current.push(marker);
+          markersRef.current.push(marker);
+        }
       });
 
       // 调整视图以包含所有标记
@@ -150,7 +181,7 @@ const ProjectMapModal = ({ isOpen, onClose }) => {
         markersRef.current = [];
       }
     };
-  }, [isOpen, language]);
+  }, [isOpen, language, projects, getBilingualText, typeColors]);
 
   // 键盘事件处理
   useEffect(() => {
@@ -227,13 +258,13 @@ const ProjectMapModal = ({ isOpen, onClose }) => {
             {language === 'en' ? 'Categories' : '项目类别'}
           </h4>
           <div className="space-y-1">
-            {Object.entries(categoryColors).map(([category, color]) => (
-              <div key={category} className="flex items-center gap-2">
+            {Object.entries(typeColors).map(([type, color]) => (
+              <div key={type} className="flex items-center gap-2">
                 <div 
                   className="w-3 h-3 rounded-full border border-white shadow-sm"
                   style={{ backgroundColor: color }}
                 />
-                <span className="text-xs text-gray-700">{category}</span>
+                <span className="text-xs text-gray-700 capitalize">{type}</span>
               </div>
             ))}
           </div>
@@ -242,10 +273,10 @@ const ProjectMapModal = ({ isOpen, onClose }) => {
     </div>
   );
 };
-
 ProjectMapModal.propTypes = {
   isOpen: PropTypes.bool.isRequired,
   onClose: PropTypes.func.isRequired,
+  language: PropTypes.string
 };
 
 export default ProjectMapModal;

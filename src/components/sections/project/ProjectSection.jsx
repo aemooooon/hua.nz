@@ -1,211 +1,242 @@
 import { useState } from 'react';
 import PropTypes from 'prop-types';
 import ProjectMapModal from './ProjectMapModal';
+import ScrollPercentageIndicator from '../../ScrollPercentageIndicator';
+import locations from '../../../store/locations';
 
 const ProjectSection = ({ section, language }) => {
     const [isMapOpen, setIsMapOpen] = useState(false);
+    const [activeFilter, setActiveFilter] = useState('all');
 
-    // 示例项目数据 - 增加更多项目来演示长内容滚动
-    const projects = [
-        {
-            id: 1,
-            title: { en: 'AI-Powered Web App', zh: 'AI驱动的Web应用' },
-            description: { en: 'A comprehensive web application featuring machine learning capabilities, real-time data processing, and modern UI design.', zh: '一个具备机器学习能力、实时数据处理和现代UI设计的综合性Web应用程序。' },
-            tech: ['React', 'Python', 'TensorFlow', 'WebGL'],
-            image: '/jsjxmm.jpg',
-            status: { en: 'Completed', zh: '已完成' }
-        },
-        {
-            id: 2,
-            title: { en: 'Real-time Data Visualization', zh: '实时数据可视化平台' },
-            description: { en: 'Interactive dashboard for real-time data visualization with 3D graphics and advanced analytics capabilities.', zh: '具有3D图形和高级分析功能的实时数据可视化交互式仪表板。' },
-            tech: ['Three.js', 'D3.js', 'WebSocket', 'Node.js'],
-            image: '/data472/472.png',
-            status: { en: 'In Progress', zh: '进行中' }
-        },
-        {
-            id: 3,
-            title: { en: 'E-commerce Platform', zh: '电商平台' },
-            description: { en: 'Full-stack e-commerce platform with payment integration, inventory management, and mobile-responsive design.', zh: '具有支付集成、库存管理和移动响应式设计的全栈电商平台。' },
-            tech: ['Next.js', 'PostgreSQL', 'Stripe', 'Tailwind'],
-            image: '/fitsgo.gif',
-            status: { en: 'Completed', zh: '已完成' }
-        },
-        {
-            id: 4,
-            title: { en: 'IoT Dashboard', zh: '物联网仪表板' },
-            description: { en: 'Comprehensive IoT device management dashboard with real-time monitoring and control capabilities.', zh: '具有实时监控和控制功能的综合物联网设备管理仪表板。' },
-            tech: ['Vue.js', 'MQTT', 'InfluxDB', 'Grafana'],
-            image: '/aqi/Overview.png',
-            status: { en: 'Planning', zh: '规划中' }
-        },
-        {
-            id: 5,
-            title: { en: 'Mobile Game Engine', zh: '移动游戏引擎' },
-            description: { en: 'Cross-platform mobile game engine with physics simulation, shader effects, and multiplayer support.', zh: '具有物理模拟、着色器效果和多人游戏支持的跨平台移动游戏引擎。' },
-            tech: ['Unity', 'C#', 'WebRTC', 'Cloud Functions'],
-            image: '/UC_F4.001.jpeg',
-            status: { en: 'In Progress', zh: '进行中' }
-        },
-        {
-            id: 6,
-            title: { en: 'Blockchain DApp', zh: '区块链去中心化应用' },
-            description: { en: 'Decentralized application built on Ethereum with smart contracts and Web3 integration.', zh: '基于以太坊构建的去中心化应用，具有智能合约和Web3集成。' },
-            tech: ['Solidity', 'Web3.js', 'React', 'Metamask'],
-            image: '/zespri_poster.png',
-            status: { en: 'Completed', zh: '已完成' }
-        },
-        {
-            id: 7,
-            title: { en: 'AR/VR Experience', zh: 'AR/VR体验应用' },
-            description: { en: 'Immersive AR/VR experience combining virtual environments with real-world interactions.', zh: '结合虚拟环境与现实世界交互的沉浸式AR/VR体验。' },
-            tech: ['WebXR', 'A-Frame', 'Three.js', 'WebGL'],
-            image: '/awared-excellence.jpeg',
-            status: { en: 'Planning', zh: '规划中' }
-        },
-        {
-            id: 8,
-            title: { en: 'Cloud Infrastructure', zh: '云基础设施管理' },
-            description: { en: 'Automated cloud infrastructure management system with containerization and CI/CD pipelines.', zh: '具有容器化和CI/CD管道的自动化云基础设施管理系统。' },
-            tech: ['Docker', 'Kubernetes', 'AWS', 'Terraform'],
-            image: '/data472/services.png',
-            status: { en: 'In Progress', zh: '进行中' }
+    // 用 locations 数据源替换硬编码项目
+    const projects = locations.locations.filter(loc => loc.type === 'project');
+
+    // 根据项目特征进行智能分组
+    const getProjectCategory = (project) => {
+        const title = (project.title && project.title[language]) || project.title || '';
+        const description = (project.description && project.description[language]) || project.description || '';
+        const name = (project.name && project.name[language]) || project.name || '';
+        
+        // 合并所有文本进行关键词匹配
+        const allText = `${title} ${description} ${name}`.toLowerCase();
+        
+        if (allText.includes('360°') || allText.includes('virtual tour') || allText.includes('虚拟漫游')) {
+            return 'VR/360°';
         }
-    ];
+        if (allText.includes('data') || allText.includes('pipeline') || allText.includes('数据') || allText.includes('aqi')) {
+            return 'Data Science';
+        }
+        if (allText.includes('mobile') || allText.includes('app') || allText.includes('移动') || allText.includes('应用')) {
+            return 'Mobile App';
+        }
+        if (allText.includes('web') || allText.includes('website') || allText.includes('网站') || allText.includes('platform')) {
+            return 'Web Platform';
+        }
+        return 'Other';
+    };
 
+    // 按类别分组项目
+    const projectsByCategory = projects.reduce((acc, project) => {
+        const category = getProjectCategory(project);
+        if (!acc[category]) acc[category] = [];
+        acc[category].push(project);
+        return acc;
+    }, {});
+
+    // 获取过滤后的项目
+    const filteredProjects = activeFilter === 'all' 
+        ? projects 
+        : projectsByCategory[activeFilter] || [];
+
+    // 状态颜色映射
     const getStatusColor = (status) => {
-        const statusEn = status.en.toLowerCase();
-        switch (statusEn) {
-            case 'completed':
-                return 'bg-green-500/20 text-green-400 border-green-500/50';
-            case 'in progress':
-                return 'bg-blue-500/20 text-blue-400 border-blue-500/50';
-            case 'planning':
-                return 'bg-yellow-500/20 text-yellow-400 border-yellow-500/50';
-            default:
-                return 'bg-gray-500/20 text-gray-400 border-gray-500/50';
-        }
+        if (!status) return 'bg-gray-500/20 text-gray-400 border-gray-500/50';
+        const s = String(status).toLowerCase();
+        if (s.includes('完成') || s.includes('2019') || s.includes('2024')) return 'bg-green-500/20 text-green-400 border-green-500/50';
+        if (s.includes('progress') || s.includes('进行') || s.includes('2020-2021')) return 'bg-blue-500/20 text-blue-400 border-blue-500/50';
+        if (s.includes('plan') || s.includes('规划') || s.includes('2024-2025')) return 'bg-yellow-500/20 text-yellow-400 border-yellow-500/50';
+        return 'bg-gray-500/20 text-gray-400 border-gray-500/50';
+    };
+
+    // 获取类别颜色
+    const getCategoryColor = (category) => {
+        const colors = {
+            'VR/360°': 'from-purple-600/20 to-purple-800/20 text-purple-400',
+            'Data Science': 'from-blue-600/20 to-blue-800/20 text-blue-400',
+            'Mobile App': 'from-green-600/20 to-green-800/20 text-green-400',
+            'Web Platform': 'from-orange-600/20 to-orange-800/20 text-orange-400',
+            'Other': 'from-gray-600/20 to-gray-800/20 text-gray-400'
+        };
+        return colors[category] || colors['Other'];
     };
 
     return (
-        <div className="min-h-screen w-full p-8 text-white">
-            <div className="max-w-7xl mx-auto">
-                {/* 顶部标题和地图按钮 */}
-                <div className="flex items-center justify-between mb-12 sticky top-0 bg-black/20 backdrop-blur-sm p-4 rounded-lg z-10">
-                    <div className="flex-1 text-center">
-                        <h1 className="text-5xl font-bold mb-4">
+        <div className="min-h-screen w-full p-8 text-white relative project-section-bg">
+            {/* 滚动百分比指示器 */}
+            <ScrollPercentageIndicator />
+            
+            <div className="max-w-7xl mx-auto relative z-10 backdrop-protection">
+                {/* 重新设计的顶部标题区域 */}
+                <div className="project-header">
+                    <div className="project-title-container">
+                        <h1 className="project-main-title">
                             {section.name[language]}
                         </h1>
-                        <p className="text-xl text-gray-300">
-                            {section.description[language]}
+                        <p className="project-subtitle">
+                            {language === 'en' ? 'Showcase of Innovation' : '创新作品展示'}
                         </p>
                     </div>
                     
-                    {/* 地图视图按钮 */}
-                    <button
-                        onClick={() => setIsMapOpen(true)}
-                        className="ml-6 flex items-center gap-2 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-4 py-2 rounded-lg transition-all duration-300 shadow-lg hover:shadow-xl"
-                        title={language === 'en' ? 'View on Map' : '地图视图'}
+                    <div className="project-controls">
+                        {/* 超吸引人的地图探索按钮 */}
+                        <button
+                            onClick={() => setIsMapOpen(true)}
+                            className="map-view-button group"
+                            title={language === 'en' ? 'Explore Projects on Interactive Map' : '在交互地图上探索项目'}
+                        >
+                            <svg className="map-view-button-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-1.447-.894L15 4m0 13V4m-6 3l6-3" />
+                            </svg>
+                            <span>
+                                {language === 'en' ? '🗺️ Explore Map' : '🗺️ 探索地图'}
+                            </span>
+                        </button>
+                    </div>
+                </div>
+                
+                {/* 动态项目统计卡片 */}
+                <div className="stats-grid">
+                    <div 
+                        className={`stat-card cursor-pointer ${activeFilter === 'all' ? 'ring-2 ring-white/30' : ''}`}
+                        onClick={() => setActiveFilter('all')}
                     >
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                        </svg>
-                        <span className="hidden sm:inline">
-                            {language === 'en' ? 'Map View' : '地图视图'}
-                        </span>
-                    </button>
+                        <span className="stat-number text-blue-400">{projects.length}</span>
+                        <span className="stat-label">{language === 'en' ? 'Total Projects' : '总项目数'}</span>
+                    </div>
+                    
+                    {Object.entries(projectsByCategory).map(([category, categoryProjects]) => (
+                        <div 
+                            key={category}
+                            className={`stat-card cursor-pointer ${activeFilter === category ? 'ring-2 ring-white/30' : ''}`}
+                            onClick={() => setActiveFilter(category)}
+                        >
+                            <span className={`stat-number ${getCategoryColor(category).split(' ')[2]}`}>
+                                {categoryProjects.length}
+                            </span>
+                            <span className="stat-label">{category}</span>
+                        </div>
+                    ))}
                 </div>
+
+                {/* 当前筛选指示器 */}
+                {activeFilter !== 'all' && (
+                    <div className="mb-6 flex items-center justify-center">
+                        <div className="bg-white/10 backdrop-blur-sm rounded-full px-6 py-2 border border-white/20">
+                            <span className="text-sm font-medium">
+                                {language === 'en' ? `Showing: ${activeFilter}` : `显示: ${activeFilter}`}
+                            </span>
+                            <button 
+                                onClick={() => setActiveFilter('all')}
+                                className="ml-3 text-white/60 hover:text-white transition-colors"
+                            >
+                                ✕
+                            </button>
+                        </div>
+                    </div>
+                )}
                 
-                {/* 项目统计 */}
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12">
-                    <div className="bg-gradient-to-r from-blue-600/20 to-blue-800/20 backdrop-blur-sm rounded-lg p-6 text-center">
-                        <div className="text-3xl font-bold text-blue-400">{projects.length}</div>
-                        <div className="text-gray-300">{language === 'en' ? 'Total Projects' : '总项目数'}</div>
-                    </div>
-                    <div className="bg-gradient-to-r from-green-600/20 to-green-800/20 backdrop-blur-sm rounded-lg p-6 text-center">
-                        <div className="text-3xl font-bold text-green-400">{projects.filter(p => p.status.en === 'Completed').length}</div>
-                        <div className="text-gray-300">{language === 'en' ? 'Completed' : '已完成'}</div>
-                    </div>
-                    <div className="bg-gradient-to-r from-yellow-600/20 to-yellow-800/20 backdrop-blur-sm rounded-lg p-6 text-center">
-                        <div className="text-3xl font-bold text-yellow-400">{projects.filter(p => p.status.en === 'In Progress').length}</div>
-                        <div className="text-gray-300">{language === 'en' ? 'In Progress' : '进行中'}</div>
-                    </div>
-                    <div className="bg-gradient-to-r from-purple-600/20 to-purple-800/20 backdrop-blur-sm rounded-lg p-6 text-center">
-                        <div className="text-3xl font-bold text-purple-400">{projects.filter(p => p.status.en === 'Planning').length}</div>
-                        <div className="text-gray-300">{language === 'en' ? 'Planning' : '规划中'}</div>
-                    </div>
-                </div>
-                
-                {/* 项目网格 */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-8 pb-12">
-                    {projects.map((project) => (
-                        <div key={project.id} className="bg-white/5 backdrop-blur-sm rounded-xl p-6 hover:bg-white/10 transition-all duration-500 border border-white/10 hover:border-white/20 hover:scale-105 group">
+                {/* 项目网格 - 增加边距避免遮挡cube */}
+                <div className="project-grid-container grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-8 pb-12">
+                    {filteredProjects.map((project, idx) => (
+                        <div key={idx} className="project-card group">
                             {/* 项目图片 */}
-                            <div className="w-full h-48 bg-gradient-to-br from-gray-700 to-gray-900 rounded-lg mb-6 overflow-hidden relative">
-                                <img 
-                                    src={project.image} 
-                                    alt={project.title[language]}
-                                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                                    onError={(e) => {
-                                        e.target.style.display = 'none';
-                                        e.target.nextSibling.style.display = 'flex';
-                                    }}
-                                />
-                                <div className="w-full h-full bg-gradient-to-br from-blue-600/20 to-purple-600/20 absolute top-0 left-0 hidden items-center justify-center">
-                                    <span className="text-4xl">🚀</span>
-                                </div>
-                                
+                            <div className="project-image-container">
+                                {project.img ? (
+                                    Array.isArray(project.img) ? (
+                                        <img src={project.img[0]} alt={(project.name && project.name[language]) || project.name || (project.title && project.title[language]) || project.title} className="project-image" />
+                                    ) : (
+                                        <img src={project.img} alt={(project.name && project.name[language]) || project.name || (project.title && project.title[language]) || project.title} className="project-image" />
+                                    )
+                                ) : (
+                                    <div className="w-full h-full flex items-center justify-center text-4xl">🚀</div>
+                                )}
                                 {/* 状态标签 */}
-                                <div className={`absolute top-3 right-3 px-3 py-1 rounded-full text-xs font-semibold border ${getStatusColor(project.status)}`}>
-                                    {project.status[language]}
+                                <div className={`project-status-badge ${getStatusColor(project.year)}`}>
+                                    {project.year || ''}
+                                </div>
+                                {/* 分类标签 */}
+                                <div className="project-category-badge">
+                                    {getProjectCategory(project)}
                                 </div>
                             </div>
-                            
                             {/* 项目信息 */}
-                            <h3 className="text-xl font-bold mb-3 group-hover:text-blue-400 transition-colors duration-300">
-                                {project.title[language]}
-                            </h3>
-                            <p className="text-gray-300 mb-6 leading-relaxed line-clamp-3">
-                                {project.description[language]}
-                            </p>
-                            
-                            {/* 技术栈 */}
-                            <div className="flex flex-wrap gap-2 mb-4">
-                                {project.tech.map((tech, index) => (
-                                    <span key={index} className="bg-blue-600/20 text-blue-400 px-3 py-1 rounded-full text-sm border border-blue-600/30">
-                                        {tech}
-                                    </span>
-                                ))}
-                            </div>
-                            
-                            {/* 操作按钮 */}
-                            <div className="flex gap-3">
-                                <button className="flex-1 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white py-2 px-4 rounded-lg transition-all duration-300 text-sm font-semibold">
-                                    {language === 'en' ? 'View Details' : '查看详情'}
-                                </button>
-                                <button className="bg-white/10 hover:bg-white/20 text-white py-2 px-4 rounded-lg transition-all duration-300 text-sm">
-                                    {language === 'en' ? 'Live Demo' : '在线演示'}
-                                </button>
+                            <div className="project-content">
+                                <h3 className="project-title">
+                                    {(project.title && project.title[language]) || (project.name && project.name[language]) || project.title || project.name}
+                                </h3>
+                                <p className="project-description">
+                                    {(project.description && project.description[language]) || project.description}
+                                </p>
+                                {/* 技术栈（如有） */}
+                                {project.tech && Array.isArray(project.tech) && (
+                                    <div className="project-tech-stack">
+                                        {project.tech.map((tech, index) => (
+                                            <span key={index} className="tech-badge">
+                                                {tech}
+                                            </span>
+                                        ))}
+                                    </div>
+                                )}
+                                {/* 其他字段展示（如地点、年份、链接） */}
+                                <div className="project-meta">
+                                    {project.location && <span>📍 {(project.location && project.location[language]) || project.location}</span>}
+                                    {project.year && <span>📅 {project.year}</span>}
+                                    {project.link && (
+                                        <a href={project.link} target="_blank" rel="noopener noreferrer" className="project-link">
+                                            {language === 'en' ? 'Learn more' : '了解更多'}
+                                        </a>
+                                    )}
+                                </div>
+                                {/* 操作按钮（可自定义） */}
+                                <div className="project-actions">
+                                    <button className="btn-primary">
+                                        {language === 'en' ? 'View Details' : '查看详情'}
+                                    </button>
+                                    <button className="btn-secondary">
+                                        {language === 'en' ? 'Live Demo' : '在线演示'}
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     ))}
                 </div>
 
                 {/* 底部说明 */}
-                <div className="text-center py-8 border-t border-white/20">
-                    <p className="text-gray-400 text-lg">
-                        {language === 'en' 
-                            ? '✨ This page demonstrates smart scrolling - notice how the content flows naturally!' 
-                            : '✨ 这个页面演示了智能滚动 - 注意内容如何自然流动！'
-                        }
-                    </p>
-                    <p className="text-gray-500 text-sm mt-2">
-                        {language === 'en' 
-                            ? 'Use mouse wheel or arrow keys to navigate. The scroll mode adapts automatically.' 
-                            : '使用鼠标滚轮或方向键导航。滚动模式会自动适应。'
-                        }
-                    </p>
+                <div className="text-center py-12 border-t border-white/10 bg-black/20 backdrop-blur-sm rounded-xl mt-8">
+                    <div className="max-w-2xl mx-auto">
+                        <p className="text-white/80 text-lg mb-3 font-medium">
+                            {language === 'en' 
+                                ? '✨ Explore different categories by clicking the cards above!' 
+                                : '✨ 点击上方分类卡片探索不同类别的项目！'
+                            }
+                        </p>
+                        <p className="text-white/60 text-sm">
+                            {language === 'en' 
+                                ? 'Watch the real-time scroll progress indicator on the right →' 
+                                : '观察右侧的实时滚动进度指示器 →'
+                            }
+                        </p>
+                        <div className="mt-6 flex justify-center">
+                            <div className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-blue-600/20 to-purple-600/20 rounded-full border border-white/20">
+                                <span className="text-sm text-white/70">
+                                    {language === 'en' 
+                                        ? `${filteredProjects.length} projects displayed` 
+                                        : `显示 ${filteredProjects.length} 个项目`
+                                    }
+                                </span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -213,6 +244,7 @@ const ProjectSection = ({ section, language }) => {
             <ProjectMapModal 
                 isOpen={isMapOpen} 
                 onClose={() => setIsMapOpen(false)} 
+                language={language}
             />
         </div>
     );

@@ -13,6 +13,9 @@ export default {
         '72': '18rem',
         '84': '21rem',
         '96': '24rem',
+        'golden-sm': '1.618rem',
+        'golden-md': '2.618rem', 
+        'golden-lg': '4.236rem',
       },
       fontFamily: {
         audiowide: ['"Audiowide"', 'cursive'],
@@ -48,7 +51,16 @@ export default {
         border: {
           light: '#e5e7eb',
           dark: '#374151'
-        }
+        },
+        gray: {
+          800: '#2d3542',
+        },
+        // 黄金分割比例相关的颜色和尺寸 - 更宽松的留白版本
+        golden: {
+          ratio: '1.618',
+          content: '58%',    // 调整为更宽松的比例
+          sidebar: '42%',    // 相应增加头像区域
+        },
       },
       animation: {
         hueRotate: "hueRotate 5s linear infinite",
