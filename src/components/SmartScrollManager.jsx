@@ -373,19 +373,7 @@ const SmartScrollManager = () => {
                 <div className="fixed inset-0 bg-black/20 z-30 transition-opacity duration-300" />
             )}
 
-            {/* 滚动提示 - 只在内容溢出时显示 */}
-            {scrollMode === 'content' && isContentOverflowing && (
-                <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 z-40">
-                    <div className="bg-black/80 text-white text-sm px-4 py-2 rounded-full backdrop-blur-sm scroll-hint">
-                        <div className="flex items-center space-x-2">
-                            <span>↕️</span>
-                            <span>
-                                {language === 'en' ? 'Scroll to explore content' : '滚动浏览内容'}
-                            </span>
-                        </div>
-                    </div>
-                </div>
-            )}
+            {/* 滚动提示已移除 */}
         </div>
     );
 };

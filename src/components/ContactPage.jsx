@@ -1,29 +1,9 @@
-import { useState } from 'react';
 import { useAppStore } from '../store/useAppStore';
-import { FaEnvelope, FaLinkedin, FaGithub, FaMapMarkerAlt, FaPaperPlane } from 'react-icons/fa';
+import { FaEnvelope, FaLinkedin, FaGithub, FaMapMarkerAlt, FaPhone } from 'react-icons/fa';
 
 const ContactPage = () => {
     const { getContent } = useAppStore();
     const content = getContent();
-    const [formData, setFormData] = useState({
-        name: '',
-        email: '',
-        message: ''
-    });
-
-    const handleChange = (e) => {
-        setFormData({
-            ...formData,
-            [e.target.name]: e.target.value
-        });
-    };
-
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        // TODO: 实现表单提交逻辑
-        console.log('Form submitted:', formData);
-        // 可以集成EmailJS或其他邮件服务
-    };
 
     return (
         <div className="w-full h-full overflow-auto p-8">
@@ -36,115 +16,81 @@ const ContactPage = () => {
                     <p className="text-xl text-gray-300">
                         {content.contact.subtitle}
                     </p>
+                    <p className="text-gray-400 mt-4">
+                        {content.contact.description}
+                    </p>
                 </div>
 
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                    {/* 联系信息 */}
-                    <div className="content-section p-8">
-                        <h2 className="text-2xl font-semibold mb-6 text-green-300">
-                            {content.contact.info}
-                        </h2>
+                {/* 联系信息 - 居中显示 */}
+                <div className="content-section p-8 max-w-2xl mx-auto">
+                    <h2 className="text-2xl font-semibold mb-8 text-green-300 text-center">
+                        {content.contact.info}
+                    </h2>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className="flex items-center space-x-4 p-6 text-enhanced rounded-lg border border-green-500/20 hover:border-green-500/40 transition-all">
+                            <FaEnvelope className="text-green-400 text-2xl flex-shrink-0" />
+                            <div>
+                                <a 
+                                    href={`mailto:${content.contact.emailAddress}`}
+                                    className="text-gray-200 hover:text-green-400 transition-colors block"
+                                >
+                                    {content.contact.emailAddress}
+                                </a>
+                                <p className="text-sm text-gray-400">Email</p>
+                            </div>
+                        </div>
                         
-                        <div className="space-y-6">
-                            <div className="flex items-center space-x-4 p-4 text-enhanced rounded-lg">
-                                <FaEnvelope className="text-green-400 text-xl flex-shrink-0" />
-                                <div>
-                                    <p className="text-gray-200">aemooooon@gmail.com</p>
-                                    <p className="text-sm text-gray-400">Email</p>
-                                </div>
+                        <div className="flex items-center space-x-4 p-6 text-enhanced rounded-lg border border-green-500/20 hover:border-green-500/40 transition-all">
+                            <FaPhone className="text-green-400 text-2xl flex-shrink-0" />
+                            <div>
+                                <a 
+                                    href={`tel:${content.contact.phone}`}
+                                    className="text-gray-200 hover:text-green-400 transition-colors block"
+                                >
+                                    {content.contact.phone}
+                                </a>
+                                <p className="text-sm text-gray-400">Phone</p>
                             </div>
-                            
-                            <div className="flex items-center space-x-4 p-4 text-enhanced rounded-lg">
-                                <FaLinkedin className="text-green-400 text-xl flex-shrink-0" />
-                                <div>
-                                    <a 
-                                        href="https://www.linkedin.com/in/aemonwang" 
-                                        target="_blank" 
-                                        rel="noopener noreferrer"
-                                        className="text-gray-200 hover:text-green-400 transition-colors"
-                                    >
-                                        linkedin.com/in/aemonwang
-                                    </a>
-                                    <p className="text-sm text-gray-400">LinkedIn</p>
-                                </div>
+                        </div>
+                        
+                        <div className="flex items-center space-x-4 p-6 text-enhanced rounded-lg border border-green-500/20 hover:border-green-500/40 transition-all">
+                            <FaLinkedin className="text-green-400 text-2xl flex-shrink-0" />
+                            <div>
+                                <a 
+                                    href={content.contact.social.linkedin.url} 
+                                    target="_blank" 
+                                    rel="noopener noreferrer"
+                                    className="text-gray-200 hover:text-green-400 transition-colors block"
+                                >
+                                    {content.contact.social.linkedin.label}
+                                </a>
+                                <p className="text-sm text-gray-400">LinkedIn</p>
                             </div>
-                            
-                            <div className="flex items-center space-x-4 p-4 text-enhanced rounded-lg">
-                                <FaGithub className="text-green-400 text-xl flex-shrink-0" />
-                                <div>
-                                    <a 
-                                        href="https://github.com/aemooooon" 
-                                        target="_blank" 
-                                        rel="noopener noreferrer"
-                                        className="text-gray-200 hover:text-green-400 transition-colors"
-                                    >
-                                        github.com/aemooooon
-                                    </a>
-                                    <p className="text-sm text-gray-400">GitHub</p>
-                                </div>
-                            </div>
-                            
-                            <div className="flex items-center space-x-4 p-4 text-enhanced rounded-lg">
-                                <FaMapMarkerAlt className="text-green-400 text-xl flex-shrink-0" />
-                                <div>
-                                    <p className="text-gray-200">{content.contact.location}</p>
-                                    <p className="text-sm text-gray-400">Location</p>
-                                </div>
+                        </div>
+                        
+                        <div className="flex items-center space-x-4 p-6 text-enhanced rounded-lg border border-green-500/20 hover:border-green-500/40 transition-all">
+                            <FaGithub className="text-green-400 text-2xl flex-shrink-0" />
+                            <div>
+                                <a 
+                                    href={content.contact.social.github.url} 
+                                    target="_blank" 
+                                    rel="noopener noreferrer"
+                                    className="text-gray-200 hover:text-green-400 transition-colors block"
+                                >
+                                    {content.contact.social.github.label}
+                                </a>
+                                <p className="text-sm text-gray-400">GitHub</p>
                             </div>
                         </div>
                     </div>
                     
-                    {/* 联系表单 */}
-                    <div className="content-section p-8">
-                        <h2 className="text-2xl font-semibold mb-6 text-green-300">
-                            {content.contact.send}
-                        </h2>
-                        
-                        <form onSubmit={handleSubmit} className="space-y-6">
-                            <div>
-                                <input
-                                    type="text"
-                                    name="name"
-                                    placeholder={content.contact.name}
-                                    value={formData.name}
-                                    onChange={handleChange}
-                                    className="w-full p-4 bg-black/30 border border-green-500/30 rounded-lg text-white placeholder-gray-400 focus:border-green-400 focus:outline-none transition-colors"
-                                    required
-                                />
-                            </div>
-                            
-                            <div>
-                                <input
-                                    type="email"
-                                    name="email"
-                                    placeholder={content.contact.email}
-                                    value={formData.email}
-                                    onChange={handleChange}
-                                    className="w-full p-4 bg-black/30 border border-green-500/30 rounded-lg text-white placeholder-gray-400 focus:border-green-400 focus:outline-none transition-colors"
-                                    required
-                                />
-                            </div>
-                            
-                            <div>
-                                <textarea
-                                    name="message"
-                                    placeholder={content.contact.message}
-                                    value={formData.message}
-                                    onChange={handleChange}
-                                    rows={6}
-                                    className="w-full p-4 bg-black/30 border border-green-500/30 rounded-lg text-white placeholder-gray-400 focus:border-green-400 focus:outline-none resize-none transition-colors"
-                                    required
-                                />
-                            </div>
-                            
-                            <button
-                                type="submit"
-                                className="w-full py-4 bg-green-500/20 border border-green-500/50 rounded-lg text-green-300 hover:bg-green-500/30 hover:border-green-400 transition-all duration-300 flex items-center justify-center space-x-2 group"
-                            >
-                                <FaPaperPlane className="group-hover:translate-x-1 transition-transform" />
-                                <span>{content.contact.send}</span>
-                            </button>
-                        </form>
+                    <div className="flex items-center justify-center space-x-4 p-6 text-enhanced rounded-lg border border-green-500/20 hover:border-green-500/40 transition-all mt-6">
+                        <FaMapMarkerAlt className="text-green-400 text-2xl flex-shrink-0" />
+                        <div className="text-center">
+                            <p className="text-gray-200">{content.contact.location}</p>
+                            <p className="text-sm text-gray-400">Location</p>
+                        </div>
                     </div>
                 </div>
             </div>

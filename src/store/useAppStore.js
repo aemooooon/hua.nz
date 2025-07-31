@@ -180,9 +180,23 @@ const contentConfig = {
       message: "Your Message",
       send: "Send Message",
       info: "Contact Information",
-      location: "Auckland, New Zealand",
-      emailAddress: "contact@example.com",
-      phone: "+64 xxx xxx xxx"
+      location: "Christchurch, New Zealand",
+      emailAddress: "aemooooon@gmail.com",
+      phone: "+64 21 037 0520",
+      social: {
+        github: {
+          url: "https://github.com/aemooooon",
+          label: "GitHub"
+        },
+        linkedin: {
+          url: "https://www.linkedin.com/in/aemonwang",
+          label: "LinkedIn"
+        },
+        email: {
+          url: "mailto:aemooooon@gmail.com",
+          label: "Email"
+        }
+      }
     },
     about: {
       title: "About Me",
@@ -242,8 +256,73 @@ const contentConfig = {
     },
     education: {
       title: "Education",
-      subtitle: "Academic journey and achievements",
-      description: "My educational background and continuous learning path."
+      degrees: [
+        {
+          id: "masters",
+          degree: "Master of Applied Data Science with Distinction",
+          institution: "University of Canterbury",
+          location: "Christchurch, New Zealand",
+          period: "February 2024 - February 2025",
+          capstoneProjects: [
+            {
+              name: "SwapBytes",
+              description: "A P2P file-sharing and messaging app built using Rust (backend) and React with Tauri (frontend). Integrated libp2p for decentralised networking.",
+              technologies: ["Rust", "React", "Tauri", "libp2p"],
+              githubUrl: "https://github.com/aemooooon/swapbytes",
+              image: "/jsjxmm.jpg"
+            },
+            {
+              name: "Digital Pet",
+              description: "A blockchain-based virtual pet dApp on Secret Network. Built a CosmWasm smart contract using Rust and a React frontend.",
+              technologies: ["Rust", "CosmWasm", "React", "Secret Network"],
+              githubUrl: "https://github.com/aemooooon/digital-pet",
+              image: "/jlw.jpg"
+            },
+            {
+              name: "Data Pipeline Project",
+              description: "A collaborative cloud-based automation system for collecting and processing environmental data from 17 different sources.",
+              technologies: ["Apache Airflow", "Python", "GraphQL", "AWS"],
+              githubUrl: "https://github.com/aemooooon/data-pipeline",
+              image: "/aqi/Overview.png"
+            }
+          ]
+        },
+        {
+          id: "bachelors",
+          degree: "Bachelor of Information Technology with Distinction",
+          institution: "Otago Polytechnic",
+          location: "Dunedin, New Zealand",
+          period: "July 2017 - June 2021",
+          awards: [
+            {
+              title: "Academic Excellence & Best Programmer",
+              year: "2021",
+              image: "/awared-best-programmer.jpeg"
+            },
+            {
+              title: "Excellence in the Bachelor of Information Technology",
+              year: "2019",
+              image: "/awared-excellence.jpeg"
+            }
+          ],
+          capstoneProjects: [
+            {
+              name: "Travel Assistant",
+              description: "An Android app using Kotlin, Jetpack, Google Maps, and Room DB for trip planning.",
+              technologies: ["Kotlin", "Android", "Google Maps"],
+              githubUrl: "https://github.com/aemooooon/travel-assistant",
+              image: "/dalincheng.jpg"
+            },
+            {
+              name: "FitsGo",
+              description: "A Fitness tracker app built with React Native and Firebase, supporting location tracking and workout history.",
+              technologies: ["React Native", "Firebase"],
+              githubUrl: "https://github.com/aemooooon/fitsgo",
+              image: "/fitsgo-team.jpg"
+            }
+          ]
+        }
+      ]
     },
     blog: {
       title: "Blog & Insights",
@@ -313,9 +392,23 @@ const contentConfig = {
       message: "您的信息",
       send: "发送信息",
       info: "联系信息",
-      location: "新西兰奥克兰",
-      emailAddress: "contact@example.com",
-      phone: "+64 xxx xxx xxx"
+      location: "新西兰基督城",
+      emailAddress: "aemooooon@gmail.com",
+      phone: "+64 21 037 0520",
+      social: {
+        github: {
+          url: "https://github.com/aemooooon",
+          label: "GitHub"
+        },
+        linkedin: {
+          url: "https://www.linkedin.com/in/aemonwang",
+          label: "LinkedIn"
+        },
+        email: {
+          url: "mailto:aemooooon@gmail.com",
+          label: "邮箱"
+        }
+      }
     },
     about: {
       title: "关于我",
@@ -374,8 +467,73 @@ const contentConfig = {
     },
     education: {
       title: "教育背景",
-      subtitle: "学术历程与成就",
-      description: "我的教育背景和持续学习之路。"
+      degrees: [
+        {
+          id: "masters",
+          degree: "应用数据科学硕士（优秀毕业）",
+          institution: "坎特伯雷大学",
+          location: "新西兰基督城",
+          period: "2024年2月 - 2025年2月",
+          capstoneProjects: [
+            {
+              name: "SwapBytes",
+              description: "使用Rust（后端）和React与Tauri（前端）构建的P2P文件共享和消息应用。集成libp2p进行去中心化网络。",
+              technologies: ["Rust", "React", "Tauri", "libp2p"],
+              githubUrl: "https://github.com/aemooooon/swapbytes",
+              image: "/jsjxmm.jpg"
+            },
+            {
+              name: "数字宠物",
+              description: "基于Secret Network的区块链虚拟宠物dApp。使用Rust构建CosmWasm智能合约，React前端。",
+              technologies: ["Rust", "CosmWasm", "React", "Secret Network"],
+              githubUrl: "https://github.com/aemooooon/digital-pet",
+              image: "/jlw.jpg"
+            },
+            {
+              name: "数据管道项目",
+              description: "协作式云端自动化系统，用于从17个不同来源收集和处理环境数据。",
+              technologies: ["Apache Airflow", "Python", "GraphQL", "AWS"],
+              githubUrl: "https://github.com/aemooooon/data-pipeline",
+              image: "/aqi/Overview.png"
+            }
+          ]
+        },
+        {
+          id: "bachelors",
+          degree: "信息技术学士（优秀毕业）",
+          institution: "奥塔哥理工学院",
+          location: "新西兰达尼丁",
+          period: "2017年7月 - 2021年6月",
+          awards: [
+            {
+              title: "学术卓越与最佳程序员奖",
+              year: "2021",
+              image: "/awared-best-programmer.jpeg"
+            },
+            {
+              title: "信息技术学士优秀奖",
+              year: "2019",
+              image: "/awared-excellence.jpeg"
+            }
+          ],
+          capstoneProjects: [
+            {
+              name: "旅行助手",
+              description: "使用Kotlin、Jetpack、Google Maps和Room DB开发的Android旅行规划应用。",
+              technologies: ["Kotlin", "Android", "Google Maps"],
+              githubUrl: "https://github.com/aemooooon/travel-assistant",
+              image: "/dalincheng.jpg"
+            },
+            {
+              name: "FitsGo",
+              description: "使用React Native和Firebase构建的健身追踪应用，支持位置跟踪和锻炼历史。",
+              technologies: ["React Native", "Firebase"],
+              githubUrl: "https://github.com/aemooooon/fitsgo",
+              image: "/fitsgo-team.jpg"
+            }
+          ]
+        }
+      ]
     },
     blog: {
       title: "博客与见解",
@@ -443,6 +601,9 @@ export const useAppStore = create(
       
       // 项目数据
       projects: projectsData,
+      
+      // 多语言文本内容
+      texts: contentConfig,
       
       // 获取当前语言的内容
       getContent: () => {

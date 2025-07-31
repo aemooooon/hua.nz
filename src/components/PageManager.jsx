@@ -2,6 +2,7 @@ import { useEffect, useState, Suspense, lazy } from 'react';
 import { useAppStore } from '../store/useAppStore';
 import NavigationCube from './NavigationCube';
 import AboutSection from './sections/about/AboutSection';
+import EducationSection from './sections/education/EducationSection';
 import { FaSpinner } from 'react-icons/fa';
 
 // 懒加载页面组件
@@ -12,7 +13,7 @@ const ContactPage = lazy(() => import('./ContactPage'));
 const BlogPage = lazy(() => import('./BlogPage'));
 
 const PageManager = () => {
-    const { currentSection } = useAppStore();
+    const { currentSection, language } = useAppStore();
     const [cubePosition, setCubePosition] = useState('center');
     const [isTransitioning, setIsTransitioning] = useState(false);
 
@@ -30,7 +31,7 @@ const PageManager = () => {
         about: AboutSection,
         projects: Project,
         gallery: Gallery,
-        education: AboutSection, // 使用 AboutSection 作为教育页面
+        education: EducationSection,
         contact: ContactPage,
         blog: BlogPage
     };
@@ -81,7 +82,11 @@ const PageManager = () => {
                         </div>
                     }
                 >
-                    <CurrentPageComponent />
+                    {activeSection === 'education' ? (
+                        <CurrentPageComponent language={language} />
+                    ) : (
+                        <CurrentPageComponent />
+                    )}
                 </Suspense>
             </div>
 

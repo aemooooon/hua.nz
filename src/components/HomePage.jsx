@@ -157,11 +157,10 @@ const HomePage = () => {
                             {content.home.title}
                         </h2>
                         
-                        {/* 滚轮提示 */}
-                        <div className={`mt-8 ${enableGrandEntrance ? 'grand-slogan-entrance' : 'animate-bounce'}`}>
-                            <p className="text-sm text-gray-400 mb-2">Scroll to explore</p>
-                            <div className="w-6 h-10 border-2 border-gray-400 rounded-full mx-auto relative">
-                                <div className="w-1 h-2 bg-gray-400 rounded-full absolute left-1/2 top-2 transform -translate-x-1/2 animate-ping"></div>
+                        {/* 装饰元素 */}
+                        <div className={`mt-8 ${enableGrandEntrance ? 'grand-slogan-entrance' : ''}`}>
+                            <div className="w-6 h-10 border-2 border-gray-400 rounded-full mx-auto relative opacity-30">
+                                <div className="w-1 h-2 bg-gray-400 rounded-full absolute left-1/2 top-2 transform -translate-x-1/2"></div>
                             </div>
                         </div>
                     </div>
