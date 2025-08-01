@@ -1,13 +1,10 @@
-/* 3D重叠卡片样式 */
+/* 3D卡片样式 - 移除3D效果 */
 .education-card-3d {
-    perspective: 1000px;
     transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-    transform-style: preserve-3d;
     border-radius: 24px;
     overflow: visible;
     position: relative;
     cursor: pointer;
-    will-change: transform;
 }
 
 .education-card-3d .card-inner {
@@ -20,7 +17,6 @@
     border: 1px solid rgba(255,255,255,0.2);
     border-radius: 24px;
     transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-    transform-style: preserve-3d;
     overflow: hidden;
 }
 
@@ -44,9 +40,9 @@
         inset 0 1px 0 rgba(255, 255, 255, 0.1);
 }
 
-/* Hover效果 */
+/* Hover效果 - 移除3D旋转 */
 .education-card-3d.hovered {
-    transform: translateY(-20px) rotateY(-5deg) scale(1.05);
+    transform: translateY(-10px) scale(1.02);
     z-index: 20 !important;
 }
 
@@ -106,7 +102,7 @@
     overflow: hidden;
     border-radius: 8px;
     transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    height: 3rem !important; /* 固定高度为48px */
+    /* 移除固定高度，让Tailwind类控制 */
 }
 
 .project-image-container::before {
@@ -187,7 +183,7 @@
 }
 
 .award-item:hover .award-icon {
-    transform: rotate(360deg) scale(1.1);
+    transform: scale(1.1);
     box-shadow: 0 0 20px rgba(255, 193, 7, 0.5);
 }
 
@@ -302,15 +298,15 @@
     }
 }
 
-/* 浮动粒子动画 */
+/* 浮动粒子动画 - 移除旋转 */
 @keyframes float {
-    0%, 100% { transform: translateY(0px) rotate(0deg); }
-    50% { transform: translateY(-20px) rotate(180deg); }
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-20px); }
 }
 
 @keyframes floatReverse {
-    0%, 100% { transform: translateY(0px) rotate(0deg); }
-    50% { transform: translateY(20px) rotate(-180deg); }
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(20px); }
 }
 
 .floating-particles {
@@ -352,11 +348,11 @@
 }
 
 .masters-card:hover {
-    transform: translateY(-25px) rotateY(-8deg) rotateX(3deg) scale(1.08);
+    transform: translateY(-10px) scale(1.02);
 }
 
 .bachelors-card:hover {
-    transform: translateY(-25px) rotateY(8deg) rotateX(3deg) scale(1.08);
+    transform: translateY(-10px) scale(1.02);
 }
 
 /* 全息投影效果 */
@@ -452,29 +448,12 @@
     opacity: 1;
 }
 
-/* 文字打字机效果 */
+/* 学位标题样式 - 移除打字机效果 */
 .degree-title {
-    overflow: hidden;
-    white-space: nowrap;
-    animation: typing 2s steps(40) 1s forwards, blink-caret 0.5s step-end infinite 3s;
-    border-right: 2px solid rgba(255, 255, 255, 0.8);
-    width: 0;
+    /* 移除打字机动画和相关样式 */
 }
 
-@keyframes typing {
-    to {
-        width: 100%;
-    }
-}
-
-@keyframes blink-caret {
-    from, to {
-        border-color: transparent;
-    }
-    50% {
-        border-color: rgba(255, 255, 255, 0.8);
-    }
-}
+/* 打字机动画已移除 */
 
 /* 延迟动画避免所有元素同时启动 */
 .masters-card .degree-title {
@@ -485,36 +464,13 @@
     animation-delay: 1.2s;
 }
 
-/* 项目缩略图魔法圈效果 */
+/* 移除魔法圈旋转效果 */
 .project-image-container::after {
-    content: '';
-    position: absolute;
-    top: -50%;
-    left: -50%;
-    width: 200%;
-    height: 200%;
-    background: conic-gradient(from 0deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-    animation: magic-circle 3s linear infinite;
-    opacity: 0;
-    transition: opacity 0.4s;
+    display: none;
 }
 
-.project-thumbnail-card:hover .project-image-container::after {
-    opacity: 1;
-}
-
-@keyframes magic-circle {
-    to {
-        transform: rotate(360deg);
-    }
-}
-
-/* 增强响应式交互 */
-@media (hover: hover) and (pointer: fine) {
-    .education-card-3d {
-        transform-style: preserve-3d;
-    }
-    
+/* 增强响应式交互 - 移除3D效果 */
+@media (hover: hover) and (pointer: fine) {    
     .project-thumbnail-card:hover {
         filter: brightness(1.1) saturate(1.2);
     }

@@ -40,7 +40,7 @@ const sectionsConfig = [
     index: 3,
     name: { en: "Gallery", zh: "作品展示" },
     description: { en: "Visual showcase", zh: "视觉作品展示" },
-    backgroundEffect: "effectheartbeats", // HeartBeats 背景
+    backgroundEffect: "effectgalaxy", // 使用与首页相同的Galaxy背景
     cubeImage: "/fitsgo-team.jpg",
     icon: "🖼️"
   },

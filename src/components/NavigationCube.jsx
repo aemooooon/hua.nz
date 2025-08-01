@@ -103,19 +103,18 @@ const NavigationCube = ({
             // 计算当前页面对应的面索引
             const currentFaceIndex = faces.findIndex(face => face.name === currentSectionId);
             if (currentFaceIndex !== -1) {
-                // 使用128度向上旋转角度，更加倾斜的戏剧性角度
-                const baseRotationX = -Math.PI * 0.711; // 128° 向上旋转
-                const baseRotationY = Math.PI * 0.25;  // 45° 对角显示
+                // 让当前面正对屏幕，使用直接的角度设置
+                const baseRotationX = 0; // 不倾斜，让面正对屏幕
+                const baseRotationY = 0; // 基础角度
                 
-                // 修正面映射，确保每个section对应的面都显示在top部分（128度向上倾斜）
-                // 基础角度：X轴向上倾斜128度，然后通过Y轴旋转来让不同面显示在顶部
+                // 修正面映射，确保每个section对应的面都正对屏幕
                 const faceRotations = [
-                    { x: baseRotationX, y: baseRotationY, z: 0 },                          // home (index 0) - 正面在顶部
-                    { x: baseRotationX, y: baseRotationY + Math.PI * 0.5, z: 0 },         // about (index 1) - 右面在顶部
-                    { x: baseRotationX, y: baseRotationY + Math.PI, z: 0 },               // projects (index 2) - 背面在顶部  
-                    { x: baseRotationX, y: baseRotationY - Math.PI * 0.5, z: 0 },         // gallery (index 3) - 左面在顶部
-                    { x: baseRotationX, y: baseRotationY + Math.PI * 1.5, z: 0 },         // education (index 4) - 底面翻转到顶部 (270度)
-                    { x: baseRotationX + Math.PI, y: baseRotationY, z: 0 }                // contact (index 5) - 顶面翻转到顶部 (180度X轴翻转)
+                    { x: baseRotationX, y: baseRotationY, z: 0 },                          // home (index 0) - 正面正对屏幕
+                    { x: baseRotationX, y: baseRotationY + Math.PI * 0.5, z: 0 },         // about (index 1) - 右面转到正面
+                    { x: baseRotationX, y: baseRotationY + Math.PI, z: 0 },               // projects (index 2) - 背面转到正面  
+                    { x: baseRotationX, y: baseRotationY - Math.PI * 0.5, z: 0 },         // gallery (index 3) - 左面转到正面
+                    { x: baseRotationX + Math.PI * 0.5, y: baseRotationY, z: 0 },         // education (index 4) - 底面转到正面
+                    { x: baseRotationX - Math.PI * 0.5, y: baseRotationY, z: 0 }          // contact (index 5) - 顶面转到正面
                 ];
                 
                 const targetRotation = faceRotations[currentFaceIndex] || faceRotations[0];
@@ -203,7 +202,7 @@ const NavigationCube = ({
         renderer.outputColorSpace = THREE.SRGBColorSpace;
         
         mountElement.appendChild(renderer.domElement);
-
+        
         // 简化光照系统以提高性能，但为非首页增强立体感
         // 环境光 - 提供基础照明
         const ambientLightIntensity = isLandingPage ? 0.5 : 0.4; // 非首页降低环境光，增强对比
@@ -262,7 +261,7 @@ const NavigationCube = ({
         };
 
         // 为每个面创建材质 - 恢复高质量纹理
-        const materials = faces.map((face) => {
+        const materials = faces.map((face, index) => {
             // 如果是视频贴图
             if (face.video) {
                 // 创建默认的棋盘格纹理作为备用
@@ -337,6 +336,13 @@ const NavigationCube = ({
                     console.warn('❌ Video autoplay failed, using fallback:', error);
                     // 即使播放失败，如果视频数据已加载，纹理仍然可以工作
                 });
+                
+                // 为视频材质添加用户数据
+                material.userData = {
+                    faceIndex: index,
+                    sectionId: face.name,
+                    sectionLabel: face.label
+                };
                 
                 return material;
             }
@@ -467,7 +473,7 @@ const NavigationCube = ({
             texture.minFilter = THREE.LinearMipmapLinearFilter;
             texture.magFilter = THREE.LinearFilter;
             
-            return new THREE.MeshPhysicalMaterial({ // 恢复高质量材质
+            const material = new THREE.MeshPhysicalMaterial({ // 恢复高质量材质
                 map: texture,
                 transparent: true,
                 opacity: 0.85,
@@ -487,13 +493,22 @@ const NavigationCube = ({
                 specularIntensity: 1.0,
                 specularColor: new THREE.Color(0xffffff)
             });
+            
+            // 为材质添加用户数据，用于识别面
+            material.userData = {
+                faceIndex: index,
+                sectionId: face.name,
+                sectionLabel: face.label
+            };
+            
+            return material;
         });
 
         // 创建立方体
         const cube = new THREE.Mesh(geometry, materials);
         scene.add(cube);
         cubeRef.current = cube;
-
+        
         // 添加边缘线框增强立体感
         const edges = new THREE.EdgesGeometry(geometry);
         const lineMaterial = new THREE.LineBasicMaterial({ 
@@ -679,40 +694,74 @@ const NavigationCube = ({
                     ease: "power1.inOut" // 更加线性平滑的过渡
                 }, 19)
                 
-                // 阶段6: 最终丝滑弹跳 (21-22s) - 调整开始时间
+                // 阶段6: 连续3次弹跳 (21-23.5s) - 增强版弹跳序列
                 .to(cube.scale, {
                     x: 1,
                     y: 1,
                     z: 1,
-                    duration: 0.6,
+                    duration: 0.4,
                     ease: "power2.out"
                 }, 21)
+                
+                // 第1次弹跳
                 .to(cube.scale, {
                     x: 1.08,
                     y: 1.08,
                     z: 1.08,
-                    duration: 0.2,
+                    duration: 0.15,
                     ease: "power2.out"
-                }, 21.6)
+                }, 21.4)
                 .to(cube.scale, {
                     x: 1,
                     y: 1,
                     z: 1,
-                    duration: 0.3,
-                    ease: "elastic.out(1.2, 0.4)" // 更柔和的弹性
-                }, 21.8);
+                    duration: 0.2,
+                    ease: "bounce.out"
+                }, 21.55)
+                
+                // 第2次弹跳 - 稍微小一些
+                .to(cube.scale, {
+                    x: 1.06,
+                    y: 1.06,
+                    z: 1.06,
+                    duration: 0.12,
+                    ease: "power2.out"
+                }, 21.8)
+                .to(cube.scale, {
+                    x: 1,
+                    y: 1,
+                    z: 1,
+                    duration: 0.18,
+                    ease: "bounce.out"
+                }, 21.92)
+                
+                // 第3次弹跳 - 最小幅度
+                .to(cube.scale, {
+                    x: 1.04,
+                    y: 1.04,
+                    z: 1.04,
+                    duration: 0.1,
+                    ease: "power2.out"
+                }, 22.15)
+                .to(cube.scale, {
+                    x: 1,
+                    y: 1,
+                    z: 1,
+                    duration: 0.25,
+                    ease: "elastic.out(1.2, 0.4)" // 最后一次用柔和的弹性回到初始位置
+                }, 22.25);
                 
         } else if (isLandingPage) {
             // 普通首页显示 - 设置默认角度
             cube.rotation.set(-Math.PI * 0.81, Math.PI * 0.25, 0);
         }
 
-        // 入场动画：720°旋转 (仅非首页)
+        // 入场动画：720°旋转后定位到128度朝上 (仅非首页)
         if (!isLandingPage) {
             // 设置初始旋转状态
             cube.rotation.set(0, 0, 0);
             
-            // 创建720°旋转入场动画
+            // 创建720°旋转入场动画，最终定位到128度朝上
             entryAnimationRef.current = gsap.timeline()
                 .to(cube.rotation, {
                     x: Math.PI * 4, // 720°旋转
@@ -722,55 +771,59 @@ const NavigationCube = ({
                     ease: "power2.out"
                 })
                 .to(cube.rotation, {
-                    // 旋转完成后，设置到当前section对应的正确角度
-                    x: (() => {
-                        const currentFaceIndex = faces.findIndex(face => face.name === currentSectionId);
-                        if (currentFaceIndex !== -1) {
-                            const baseRotationX = -Math.PI * 0.711; // 128° 向上旋转
-                            const baseRotationY = Math.PI * 0.25;  // 45° 对角显示
-                            const faceRotations = [
-                                { x: baseRotationX, y: baseRotationY, z: 0 },                          // home (index 0) - 正面在顶部
-                                { x: baseRotationX, y: baseRotationY + Math.PI * 0.5, z: 0 },         // about (index 1) - 右面在顶部
-                                { x: baseRotationX, y: baseRotationY + Math.PI, z: 0 },               // projects (index 2) - 背面在顶部  
-                                { x: baseRotationX, y: baseRotationY - Math.PI * 0.5, z: 0 },         // gallery (index 3) - 左面在顶部
-                                { x: baseRotationX, y: baseRotationY + Math.PI * 1.5, z: 0 },         // education (index 4) - 底面翻转到顶部 (270度)
-                                { x: baseRotationX + Math.PI, y: baseRotationY, z: 0 }                // contact (index 5) - 顶面翻转到顶部 (180度X轴翻转)
-                            ];
-                            return faceRotations[currentFaceIndex]?.x || baseRotationX;
-                        }
-                        return -Math.PI * 0.711;
-                    })(),
-                    y: (() => {
-                        const currentFaceIndex = faces.findIndex(face => face.name === currentSectionId);
-                        if (currentFaceIndex !== -1) {
-                            const baseRotationX = -Math.PI * 0.711; // 128° 向上旋转
-                            const baseRotationY = Math.PI * 0.25;  // 45° 对角显示
-                            const faceRotations = [
-                                { x: baseRotationX, y: baseRotationY, z: 0 },                          // home (index 0) - 正面在顶部
-                                { x: baseRotationX, y: baseRotationY + Math.PI * 0.5, z: 0 },         // about (index 1) - 右面在顶部
-                                { x: baseRotationX, y: baseRotationY + Math.PI, z: 0 },               // projects (index 2) - 背面在顶部  
-                                { x: baseRotationX, y: baseRotationY - Math.PI * 0.5, z: 0 },         // gallery (index 3) - 左面在顶部
-                                { x: baseRotationX, y: baseRotationY + Math.PI * 1.5, z: 0 },         // education (index 4) - 底面翻转到顶部 (270度)
-                                { x: baseRotationX + Math.PI, y: baseRotationY, z: 0 }                // contact (index 5) - 顶面翻转到顶部 (180度X轴翻转)
-                            ];
-                            return faceRotations[currentFaceIndex]?.y || baseRotationY;
-                        }
-                        return Math.PI * 0.25;
-                    })(),
+                    // 旋转完成后，设置到128度朝上的固定角度
+                    x: -Math.PI * 0.71, // 128度向上旋转
+                    y: Math.PI * 0.25,  // 45度让角正对摄像机
                     z: 0,
                     duration: 0.8,
                     ease: "back.out(1.7)"
                 });
         }
 
-        // 鼠标交互
-        // 移除raycaster，因为不再需要悬停检测
+        // 🎯 交互系统相关函数（仅首页使用）
         
-        // 全局鼠标移动监听 (只在landing page启用)
+        // 🎯 交互系统相关函数（仅首页使用）
+        
+        const handleMouseMove = (event) => {
+            if (isLandingPage) {
+                // 首页逻辑：只处理拖拽旋转
+                if (isDraggingRef.current) {
+                    const deltaX = event.clientX - lastMouseRef.current.x;
+                    const deltaY = event.clientY - lastMouseRef.current.y;
+                    
+                    cube.rotation.y += deltaX * 0.01;
+                    cube.rotation.x += deltaY * 0.01;
+                    
+                    lastMouseRef.current = { x: event.clientX, y: event.clientY };
+                }
+            }
+            // 非首页无交互逻辑，cube保持静止
+        };
+        
+        const handleMouseDown = (event) => {
+            if (isLandingPage) {
+                // 首页拖拽
+                isDraggingRef.current = true;
+                hasBeenDraggedRef.current = true;
+                lastMouseRef.current = { x: event.clientX, y: event.clientY };
+                document.body.style.cursor = 'grabbing';
+            }
+            // 非首页无交互逻辑，cube保持静止
+        };
+        
+        const handleMouseUp = () => {
+            if (isLandingPage) {
+                isDraggingRef.current = false;
+                document.body.style.cursor = 'default';
+            }
+            // 非首页无交互逻辑，cube保持静止
+        };
+        
+        // 全局鼠标移动监听 (只在landing page启用，用于物理效果)
         const handleGlobalMouseMove = (event) => {
             if (!isLandingPage) return;
             
-            // 更新鼠标位置
+            // 更新鼠标位置用于物理效果
             const newMouseX = (event.clientX / window.innerWidth) * 2 - 1;
             const newMouseY = -(event.clientY / window.innerHeight) * 2 + 1;
             
@@ -791,42 +844,17 @@ const NavigationCube = ({
             lastMousePosRef.current = { x: newMouseX, y: newMouseY };
             lastFrameTimeRef.current = currentTime;
         };
-
-        // 拖拽相关的事件处理
-        const handleMouseDown = (event) => {
-            if (!isLandingPage) return;
-            isDraggingRef.current = true;
-            hasBeenDraggedRef.current = true; // 标记已被拖拽
-            lastMouseRef.current = { x: event.clientX, y: event.clientY };
-            document.body.style.cursor = 'grabbing';
-        };
-
-        const handleMouseMove = (event) => {
-            // 只处理拖拽旋转，移除悬停检测
-            if (isDraggingRef.current && isLandingPage) {
-                const deltaX = event.clientX - lastMouseRef.current.x;
-                const deltaY = event.clientY - lastMouseRef.current.y;
-                
-                cube.rotation.y += deltaX * 0.01;
-                cube.rotation.x += deltaY * 0.01;
-                
-                lastMouseRef.current = { x: event.clientX, y: event.clientY };
-            }
-        };
-
-        const handleMouseUp = () => {
-            isDraggingRef.current = false;
-            document.body.style.cursor = 'default';
-        };
-
-        // 添加事件监听 - 只包含拖拽功能，移除点击导航
+        
+        // 添加事件监听
         if (isLandingPage) {
+            // 首页事件
             window.addEventListener('mousemove', handleGlobalMouseMove);
             renderer.domElement.addEventListener('mousedown', handleMouseDown);
             window.addEventListener('mousemove', handleMouseMove);
             window.addEventListener('mouseup', handleMouseUp);
         } else {
-            renderer.domElement.addEventListener('mousemove', handleMouseMove);
+            // 非首页：仅保留基本事件，cube保持静止不可交互
+            // 移除所有交互功能，cube保持128度朝上的静止状态
         }
 
         // 动画循环
@@ -910,37 +938,17 @@ const NavigationCube = ({
                     mouseVelocityRef.current.y *= 0.92;
                 }
             } else {
-                // 非首页: 作为静态页面指示器，显示当前页面对应的面
-                if (currentSectionId) {
-                    // 计算当前页面对应的面索引
-                    const currentFaceIndex = faces.findIndex(face => face.name === currentSectionId);
-                    if (currentFaceIndex !== -1) {
-                        // 使用128度向上旋转角度，更加倾斜的戏剧性角度
-                        const baseRotationX = -Math.PI * 0.711; // 128° 向上旋转
-                        const baseRotationY = Math.PI * 0.25;  // 45° 对角显示
-                        
-                        // 修正面映射，确保每个section对应的面都显示在top部分（128度向上倾斜）
-                        // 基础角度：X轴向上倾斜128度，然后通过Y轴旋转来让不同面显示在顶部
-                        const faceRotations = [
-                            { x: baseRotationX, y: baseRotationY, z: 0 },                          // home (index 0) - 正面在顶部
-                            { x: baseRotationX, y: baseRotationY + Math.PI * 0.5, z: 0 },         // about (index 1) - 右面在顶部
-                            { x: baseRotationX, y: baseRotationY + Math.PI, z: 0 },               // projects (index 2) - 背面在顶部  
-                            { x: baseRotationX, y: baseRotationY - Math.PI * 0.5, z: 0 },         // gallery (index 3) - 左面在顶部
-                            { x: baseRotationX, y: baseRotationY + Math.PI * 1.5, z: 0 },         // education (index 4) - 底面翻转到顶部 (270度)
-                            { x: baseRotationX + Math.PI, y: baseRotationY, z: 0 }                // contact (index 5) - 顶面翻转到顶部 (180度X轴翻转)
-                        ];
-                        
-                        const targetRotation = faceRotations[currentFaceIndex] || faceRotations[0];
-                        
-                        // 立即设置到目标旋转，不使用过渡动画
-                        cube.rotation.x = targetRotation.x;
-                        cube.rotation.y = targetRotation.y;
-                        cube.rotation.z = targetRotation.z;
-                    }
-                }
+                // 非首页: 保持静止状态，128度朝上角度
+                const currentTime = performance.now();
                 
-                // 保持cube在canvas中心位置
-                cube.position.set(0, 0, 0);
+                // 设置固定角度：128度朝上（约等于 -Math.PI * 0.71）
+                cube.rotation.x = -Math.PI * 0.71; // 128度向上旋转
+                cube.rotation.y = Math.PI * 0.25;  // 45度让角正对摄像机
+                cube.rotation.z = 0; // 无Z轴旋转
+                
+                // 保持cube在canvas中心位置，只有轻微的浮动效果
+                const floatY = Math.sin(currentTime * 0.001) * 0.02; // 轻微的上下浮动
+                cube.position.set(0, floatY, 0);
             }
             
             renderer.render(scene, camera);
@@ -964,14 +972,17 @@ const NavigationCube = ({
             if (mountElement && renderer.domElement) {
                 mountElement.removeChild(renderer.domElement);
             }
+            
+            // 移除事件监听器
             if (isLandingPage) {
                 window.removeEventListener('mousemove', handleGlobalMouseMove);
                 renderer.domElement.removeEventListener('mousedown', handleMouseDown);
                 window.removeEventListener('mousemove', handleMouseMove);
                 window.removeEventListener('mouseup', handleMouseUp);
             } else {
-                renderer.domElement.removeEventListener('mousemove', handleMouseMove);
+                // 非首页：无需移除事件监听器，因为没有添加
             }
+            
             geometry.dispose();
             materials.forEach(material => {
                 if (material.map) {
@@ -991,22 +1002,24 @@ const NavigationCube = ({
     }, [faces, isLandingPage, canvasSize, onSectionChange, currentSectionId, enableOpeningAnimation, onAnimationComplete]); // 添加所有依赖项
 
     return (
-        <div 
-            ref={mountRef}
-            className={`transition-all duration-300 m-0 p-0 ${
-                isLandingPage 
-                    ? 'fixed inset-0 z-10 w-full h-full overflow-hidden' // 首页时固定全屏，z-index 10
-                    : 'w-full h-full flex items-center justify-center'
-            }`}
-            style={!isLandingPage ? {
-                filter: 'drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3))', // 适度阴影
-                overflow: 'visible',
-                zIndex: 9999,
-                pointerEvents: 'auto'
-            } : {
-                pointerEvents: 'auto'
-            }}
-        />
+        <div className="relative">
+            <div 
+                ref={mountRef}
+                className={`transition-all duration-300 m-0 p-0 ${
+                    isLandingPage 
+                        ? 'fixed inset-0 z-10 w-full h-full overflow-hidden' // 首页时固定全屏，z-index 10
+                        : 'w-full h-full flex items-center justify-center'
+                }`}
+                style={!isLandingPage ? {
+                    filter: 'drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3))', // 适度阴影
+                    overflow: 'visible',
+                    zIndex: 9999,
+                    pointerEvents: 'auto'
+                } : {
+                    pointerEvents: 'auto'
+                }}
+            />
+        </div>
     );
 };
 
