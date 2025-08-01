@@ -106,13 +106,43 @@ const EducationSection = ({ language }) => {
                     <div className="max-w-6xl mx-auto w-full">
                         {/* 页面标题 */}
                         <div className="mb-12 text-center mt-16 sm:mt-20">
-                            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-6 bg-gradient-to-r from-emerald-400 via-blue-400 to-purple-400 bg-clip-text text-transparent">
+                            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-6 bg-gradient-to-r from-emerald-400 via-blue-400 to-purple-400 bg-clip-text text-transparent leading-normal py-1">
                                 {degree.degree.replace(" with Distinction", "")}
                             </h1>
-                            <div className="flex items-center justify-center gap-4 mb-4">
+                            <div className="flex items-center justify-center gap-4 mb-4 flex-wrap">
                                 <span className={`px-4 py-2 bg-gradient-to-r ${colors.badgeGradient} text-white text-sm font-semibold rounded-full shadow-lg`}>
                                     🏆 With Distinction
                                 </span>
+                                {/* Awards badges - only for bachelor's degree */}
+                                {theme === "blue" && degree.awards && degree.awards.map((award, idx) => (
+                                    <div key={idx} className="relative group">
+                                        <span className="px-3 py-1 bg-gradient-to-r from-yellow-400 to-orange-500 text-white text-xs font-semibold rounded-full shadow-lg cursor-pointer hover:scale-105 transition-transform">
+                                            🏆 {award.year}
+                                        </span>
+                                        {/* Award image tooltip */}
+                                        <div className="absolute top-full left-1/2 transform -translate-x-1/2 mt-2 opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none z-50">
+                                            <div className="bg-gradient-to-br from-gray-900 to-gray-800 border-2 border-yellow-400/50 rounded-2xl p-4 shadow-2xl min-w-[220px] backdrop-blur-md">
+                                                {/* 内部光晕效果 */}
+                                                <div className="absolute inset-0 bg-gradient-to-br from-yellow-400/10 to-orange-500/10 rounded-2xl"></div>
+                                                <div className="relative">
+                                                    <img 
+                                                        src={award.image} 
+                                                        alt={award.title}
+                                                        className="w-full h-32 object-cover rounded-xl mb-3 border border-yellow-400/20 shadow-lg"
+                                                    />
+                                                    <p className="text-yellow-300 text-sm font-semibold text-center drop-shadow-sm">
+                                                        {award.title}
+                                                    </p>
+                                                    <p className="text-gray-300 text-xs text-center mt-1">
+                                                        {award.year}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                            {/* Arrow */}
+                                            <div className="absolute -top-2 left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-[8px] border-r-[8px] border-b-[8px] border-transparent border-b-yellow-400/50"></div>
+                                        </div>
+                                    </div>
+                                ))}
                             </div>
                             <h2 className={`text-2xl sm:text-3xl ${colors.accent} font-medium mb-2`}>
                                 {degree.institution}
@@ -207,57 +237,6 @@ const EducationSection = ({ language }) => {
                                             ))}
                                         </div>
                                     </div>
-
-                                    {/* 奖项部分 - 在同一个卡片内 */}
-                                    {degree.awards && (
-                                        <div className="pt-6 border-t border-white/10">
-                                            <h3 className="text-2xl sm:text-3xl font-bold text-white mb-6 flex items-center">
-                                                <span className="w-2 h-6 bg-gradient-to-b from-yellow-400 to-orange-500 rounded-full mr-3"></span>
-                                                {language === "en" ? "Awards" : "获奖"}
-                                            </h3>
-                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                                {degree.awards.map((award, idx) => (
-                                                    <div
-                                                        key={idx}
-                                                        className={`project-thumbnail-card ${
-                                                            hoveredProject === 'award-' + idx ? "project-hovered" : ""
-                                                        }`}
-                                                        onMouseEnter={() => setHoveredProject('award-' + idx)}
-                                                        onMouseLeave={() => setHoveredProject(null)}
-                                                    >
-                                                        <div
-                                                            className="relative h-32 sm:h-40 rounded-xl overflow-hidden group cursor-pointer project-image-container"
-                                                            style={{
-                                                                backgroundImage: `url(${award.image})`,
-                                                                backgroundSize: "cover",
-                                                                backgroundPosition: "center",
-                                                            }}
-                                                        >
-                                                            {/* 图片覆盖层 */}
-                                                            <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent"></div>
-                                                            
-                                                            {/* 奖项年份 */}
-                                                            <div className="absolute bottom-3 left-3 right-3">
-                                                                <h4 className="text-white font-bold text-sm sm:text-base drop-shadow-lg">
-                                                                    {award.year}
-                                                                </h4>
-                                                            </div>
-                                                            
-                                                            {/* Hover详情显示 */}
-                                                            <div className="absolute inset-0 bg-black/95 opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center p-4">
-                                                                <div className="text-center">
-                                                                    <p className="text-yellow-300 text-lg font-semibold mb-2">
-                                                                        {award.title}
-                                                                    </p>
-                                                                    <p className="text-gray-400 text-sm">{award.year}</p>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                ))}
-                                            </div>
-                                        </div>
-                                    )}
                                 </div>
                             ) : (
                                 /* Masters页面 - 只显示项目 */

@@ -4,23 +4,8 @@ import * as THREE from 'three';
 import BaguaPositionAnalyzer from './BaguaPositionAnalyzer';
 
 const Gallery3D = ({ 
-    items = [        // 极简动画 - 几乎静态，只在鼠标交互时有微妙效果
-        const floatAnimation = () => {
-            const time = Date.now() * 0.001;
-            const phaseOffset = index * (Math.PI / 18);
-            
-            // 只有在鼠标按下时才有微妙的动画
-            if (isMouseDownRef.current) {
-                frameGroup.position.z = pos.z + Math.sin(time * 2 + phaseOffset) * 0.05;
-                frameGroup.rotation.z = (position.rotation || 0) + Math.sin(time * 1.5 + phaseOffset) * 0.01;
-            } else {
-                // 完全静态
-                frameGroup.position.z = pos.z;
-                frameGroup.rotation.z = position.rotation || 0;
-            }
-            
-            // 移除发光效果以提升性能
-        };ck, 
+    items = [], 
+    onItemClick, 
     isVisible = false
 }) => {
     const mountRef = useRef();
@@ -36,7 +21,6 @@ const Gallery3D = ({
     const targetRotationRef = useRef({ x: 0, y: 0 });
     const currentRotationRef = useRef({ x: 0, y: 0 });
     const baguaGroupRef = useRef();
-    const isMouseInteractingRef = useRef(false); // 添加鼠标交互状态
     
     const [isLoading, setIsLoading] = useState(true);
     const [baguaPositions, setBaguaPositions] = useState([]);
@@ -76,14 +60,14 @@ const Gallery3D = ({
                     baseAngle: trigram.angle,
                     position3D: {
                         x: Math.cos(baseAngle) * radius,
-                        y: (localIndex - trigram.yaoCount / 2) * 0.8,
-                        z: Math.sin(baseAngle) * radius
+                        y: Math.sin(baseAngle) * radius,
+                        z: 0 // 平面布局
                     },
-                    rotation: baseAngle,
+                    rotation: baseAngle + Math.PI / 2,
                     isYang: isYang,
                     size: isYang 
-                        ? { width: 3.5, height: 1.2, depth: 0.15 }
-                        : { width: 2.8, height: 2.2, depth: 0.15 },
+                        ? { width: 3.0, height: 1.8, depth: 0.08 }
+                        : { width: 2.0, height: 1.8, depth: 0.08 },
                     color: trigram.color
                 });
                 globalIndex++;
@@ -145,18 +129,6 @@ const Gallery3D = ({
         yangDot.position.set(0, -0.5, 0.01);
         taijiGroup.add(yangDot);
         
-        // 添加微光效果
-        const glowGeometry = new THREE.CircleGeometry(1.5, 64);
-        const glowMaterial = new THREE.MeshBasicMaterial({
-            color: 0xffffff,
-            transparent: true,
-            opacity: 0.1,
-            blending: THREE.AdditiveBlending
-        });
-        const glow = new THREE.Mesh(glowGeometry, glowMaterial);
-        glow.position.z = -0.05;
-        taijiGroup.add(glow);
-        
         return taijiGroup;
     }, []);
 
@@ -183,7 +155,7 @@ const Gallery3D = ({
         const frameGeometry = new THREE.BoxGeometry(
             position.size.width, 
             position.size.height, 
-            position.size.depth || 0.15
+            position.size.depth || 0.08
         );
         const frameMaterial = new THREE.MeshPhysicalMaterial({
             color: position.color,
@@ -199,56 +171,26 @@ const Gallery3D = ({
         
         // 图片几何体
         const imageGeometry = new THREE.PlaneGeometry(
-            position.size.width - 0.4, 
-            position.size.height - 0.4
+            position.size.width - 0.2, 
+            position.size.height - 0.2
         );
         
-        // 加载纹理
+        // 图片材质
         const textureLoader = new THREE.TextureLoader();
-        textureLoader.load(
-            item.thumbnail || item.src,
-            (texture) => {
-                texture.minFilter = THREE.LinearFilter;
-                texture.magFilter = THREE.LinearFilter;
-                texture.generateMipmaps = false;
-                
-                const imageMaterial = new THREE.MeshBasicMaterial({
-                    map: texture,
-                    transparent: true,
-                    opacity: 0.95
-                });
-                
-                const imageMesh = new THREE.Mesh(imageGeometry, imageMaterial);
-                imageMesh.position.z = 0.11;
-                frameGroup.add(imageMesh);
-                
-                imageMesh.userData = {
-                    item: item,
-                    index: index,
-                    frameGroup: frameGroup
-                };
-            },
-            undefined,
-            (error) => {
-                console.warn('Failed to load texture:', item.src, error);
-            }
-        );
+        const texture = textureLoader.load(item.src || item.thumbnail);
+        texture.colorSpace = THREE.SRGBColorSpace;
         
-        // 发光效果
-        const glowGeometry = new THREE.PlaneGeometry(
-            position.size.width + 0.5, 
-            position.size.height + 0.5
-        );
-        const glowMaterial = new THREE.MeshBasicMaterial({
-            color: position.color,
+        const imageMaterial = new THREE.MeshStandardMaterial({
+            map: texture,
             transparent: true,
-            opacity: 0.15,
-            side: THREE.DoubleSide,
-            blending: THREE.AdditiveBlending
+            opacity: 0.95,
+            side: THREE.DoubleSide
         });
-        const glowMesh = new THREE.Mesh(glowGeometry, glowMaterial);
-        glowMesh.position.z = -0.08;
-        frameGroup.add(glowMesh);
+        
+        const imageMesh = new THREE.Mesh(imageGeometry, imageMaterial);
+        imageMesh.position.z = 0.05;
+        imageMesh.userData = { item: item, index: index };
+        frameGroup.add(imageMesh);
         
         // 极简动画 - 几乎静态，只在鼠标交互时有微妙效果
         const floatAnimation = () => {
@@ -264,8 +206,6 @@ const Gallery3D = ({
                 frameGroup.position.z = pos.z;
                 frameGroup.rotation.z = position.rotation || 0;
             }
-            
-            // 移除发光效果以提升性能
         };
         
         frameGroup.userData = {
@@ -339,9 +279,6 @@ const Gallery3D = ({
         
         frames.forEach(frame => baguaGroup.add(frame));
         framesRef.current = frames;
-        
-        // 移除粒子效果以提升性能
-        // 原来的粒子系统代码已被移除
         
         // 延时隐藏加载指示器
         setTimeout(() => setIsLoading(false), 1000);
@@ -460,8 +397,6 @@ const Gallery3D = ({
             
             // 八卦效果 - 移除自动动画，保持静态
             if (baguaGroupRef.current) {
-                // 移除自动缩放和旋转效果，保持完全静态
-                
                 // 太极微妙旋转 - 只有这个保留一点动画
                 if (taijiRef.current) {
                     taijiRef.current.rotation.z = -time * 0.1; // 非常缓慢的旋转
@@ -477,9 +412,6 @@ const Gallery3D = ({
                     }
                 }
             });
-            
-            // 移除粒子动画
-            // 原来的粒子动画代码已被移除
             
             rendererRef.current.render(sceneRef.current, camera);
             animationIdRef.current = requestAnimationFrame(animate);

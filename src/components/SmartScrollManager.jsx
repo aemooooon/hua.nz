@@ -328,10 +328,12 @@ const SmartScrollManager = () => {
             className="relative w-full h-screen m-0 p-0"
             style={{ overflow: 'hidden' }}
         >
-            {/* 背景画布 */}
-            <BackgroundCanvas 
-                effectType={currentSectionConfig?.backgroundEffect || 'effectfuse'}
-            />
+            {/* 背景画布 - 只在有背景效果时渲染 */}
+            {currentSectionConfig?.backgroundEffect && (
+                <BackgroundCanvas 
+                    effectType={currentSectionConfig.backgroundEffect}
+                />
+            )}
 
             {/* 导航立方体 - 只在非首页显示，确保不被裁剪 */}
             {currentSectionConfig?.id !== 'home' && (
