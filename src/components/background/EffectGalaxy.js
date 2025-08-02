@@ -11,11 +11,11 @@ export class EffectGalaxy {
         this.animationFrameId = null;
         this.time = 0;
 
-        // 优化后的参数 - 下半部分半圆效果
-        this.particleCount = 12000; // 稍微减少粒子数量
+        // 性能优化后的参数 - 为改善INP再次优化
+        this.particleCount = params.particleCount || 4000; // 再次减少到4000进一步提升交互响应
         this.branches = 3;
-        this.radius = 8; // 增大半径以覆盖更大范围
-        this.size = 0.1; // 稍微增大粒子
+        this.radius = 9; // 再次增大半径补偿粒子减少
+        this.size = params.size || 0.12; // 增大粒子尺寸维持视觉效果
         this.colorInside = new THREE.Color('#ffa575');
         this.colorOutside = new THREE.Color('#311599');
 
@@ -38,9 +38,11 @@ export class EffectGalaxy {
 
         this.renderer = new THREE.WebGLRenderer({ 
             canvas: this.canvas, 
-            antialias: true
+            antialias: false, // 关闭抗锯齿提升性能
+            powerPreference: "low-power", // 使用低功耗模式
+            precision: "mediump" // 使用中等精度
         });
-        this.renderer.setPixelRatio(window.devicePixelRatio);
+        this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5)); // 限制像素比
         this.renderer.setSize(this.canvas.width, this.canvas.height, false);
 
         // 创建Galaxy
@@ -99,34 +101,37 @@ export class EffectGalaxy {
         geometry.setAttribute('position', new THREE.BufferAttribute(this.positions, 3));
         geometry.setAttribute('color', new THREE.BufferAttribute(this.colors, 3));
         
-        // 创建圆形纹理让粒子看起来像气泡
+        // 创建圆形纹理让粒子看起来像气泡 - 优化纹理尺寸
         const canvas = document.createElement('canvas');
-        canvas.width = 64;
-        canvas.height = 64;
+        canvas.width = 32; // 减小纹理尺寸从64到32
+        canvas.height = 32;
         const context = canvas.getContext('2d');
         
         // 绘制渐变圆形
-        const gradient = context.createRadialGradient(32, 32, 0, 32, 32, 32);
+        const gradient = context.createRadialGradient(16, 16, 0, 16, 16, 16);
         gradient.addColorStop(0, 'rgba(255, 255, 255, 1)');
         gradient.addColorStop(0.2, 'rgba(255, 255, 255, 1)');
         gradient.addColorStop(0.4, 'rgba(255, 255, 255, 0.8)');
         gradient.addColorStop(1, 'rgba(255, 255, 255, 0)');
         
         context.fillStyle = gradient;
-        context.fillRect(0, 0, 64, 64);
+        context.fillRect(0, 0, 32, 32);
         
         const texture = new THREE.CanvasTexture(canvas);
+        texture.generateMipmaps = false; // 禁用mipmap生成
+        texture.minFilter = THREE.LinearFilter; // 使用线性过滤
         
-        // 创建材质 - 增强光源扩散效果
+        // 创建材质 - 性能优化版本
         const material = new THREE.PointsMaterial({
-            size: this.size * 1.2, // 稍微增大粒子
+            size: this.size * 1.5, // 补偿纹理尺寸减小
             sizeAttenuation: true,
             depthWrite: false,
             blending: THREE.AdditiveBlending,
             vertexColors: true,
             transparent: true,
-            opacity: 0.7, // 提高透明度让光源更明显
-            map: texture // 使用圆形纹理
+            opacity: 0.6, // 稍微降低透明度减少overdraw
+            map: texture,
+            alphaTest: 0.1 // 添加alpha测试提升性能
         });
         
         this.mesh = new THREE.Points(geometry, material);
@@ -142,26 +147,21 @@ export class EffectGalaxy {
     }
 
     createCentralLight() {
-        // 创建中心光源 - 位于屏幕中央稍下
-        this.centralLight = new THREE.PointLight(new THREE.Color('#ffffff'), 2.0, 50);
-        this.centralLight.position.set(0, -1, 0); // 中心位置稍下
+        // 创建中心光源 - 性能优化版本
+        this.centralLight = new THREE.PointLight(new THREE.Color('#ffffff'), 1.5, 30); // 减少光照强度和范围
+        this.centralLight.position.set(0, -1, 0);
         this.scene.add(this.centralLight);
         
-        // 添加橙色光源增强效果
-        const orangeLight = new THREE.PointLight(this.colorInside, 1.5, 40);
+        // 减少额外光源数量，只保留一个辅助光源
+        const orangeLight = new THREE.PointLight(this.colorInside, 1.0, 25);
         orangeLight.position.set(0, -1, 0);
         this.scene.add(orangeLight);
         
-        // 添加蓝色光源
-        const blueLight = new THREE.PointLight(this.colorOutside, 1.0, 35);
-        blueLight.position.set(0, -1, 0);
-        this.scene.add(blueLight);
-        
         // 柔和的环境光
-        this.ambientLight = new THREE.AmbientLight(0x404040, 0.25);
+        this.ambientLight = new THREE.AmbientLight(0x404040, 0.2); // 降低环境光强度
         this.scene.add(this.ambientLight);
         
-        console.log('EffectGalaxy: Created central light for bottom half galaxy');
+        console.log('EffectGalaxy: Created optimized central light');
     }
 
     updatePositions() {
@@ -196,10 +196,12 @@ export class EffectGalaxy {
     animate() {
         this.animationFrameId = requestAnimationFrame(this.animate.bind(this));
         
-        this.time += 0.01;
+        this.time += 0.005; // 再次减慢动画速度进一步改善INP
         
-        // 更新粒子位置以产生旋转动画
-        this.updatePositions();
+        // 性能优化：每4帧更新一次位置进一步减少计算负载
+        if (this.animationFrameId % 4 === 0) {
+            this.updatePositions();
+        }
         
         // 渲染场景
         this.renderer.render(this.scene, this.camera);

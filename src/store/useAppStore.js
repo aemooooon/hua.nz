@@ -584,10 +584,6 @@ export const useAppStore = create(
       currentEffect: 'effectgalaxy',
       setCurrentEffect: (effect) => set({ currentEffect: effect }),
       
-      // 音频状态
-      audioEnabled: false,
-      setAudioEnabled: (enabled) => set({ audioEnabled: enabled }),
-
       // 滚动状态
       isScrolling: false,
       setIsScrolling: (scrolling) => set({ isScrolling: scrolling }),
@@ -684,8 +680,7 @@ export const useAppStore = create(
       name: 'hua-portfolio-store',
       partialize: (state) => ({
         language: state.language,
-        theme: state.theme,
-        audioEnabled: state.audioEnabled
+        theme: state.theme
       })
     }
   )

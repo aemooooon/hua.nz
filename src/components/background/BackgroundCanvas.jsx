@@ -169,17 +169,17 @@ const BackgroundCanvas = ({ effectType = 'effectfuse' }) => {
                         break;
                     }
                     case 'effectgalaxy': {
-                        // Galaxy 效果 - 基于测试版本成功参数优化
+                        // Galaxy 效果 - 为改善INP再次优化性能
                         const galaxyParams = {
-                            particleCount: 15000,  // 适中的粒子数量保证性能
+                            particleCount: 4000,   // 为改善INP再次减少到4000
                             branches: 3,
-                            radius: 8,  // 更大的银河系
+                            radius: 9,
                             spin: 1,
                             randomness: 0.3,
                             randomnessPower: 3,
-                            size: 2.0,  // 大粒子确保可见
-                            colorInside: defaultParams.colorInside || '#ffff00', // 亮黄色
-                            colorOutside: defaultParams.colorOutside || '#ff8800' // 亮橙色
+                            size: 0.12,            // 增大粒子尺寸补偿数量减少
+                            colorInside: defaultParams.colorInside || '#ffff00',
+                            colorOutside: defaultParams.colorOutside || '#ff8800'
                         };
                         effectInstanceRef.current = new EffectGalaxy(canvas, galaxyParams);
                         break;

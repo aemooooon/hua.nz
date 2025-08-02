@@ -533,6 +533,8 @@ const NavigationCube = ({
                     if (onAnimationComplete) {
                         onAnimationComplete();
                     }
+                    // 触发全局事件通知控制按钮显示
+                    window.dispatchEvent(new CustomEvent('cubeAnimationComplete'));
                 }
             })
                 // 阶段1: 从远处快速飞入 (0-2s)
@@ -550,96 +552,103 @@ const NavigationCube = ({
                     ease: "back.out(1.7)"
                 }, 0.5)
                 
-                // 阶段2: 摄像机穿越展示每个面 (2.5-14.5s) - 进一步放慢展示速度
-                // 面1: Home面 (正面) - 2.5-4.5s
+                // 阶段2: 摄像机穿越展示每个面 (2.5-14.5s) - 优化每个面的摄像机进入角度，保持cube居中
+                // 面1: Home面 (正面) - 从正前方进入 (2.5-4.5s)
                 .to(cube.rotation, {
                     x: 0,
                     y: 0,
                     z: 0,
-                    duration: 1.5, // 进一步增加到1.5秒，更慢的旋转让用户看清纹理
+                    duration: 1.5,
                     ease: "power2.inOut"
                 }, 2.5)
                 .to(camera.position, {
-                    z: 4, // 摄像机靠近
-                    duration: 0.8, // 进一步增加到0.8秒，更慢的摄像机移动
-                    ease: "power2.out"
+                    x: 0, y: 0, z: 4, // 从正前方进入
+                    duration: 0.8,
+                    ease: "power2.out",
+                    onUpdate: () => camera.lookAt(cube.position) // 始终看向cube中心
                 }, 3.2)
                 
-                // 面2: About面 (右面) - 4.5-6.5s
+                // 面2: About面 (右面) - 从右侧进入 (4.5-6.5s)
                 .to(cube.rotation, {
                     x: 0,
                     y: -Math.PI * 0.5, // 90度显示右面
                     z: 0,
-                    duration: 1.5, // 进一步放慢旋转速度
+                    duration: 1.5,
                     ease: "power2.inOut"
                 }, 4.5)
                 .to(camera.position, {
-                    z: 3.5, // 更近距离特写
-                    duration: 0.8, // 进一步放慢摄像机移动
-                    ease: "power2.out"
+                    x: 4, y: 0, z: 2, // 从右侧斜角进入
+                    duration: 0.8,
+                    ease: "power2.out",
+                    onUpdate: () => camera.lookAt(cube.position) // 始终看向cube中心
                 }, 5.3)
                 
-                // 面3: Projects面 (背面) - 6.5-8.5s
+                // 面3: Projects面 (背面) - 从后方高处进入 (6.5-8.5s)
                 .to(cube.rotation, {
                     x: 0,
                     y: -Math.PI, // 180度显示背面
                     z: 0,
-                    duration: 1.5, // 进一步放慢旋转速度
+                    duration: 1.5,
                     ease: "power2.inOut"
                 }, 6.5)
                 .to(camera.position, {
-                    z: 4,
-                    duration: 0.8, // 进一步放慢摄像机移动
-                    ease: "power2.out"
+                    x: 0, y: 3, z: -4, // 从后方高处进入
+                    duration: 0.8,
+                    ease: "power2.out",
+                    onUpdate: () => camera.lookAt(cube.position) // 始终看向cube中心
                 }, 7.3)
                 
-                // 面4: Gallery面 (左面) - 8.5-10.5s
+                // 面4: Gallery面 (左面) - 从左下方进入 (8.5-10.5s)
                 .to(cube.rotation, {
                     x: 0,
                     y: -Math.PI * 1.5, // 270度显示左面
                     z: 0,
-                    duration: 1.5, // 进一步放慢旋转速度
+                    duration: 1.5,
                     ease: "power2.inOut"
                 }, 8.5)
                 .to(camera.position, {
-                    z: 3.5,
-                    duration: 0.8, // 进一步放慢摄像机移动
-                    ease: "power2.out"
+                    x: -4, y: -2, z: 2, // 从左下方进入
+                    duration: 0.8,
+                    ease: "power2.out",
+                    onUpdate: () => camera.lookAt(cube.position) // 始终看向cube中心
                 }, 9.3)
                 
-                // 面5: Education面 (底面) - 10.5-12.5s
+                // 面5: Education面 (底面) - 从下方进入 (10.5-12.5s)
                 .to(cube.rotation, {
                     x: Math.PI * 0.5, // 向上翻转显示底面
                     y: -Math.PI * 1.5,
                     z: 0,
-                    duration: 1.5, // 进一步放慢旋转速度
+                    duration: 1.5,
                     ease: "power2.inOut"
                 }, 10.5)
                 .to(camera.position, {
-                    z: 4,
-                    duration: 0.8, // 进一步放慢摄像机移动
-                    ease: "power2.out"
+                    x: 0, y: -4, z: 2, // 从下方进入
+                    duration: 0.8,
+                    ease: "power2.out",
+                    onUpdate: () => camera.lookAt(cube.position) // 始终看向cube中心
                 }, 11.3)
                 
-                // 面6: Contact面 (顶面) - 12.5-14.5s
+                // 面6: Contact面 (顶面) - 从上方进入 (12.5-14.5s)
                 .to(cube.rotation, {
                     x: -Math.PI * 0.5, // 向下翻转显示顶面
                     y: -Math.PI * 1.5,
                     z: 0,
-                    duration: 1.5, // 进一步放慢旋转速度
+                    duration: 1.5,
                     ease: "power2.inOut"
                 }, 12.5)
                 .to(camera.position, {
-                    z: 3.5,
-                    duration: 0.8, // 进一步放慢摄像机移动
-                    ease: "power2.out"
+                    x: 0, y: 4, z: 2, // 从上方进入
+                    duration: 0.8,
+                    ease: "power2.out",
+                    onUpdate: () => camera.lookAt(cube.position) // 始终看向cube中心
                 }, 13.3)
                 
-                // 阶段3: 疯狂旋转放大 (14.5-16.5s) - 调整开始时间
+                // 摄像机回到标准位置 (14.5s)
                 .to(camera.position, {
-                    z: 10, // 摄像机拉远
+                    x: 0, y: 0, z: 10, // 回到标准观察位置
                     duration: 0.5,
-                    ease: "power2.in"
+                    ease: "power2.in",
+                    onUpdate: () => camera.lookAt(cube.position) // 始终看向cube中心
                 }, 14.5)
                 .to(cube.scale, {
                     x: 12, // 大幅放大

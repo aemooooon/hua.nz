@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import { FaSun, FaMoon, FaGlobe } from 'react-icons/fa';
 import { useAppStore } from '../store/useAppStore';
 
@@ -10,10 +11,28 @@ const ThemeLanguageToggle = () => {
         getContent 
     } = useAppStore();
     
+    const [isVisible, setIsVisible] = useState(false);
     const content = getContent();
 
+    // 监听cube动画完成事件
+    useEffect(() => {
+        const handleCubeAnimationComplete = () => {
+            // 延迟一点显示按钮，确保动画完全结束
+            setTimeout(() => {
+                setIsVisible(true);
+            }, 800); // cube动画完成后显示
+        };
+
+        // 监听自定义事件
+        window.addEventListener('cubeAnimationComplete', handleCubeAnimationComplete);
+        
+        return () => {
+            window.removeEventListener('cubeAnimationComplete', handleCubeAnimationComplete);
+        };
+    }, []);
+
     return (
-        <div className="fixed bottom-6 right-6 z-50 flex items-center space-x-3">
+        <div className={`fixed bottom-6 right-6 z-50 flex items-center space-x-3 transition-opacity duration-1000 ${isVisible ? 'opacity-100' : 'opacity-0'}`}>
             {/* 语言切换 */}
             <button
                 onClick={toggleLanguage}
