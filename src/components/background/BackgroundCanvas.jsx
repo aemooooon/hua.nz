@@ -223,6 +223,8 @@ const BackgroundCanvas = ({ effectType = 'effectfuse' }) => {
         window.addEventListener('resize', debouncedResize);
 
         return () => {
+            console.log('BackgroundCanvas: Cleaning up effect and canvas...');
+            
             window.removeEventListener('resize', debouncedResize);
             
             // 清除清理定时器
@@ -231,29 +233,54 @@ const BackgroundCanvas = ({ effectType = 'effectfuse' }) => {
                 cleanupTimeoutRef.current = null;
             }
             
-            // 清理效果实例
+            // 强制清理效果实例
             if (effectInstanceRef.current) {
                 try {
+                    console.log(`BackgroundCanvas: Disposing effect of type: ${effectType}`);
+                    
+                    // 调用stop方法
                     if (typeof effectInstanceRef.current.stop === 'function') {
                         effectInstanceRef.current.stop();
                     } else if (typeof effectInstanceRef.current.destroy === 'function') {
                         effectInstanceRef.current.destroy();
                     }
+                    
+                    // 强制清空引用
+                    effectInstanceRef.current = null;
                 } catch (error) {
                     console.error('Error cleaning up effect:', error);
+                    effectInstanceRef.current = null;
                 }
-                effectInstanceRef.current = null;
             }
             
-            // 清理画布
+            // 强制清理画布
             if (canvas && document.body.contains(canvas)) {
                 try {
+                    // 清理canvas上下文
+                    const context = canvas.getContext('webgl') || canvas.getContext('webgl2') || canvas.getContext('2d');
+                    if (context) {
+                        if (context.getExtension && context.getExtension('WEBGL_lose_context')) {
+                            context.getExtension('WEBGL_lose_context').loseContext();
+                        }
+                    }
+                    
+                    // 移除canvas
                     document.body.removeChild(canvas);
+                    console.log('BackgroundCanvas: Canvas removed from DOM');
                 } catch (error) {
                     console.error('Error removing canvas:', error);
                 }
             }
+            
+            // 清空canvas引用
             canvasRef.current = null;
+            
+            // 强制垃圾回收提示（开发环境）
+            if (typeof window !== 'undefined' && window.gc) {
+                setTimeout(() => window.gc(), 100);
+            }
+            
+            console.log('BackgroundCanvas: Cleanup completed');
         };
     }, [effectType]);
 

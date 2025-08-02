@@ -71,16 +71,20 @@ const ProjectSection = ({ language }) => {
 
     return (
         <div className="min-h-screen w-full p-8 text-white relative project-section-bg">
-            {/* Projects标题 - 左上角，与Gallery保持一致 */}
-            <div className="fixed top-6 left-6 z-50">
-                <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 bg-clip-text text-transparent">
-                    Projects
-                </h1>
-            </div>
-            
-            <div className="max-w-7xl mx-auto relative z-10 backdrop-protection pt-20">
-                {/* 居中的地图探索按钮 */}
-                <div className="flex justify-center mb-8">
+            {/* 顶部标题栏 - 左右对称布局 */}
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 pt-4 gap-4 sm:gap-0">
+                {/* 左侧：Projects标题和副标题 */}
+                <div className="flex flex-col">
+                    <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 bg-clip-text text-transparent mb-2">
+                        Projects
+                    </h1>
+                    <h2 className="text-lg md:text-xl text-white/70 font-light italic pl-1 project-subtitle">
+                        {language === 'en' ? 'showcases' : '作品展示'}
+                    </h2>
+                </div>
+
+                {/* 右侧：地图探索按钮 */}
+                <div className="flex items-center self-start sm:self-center">
                     <button
                         onClick={() => setIsMapOpen(true)}
                         className="map-view-button group"
@@ -94,9 +98,12 @@ const ProjectSection = ({ language }) => {
                         </span>
                     </button>
                 </div>
-                
-                {/* 动态项目统计卡片 */}
-                <div className="stats-grid">
+            </div>
+            
+            {/* 全屏内容区域 - 与顶部标题栏保持一致的全屏布局 */}
+            <div className="relative z-10 backdrop-protection">
+                {/* 动态项目统计卡片 - 全屏宽度 */}
+                <div className="stats-grid px-4 sm:px-6 lg:px-8">
                     <div 
                         className={`stat-card cursor-pointer ${activeFilter === 'all' ? 'ring-2 ring-white/30' : ''}`}
                         onClick={() => setActiveFilter('all')}
@@ -136,8 +143,8 @@ const ProjectSection = ({ language }) => {
                     </div>
                 )}
                 
-                {/* 项目网格 - 增加边距避免遮挡cube */}
-                <div className="project-grid-container grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-8 pb-12">
+                {/* 项目网格 - 全屏宽度布局，增加边距避免遮挡cube */}
+                <div className="project-grid-container grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6 lg:gap-8 pb-12 px-4 sm:px-6 lg:px-8">
                     {filteredProjects.map((project, idx) => (
                         <div key={idx} className="project-card group">
                             {/* 项目图片 */}
@@ -202,9 +209,9 @@ const ProjectSection = ({ language }) => {
                     ))}
                 </div>
 
-                {/* 底部说明 */}
-                <div className="text-center py-12 border-t border-white/10 bg-black/20 backdrop-blur-sm rounded-xl mt-8">
-                    <div className="max-w-2xl mx-auto">
+                {/* 底部说明 - 全屏宽度 */}
+                <div className="text-center py-12 border-t border-white/10 bg-black/20 backdrop-blur-sm rounded-xl mt-8 mx-4 sm:mx-6 lg:mx-8">
+                    <div className="max-w-2xl mx-auto px-4">
                         <p className="text-white/80 text-lg mb-3 font-medium">
                             {language === 'en' 
                                 ? '✨ Explore different categories by clicking the cards above!' 

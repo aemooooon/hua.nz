@@ -385,36 +385,118 @@ export class EffectLorenzAttractor {
     }
 
     stop() {
+        console.log('EffectLorenzAttractor: Stopping and cleaning up resources...');
+        
+        // 停止动画循环
         if (this.animationFrameId) {
             cancelAnimationFrame(this.animationFrameId);
             this.animationFrameId = null;
         }
         
+        // 清理后处理管道
+        if (this.composer) {
+            this.composer.dispose();
+            this.composer = null;
+        }
+        
+        // 清理渲染器
         if (this.renderer) {
+            // 清理渲染器上下文
+            const context = this.renderer.getContext();
+            if (context && context.getExtension('WEBGL_lose_context')) {
+                context.getExtension('WEBGL_lose_context').loseContext();
+            }
             this.renderer.dispose();
+            this.renderer.forceContextLoss();
+            this.renderer = null;
         }
         
         // 清理实例化网格
         if (this.instancedMesh) {
             this.scene.remove(this.instancedMesh);
-            this.instancedMesh.geometry.dispose();
-            this.instancedMesh.material.dispose();
+            if (this.instancedMesh.geometry) {
+                this.instancedMesh.geometry.dispose();
+            }
+            if (this.instancedMesh.material) {
+                this.instancedMesh.material.dispose();
+            }
+            if (this.instancedMesh.instanceColor) {
+                this.instancedMesh.instanceColor = null;
+            }
+            this.instancedMesh = null;
+        }
+        
+        // 清理主球和光环
+        if (this.fireball) {
+            this.scene.remove(this.fireball);
+            if (this.fireball.geometry) this.fireball.geometry.dispose();
+            if (this.fireball.material) this.fireball.material.dispose();
+            this.fireball = null;
+        }
+        
+        if (this.halo) {
+            this.scene.remove(this.halo);
+            if (this.halo.geometry) this.halo.geometry.dispose();
+            if (this.halo.material) this.halo.material.dispose();
+            this.halo = null;
+        }
+        
+        // 清理几何体和材质
+        if (this.particleGeometry) {
+            this.particleGeometry.dispose();
+            this.particleGeometry = null;
+        }
+        
+        if (this.particleMaterial) {
+            this.particleMaterial.dispose();
+            this.particleMaterial = null;
         }
         
         // 清理粒子纹理
         if (this.particleTexture) {
             this.particleTexture.dispose();
+            this.particleTexture = null;
         }
         
         // 清理轨迹数组
         this.trailPositions = [];
         this.trailColors = [];
         
-        // 清理场景
-        while (this.scene.children.length > 0) {
-            this.scene.remove(this.scene.children[0]);
+        // 清理所有光源
+        if (this.pointLight) {
+            this.scene.remove(this.pointLight);
+            this.pointLight = null;
         }
         
+        if (this.sunLight) {
+            this.scene.remove(this.sunLight);
+            this.scene.remove(this.sunLight.target);
+            this.sunLight = null;
+        }
+        
+        // 清理场景中的所有对象
+        while (this.scene.children.length > 0) {
+            const child = this.scene.children[0];
+            this.scene.remove(child);
+            
+            // 递归清理几何体和材质
+            if (child.geometry) child.geometry.dispose();
+            if (child.material) {
+                if (Array.isArray(child.material)) {
+                    child.material.forEach(material => material.dispose());
+                } else {
+                    child.material.dispose();
+                }
+            }
+        }
+        
+        // 清理场景
+        this.scene = null;
+        this.camera = null;
+        
+        // 移除事件监听器
         window.removeEventListener("resize", this.onResize.bind(this));
+        
+        console.log('EffectLorenzAttractor: Resource cleanup completed');
     }
 }

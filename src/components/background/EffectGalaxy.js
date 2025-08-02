@@ -219,30 +219,79 @@ export class EffectGalaxy {
     }
 
     stop() {
+        console.log('EffectGalaxy: Stopping and cleaning up resources...');
+        
+        // 停止动画循环
         if (this.animationFrameId) {
             cancelAnimationFrame(this.animationFrameId);
             this.animationFrameId = null;
         }
         
+        // 清理渲染器
         if (this.renderer) {
+            // 清理渲染器上下文
+            const context = this.renderer.getContext();
+            if (context && context.getExtension('WEBGL_lose_context')) {
+                context.getExtension('WEBGL_lose_context').loseContext();
+            }
             this.renderer.dispose();
+            this.renderer.forceContextLoss();
+            this.renderer = null;
         }
         
-        // 清理几何体和材质
+        // 清理网格几何体和材质
         if (this.mesh) {
+            this.scene.remove(this.mesh);
             if (this.mesh.geometry) {
                 this.mesh.geometry.dispose();
             }
             if (this.mesh.material) {
                 this.mesh.material.dispose();
             }
+            this.mesh = null;
         }
         
-        // 清理场景
+        // 清理几何体
+        if (this.geometry) {
+            this.geometry.dispose();
+            this.geometry = null;
+        }
+        
+        // 清理材质
+        if (this.material) {
+            this.material.dispose();
+            this.material = null;
+        }
+        
+        // 清理纹理
+        if (this.texture) {
+            this.texture.dispose();
+            this.texture = null;
+        }
+        
+        // 清理场景中的所有对象
         while (this.scene.children.length > 0) {
-            this.scene.remove(this.scene.children[0]);
+            const child = this.scene.children[0];
+            this.scene.remove(child);
+            
+            // 递归清理几何体和材质
+            if (child.geometry) child.geometry.dispose();
+            if (child.material) {
+                if (Array.isArray(child.material)) {
+                    child.material.forEach(material => material.dispose());
+                } else {
+                    child.material.dispose();
+                }
+            }
         }
         
+        // 清理场景和相机
+        this.scene = null;
+        this.camera = null;
+        
+        // 移除事件监听器
         window.removeEventListener("resize", this.onResize.bind(this));
+        
+        console.log('EffectGalaxy: Resource cleanup completed');
     }
 }

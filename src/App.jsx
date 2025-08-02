@@ -3,6 +3,7 @@ import SmartScrollManager from "./components/SmartScrollManager";
 import ThemeLanguageToggle from "./components/ThemeLanguageToggle";
 import SmartDirectionalCursor from "./components/SmartDirectionalCursor";
 import ErrorBoundary from "./components/ErrorBoundary";
+import MemoryMonitor from "./components/MemoryMonitor";
 import { useAppStore } from "./store/useAppStore";
 
 const App = () => {
@@ -28,6 +29,9 @@ const App = () => {
 
                 {/* 主题和语言切换 - 只在首页显示，有自己的显示时机控制 */}
                 {isHomePage && <ThemeLanguageToggle />}
+
+                {/* 内存监控器 - 开发调试用 */}
+                <MemoryMonitor />
             </div>
         </ErrorBoundary>
     );

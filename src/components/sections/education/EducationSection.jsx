@@ -232,17 +232,36 @@ const EducationSection = ({ language }) => {
 
     return (
         <div className="relative w-full min-h-screen overflow-auto bg-black/20">
-            {/* Education标题 - 左上角，与Gallery保持一致 */}
-            <div className="fixed top-6 left-6 z-50">
-                <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 bg-clip-text text-transparent">
-                    Education
-                </h1>
+            {/* Education标题 - 居左显示，与Projects保持一致 */}
+            <div className="flex flex-col p-8 pt-12">
+                <div className="flex flex-col">
+                    <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 bg-clip-text text-transparent mb-2">
+                        Education
+                    </h1>
+                    <h2 className="text-lg md:text-xl text-white/70 font-light italic pl-1">
+                        {language === 'en' ? 'academic background' : '教育背景'}
+                    </h2>
+                </div>
             </div>
 
             {/* 学历内容 - 垂直滚动 */}
-            <div className="w-full p-4 sm:p-6 lg:p-8 text-white pt-20">
+            <div className="w-full p-4 sm:p-6 lg:p-8 text-white pt-0">
                 <div className="max-w-6xl mx-auto">
-                    {degrees.map((degree) => renderEducationCard(degree))}
+                    {degrees.map((degree, index) => (
+                        <div key={degree.id}>
+                            {renderEducationCard(degree)}
+                            {/* 在 Master 和 Bachelor 之间添加分割线 */}
+                            {index === 0 && (
+                                <div className="flex items-center justify-center my-16">
+                                    <div className="flex-1 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent"></div>
+                                    <div className="px-6">
+                                        <div className="w-3 h-3 rounded-full bg-gradient-to-r from-blue-400 to-purple-500 opacity-60"></div>
+                                    </div>
+                                    <div className="flex-1 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent"></div>
+                                </div>
+                            )}
+                        </div>
+                    ))}
                 </div>
             </div>
         </div>
