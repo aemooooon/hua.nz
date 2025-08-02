@@ -66,6 +66,7 @@ export default {
         hueRotate: "hueRotate 5s linear infinite",
         zoomIn: "zoomIn 1s ease forwards",
         slideIn: "slideIn 1s ease forwards",
+        'spin-reverse': 'spin-reverse 1s linear infinite',
       },
       keyframes: {
         hueRotate: {
@@ -74,6 +75,10 @@ export default {
           "50%": { boxShadow: "0 0 60px #7ca65c", borderColor: "#7ca65c" },
           "80%": { boxShadow: "0 0 40px #5d7d4b", borderColor: "#5d7d4b" },
           "100%": { boxShadow: "0 0 20px #768e90", borderColor: "#768e90" },
+        },
+        'spin-reverse': {
+          '0%': { transform: 'rotate(360deg)' },
+          '100%': { transform: 'rotate(0deg)' },
         },
         zoomIn: {
           "0%": { transform: "scale(0)", opacity: "0" },

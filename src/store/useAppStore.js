@@ -40,7 +40,7 @@ const sectionsConfig = [
     index: 3,
     name: { en: "Gallery", zh: "作品展示" },
     description: { en: "Visual showcase", zh: "视觉作品展示" },
-    backgroundEffect: "effectgalaxy", // 使用首页的Galaxy背景效果
+    backgroundEffect: null, // Gallery内部自己管理背景加载时机
     cubeImage: "/fitsgo-team.jpg",
     icon: "🖼️"
   },

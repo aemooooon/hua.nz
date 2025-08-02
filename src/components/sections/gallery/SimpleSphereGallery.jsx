@@ -365,10 +365,33 @@ const SimpleSphereGallery = ({ items, onItemClick, isVisible }) => {
                 style={{ minHeight: '600px', cursor: 'grab' }}
             />
             
-            {/* 加载指示器 */}
+            {/* 优雅的3D场景加载指示器 */}
             {isLoading && (
-                <div className="absolute inset-0 flex items-center justify-center bg-black/30 backdrop-blur-sm">
-                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
+                <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/20 backdrop-blur-sm">
+                    {/* 现代化的3D风格加载动画 */}
+                    <div className="relative">
+                        {/* 外层旋转环 */}
+                        <div className="w-16 h-16 border-4 border-transparent border-t-blue-400 border-r-purple-500 rounded-full animate-spin"></div>
+                        {/* 内层反向旋转环 */}
+                        <div className="absolute top-2 left-2 w-12 h-12 border-4 border-transparent border-b-pink-500 border-l-blue-400 rounded-full animate-spin-reverse"></div>
+                        {/* 中心脉动点 */}
+                        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-4 h-4 bg-gradient-to-r from-blue-400 to-purple-500 rounded-full animate-pulse"></div>
+                    </div>
+                    
+                    {/* 加载文本 */}
+                    <div className="mt-4 text-white/80 text-sm font-light tracking-wide">
+                        Initializing 3D Gallery...
+                    </div>
+                    
+                    {/* 粒子效果 */}
+                    <div className="absolute inset-0 pointer-events-none">
+                        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+                            <div className="w-1 h-1 bg-blue-400 rounded-full absolute animate-ping" style={{ top: '-60px', left: '20px', animationDelay: '0s' }}></div>
+                            <div className="w-1 h-1 bg-purple-500 rounded-full absolute animate-ping" style={{ top: '40px', left: '-30px', animationDelay: '0.5s' }}></div>
+                            <div className="w-1 h-1 bg-pink-500 rounded-full absolute animate-ping" style={{ top: '30px', left: '50px', animationDelay: '1s' }}></div>
+                            <div className="w-1 h-1 bg-blue-400 rounded-full absolute animate-ping" style={{ top: '-40px', left: '-40px', animationDelay: '1.5s' }}></div>
+                        </div>
+                    </div>
                 </div>
             )}
         </div>

@@ -243,6 +243,16 @@ body.light {
     }
 }
 
+/* 🔥 反向旋转动画 - 用于 Gallery loading */
+@keyframes spin-reverse {
+    0% {
+        transform: rotate(360deg);
+    }
+    100% {
+        transform: rotate(0deg);
+    }
+}
+
 /* Leaflet 弹窗样式 */
 .leaflet-popup-close-button {
     font-size: 40px !important;
