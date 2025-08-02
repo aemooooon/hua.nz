@@ -1,10 +1,9 @@
 import { useState } from 'react';
 import PropTypes from 'prop-types';
 import ProjectMapModal from './ProjectMapModal';
-import ScrollPercentageIndicator from '../../ScrollPercentageIndicator';
 import locations from '../../../store/locations';
 
-const ProjectSection = ({ section, language }) => {
+const ProjectSection = ({ language }) => {
     const [isMapOpen, setIsMapOpen] = useState(false);
     const [activeFilter, setActiveFilter] = useState('all');
 
@@ -72,36 +71,28 @@ const ProjectSection = ({ section, language }) => {
 
     return (
         <div className="min-h-screen w-full p-8 text-white relative project-section-bg">
-            {/* 滚动百分比指示器 */}
-            <ScrollPercentageIndicator />
+            {/* Projects标题 - 左上角，与Gallery保持一致 */}
+            <div className="fixed top-6 left-6 z-50">
+                <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 bg-clip-text text-transparent">
+                    Projects
+                </h1>
+            </div>
             
-            <div className="max-w-7xl mx-auto relative z-10 backdrop-protection">
-                {/* 重新设计的顶部标题区域 */}
-                <div className="project-header">
-                    <div className="project-title-container">
-                        <h1 className="project-main-title">
-                            {section.name[language]}
-                        </h1>
-                        <p className="project-subtitle">
-                            {language === 'en' ? 'Showcase of Innovation' : '创新作品展示'}
-                        </p>
-                    </div>
-                    
-                    <div className="project-controls">
-                        {/* 超吸引人的地图探索按钮 */}
-                        <button
-                            onClick={() => setIsMapOpen(true)}
-                            className="map-view-button group"
-                            title={language === 'en' ? 'Explore Projects on Interactive Map' : '在交互地图上探索项目'}
-                        >
-                            <svg className="map-view-button-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-1.447-.894L15 4m0 13V4m-6 3l6-3" />
-                            </svg>
-                            <span>
-                                {language === 'en' ? '🗺️ Explore Map' : '🗺️ 探索地图'}
-                            </span>
-                        </button>
-                    </div>
+            <div className="max-w-7xl mx-auto relative z-10 backdrop-protection pt-20">
+                {/* 居中的地图探索按钮 */}
+                <div className="flex justify-center mb-8">
+                    <button
+                        onClick={() => setIsMapOpen(true)}
+                        className="map-view-button group"
+                        title={language === 'en' ? 'Explore Projects on Interactive Map' : '在交互地图上探索项目'}
+                    >
+                        <svg className="map-view-button-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-1.447-.894L15 4m0 13V4m-6 3l6-3" />
+                        </svg>
+                        <span>
+                            {language === 'en' ? '🗺️ Explore Map' : '🗺️ 探索地图'}
+                        </span>
+                    </button>
                 </div>
                 
                 {/* 动态项目统计卡片 */}
@@ -251,10 +242,6 @@ const ProjectSection = ({ section, language }) => {
 };
 
 ProjectSection.propTypes = {
-    section: PropTypes.shape({
-        name: PropTypes.object.isRequired,
-        description: PropTypes.object.isRequired
-    }).isRequired,
     language: PropTypes.string.isRequired
 };
 

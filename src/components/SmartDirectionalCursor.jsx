@@ -6,7 +6,6 @@ const SmartDirectionalCursor = () => {
     const [isVisible, setIsVisible] = useState(false);
     const [direction, setDirection] = useState('none'); // 'up', 'down', 'both', 'none'
     const [isHovering, setIsHovering] = useState(false);
-    const [animationFrame, setAnimationFrame] = useState(0);
     const [scrollIntensity, setScrollIntensity] = useState(0); // 滚动力度 0-1
     const [lastScrollTime, setLastScrollTime] = useState(0);
     
@@ -31,25 +30,36 @@ const SmartDirectionalCursor = () => {
         setDirection(getAvailableDirections());
     }, [getAvailableDirections]);
 
-    // 滚动力度检测
+    // 滚动力度检测 - 优化性能和响应速度
     const handleWheelForce = useCallback((event) => {
-        const force = Math.min(Math.abs(event.deltaY) / 100, 1); // 标准化滚动力度
+        const force = Math.min(Math.abs(event.deltaY) / 80, 1); // 降低除数，提高灵敏度
+        
+        // 减少节流时间，提高响应速度
+        const now = performance.now();
+        if (now - (handleWheelForce.lastTime || 0) < 8) return; // 从16ms减少到8ms，提高到120fps
+        handleWheelForce.lastTime = now;
+        
         setScrollIntensity(force);
-        setLastScrollTime(Date.now());
+        setLastScrollTime(now);
         
         // 清除之前的衰减定时器
         if (scrollDecayTimerRef.current) {
             clearTimeout(scrollDecayTimerRef.current);
         }
         
-        // 设置力度衰减
+        // 减少衰减时间，更快响应
         scrollDecayTimerRef.current = setTimeout(() => {
             setScrollIntensity(0);
-        }, 500); // 0.5秒后衰减
+        }, 200); // 从300ms减少到200ms，更快衰减
     }, []);
 
-    // 鼠标位置跟踪
+    // 鼠标位置跟踪 - 优化性能
     const handleMouseMove = useCallback((e) => {
+        // 节流处理，避免过于频繁的位置更新
+        const now = performance.now();
+        if (now - (handleMouseMove.lastTime || 0) < 8) return; // 限制到120fps，更流畅
+        handleMouseMove.lastTime = now;
+        
         setCursorPosition({ x: e.clientX, y: e.clientY });
         
         if (!isVisible) {
@@ -68,22 +78,28 @@ const SmartDirectionalCursor = () => {
         setIsHovering(false);
     }, []);
 
-    // 动画循环
+    // 优化动画循环 - 提高帧率和响应速度
     useEffect(() => {
         const animate = () => {
-            setAnimationFrame(prev => prev + 1);
+            // 提高动画帧率，减少延迟
+            const now = performance.now();
+            if (now - (animate.lastTime || 0) < 16) { // 提高到60fps，更流畅
+                animationFrameRef.current = requestAnimationFrame(animate);
+                return;
+            }
+            animate.lastTime = now;
             
-            // 光晕强度动画
+            // 光晕强度动画 - 更快响应
             if (isHovering) {
-                glowIntensityRef.current = Math.min(glowIntensityRef.current + 0.05, 1);
+                glowIntensityRef.current = Math.min(glowIntensityRef.current + 0.12, 1); // 增加步长
             } else {
-                glowIntensityRef.current = Math.max(glowIntensityRef.current - 0.03, 0.3);
+                glowIntensityRef.current = Math.max(glowIntensityRef.current - 0.08, 0.3); // 增加步长
             }
             
-            // 滚动力度自然衰减
-            const timeSinceScroll = Date.now() - lastScrollTime;
-            if (timeSinceScroll > 100) {
-                setScrollIntensity(prev => Math.max(prev - 0.02, 0));
+            // 滚动力度自然衰减 - 更快衰减
+            const timeSinceScroll = now - lastScrollTime;
+            if (timeSinceScroll > 30) { // 从50ms减少到30ms，更快开始衰减
+                setScrollIntensity(prev => Math.max(prev - 0.05, 0)); // 增加衰减步长
             }
             
             animationFrameRef.current = requestAnimationFrame(animate);
@@ -133,37 +149,18 @@ const SmartDirectionalCursor = () => {
         };
     }, []);
 
-    // 渲染强力箭头指示器 - 汽车仪表盘风格
+    // 渲染进度指示器光标 - 固定尺寸，进度圆圈效果
     const renderPowerDirectionalIndicator = () => {
-        const baseSize = 256; // 保持256px直径 - 超大尺寸！
-        const hoverScale = isHovering ? 1.03 : 1; // 更小的悬停缩放，减少突兀
-        const forceScale = 1 + scrollIntensity * 0.15; // 更小的力度缩放
-        const totalScale = hoverScale * forceScale;
-        const size = baseSize * totalScale;
+        const baseSize = 200; // 固定尺寸，不受滚动强度影响
+        const hoverScale = isHovering ? 1.02 : 1; // 微小的悬停缩放
+        const size = baseSize * hoverScale; // 移除力度缩放
         
-        const glowIntensity = glowIntensityRef.current;
-        const pulseScale = 1 + Math.sin(animationFrame * 0.15) * 0.06 * glowIntensity; // 减小脉冲幅度
-        
-        // 动态颜色基于滚动力度 - 从绿色到红色的渐变
-        const baseColor = '#00f5ff'; // 科技蓝
-        // 根据滚动强度从绿色(120)到红色(0)渐变
-        // 0% = 绿色(120度), 100% = 红色(0度)
-        // 更细腻的颜色渐变：使用平滑的曲线过渡
-        // 使用easeInOut曲线让过渡更自然，避免鼠标敏感导致的突变
-        const smoothIntensity = scrollIntensity * scrollIntensity * (3 - 2 * scrollIntensity); // 平滑曲线
-        const hue = 120 * (1 - smoothIntensity); // 120度(绿色) -> 0度(红色)，使用平滑强度
-        
-        // 更细腻的饱和度和亮度控制
-        const saturation = 80 + smoothIntensity * 20; // 从80%逐渐到100%饱和度
-        const lightness = smoothIntensity < 0.3 
-            ? 60 - smoothIntensity * 20  // 早期阶段：从绿色(60%)缓慢降低
-            : smoothIntensity < 0.7
-            ? 50 - smoothIntensity * 15  // 中期阶段：继续降低但更缓慢
-            : 40 - smoothIntensity * 10; // 后期阶段：红色区域，但保持细腻
-        
-        const forceColor = `hsl(${hue}, ${saturation}%, ${lightness}%)`; // 细腻的绿到红渐变
-        const shadowIntensity = 15 + scrollIntensity * 60; // 减少阴影强度
-        const shadowBlur = 8 + scrollIntensity * 30; // 减少模糊半径
+        // 进度圆圈颜色配置
+        const baseColor = '#00f5ff'; // 青色基础圆圈
+        const progressColor = '#00ff88'; // 绿色进度色
+        const percentage = Math.round(scrollIntensity * 100); // 滚动强度百分比
+        const strokeWidth = 1; // 箭头线条宽度
+        const progressStrokeWidth = 5; // 进度圆弧使用更粗的线条，更加突出
         
         const containerStyle = {
             width: `${size}px`,
@@ -172,19 +169,20 @@ const SmartDirectionalCursor = () => {
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            transform: `scale(${pulseScale})`,
-            transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
-            filter: `drop-shadow(0 0 ${shadowBlur}px ${forceColor}${Math.floor(shadowIntensity * 2.55).toString(16).padStart(2, '0')})`,
+            transform: 'translate3d(0, 0, 0)', // 触发硬件加速
+            willChange: 'transform', // 优化提示
         };
 
         const createArrow = (direction, intensity = 1) => {
-            const arrowSize = 48 * totalScale; // 进一步减小箭头尺寸，减轻厚重感
-            const strokeWidth = 2 + scrollIntensity * 1.5; // 更细的线宽，更轻盈
+            const arrowSize = 120 * hoverScale; // 固定尺寸，只受悬停影响
             
-            // 根据方向绘制不同的箭头路径
+            // 简化的长箭头路径 - 类似手画的勾形
             const arrowPath = direction === 'up' 
-                ? "M12 5L12 19M12 5L8 9M12 5L16 9" // 向上箭头（12点方向）
-                : "M12 19L12 5M12 19L8 15M12 19L16 15"; // 向下箭头（6点方向）
+                ? "M12 22L12 2M8 6L12 2L16 6" // 向上箭头：长竖线 + 简单的勾形顶部
+                : "M12 2L12 22M8 18L12 22L16 18"; // 向下箭头：长竖线 + 简单的勾形底部
+            
+            // 箭头颜色：固定为白色，不受滚动强度影响
+            const arrowColor = '#ffffff';
             
             return (
                 <div
@@ -195,33 +193,28 @@ const SmartDirectionalCursor = () => {
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        transition: 'all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
-                        opacity: intensity * 0.85, // 降低透明度，减轻厚重感
+                        opacity: intensity * 0.9,
+                        zIndex: 10,
+                        transform: 'translate3d(0, 0, 0)',
+                        willChange: 'opacity',
                     }}
                 >
-                    <svg width={arrowSize} height={arrowSize} viewBox="0 0 24 24">
-                        <defs>
-                            <linearGradient id={`arrowGradient${direction}`} x1="0%" y1="0%" x2="0%" y2="100%">
-                                <stop offset="0%" stopColor={baseColor} stopOpacity={0.6} />
-                                <stop offset="50%" stopColor={forceColor} stopOpacity={0.8} />
-                                <stop offset="100%" stopColor="#ffffff" stopOpacity={0.4} />
-                            </linearGradient>
-                            <filter id={`glow${direction}`}>
-                                <feGaussianBlur stdDeviation="1.5" result="coloredBlur"/>
-                                <feMerge> 
-                                    <feMergeNode in="coloredBlur"/>
-                                    <feMergeNode in="SourceGraphic"/>
-                                </feMerge>
-                            </filter>
-                        </defs>
+                    <svg 
+                        width={arrowSize} 
+                        height={arrowSize} 
+                        viewBox="0 0 24 24"
+                        style={{
+                            shapeRendering: 'geometricPrecision',
+                            vectorEffect: 'non-scaling-stroke'
+                        }}
+                    >
                         <path
                             d={arrowPath}
-                            stroke={`url(#arrowGradient${direction})`}
+                            stroke={arrowColor}
                             strokeWidth={strokeWidth}
                             strokeLinecap="round"
                             strokeLinejoin="round"
                             fill="none"
-                            filter={`url(#glow${direction})`}
                             opacity={intensity}
                         />
                     </svg>
@@ -231,109 +224,93 @@ const SmartDirectionalCursor = () => {
 
         return (
             <div style={containerStyle}>
-                {/* 外圈能量环 - 根据百分比显示绿到红渐变 */}
-                <div
+                {/* 进度圆圈指示器 - SVG实现 */}
+                <svg
+                    width={size}
+                    height={size}
                     style={{
                         position: 'absolute',
-                        width: `${size + 60}px`, // 减小外圈扩展
-                        height: `${size + 60}px`,
-                        borderRadius: '50%',
-                        background: `conic-gradient(from ${animationFrame * 2}deg, 
-                            ${forceColor}00 0deg, 
-                            ${forceColor}60 ${scrollIntensity * 180}deg, 
-                            ${forceColor}80 ${scrollIntensity * 360}deg, 
-                            ${forceColor}00 360deg)`,
-                        animation: scrollIntensity > 0.1 ? 'spin 2s linear infinite' : 'none',
-                        opacity: glowIntensity * 0.8, // 稍微提高透明度让颜色更明显
+                        transform: 'rotate(-90deg)', // 从12点钟方向开始
                     }}
-                />
-                
-                {/* 中心核心 - 更小更轻 */}
-                <div
-                    style={{
-                        position: 'absolute',
-                        width: `${size * 0.3}px`, // 减小中心核心尺寸
-                        height: `${size * 0.3}px`,
-                        borderRadius: '50%',
-                        background: `radial-gradient(circle, ${forceColor}40, ${baseColor}15)`, // 降低渐变透明度
-                        border: `1.5px solid ${forceColor}`, // 更细的边框
-                        boxShadow: `
-                            inset 0 0 ${8 + scrollIntensity * 15}px ${forceColor}30,
-                            0 0 ${15 + scrollIntensity * 30}px ${forceColor}40
-                        `, // 减少发光强度
-                        backdropFilter: 'blur(2px)', // 减少模糊
-                        opacity: 0.8, // 增加透明度
-                    }}
-                />
+                >
+                    {/* 底层青色圆圈 */}
+                    <circle
+                        cx={size / 2}
+                        cy={size / 2}
+                        r={(size - 4) / 2}
+                        fill="none"
+                        stroke={baseColor}
+                        strokeWidth={strokeWidth}
+                        opacity="0.6"
+                    />
+                    
+                    {/* 进度圆弧 - 根据滚动强度显示 */}
+                    {scrollIntensity > 0 && (
+                        <circle
+                            cx={size / 2}
+                            cy={size / 2}
+                            r={(size - 4) / 2}
+                            fill="none"
+                            stroke={progressColor}
+                            strokeWidth={progressStrokeWidth}
+                            strokeLinecap="round"
+                            opacity="0.9"
+                            strokeDasharray={`${2 * Math.PI * ((size - 4) / 2)}`}
+                            strokeDashoffset={`${2 * Math.PI * ((size - 4) / 2) * (1 - scrollIntensity)}`}
+                            style={{
+                                transition: 'stroke-dashoffset 0.05s cubic-bezier(0.25, 0.46, 0.45, 0.94)', // 更快更流畅的贝塞尔曲线
+                                willChange: 'stroke-dashoffset', // 提示浏览器优化
+                            }}
+                        />
+                    )}
+                </svg>
 
-                {/* 力度指示环 - 更轻盈 */}
-                {scrollIntensity > 0.15 && ( // 提高触发阈值
+                {/* 滚动强度百分比显示 - 显示在圆圈中心 */}
+                {scrollIntensity > 0 && (
                     <div
                         style={{
                             position: 'absolute',
-                            width: `${size * 0.7}px`, // 减小环的尺寸
-                            height: `${size * 0.7}px`,
-                            borderRadius: '50%',
-                            border: `2px solid transparent`, // 更细的边框
-                            borderTopColor: forceColor,
-                            borderRightColor: scrollIntensity > 0.4 ? forceColor : 'transparent', // 调整阈值
-                            borderBottomColor: scrollIntensity > 0.7 ? forceColor : 'transparent',
-                            borderLeftColor: scrollIntensity > 0.95 ? forceColor : 'transparent',
-                            animation: 'spin 1.2s linear infinite', // 稍慢的旋转
-                            opacity: scrollIntensity * 0.8, // 降低透明度
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            fontSize: '14px',
+                            fontWeight: '600',
+                            fontFamily: 'Monaco, "Courier New", monospace',
+                            color: progressColor,
+                            opacity: 0.95,
+                            zIndex: 15,
+                            textShadow: `0 0 4px ${progressColor}`,
+                            transform: 'translate3d(0, 0, 0)',
+                            willChange: 'opacity',
                         }}
-                    />
+                    >
+                        {percentage}%
+                    </div>
                 )}
 
-                {/* 方向箭头 - 12点/6点方向 */}
-                {direction === 'up' && createArrow('up')} {/* 正上方（12点钟方向） */}
-                {direction === 'down' && createArrow('down')} {/* 正下方（6点钟方向） */}
+                {/* 方向箭头 - 固定尺寸 */}
+                {direction === 'up' && createArrow('up')}
+                {direction === 'down' && createArrow('down')}
                 {direction === 'both' && (
                     <>
-                        {/* 双箭头显示，减少透明度叠加 */}
-                        {createArrow('up', 0.6)} {/* 上箭头，减少透明度 */}
-                        {createArrow('down', 0.6)}  {/* 下箭头，减少透明度 */}
+                        {createArrow('up', 0.7)}
+                        {createArrow('down', 0.7)}
                     </>
                 )}
                 
-                {/* 无方向时的脉冲中心 - 更轻盈 */}
-                {direction === 'none' && (
+                {/* 无方向时的简单中心点 */}
+                {direction === 'none' && scrollIntensity === 0 && (
                     <div
                         style={{
                             position: 'absolute',
-                            width: `${16 + scrollIntensity * 8}px`, // 减小中心点尺寸
-                            height: `${16 + scrollIntensity * 8}px`,
+                            width: '8px',
+                            height: '8px',
                             borderRadius: '50%',
-                            background: forceColor,
-                            boxShadow: `0 0 ${30 + scrollIntensity * 50}px ${forceColor}`, // 减少发光强度
-                            animation: 'pulse 2s ease-in-out infinite', // 稍慢的脉冲
-                            opacity: 0.8, // 增加透明度
+                            backgroundColor: baseColor,
+                            opacity: 0.8,
+                            transform: 'translate3d(0, 0, 0)',
                         }}
                     />
-                )}
-
-                {/* 滚动力度数值显示 - 在两个圆环的正中间 */}
-                {scrollIntensity > 0.25 && ( // 提高显示阈值
-                    <div
-                        style={{
-                            position: 'absolute',
-                            top: `${size * 0.65}px`, // 移动到两个圆环的正中间
-                            left: '50%',
-                            transform: 'translateX(-50%)',
-                            color: forceColor,
-                            fontSize: '16px', // 稍微增大字体
-                            fontWeight: '600', // 加粗字体
-                            textShadow: `0 0 12px ${forceColor}`, // 增强文字发光
-                            fontFamily: 'monospace',
-                            opacity: scrollIntensity * 0.9, // 稍微提高透明度
-                            background: `rgba(0, 0, 0, 0.3)`, // 添加半透明背景
-                            padding: '2px 8px', // 添加内边距
-                            borderRadius: '12px', // 圆角
-                            border: `1px solid ${forceColor}30`, // 添加边框
-                        }}
-                    >
-                        {Math.round(scrollIntensity * 100)}%
-                    </div>
                 )}
             </div>
         );
@@ -379,43 +356,18 @@ const SmartDirectionalCursor = () => {
                 }
             `}</style>
             
-            {/* 主光标 - 居中定位 */}
+            {/* 主光标 - 居中定位，性能优化 */}
             <div
                 className={`power-cursor ${isHovering ? 'hovering' : ''}`}
                 style={{
                     left: cursorPosition.x,
                     top: cursorPosition.y,
-                    transform: `translate(-50%, -50%)`, // 完全居中
-                    transition: 'transform 0.1s ease-out',
+                    transform: `translate3d(-50%, -50%, 0)`, // 使用 translate3d 触发硬件加速
+                    willChange: 'transform', // 优化提示
                 }}
             >
                 {renderPowerDirectionalIndicator()}
             </div>
-
-            {/* 能量轨迹粒子 - 适配256px超大光标 */}
-            {scrollIntensity > 0.3 && (
-                <>
-                    {[...Array(Math.floor(scrollIntensity * 12))].map((_, i) => ( // 增加粒子数量
-                        <div
-                            key={i}
-                            style={{
-                                position: 'fixed',
-                                left: cursorPosition.x + (Math.random() - 0.5) * 80, // 增大粒子散布范围，适配256px
-                                top: cursorPosition.y + (Math.random() - 0.5) * 80,
-                                width: `${4 + Math.random() * 6}px`, // 增大粒子尺寸
-                                height: `${4 + Math.random() * 6}px`,
-                                borderRadius: '50%',
-                                background: `hsl(${180 + scrollIntensity * 60}, 100%, ${70 + Math.random() * 30}%)`,
-                                pointerEvents: 'none',
-                                zIndex: 9998,
-                                animation: `float ${1 + Math.random()}s ease-in-out infinite`,
-                                opacity: scrollIntensity * (0.6 + Math.random() * 0.4),
-                                transform: 'translate(-50%, -50%)',
-                            }}
-                        />
-                    ))}
-                </>
-            )}
         </>
     );
 };

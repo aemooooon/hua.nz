@@ -147,7 +147,14 @@ const CSS3DSphereGallery = ({ items, onItemClick, isVisible }) => {
     }, []);
     // 创建图片对象并排列成球形 - 使用useCallback但不依赖易变的值
     const createImageObjects = useCallback(() => {
-        if (!sceneRef.current || !itemsRef.current.length || isDestroyedRef.current) return;
+        if (!sceneRef.current || !itemsRef.current.length || isDestroyedRef.current) {
+            console.log('CSS3DSphereGallery: createImageObjects cancelled', { 
+                hasScene: !!sceneRef.current, 
+                itemsLength: itemsRef.current.length, 
+                isDestroyed: isDestroyedRef.current 
+            });
+            return;
+        }
 
         console.log('Creating image objects - should only happen when items change');
         const scene = sceneRef.current;
@@ -168,6 +175,8 @@ const CSS3DSphereGallery = ({ items, onItemClick, isVisible }) => {
         const vector = new THREE.Vector3();
         const radius = 1200; // 减小球形半径，让球更紧凑
 
+        console.log('CSS3DSphereGallery: Computing sphere positions for', currentItems.length, 'items');
+
         for (let i = 0; i < currentItems.length; i++) {
             const phi = Math.acos(-1 + (2 * i) / currentItems.length);
             const theta = Math.sqrt(currentItems.length * Math.PI) * phi;
@@ -186,6 +195,8 @@ const CSS3DSphereGallery = ({ items, onItemClick, isVisible }) => {
                 rotation: tempObject.rotation.clone()
             });
         }
+
+        console.log('CSS3DSphereGallery: Sphere positions computed:', spherePositions.length);
 
         // 为每个图片创建CSS3D对象
         currentItems.forEach((item, index) => {
@@ -399,13 +410,17 @@ const CSS3DSphereGallery = ({ items, onItemClick, isVisible }) => {
 
     // 初始化
     useEffect(() => {
+        console.log('CSS3DSphereGallery: useEffect triggered', { isVisible, itemsLength: items.length });
+        
         if (isVisible && !isDestroyedRef.current) {
             const currentMount = mountRef.current;
+            console.log('CSS3DSphereGallery: Initializing scene', { currentMount: !!currentMount });
             
             // 重置销毁标志
             isDestroyedRef.current = false;
             
             const renderer = initScene();
+            console.log('CSS3DSphereGallery: Scene initialized', { renderer: !!renderer });
             
             // 添加点击事件监听器
             if (renderer) {
@@ -415,6 +430,7 @@ const CSS3DSphereGallery = ({ items, onItemClick, isVisible }) => {
             // 场景初始化后创建图片对象
             setTimeout(() => {
                 if (!isDestroyedRef.current) {
+                    console.log('CSS3DSphereGallery: Creating image objects');
                     createImageObjects();
                 }
             }, 100);
@@ -467,7 +483,7 @@ const CSS3DSphereGallery = ({ items, onItemClick, isVisible }) => {
                 controlsRef.current = null;
             };
         }
-    }, [isVisible, initScene, handleResize, animate, handleMouseClick, createImageObjects]);
+    }, [isVisible, items.length, initScene, handleResize, animate, handleMouseClick, createImageObjects]);
 
     // 简化：只在items变化且组件可见时创建对象，但避免不必要的重建
     useEffect(() => {

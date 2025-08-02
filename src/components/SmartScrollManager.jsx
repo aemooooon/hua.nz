@@ -1,6 +1,5 @@
 import { useEffect, useCallback, useRef, useState } from 'react';
 import { useAppStore } from '../store/useAppStore';
-import NavigationCube from './NavigationCube';
 import BackgroundCanvas from './background/BackgroundCanvas';
 import '../styles/SmartScroll.css';
 
@@ -34,8 +33,11 @@ const SmartScrollManager = () => {
     const scrollAccumulatorRef = useRef(0); // 滚动累积器
     
     // 滚动状态管理
-    const [scrollMode, setScrollMode] = useState('slide'); // 'slide' | 'content'
+    const [scrollMode, setScrollMode] = useState('slide'); // 'slide' | 'content' | 'hybrid'
     const [isContentOverflowing, setIsContentOverflowing] = useState(false);
+    
+    // 混合滚动模式：判断当前页面是否为 Home
+    const isHomePage = currentSectionConfig?.id === 'home';
 
     // 滚动敏感度配置
     const SCROLL_THRESHOLD = 240; // 滚动阈值 - 需要累积240px才触发（提高一倍）
@@ -51,7 +53,7 @@ const SmartScrollManager = () => {
         contact: ContactSection
     };
 
-    // 检测内容是否超出视窗
+    // 检测内容是否超出视窗并实现混合滚动模式
     const checkContentOverflow = useCallback(() => {
         if (!contentRef.current) return;
         
@@ -59,34 +61,38 @@ const SmartScrollManager = () => {
         const isOverflowing = container.scrollHeight > container.clientHeight;
         setIsContentOverflowing(isOverflowing);
         
-        // 只有在非About页面时才自动切换到内容滚动模式
-        if (currentSectionConfig?.id !== 'about') {
-            if (isOverflowing && scrollMode === 'slide') {
-                setScrollMode('content');
-            } else if (!isOverflowing && scrollMode === 'content') {
-                setScrollMode('slide');
+        // 混合滚动模式逻辑
+        if (isHomePage) {
+            // Home 页面始终使用 slide 模式（隐藏滚动条）
+            setScrollMode('slide');
+        } else {
+            // 其他页面根据内容溢出情况决定滚动模式
+            if (isOverflowing) {
+                setScrollMode('content'); // 内容溢出时使用内容滚动模式
+            } else {
+                setScrollMode('slide'); // 内容不溢出时使用幻灯片模式
             }
         }
-    }, [scrollMode, currentSectionConfig?.id]);
+    }, [isHomePage]);
 
     // 重置滚动状态（切换section时）
     const resetScrollState = useCallback(() => {
         scrollAccumulatorRef.current = 0; // 重置累积器
-        
-        // About页面现在使用标准滚动模式
-        setScrollMode('slide');
         
         if (contentRef.current) {
             contentRef.current.scrollTop = 0;
         }
     }, []);
 
-    // 智能滚轮处理 - 降低敏感度
+    // 智能滚轮处理 - 混合滚动模式优化
     const handleWheel = useCallback((event) => {
         const now = Date.now();
         if (isScrolling) return;
         
-        event.preventDefault();
+        // Home 页面和非溢出页面阻止默认滚动
+        if (isHomePage || (!isContentOverflowing && scrollMode === 'slide')) {
+            event.preventDefault();
+        }
         
         // 重置累积器如果时间间隔太长
         if (now - lastWheelTimeRef.current > SCROLL_RESET_TIME) {
@@ -111,8 +117,8 @@ const SmartScrollManager = () => {
         const isScrollingDown = event.deltaY > 0;
         const isScrollingUp = event.deltaY < 0;
 
-        if (scrollMode === 'content' && isContentOverflowing) {
-            // 内容滚动模式（无滚动条）
+        if (scrollMode === 'content' && isContentOverflowing && !isHomePage) {
+            // 内容滚动模式（仅适用于非 Home 页面）
             const currentScrollTop = container.scrollTop;
             const maxScrollTop = container.scrollHeight - container.clientHeight;
             
@@ -123,9 +129,8 @@ const SmartScrollManager = () => {
                         navigateNext();
                     }
                 } else {
-                    // 在内容内滚动
-                    const newScrollTop = Math.min(currentScrollTop + 100, maxScrollTop);
-                    container.scrollTop = newScrollTop;
+                    // 在内容内滚动（让浏览器自然处理）
+                    return;
                 }
             } else if (isScrollingUp) {
                 if (currentScrollTop <= 10) {
@@ -134,9 +139,8 @@ const SmartScrollManager = () => {
                         navigatePrev();
                     }
                 } else {
-                    // 在内容内滚动
-                    const newScrollTop = Math.max(currentScrollTop - 100, 0);
-                    container.scrollTop = newScrollTop;
+                    // 在内容内滚动（让浏览器自然处理）
+                    return;
                 }
             }
         } else {
@@ -147,9 +151,9 @@ const SmartScrollManager = () => {
                 navigatePrev();
             }
         }
-    }, [isScrolling, scrollMode, isContentOverflowing, currentSection, sections.length, navigateNext, navigatePrev]);
+    }, [isScrolling, scrollMode, isContentOverflowing, isHomePage, currentSection, sections.length, navigateNext, navigatePrev]);
 
-    // 键盘事件处理（增强版）
+    // 键盘事件处理（混合滚动模式优化）
     const handleKeyDown = useCallback((event) => {
         if (isScrolling) return;
         
@@ -158,7 +162,7 @@ const SmartScrollManager = () => {
         switch (event.key) {
             case 'ArrowDown':
                 event.preventDefault();
-                if (scrollMode === 'content' && isContentOverflowing && container) {
+                if (scrollMode === 'content' && isContentOverflowing && !isHomePage && container) {
                     const maxScrollTop = container.scrollHeight - container.clientHeight;
                     if (container.scrollTop >= maxScrollTop - 10) {
                         if (currentSection < sections.length - 1) {
@@ -177,7 +181,7 @@ const SmartScrollManager = () => {
                 
             case 'ArrowUp':
                 event.preventDefault();
-                if (scrollMode === 'content' && isContentOverflowing && container) {
+                if (scrollMode === 'content' && isContentOverflowing && !isHomePage && container) {
                     if (container.scrollTop <= 10) {
                         if (currentSection > 0) {
                             navigatePrev();
@@ -210,7 +214,7 @@ const SmartScrollManager = () => {
                 
             case 'Home':
                 event.preventDefault();
-                if (scrollMode === 'content' && container) {
+                if (scrollMode === 'content' && !isHomePage && container) {
                     container.scrollTop = 0;
                 } else {
                     navigateToSection(0);
@@ -219,7 +223,7 @@ const SmartScrollManager = () => {
                 
             case 'End':
                 event.preventDefault();
-                if (scrollMode === 'content' && container) {
+                if (scrollMode === 'content' && !isHomePage && container) {
                     const maxScrollTop = container.scrollHeight - container.clientHeight;
                     container.scrollTop = maxScrollTop;
                 } else {
@@ -237,7 +241,7 @@ const SmartScrollManager = () => {
                 break;
             }
         }
-    }, [isScrolling, scrollMode, isContentOverflowing, currentSection, sections.length, navigateNext, navigatePrev, navigateToSection]);
+    }, [isScrolling, scrollMode, isContentOverflowing, isHomePage, currentSection, sections.length, navigateNext, navigatePrev, navigateToSection]);
 
     // 监听section变化，重置滚动状态
     useEffect(() => {
@@ -296,32 +300,6 @@ const SmartScrollManager = () => {
         );
     };
 
-    // 渲染滚动指示器
-    const renderScrollIndicator = () => {
-        if (scrollMode === 'content' && isContentOverflowing) {
-            // 内容滚动指示器
-            const container = contentRef.current;
-            if (!container) return null;
-
-            const scrollPercentage = (container.scrollTop / (container.scrollHeight - container.clientHeight)) * 100;
-
-            return (
-                <div className="fixed right-4 top-1/2 transform -translate-y-1/2 z-40">
-                    <div className="w-1 h-32 bg-white/20 rounded-full overflow-hidden">
-                        <div 
-                            className="w-full bg-blue-400 rounded-full scroll-indicator"
-                            style={{ height: `${Math.max(scrollPercentage, 5)}%` }}
-                        />
-                    </div>
-                    <div className="text-xs text-white/60 mt-2 text-center">
-                        {Math.round(scrollPercentage)}%
-                    </div>
-                </div>
-            );
-        }
-        return null;
-    };
-
     return (
         <div 
             ref={containerRef}
@@ -335,40 +313,19 @@ const SmartScrollManager = () => {
                 />
             )}
 
-            {/* 导航立方体 - 只在非首页显示，确保不被裁剪 */}
-            {currentSectionConfig?.id !== 'home' && (
-                <div 
-                    className="absolute z-50" 
-                    style={{ 
-                        top: '16px',      // 距离顶部16px
-                        right: '16px',    // 距离右边16px
-                        width: '240px',   // Canvas尺寸增大到240px
-                        height: '240px',
-                        overflow: 'visible',
-                        pointerEvents: 'none' // 防止阻挡其他元素的交互
-                    }}
-                >
-                    <NavigationCube 
-                        sections={sections}
-                        onSectionChange={navigateToSection}
-                        currentSectionId={currentSectionConfig?.id}
-                        enableOpeningAnimation={enableOpeningAnimation && currentSectionConfig?.id === 'home'}
-                    />
-                </div>
-            )}
-
-            {/* 当前栏目内容 - 智能滚动容器 */}
+            {/* 当前栏目内容 - 混合滚动容器 */}
             <div 
                 ref={contentRef}
                 className={`absolute inset-0 z-20 smooth-scroll scroll-mode-transition ${
-                    scrollMode === 'content' ? 'overflow-y-hidden' : 'overflow-hidden'
+                    isHomePage 
+                        ? 'scroll-mode-home overflow-hidden' 
+                        : isContentOverflowing 
+                            ? 'scroll-mode-auto overflow-y-auto' 
+                            : 'overflow-hidden'
                 }`}
             >
                 {renderCurrentSection()}
             </div>
-
-            {/* 滚动指示器 */}
-            {renderScrollIndicator()}
 
             {/* 过渡遮罩 */}
             {isScrolling && (

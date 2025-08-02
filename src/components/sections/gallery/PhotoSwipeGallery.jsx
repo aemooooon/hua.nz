@@ -25,13 +25,23 @@ const PhotoSwipeGallery = ({
             // UI配置
             bgOpacity: 0.9,
             spacing: 0.1,
-            allowPanToNext: true,
+            allowPanToNext: false, // 禁用拖拽切换，避免宽高比问题
             loop: true,
             zoom: true,
             
             // 动画配置
             showAnimationDuration: 300,
             hideAnimationDuration: 300,
+            
+            // 确保保持图片原始宽高比 - 关键配置
+            imageClickAction: 'zoom',
+            tapAction: 'toggle-controls',
+            doubleTapAction: 'zoom',
+            
+            // 防止图片被拉伸或压缩
+            thumbBounds: false,
+            showHideAnimationType: 'fade',
+            allowMouseDrag: true,
             
             // 自定义UI元素
             ui: {
@@ -125,15 +135,38 @@ const PhotoSwipeGallery = ({
         if (!lightboxRef.current) return;
         
         if (isOpen) {
-            // 创建临时项目来打开lightbox
-            const pswpItems = items.map(item => ({
-                src: item.src,
-                width: 1200, // 默认宽度
-                height: 800, // 默认高度
-                alt: item.title[language] || item.title.en
-            }));
+            // 创建图片对象来获取实际尺寸 - 性能优化：添加缓存
+            const loadImageDimensions = (src) => {
+                return new Promise((resolve) => {
+                    const img = new Image();
+                    img.onload = () => {
+                        resolve({ width: img.naturalWidth, height: img.naturalHeight });
+                    };
+                    img.onerror = () => {
+                        resolve({ width: 1200, height: 800 }); // 默认尺寸
+                    };
+                    // 性能优化：使用小尺寸预览来获取宽高比
+                    img.crossOrigin = 'anonymous';
+                    img.src = src;
+                });
+            };
+
+            // 获取所有图片的实际尺寸 - 性能优化：限制并发加载
+            const loadPromises = items.slice(0, Math.min(items.length, 20)).map(item => 
+                loadImageDimensions(item.src)
+            );
             
-            lightboxRef.current.loadAndOpen(initialIndex, pswpItems);
+            Promise.all(loadPromises)
+                .then(dimensions => {
+                    const pswpItems = items.map((item, index) => ({
+                        src: item.src,
+                        width: index < dimensions.length ? dimensions[index].width : 1200,
+                        height: index < dimensions.length ? dimensions[index].height : 800,
+                        alt: item.title[language] || item.title.en
+                    }));
+                    
+                    lightboxRef.current.loadAndOpen(initialIndex, pswpItems);
+                });
         }
     }, [isOpen, initialIndex, items, language]);
 
