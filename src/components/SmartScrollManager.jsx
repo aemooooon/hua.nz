@@ -38,6 +38,9 @@ const SmartScrollManager = () => {
     const [sectionScrollPositions, setSectionScrollPositions] = useState({}); // 记录各section的滚动位置
     const [isPreviewingScroll, setIsPreviewingScroll] = useState(false); // 预览滚动状态
     const [previewOffset, setPreviewOffset] = useState(0); // 预览偏移量
+    const [isBouncing, setIsBouncing] = useState(false); // 回弹动画状态
+    const [bounceDirection, setBounceDirection] = useState('none'); // 回弹方向
+    const bounceTimerRef = useRef(); // 回弹定时器
     
     // 混合滚动模式：判断当前页面是否为 Home
     const isHomePage = currentSectionConfig?.id === 'home';
@@ -47,6 +50,19 @@ const SmartScrollManager = () => {
     const SCROLL_RESET_TIME = 300; // 增加重置时间间隔，提高稳定性
     const PREVIEW_THRESHOLD = 200; // 提高预览动画阈值
     const PREVIEW_MAX_OFFSET = 80; // 最大预览偏移
+    
+    // 将回弹状态存储到全局状态，以便光标组件访问
+    useEffect(() => {
+        // 创建自定义事件来通知光标组件边界状态
+        const bounceEvent = new CustomEvent('scrollBounce', {
+            detail: { 
+                isBouncing, 
+                direction: bounceDirection,
+                intensity: scrollAccumulatorRef.current / SCROLL_THRESHOLD
+            }
+        });
+        window.dispatchEvent(bounceEvent);
+    }, [isBouncing, bounceDirection]);
 
     // 组件映射
     const sectionComponents = {
@@ -89,6 +105,40 @@ const SmartScrollManager = () => {
             }
         }
     }, [isHomePage, currentSectionConfig?.id]);
+
+    // 处理iOS式回弹动画
+    const triggerBounceAnimation = useCallback((direction, intensity = 0.5) => {
+        // 清除之前的回弹定时器
+        if (bounceTimerRef.current) {
+            clearTimeout(bounceTimerRef.current);
+        }
+        
+        // 设置回弹方向和强度
+        setBounceDirection(direction);
+        setIsBouncing(true);
+        
+        // 根据强度计算回弹偏移
+        const maxBounceOffset = 30; // 最大回弹距离
+        const bounceOffset = Math.min(intensity * maxBounceOffset, maxBounceOffset);
+        const offset = direction === 'up' ? -bounceOffset : bounceOffset;
+        
+        setPreviewOffset(offset);
+        setIsPreviewingScroll(true);
+        
+        console.log(`[ScrollManager] 触发回弹动画: ${direction}, 强度: ${intensity}, 偏移: ${offset}px`);
+        
+        // 300ms后开始回弹动画
+        bounceTimerRef.current = setTimeout(() => {
+            setIsPreviewingScroll(false);
+            setPreviewOffset(0);
+            
+            // 再等300ms后结束回弹状态
+            setTimeout(() => {
+                setIsBouncing(false);
+                setBounceDirection('none');
+            }, 300);
+        }, 150);
+    }, []);
 
     // 重置滚动状态（切换section时）- 智能位置恢复
     const resetScrollState = useCallback(() => {
@@ -163,6 +213,13 @@ const SmartScrollManager = () => {
                     
                     if (scrollAccumulatorRef.current < SCROLL_THRESHOLD) {
                         scrollAccumulatorRef.current += Math.abs(event.deltaY);
+                        
+                        // 如果已经到达真正的底部，触发回弹动画
+                        if (currentScrollTop >= maxScrollTop - 5) {
+                            const intensity = Math.min(scrollAccumulatorRef.current / SCROLL_THRESHOLD, 1);
+                            triggerBounceAnimation('down', intensity);
+                        }
+                        
                         if (scrollAccumulatorRef.current >= SCROLL_THRESHOLD && currentSection < sections.length - 1) {
                             console.log(`[ScrollManager] 到达 ${currentSectionConfig?.id} 底部，切换到下一页`);
                             scrollAccumulatorRef.current = 0;
@@ -187,6 +244,13 @@ const SmartScrollManager = () => {
                     
                     if (scrollAccumulatorRef.current < SCROLL_THRESHOLD) {
                         scrollAccumulatorRef.current += Math.abs(event.deltaY);
+                        
+                        // 如果已经到达真正的顶部，触发回弹动画
+                        if (currentScrollTop <= 5) {
+                            const intensity = Math.min(scrollAccumulatorRef.current / SCROLL_THRESHOLD, 1);
+                            triggerBounceAnimation('up', intensity);
+                        }
+                        
                         if (scrollAccumulatorRef.current >= SCROLL_THRESHOLD && currentSection > 0) {
                             console.log(`[ScrollManager] 到达 ${currentSectionConfig?.id} 顶部，切换到上一页`);
                             scrollAccumulatorRef.current = 0;
@@ -250,6 +314,27 @@ const SmartScrollManager = () => {
             setPreviewOffset(event.deltaY > 0 ? offset : -offset);
         }
         
+        // 检查边界条件并触发回弹动画（幻灯片模式）
+        if (scrollMode !== 'content') {
+            const atBottomBoundary = event.deltaY > 0 && currentSection >= sections.length - 1;
+            const atTopBoundary = event.deltaY < 0 && currentSection <= 0;
+            
+            if (atBottomBoundary || atTopBoundary) {
+                // 在边界时触发回弹动画
+                const intensity = Math.min(scrollAccumulatorRef.current / SCROLL_THRESHOLD, 1);
+                const direction = atBottomBoundary ? 'down' : 'up';
+                triggerBounceAnimation(direction, intensity);
+                
+                // 如果累积足够大，重置累积器（防止持续触发）
+                if (scrollAccumulatorRef.current >= SCROLL_THRESHOLD) {
+                    scrollAccumulatorRef.current = 0;
+                    setIsPreviewingScroll(false);
+                    setPreviewOffset(0);
+                }
+                return; // 边界状态不进行页面切换
+            }
+        }
+        
         // 只有累积超过阈值才触发section切换（仅在非内容滚动模式下）
         if (scrollAccumulatorRef.current < SCROLL_THRESHOLD) {
             return;
@@ -273,7 +358,7 @@ const SmartScrollManager = () => {
         }
     }, [isScrolling, scrollMode, isContentOverflowing, isHomePage, currentSection, sections.length, 
         navigateNext, navigatePrev, currentSectionConfig, isPreviewingScroll,
-        setSectionScrollPositions, setIsPreviewingScroll, setPreviewOffset]);
+        setSectionScrollPositions, setIsPreviewingScroll, setPreviewOffset, triggerBounceAnimation]);
 
     // 键盘事件处理（混合滚动模式优化）
     const handleKeyDown = useCallback((event) => {
@@ -417,6 +502,11 @@ const SmartScrollManager = () => {
                 container.removeEventListener('wheel', handleWheel);
                 document.removeEventListener('keydown', handleKeyDown);
                 window.removeEventListener('resize', handleResize);
+                
+                // 清理回弹定时器
+                if (bounceTimerRef.current) {
+                    clearTimeout(bounceTimerRef.current);
+                }
             };
         }
     }, [handleWheel, handleKeyDown, checkContentOverflow]);
@@ -463,7 +553,7 @@ const SmartScrollManager = () => {
                 />
             )}
 
-            {/* 当前栏目内容 - 混合滚动容器，支持预览动画 */}
+            {/* 当前栏目内容 - 混合滚动容器，支持预览动画和回弹动画 */}
             <div 
                 ref={contentRef}
                 className={`absolute inset-0 z-20 smooth-scroll scroll-mode-transition ${
@@ -472,12 +562,14 @@ const SmartScrollManager = () => {
                         : isContentOverflowing 
                             ? 'scroll-mode-auto overflow-y-auto' 
                             : 'overflow-hidden'
-                }`}
+                } ${isBouncing ? 'bouncing' : ''}`}
                 style={{
                     transform: isPreviewingScroll ? `translateY(${previewOffset}px)` : 'translateY(0)',
-                    transition: isPreviewingScroll 
+                    transition: isPreviewingScroll && !isBouncing
                         ? 'none' 
-                        : 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)', // iOS式回弹动画
+                        : isBouncing
+                            ? 'transform 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55)' // iOS式回弹曲线
+                            : 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)', // 普通过渡
                     willChange: 'transform'
                 }}
             >

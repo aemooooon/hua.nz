@@ -25,30 +25,37 @@ const SmartDirectionalCursor = () => {
         return 'none';
     }, [currentSection, sections.length]);
 
-    // 检测是否处于边界状态（无法滚动的方向）- 增强版本，考虑内容滚动模式
-    const getScrollBoundaryState = useCallback(() => {
+    // 简化的边界检测 - 只检测真正无法滚动的绝对边界
+    const isAtAbsoluteBoundary = useCallback(() => {
         const canGoUp = currentSection > 0;
         const canGoDown = currentSection < sections.length - 1;
         
-        // 检测当前页面是否有内容可滚动
+        // 检测当前页面的内容滚动状态
         const currentContainer = document.querySelector('.scroll-mode-auto');
         let hasContentToScroll = false;
-        let atContentTop = false;
-        let atContentBottom = false;
+        let atContentTop = true;
+        let atContentBottom = true;
         
         if (currentContainer) {
             hasContentToScroll = currentContainer.scrollHeight > currentContainer.clientHeight + 10;
-            atContentTop = currentContainer.scrollTop <= 50;
-            atContentBottom = currentContainer.scrollTop >= (currentContainer.scrollHeight - currentContainer.clientHeight - 50);
+            atContentTop = currentContainer.scrollTop <= 5;
+            atContentBottom = currentContainer.scrollTop >= (currentContainer.scrollHeight - currentContainer.clientHeight - 5);
         }
         
+        // 只有在以下情况才被认为是绝对边界：
+        // 1. 在第一页且内容到达顶部或没有内容可滚动，无法继续向上
+        // 2. 在最后一页且内容到达底部或没有内容可滚动，无法继续向下
+        // 3. 只有一页且没有内容可滚动
+        
+        const isTopBoundary = !canGoUp && (!hasContentToScroll || atContentTop);
+        const isBottomBoundary = !canGoDown && (!hasContentToScroll || atContentBottom);
+        const hasNowhereToGo = !canGoUp && !canGoDown && !hasContentToScroll;
+        
         return {
-            isAtTop: !canGoUp && (!hasContentToScroll || atContentTop),
-            isAtBottom: !canGoDown && (!hasContentToScroll || atContentBottom),
-            hasNoDirection: !canGoUp && !canGoDown && !hasContentToScroll,
-            hasContentToScroll,
-            atContentTop,
-            atContentBottom
+            isTopBoundary,
+            isBottomBoundary,
+            hasNowhereToGo,
+            hasContentToScroll
         };
     }, [currentSection, sections.length]);
 
@@ -182,16 +189,18 @@ const SmartDirectionalCursor = () => {
         const hoverScale = isHovering ? 1.02 : 1; // 微小的悬停缩放
         const size = baseSize * hoverScale; // 移除力度缩放
         
-        // 边界状态检测 - 增强版本，考虑内容滚动
-        const boundaryState = getScrollBoundaryState();
-        const isInBoundary = (direction === 'up' && boundaryState.isAtTop) || 
-                           (direction === 'down' && boundaryState.isAtBottom) ||
-                           (direction === 'none' && boundaryState.hasNoDirection);
+        // 边界状态检测 - 使用简化的边界检测
+        const boundaryState = isAtAbsoluteBoundary();
         
-        // 如果有内容可滚动但还没到边界，不应该显示红色
-        const shouldShowBoundaryWarning = isInBoundary && !(boundaryState.hasContentToScroll && 
-            ((direction === 'up' && !boundaryState.atContentTop) || 
-             (direction === 'down' && !boundaryState.atContentBottom)));
+        // 检测是否在绝对无法滚动的边界
+        const shouldShowBoundaryWarning = (
+            // 向上滚动但已到达绝对顶部边界
+            (boundaryState.isTopBoundary && scrollIntensity > 0) ||
+            // 向下滚动但已到达绝对底部边界  
+            (boundaryState.isBottomBoundary && scrollIntensity > 0) ||
+            // 没有任何地方可以滚动
+            (boundaryState.hasNowhereToGo && scrollIntensity > 0)
+        );
         
         // 进度圆圈颜色配置 - 根据边界状态和滚动强度调整
         const getBaseColor = () => {
@@ -241,9 +250,9 @@ const SmartDirectionalCursor = () => {
                     return '#ffffff'; // 无滚动时为白色
                 }
                 
-                // 使用增强的边界状态检测
+                // 只有在绝对边界时显示红色，其他情况都显示绿色
                 if (shouldShowBoundaryWarning) {
-                    // 边界状态时显示红色渐变
+                    // 绝对边界状态时显示红色渐变
                     const lightRed = [255, 68, 68];   // #ff4444 的 RGB 值
                     const darkRed = [180, 20, 20];    // 深红色的 RGB 值
                     
@@ -253,7 +262,7 @@ const SmartDirectionalCursor = () => {
                     
                     return `rgb(${r}, ${g}, ${b})`;
                 } else {
-                    // 正常状态显示绿色渐变
+                    // 正常状态（包括有内容可滚动时）显示绿色渐变
                     const lightGreen = [0, 255, 136]; // #00ff88 的 RGB 值
                     const darkGreen = [0, 180, 60];   // 深绿色的 RGB 值
                     
