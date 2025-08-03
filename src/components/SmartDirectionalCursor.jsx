@@ -149,14 +149,14 @@ const SmartDirectionalCursor = () => {
         };
     }, []);
 
-    // 渲染进度指示器光标 - 固定尺寸，进度圆圈效果
+    // 渲染进度指示器光标 - 缩小尺寸，进度圆圈效果
     const renderPowerDirectionalIndicator = () => {
-        const baseSize = 200; // 固定尺寸，不受滚动强度影响
+        const baseSize = 133; // 缩小为原来的三分之二 (200 * 2/3 ≈ 133)
         const hoverScale = isHovering ? 1.02 : 1; // 微小的悬停缩放
         const size = baseSize * hoverScale; // 移除力度缩放
         
         // 进度圆圈颜色配置
-        const baseColor = '#00f5ff'; // 青色基础圆圈
+        const baseColor = '#ffffff'; // 白色基础圆圈，与箭头保持一致
         const progressColor = '#00ff88'; // 绿色进度色
         const percentage = Math.round(scrollIntensity * 100); // 滚动强度百分比
         const strokeWidth = 1; // 箭头线条宽度
@@ -174,15 +174,31 @@ const SmartDirectionalCursor = () => {
         };
 
         const createArrow = (direction, intensity = 1) => {
-            const arrowSize = 120 * hoverScale; // 固定尺寸，只受悬停影响
+            const arrowSize = 80 * hoverScale; // 缩小箭头尺寸 (120 * 2/3 = 80)
             
             // 简化的长箭头路径 - 类似手画的勾形
             const arrowPath = direction === 'up' 
                 ? "M12 22L12 2M8 6L12 2L16 6" // 向上箭头：长竖线 + 简单的勾形顶部
                 : "M12 2L12 22M8 18L12 22L16 18"; // 向下箭头：长竖线 + 简单的勾形底部
             
-            // 箭头颜色：固定为白色，不受滚动强度影响
-            const arrowColor = '#ffffff';
+            // 箭头颜色：根据滚动力度实时变化（绿色进度条效果）
+            const getArrowColor = () => {
+                if (scrollIntensity === 0) {
+                    return '#ffffff'; // 无滚动时为白色
+                }
+                
+                // 根据滚动强度从浅绿色渐变到深绿色
+                const lightGreen = [0, 255, 136]; // #00ff88 的 RGB 值
+                const darkGreen = [0, 180, 60];   // 深绿色的 RGB 值
+                
+                const r = Math.round(lightGreen[0] + (darkGreen[0] - lightGreen[0]) * scrollIntensity);
+                const g = Math.round(lightGreen[1] + (darkGreen[1] - lightGreen[1]) * scrollIntensity);
+                const b = Math.round(lightGreen[2] + (darkGreen[2] - lightGreen[2]) * scrollIntensity);
+                
+                return `rgb(${r}, ${g}, ${b})`;
+            };
+            
+            const arrowColor = getArrowColor();
             
             return (
                 <div
@@ -193,7 +209,7 @@ const SmartDirectionalCursor = () => {
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        opacity: intensity * 0.9,
+                        opacity: intensity * 0.8, // 箭头透明度设为 0.8
                         zIndex: 10,
                         transform: 'translate3d(0, 0, 0)',
                         willChange: 'opacity',
@@ -215,7 +231,11 @@ const SmartDirectionalCursor = () => {
                             strokeLinecap="round"
                             strokeLinejoin="round"
                             fill="none"
-                            opacity={intensity}
+                            opacity={0.8} // 设置箭头透明度为 0.8
+                            style={{
+                                transition: 'stroke 0.1s ease-out', // 颜色变化动画
+                                willChange: 'stroke',
+                            }}
                         />
                     </svg>
                 </div>
@@ -233,7 +253,7 @@ const SmartDirectionalCursor = () => {
                         transform: 'rotate(-90deg)', // 从12点钟方向开始
                     }}
                 >
-                    {/* 底层青色圆圈 */}
+                    {/* 底层白色圆圈 */}
                     <circle
                         cx={size / 2}
                         cy={size / 2}
@@ -241,7 +261,7 @@ const SmartDirectionalCursor = () => {
                         fill="none"
                         stroke={baseColor}
                         strokeWidth={strokeWidth}
-                        opacity="0.6"
+                        opacity="0.4"
                     />
                     
                     {/* 进度圆弧 - 根据滚动强度显示 */}
