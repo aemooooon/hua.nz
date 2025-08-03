@@ -1,6 +1,5 @@
-import { useEffect, useState, Suspense, lazy } from 'react';
+import { Suspense, lazy } from 'react';
 import { useAppStore } from '../store/useAppStore';
-import NavigationCube from './NavigationCube';
 import AboutSection from './sections/about/AboutSection';
 import EducationSection from './sections/education/EducationSection';
 import { FaSpinner } from 'react-icons/fa';
@@ -14,8 +13,6 @@ const BlogPage = lazy(() => import('./BlogPage'));
 
 const PageManager = () => {
     const { currentSection, language } = useAppStore();
-    const [cubePosition, setCubePosition] = useState('center');
-    const [isTransitioning, setIsTransitioning] = useState(false);
 
     // 将 section index 转换为 section name
     const getSectionName = (index) => {
@@ -36,26 +33,9 @@ const PageManager = () => {
         blog: BlogPage
     };
 
-    // 根据当前页面设置立方体位置
-    useEffect(() => {
-        setIsTransitioning(true);
-        
-        if (activeSection === 'home') {
-            setCubePosition('center');
-        } else {
-            setCubePosition('top-right');
-        }
-        
-        const timer = setTimeout(() => {
-            setIsTransitioning(false);
-        }, 800);
-        
-        return () => clearTimeout(timer);
-    }, [activeSection]);
-
     const CurrentPageComponent = pageComponents[activeSection] || HomePage;
 
-    // 如果在首页，直接渲染HomePage（它包含了自己的立方体）
+    // 如果在首页，直接渲染HomePage（它包含了自己的HeroCube）
     if (activeSection === 'home') {
         return (
             <Suspense
@@ -70,11 +50,11 @@ const PageManager = () => {
         );
     }
 
-    // 其他页面：显示页面内容 + 右上角小立方体
+    // 其他页面：只显示页面内容
     return (
         <>
             {/* 当前页面内容 */}
-            <div className={`page-content transition-opacity duration-500 ${isTransitioning ? 'opacity-90' : 'opacity-100'}`}>
+            <div className="page-content transition-opacity duration-500 opacity-100">
                 <Suspense
                     fallback={
                         <div className="w-full h-full flex justify-center items-center">
@@ -88,22 +68,6 @@ const PageManager = () => {
                         <CurrentPageComponent />
                     )}
                 </Suspense>
-            </div>
-
-            {/* 导航立方体 - 右上角小尺寸 */}
-            <div 
-                className={`fixed top-6 right-6 z-50 transition-all duration-800 ease-in-out ${
-                    cubePosition === 'top-right' ? 'scale-30 opacity-100' : 'scale-100 opacity-0'
-                }`}
-                style={{
-                    transform: cubePosition === 'top-right' ? 'scale(0.3)' : 'scale(1)',
-                    transformOrigin: 'center'
-                }}
-            >
-                <NavigationCube
-                    isLandingPage={false}
-                    currentSectionId={activeSection}
-                />
             </div>
         </>
     );

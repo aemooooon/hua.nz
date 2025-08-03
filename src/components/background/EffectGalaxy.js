@@ -196,12 +196,10 @@ export class EffectGalaxy {
     animate() {
         this.animationFrameId = requestAnimationFrame(this.animate.bind(this));
         
-        this.time += 0.005; // 再次减慢动画速度进一步改善INP
+        this.time += 0.008; // 稍微加快动画速度以改善视觉效果
         
-        // 性能优化：每4帧更新一次位置进一步减少计算负载
-        if (this.animationFrameId % 4 === 0) {
-            this.updatePositions();
-        }
+        // 每帧都更新位置，确保平滑旋转
+        this.updatePositions();
         
         // 渲染场景
         this.renderer.render(this.scene, this.camera);

@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useAppStore } from '../../../store/useAppStore';
-import NavigationCube from '../../NavigationCube';
+import HeroCube from './HeroCube';
 import '../../../styles/OpeningAnimations.css';
 
 // import { Suspense, lazy } from 'react'; // 移动到About页面
@@ -11,8 +11,6 @@ import '../../../styles/OpeningAnimations.css';
 const HomeSection = ({ 
     section, 
     language, 
-    sections, 
-    onSectionChange, 
     // 开场动画相关属性
     enableOpeningAnimation = false
 }) => {
@@ -97,15 +95,11 @@ const HomeSection = ({
             </div>
 
             {/* Cube延迟加载 */}
-            {showCube && (
-                <NavigationCube 
-                    isLandingPage={true}
-                    sections={sections}
-                    onSectionChange={onSectionChange}
-                    currentSectionId="home"
+            {/* {showCube && (
+                <HeroCube 
                     enableOpeningAnimation={enableOpeningAnimation}
                 />
-            )}
+            )} */}
         </div>
     );
 };
@@ -115,8 +109,6 @@ HomeSection.propTypes = {
         description: PropTypes.object.isRequired
     }).isRequired,
     language: PropTypes.string.isRequired,
-    sections: PropTypes.array,
-    onSectionChange: PropTypes.func,
     enableOpeningAnimation: PropTypes.bool
 };
 

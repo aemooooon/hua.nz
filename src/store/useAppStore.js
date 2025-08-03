@@ -12,7 +12,7 @@ const sectionsConfig = [
     index: 0,
     name: { en: "Home", zh: "首页" },
     description: { en: "Welcome to my portfolio", zh: "欢迎来到我的作品集" },
-    backgroundEffect: "effectgalaxy", // Galaxy 效果
+    backgroundEffect: "effectchaos", // Chaos 效果
     cubeImage: "/hua.jpeg",
     cubeVideo: "/video.mp4", // 添加视频属性
     icon: "🏠"
@@ -581,7 +581,7 @@ export const useAppStore = create(
       setCurrentSection: (index) => set({ currentSection: index }),
       
       // 当前背景效果
-      currentEffect: 'effectgalaxy',
+      currentEffect: 'effectchaos',
       setCurrentEffect: (effect) => set({ currentEffect: effect }),
       
       // 滚动状态

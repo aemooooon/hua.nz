@@ -76,11 +76,11 @@ const GallerySection = ({ language }) => {
             {/* 分阶段加载的背景 - 只在3D球体显示后才加载 */}
             {showBackground && (
                 <BackgroundCanvas 
-                    effectType="effectgalaxy"
+                    effectType="effectchaos"
                 />
             )}
 
-            {/* Gallery标题 - 左上角，与NavigationCube对称 */}
+            {/* Gallery标题 - 左上角 */}
             <div className="fixed top-6 left-6 z-50">
                 <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 bg-clip-text text-transparent">
                     Gallery

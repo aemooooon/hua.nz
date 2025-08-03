@@ -4,7 +4,7 @@ import imageSrc from "./hua_icon_base64";
 // 延迟加载hover图片以优化首屏性能
 // import hoverImageSrc from "../assets/images/hua_500w1.jpg"; 
 import { FaSpinner } from "react-icons/fa";
-import NavigationCube from "./NavigationCube";
+import HeroCube from "./sections/home/HeroCube";
 import "../styles/OpeningAnimations.css";
 
 const Avatar = lazy(() => import("./Avatar"));
@@ -171,9 +171,8 @@ const HomePage = () => {
                     <div className={`cube-container ${
                         enableGrandEntrance ? 'cube-grand-entrance' : 'animate-slideInRight'
                     }`}>
-                        <NavigationCube 
+                        <HeroCube 
                             key={animationKey} // 用于重新触发动画
-                            isLandingPage={true} 
                             enableOpeningAnimation={enableGrandEntrance}
                         />
                     </div>
