@@ -14,7 +14,7 @@ const SmartDirectionalCursor = () => {
     const glowIntensityRef = useRef(0);
     const scrollDecayTimerRef = useRef();
 
-    // 根据当前位置判断可用的方向
+    // 根据当前位置判断可用的方向和边界状态
     const getAvailableDirections = useCallback(() => {
         const canGoUp = currentSection > 0;
         const canGoDown = currentSection < sections.length - 1;
@@ -23,6 +23,33 @@ const SmartDirectionalCursor = () => {
         if (canGoUp) return 'up';
         if (canGoDown) return 'down';
         return 'none';
+    }, [currentSection, sections.length]);
+
+    // 检测是否处于边界状态（无法滚动的方向）- 增强版本，考虑内容滚动模式
+    const getScrollBoundaryState = useCallback(() => {
+        const canGoUp = currentSection > 0;
+        const canGoDown = currentSection < sections.length - 1;
+        
+        // 检测当前页面是否有内容可滚动
+        const currentContainer = document.querySelector('.scroll-mode-auto');
+        let hasContentToScroll = false;
+        let atContentTop = false;
+        let atContentBottom = false;
+        
+        if (currentContainer) {
+            hasContentToScroll = currentContainer.scrollHeight > currentContainer.clientHeight + 10;
+            atContentTop = currentContainer.scrollTop <= 50;
+            atContentBottom = currentContainer.scrollTop >= (currentContainer.scrollHeight - currentContainer.clientHeight - 50);
+        }
+        
+        return {
+            isAtTop: !canGoUp && (!hasContentToScroll || atContentTop),
+            isAtBottom: !canGoDown && (!hasContentToScroll || atContentBottom),
+            hasNoDirection: !canGoUp && !canGoDown && !hasContentToScroll,
+            hasContentToScroll,
+            atContentTop,
+            atContentBottom
+        };
     }, [currentSection, sections.length]);
 
     // 更新方向状态
@@ -149,15 +176,42 @@ const SmartDirectionalCursor = () => {
         };
     }, []);
 
-    // 渲染进度指示器光标 - 缩小尺寸，进度圆圈效果
+    // 渲染进度指示器光标 - 缩小尺寸，进度圆圈效果，支持边界红色提示
     const renderPowerDirectionalIndicator = () => {
         const baseSize = 133; // 缩小为原来的三分之二 (200 * 2/3 ≈ 133)
         const hoverScale = isHovering ? 1.02 : 1; // 微小的悬停缩放
         const size = baseSize * hoverScale; // 移除力度缩放
         
-        // 进度圆圈颜色配置
-        const baseColor = '#ffffff'; // 白色基础圆圈，与箭头保持一致
-        const progressColor = '#00ff88'; // 绿色进度色
+        // 边界状态检测 - 增强版本，考虑内容滚动
+        const boundaryState = getScrollBoundaryState();
+        const isInBoundary = (direction === 'up' && boundaryState.isAtTop) || 
+                           (direction === 'down' && boundaryState.isAtBottom) ||
+                           (direction === 'none' && boundaryState.hasNoDirection);
+        
+        // 如果有内容可滚动但还没到边界，不应该显示红色
+        const shouldShowBoundaryWarning = isInBoundary && !(boundaryState.hasContentToScroll && 
+            ((direction === 'up' && !boundaryState.atContentTop) || 
+             (direction === 'down' && !boundaryState.atContentBottom)));
+        
+        // 进度圆圈颜色配置 - 根据边界状态和滚动强度调整
+        const getBaseColor = () => {
+            if (shouldShowBoundaryWarning && scrollIntensity > 0) {
+                // 边界状态且有滚动力度时显示红色
+                return '#ff4444';
+            }
+            return '#ffffff'; // 正常状态为白色
+        };
+        
+        const getProgressColor = () => {
+            if (shouldShowBoundaryWarning && scrollIntensity > 0) {
+                // 边界状态时进度条也显示红色
+                return '#ff4444';
+            }
+            return '#00ff88'; // 正常状态为绿色
+        };
+        
+        const baseColor = getBaseColor();
+        const progressColor = getProgressColor();
         const percentage = Math.round(scrollIntensity * 100); // 滚动强度百分比
         const strokeWidth = 1; // 箭头线条宽度
         const progressStrokeWidth = 5; // 进度圆弧使用更粗的线条，更加突出
@@ -181,21 +235,34 @@ const SmartDirectionalCursor = () => {
                 ? "M12 22L12 2M8 6L12 2L16 6" // 向上箭头：长竖线 + 简单的勾形顶部
                 : "M12 2L12 22M8 18L12 22L16 18"; // 向下箭头：长竖线 + 简单的勾形底部
             
-            // 箭头颜色：根据滚动力度实时变化（绿色进度条效果）
+            // 箭头颜色：根据滚动力度和边界状态实时变化
             const getArrowColor = () => {
                 if (scrollIntensity === 0) {
                     return '#ffffff'; // 无滚动时为白色
                 }
                 
-                // 根据滚动强度从浅绿色渐变到深绿色
-                const lightGreen = [0, 255, 136]; // #00ff88 的 RGB 值
-                const darkGreen = [0, 180, 60];   // 深绿色的 RGB 值
-                
-                const r = Math.round(lightGreen[0] + (darkGreen[0] - lightGreen[0]) * scrollIntensity);
-                const g = Math.round(lightGreen[1] + (darkGreen[1] - lightGreen[1]) * scrollIntensity);
-                const b = Math.round(lightGreen[2] + (darkGreen[2] - lightGreen[2]) * scrollIntensity);
-                
-                return `rgb(${r}, ${g}, ${b})`;
+                // 使用增强的边界状态检测
+                if (shouldShowBoundaryWarning) {
+                    // 边界状态时显示红色渐变
+                    const lightRed = [255, 68, 68];   // #ff4444 的 RGB 值
+                    const darkRed = [180, 20, 20];    // 深红色的 RGB 值
+                    
+                    const r = Math.round(lightRed[0] + (darkRed[0] - lightRed[0]) * scrollIntensity);
+                    const g = Math.round(lightRed[1] + (darkRed[1] - lightRed[1]) * scrollIntensity);
+                    const b = Math.round(lightRed[2] + (darkRed[2] - lightRed[2]) * scrollIntensity);
+                    
+                    return `rgb(${r}, ${g}, ${b})`;
+                } else {
+                    // 正常状态显示绿色渐变
+                    const lightGreen = [0, 255, 136]; // #00ff88 的 RGB 值
+                    const darkGreen = [0, 180, 60];   // 深绿色的 RGB 值
+                    
+                    const r = Math.round(lightGreen[0] + (darkGreen[0] - lightGreen[0]) * scrollIntensity);
+                    const g = Math.round(lightGreen[1] + (darkGreen[1] - lightGreen[1]) * scrollIntensity);
+                    const b = Math.round(lightGreen[2] + (darkGreen[2] - lightGreen[2]) * scrollIntensity);
+                    
+                    return `rgb(${r}, ${g}, ${b})`;
+                }
             };
             
             const arrowColor = getArrowColor();

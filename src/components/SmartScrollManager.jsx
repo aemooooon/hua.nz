@@ -35,13 +35,18 @@ const SmartScrollManager = () => {
     // 滚动状态管理
     const [scrollMode, setScrollMode] = useState('slide'); // 'slide' | 'content' | 'hybrid'
     const [isContentOverflowing, setIsContentOverflowing] = useState(false);
+    const [sectionScrollPositions, setSectionScrollPositions] = useState({}); // 记录各section的滚动位置
+    const [isPreviewingScroll, setIsPreviewingScroll] = useState(false); // 预览滚动状态
+    const [previewOffset, setPreviewOffset] = useState(0); // 预览偏移量
     
     // 混合滚动模式：判断当前页面是否为 Home
     const isHomePage = currentSectionConfig?.id === 'home';
 
-    // 滚动敏感度配置
-    const SCROLL_THRESHOLD = 240; // 滚动阈值 - 需要累积240px才触发（提高一倍）
-    const SCROLL_RESET_TIME = 150; // 重置时间间隔
+    // 滚动敏感度配置 - 优化后的参数
+    const SCROLL_THRESHOLD = 600; // 进一步提高滚动阈值，防止误触发（从400增加到600）
+    const SCROLL_RESET_TIME = 300; // 增加重置时间间隔，提高稳定性
+    const PREVIEW_THRESHOLD = 200; // 提高预览动画阈值
+    const PREVIEW_MAX_OFFSET = 80; // 最大预览偏移
 
     // 组件映射
     const sectionComponents = {
@@ -53,43 +58,153 @@ const SmartScrollManager = () => {
         contact: ContactSection
     };
 
-    // 检测内容是否超出视窗并实现混合滚动模式
+    // 检测内容是否超出视窗并实现混合滚动模式 - 优化为通用逻辑，增加稳定性检测
     const checkContentOverflow = useCallback(() => {
         if (!contentRef.current) return;
         
         const container = contentRef.current;
-        const isOverflowing = container.scrollHeight > container.clientHeight;
+        
+        // 强制重排和重绘，确保获取准确的尺寸
+        container.offsetHeight; // 触发重排
+        
+        const isOverflowing = container.scrollHeight > container.clientHeight + 10; // 增加10px缓冲区，防止临界状态
+        
+        // 添加调试日志，帮助诊断问题
+        console.log(`[ScrollManager] Section: ${currentSectionConfig?.id}, ScrollHeight: ${container.scrollHeight}, ClientHeight: ${container.clientHeight}, IsOverflowing: ${isOverflowing}`);
+        
         setIsContentOverflowing(isOverflowing);
         
-        // 混合滚动模式逻辑
+        // 混合滚动模式逻辑 - 适用于所有页面
         if (isHomePage) {
             // Home 页面始终使用 slide 模式（隐藏滚动条）
             setScrollMode('slide');
         } else {
-            // 其他页面根据内容溢出情况决定滚动模式
+            // 所有其他页面根据内容溢出情况决定滚动模式
             if (isOverflowing) {
-                setScrollMode('content'); // 内容溢出时使用内容滚动模式
+                setScrollMode('content'); // 任何内容溢出的页面都使用内容滚动模式
+                console.log(`[ScrollManager] ${currentSectionConfig?.id} 切换到内容滚动模式`);
             } else {
                 setScrollMode('slide'); // 内容不溢出时使用幻灯片模式
+                console.log(`[ScrollManager] ${currentSectionConfig?.id} 切换到幻灯片模式`);
             }
         }
-    }, [isHomePage]);
+    }, [isHomePage, currentSectionConfig?.id]);
 
-    // 重置滚动状态（切换section时）
+    // 重置滚动状态（切换section时）- 智能位置恢复
     const resetScrollState = useCallback(() => {
         scrollAccumulatorRef.current = 0; // 重置累积器
+        setIsPreviewingScroll(false);
+        setPreviewOffset(0);
         
         if (contentRef.current) {
-            contentRef.current.scrollTop = 0;
+            const sectionId = currentSectionConfig?.id;
+            
+            // 根据导航方向和内容长度决定滚动位置 - 适用于所有有溢出内容的页面
+            const shouldScrollToBottom = () => {
+                // 如果有保存的滚动位置，且是从下一个section返回，则滚动到底部
+                if (sectionScrollPositions[sectionId] !== undefined) {
+                    return sectionScrollPositions[sectionId] === 'bottom';
+                }
+                
+                // 对于任何有溢出内容的页面，从下一个section返回时滚动到底部
+                if (isContentOverflowing) {
+                    const previousDirection = currentSectionConfig?.previousDirection;
+                    
+                    // 如果是从后面的section返回的，应该定位到底部
+                    if (previousDirection === 'from-next') {
+                        return true;
+                    }
+                }
+                
+                return false;
+            };
+            
+            if (shouldScrollToBottom()) {
+                // 滚动到底部，模拟传统HTML体验
+                setTimeout(() => {
+                    if (contentRef.current) {
+                        const maxScrollTop = contentRef.current.scrollHeight - contentRef.current.clientHeight;
+                        contentRef.current.scrollTop = maxScrollTop;
+                    }
+                }, 100);
+            } else {
+                // 默认滚动到顶部
+                contentRef.current.scrollTop = 0;
+            }
         }
-    }, []);
+    }, [currentSectionConfig, isContentOverflowing, sectionScrollPositions]);
 
-    // 智能滚轮处理 - 混合滚动模式优化
+    // 智能滚轮处理 - 混合滚动模式优化，增加iOS式预览动画
     const handleWheel = useCallback((event) => {
         const now = Date.now();
         if (isScrolling) return;
         
-        // Home 页面和非溢出页面阻止默认滚动
+        // 内容滚动模式下，优先处理内容滚动，不进行累积计算
+        if (scrollMode === 'content' && isContentOverflowing && !isHomePage) {
+            const container = contentRef.current;
+            if (!container) return;
+            
+            const currentScrollTop = container.scrollTop;
+            const maxScrollTop = container.scrollHeight - container.clientHeight;
+            const isScrollingDown = event.deltaY > 0;
+            const isScrollingUp = event.deltaY < 0;
+            
+            // 更严格的边界检测，减少误触发
+            const SCROLL_BOUNDARY_THRESHOLD = 50;
+            
+            if (isScrollingDown) {
+                if (currentScrollTop >= maxScrollTop - SCROLL_BOUNDARY_THRESHOLD) {
+                    // 到达内容底部，检查是否有足够的滚动累积
+                    // 重置累积器如果时间间隔太长
+                    if (now - lastWheelTimeRef.current > SCROLL_RESET_TIME) {
+                        scrollAccumulatorRef.current = 0;
+                    }
+                    lastWheelTimeRef.current = now;
+                    
+                    if (scrollAccumulatorRef.current < SCROLL_THRESHOLD) {
+                        scrollAccumulatorRef.current += Math.abs(event.deltaY);
+                        if (scrollAccumulatorRef.current >= SCROLL_THRESHOLD && currentSection < sections.length - 1) {
+                            console.log(`[ScrollManager] 到达 ${currentSectionConfig?.id} 底部，切换到下一页`);
+                            scrollAccumulatorRef.current = 0;
+                            navigateNext();
+                        }
+                        return; // 不阻止默认滚动，但也不进行页面切换
+                    }
+                } else {
+                    // 在内容中间滚动向下，完全交给浏览器处理
+                    scrollAccumulatorRef.current = 0; // 重置累积器
+                    console.log(`[ScrollManager] 在 ${currentSectionConfig?.id} 向下滚动，ScrollTop: ${currentScrollTop}/${maxScrollTop}`);
+                    return; // 让浏览器自然处理滚动
+                }
+            } else if (isScrollingUp) {
+                if (currentScrollTop <= SCROLL_BOUNDARY_THRESHOLD) {
+                    // 到达内容顶部，检查是否有足够的滚动累积
+                    // 重置累积器如果时间间隔太长
+                    if (now - lastWheelTimeRef.current > SCROLL_RESET_TIME) {
+                        scrollAccumulatorRef.current = 0;
+                    }
+                    lastWheelTimeRef.current = now;
+                    
+                    if (scrollAccumulatorRef.current < SCROLL_THRESHOLD) {
+                        scrollAccumulatorRef.current += Math.abs(event.deltaY);
+                        if (scrollAccumulatorRef.current >= SCROLL_THRESHOLD && currentSection > 0) {
+                            console.log(`[ScrollManager] 到达 ${currentSectionConfig?.id} 顶部，切换到上一页`);
+                            scrollAccumulatorRef.current = 0;
+                            navigatePrev();
+                        }
+                        return; // 不阻止默认滚动，但也不进行页面切换
+                    }
+                } else {
+                    // 在内容中间滚动向上，完全交给浏览器处理
+                    scrollAccumulatorRef.current = 0; // 重置累积器
+                    console.log(`[ScrollManager] 在 ${currentSectionConfig?.id} 向上滚动，ScrollTop: ${currentScrollTop}/${maxScrollTop}`);
+                    return; // 让浏览器自然处理滚动
+                }
+            }
+            return; // 内容滚动模式下直接返回
+        }
+        
+        // 非内容滚动模式下的处理（Home页面和非溢出页面）
         if (isHomePage || (!isContentOverflowing && scrollMode === 'slide')) {
             event.preventDefault();
         }
@@ -97,61 +212,68 @@ const SmartScrollManager = () => {
         // 重置累积器如果时间间隔太长
         if (now - lastWheelTimeRef.current > SCROLL_RESET_TIME) {
             scrollAccumulatorRef.current = 0;
+            // 重置预览状态
+            if (isPreviewingScroll) {
+                setIsPreviewingScroll(false);
+                setPreviewOffset(0);
+            }
         }
         lastWheelTimeRef.current = now;
         
-        // 累积滚动距离
-        scrollAccumulatorRef.current += Math.abs(event.deltaY);
+        // 累积滚动距离（仅在非内容滚动模式下）
+        const deltaY = Math.abs(event.deltaY);
+        scrollAccumulatorRef.current += deltaY;
         
-        // 只有累积超过阈值才触发
+        // 记录当前section的滚动位置（仅在内容滚动模式下）
+        const container = contentRef.current;
+        if (container && scrollMode === 'content' && isContentOverflowing) {
+            const sectionId = currentSectionConfig?.id;
+            const scrollTop = container.scrollTop;
+            const maxScrollTop = container.scrollHeight - container.clientHeight;
+            const scrollPosition = scrollTop >= maxScrollTop - 10 ? 'bottom' : 
+                                 scrollTop <= 10 ? 'top' : 'middle';
+            
+            setSectionScrollPositions(prev => ({
+                ...prev,
+                [sectionId]: scrollPosition
+            }));
+        }
+        
+        // 预览动画逻辑 - 在达到阈值前显示方向提示（仅在非内容滚动模式下）
+        if (scrollMode !== 'content' && scrollAccumulatorRef.current >= PREVIEW_THRESHOLD && scrollAccumulatorRef.current < SCROLL_THRESHOLD) {
+            if (!isPreviewingScroll) {
+                setIsPreviewingScroll(true);
+            }
+            // 计算预览偏移量
+            const progress = (scrollAccumulatorRef.current - PREVIEW_THRESHOLD) / (SCROLL_THRESHOLD - PREVIEW_THRESHOLD);
+            const offset = Math.min(progress * PREVIEW_MAX_OFFSET, PREVIEW_MAX_OFFSET);
+            setPreviewOffset(event.deltaY > 0 ? offset : -offset);
+        }
+        
+        // 只有累积超过阈值才触发section切换（仅在非内容滚动模式下）
         if (scrollAccumulatorRef.current < SCROLL_THRESHOLD) {
             return;
         }
         
-        // 重置累积器
+        // 重置累积器和预览状态
         scrollAccumulatorRef.current = 0;
+        setIsPreviewingScroll(false);
+        setPreviewOffset(0);
         
-        const container = contentRef.current;
         if (!container) return;
 
         const isScrollingDown = event.deltaY > 0;
         const isScrollingUp = event.deltaY < 0;
 
-        if (scrollMode === 'content' && isContentOverflowing && !isHomePage) {
-            // 内容滚动模式（仅适用于非 Home 页面）
-            const currentScrollTop = container.scrollTop;
-            const maxScrollTop = container.scrollHeight - container.clientHeight;
-            
-            if (isScrollingDown) {
-                if (currentScrollTop >= maxScrollTop - 10) {
-                    // 到达内容底部，切换到下一个section
-                    if (currentSection < sections.length - 1) {
-                        navigateNext();
-                    }
-                } else {
-                    // 在内容内滚动（让浏览器自然处理）
-                    return;
-                }
-            } else if (isScrollingUp) {
-                if (currentScrollTop <= 10) {
-                    // 到达内容顶部，切换到上一个section
-                    if (currentSection > 0) {
-                        navigatePrev();
-                    }
-                } else {
-                    // 在内容内滚动（让浏览器自然处理）
-                    return;
-                }
-            }
-        } else {
-            // 幻灯片模式 - 直接切换section（带边界检查）
-            if (isScrollingDown && currentSection < sections.length - 1) {
-                navigateNext();
-            } else if (isScrollingUp && currentSection > 0) {
-                navigatePrev();
-            }
+        // 幻灯片模式 - 直接切换section（带边界检查）
+        if (isScrollingDown && currentSection < sections.length - 1) {
+            navigateNext();
+        } else if (isScrollingUp && currentSection > 0) {
+            navigatePrev();
         }
-    }, [isScrolling, scrollMode, isContentOverflowing, isHomePage, currentSection, sections.length, navigateNext, navigatePrev]);
+    }, [isScrolling, scrollMode, isContentOverflowing, isHomePage, currentSection, sections.length, 
+        navigateNext, navigatePrev, currentSectionConfig, isPreviewingScroll,
+        setSectionScrollPositions, setIsPreviewingScroll, setPreviewOffset]);
 
     // 键盘事件处理（混合滚动模式优化）
     const handleKeyDown = useCallback((event) => {
@@ -248,28 +370,56 @@ const SmartScrollManager = () => {
         resetScrollState();
     }, [currentSection, resetScrollState]);
 
-    // 监听内容变化，检测溢出
+    // 监听内容变化，检测溢出 - 增加多次检测和稳定性保证
     useEffect(() => {
-        const checkTimer = setTimeout(() => {
+        // 立即检测一次
+        checkContentOverflow();
+        
+        // 延迟检测，确保内容已完全渲染
+        const checkTimer1 = setTimeout(() => {
             checkContentOverflow();
-        }, 100); // 延迟检测，确保内容已渲染
+        }, 150);
+        
+        // 再次延迟检测，确保图片等资源加载完成
+        const checkTimer2 = setTimeout(() => {
+            checkContentOverflow();
+        }, 500);
+        
+        // 最后一次检测，确保动态内容都已加载
+        const checkTimer3 = setTimeout(() => {
+            checkContentOverflow();
+        }, 1000);
 
-        return () => clearTimeout(checkTimer);
+        return () => {
+            clearTimeout(checkTimer1);
+            clearTimeout(checkTimer2);
+            clearTimeout(checkTimer3);
+        };
     }, [currentSection, checkContentOverflow]);
 
-    // 添加事件监听器
+    // 添加事件监听器 - 包含窗口大小变化监听
     useEffect(() => {
         const container = containerRef.current;
+        
+        // 窗口大小变化时重新检测内容溢出
+        const handleResize = () => {
+            setTimeout(() => {
+                checkContentOverflow();
+            }, 100);
+        };
+        
         if (container) {
             container.addEventListener('wheel', handleWheel, { passive: false });
             document.addEventListener('keydown', handleKeyDown);
+            window.addEventListener('resize', handleResize);
 
             return () => {
                 container.removeEventListener('wheel', handleWheel);
                 document.removeEventListener('keydown', handleKeyDown);
+                window.removeEventListener('resize', handleResize);
             };
         }
-    }, [handleWheel, handleKeyDown]);
+    }, [handleWheel, handleKeyDown, checkContentOverflow]);
 
     // 渲染当前栏目组件
     const renderCurrentSection = () => {
@@ -313,7 +463,7 @@ const SmartScrollManager = () => {
                 />
             )}
 
-            {/* 当前栏目内容 - 混合滚动容器 */}
+            {/* 当前栏目内容 - 混合滚动容器，支持预览动画 */}
             <div 
                 ref={contentRef}
                 className={`absolute inset-0 z-20 smooth-scroll scroll-mode-transition ${
@@ -323,6 +473,13 @@ const SmartScrollManager = () => {
                             ? 'scroll-mode-auto overflow-y-auto' 
                             : 'overflow-hidden'
                 }`}
+                style={{
+                    transform: isPreviewingScroll ? `translateY(${previewOffset}px)` : 'translateY(0)',
+                    transition: isPreviewingScroll 
+                        ? 'none' 
+                        : 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)', // iOS式回弹动画
+                    willChange: 'transform'
+                }}
             >
                 {renderCurrentSection()}
             </div>

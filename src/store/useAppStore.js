@@ -652,11 +652,20 @@ export const useAppStore = create(
         return get().projects.locations.filter(project => project.status === status);
       },
 
-      // 导航到指定区块
+      // 导航到指定区块 - 增加方向跟踪
       navigateToSection: (index) => {
+        const { currentSection, sections } = get();
+        const direction = index > currentSection ? 'from-prev' : 'from-next';
+        
+        // 更新当前section的配置，包含导航方向信息
+        const updatedSections = sections.map((section, i) => 
+          i === index ? { ...section, previousDirection: direction } : section
+        );
+        
         set({ 
           currentSection: index,
-          isScrolling: true 
+          isScrolling: true,
+          sections: updatedSections
         });
         // 设置延迟重置滚动状态
         setTimeout(() => set({ isScrolling: false }), 1000);
