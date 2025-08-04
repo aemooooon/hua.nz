@@ -45,6 +45,10 @@ export class EffectChaos {
         this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5)); // 限制像素比
         this.renderer.setSize(this.canvas.width, this.canvas.height, false);
 
+        // 添加WebGL上下文丢失/恢复处理（可选，减少控制台警告）
+        this.canvas.addEventListener('webglcontextlost', this.onContextLost.bind(this));
+        this.canvas.addEventListener('webglcontextrestored', this.onContextRestored.bind(this));
+
         // 创建Galaxy
         this.createGalaxy();
 
@@ -207,6 +211,27 @@ export class EffectChaos {
         this.renderer.setSize(newWidth, newHeight, false);
     }
 
+    onContextLost(event) {
+        event.preventDefault();
+        console.warn('WebGL context lost. Attempting to restore...');
+        
+        // 停止动画
+        this.stop();
+        
+        // 清理资源
+        this.cleanup();
+    }
+
+    onContextRestored() {
+        console.log('WebGL context restored. Reinitializing...');
+        
+        // 重新初始化渲染器和场景
+        this.init();
+        
+        // 重新开始动画
+        this.start();
+    }
+
     stop() {
         console.log('EffectChaos: Stopping and cleaning up resources...');
         
@@ -282,6 +307,54 @@ export class EffectChaos {
         window.removeEventListener("resize", this.onResize.bind(this));
         
         console.log('EffectChaos: Resource cleanup completed');
+    }
+
+    cleanup() {
+        // 清理网格几何体和材质
+        if (this.mesh) {
+            this.scene.remove(this.mesh);
+            if (this.mesh.geometry) {
+                this.mesh.geometry.dispose();
+            }
+            if (this.mesh.material) {
+                this.mesh.material.dispose();
+            }
+            this.mesh = null;
+        }
+        
+        // 清理几何体
+        if (this.geometry) {
+            this.geometry.dispose();
+            this.geometry = null;
+        }
+        
+        // 清理材质
+        if (this.material) {
+            this.material.dispose();
+            this.material = null;
+        }
+        
+        // 清理纹理
+        if (this.texture) {
+            this.texture.dispose();
+            this.texture = null;
+        }
+        
+        // 清理场景中的所有对象
+        while (this.scene.children.length > 0) {
+            const child = this.scene.children[0];
+            this.scene.remove(child);
+            
+            // 递归清理几何体和材质
+            if (child.geometry) child.geometry.dispose();
+            if (child.material) {
+                if (Array.isArray(child.material)) {
+                    child.material.forEach(material => material.dispose());
+                } else {
+                    child.material.dispose();
+                }
+            }
+        }
     }
 
     destroy() {
