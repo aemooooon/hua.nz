@@ -218,11 +218,7 @@ export class EffectFuse {
                     this.positionBuffer = null;
                 }
                 
-                // 清理 WebGL 上下文
-                const ext = this.gl.getExtension('WEBGL_lose_context');
-                if (ext) {
-                    ext.loseContext();
-                }
+                // 不强制丢失上下文，让它自然清理
             } catch (error) {
                 console.error('Error cleaning up WebGL resources:', error);
             }

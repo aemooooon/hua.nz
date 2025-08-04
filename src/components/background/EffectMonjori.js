@@ -106,9 +106,24 @@ export function EffectMonjori(canvas, params = {}) {
 
     const stop = () => {
         if (animationFrameId) cancelAnimationFrame(animationFrameId);
+        
+        // 清理Three.js资源
+        if (scene) {
+            scene.children.forEach(child => {
+                if (child.geometry) child.geometry.dispose();
+                if (child.material) {
+                    if (Array.isArray(child.material)) {
+                        child.material.forEach(material => material.dispose());
+                    } else {
+                        child.material.dispose();
+                    }
+                }
+            });
+        }
+        
         if (renderer) {
             renderer.dispose();
-            renderer.forceContextLoss();
+            // 不强制丢失上下文，让它自然清理
             if (canvas?.parentNode) {
                 canvas.parentNode.removeChild(canvas);
             }

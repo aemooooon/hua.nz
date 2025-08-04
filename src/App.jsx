@@ -3,12 +3,14 @@ import SmartScrollManager from "./components/features/SmartScrollManager";
 import ThemeLanguageToggle from "./components/ui/ThemeLanguageToggle";
 import SmartDirectionalCursor from "./components/features/SmartDirectionalCursor";
 import ErrorBoundary from "./components/ui/ErrorBoundary";
-import MemoryMonitor from "./utils/MemoryMonitor";
+import DeveloperPanel from "./components/performancepanel/DeveloperPanel";
+import { useDeveloperPanel } from "./hooks/useDeveloperPanel";
 import { useAppStore } from "./store/useAppStore";
 
 const App = () => {
     const { theme, getCurrentSection } = useAppStore();
     const currentSection = getCurrentSection();
+    const developerPanel = useDeveloperPanel();
     
     // 只在首页显示控制按钮
     const isHomePage = currentSection?.id === 'home';
@@ -30,8 +32,13 @@ const App = () => {
                 {/* 主题和语言切换 - 只在首页显示，有自己的显示时机控制 */}
                 {isHomePage && <ThemeLanguageToggle />}
 
-                {/* 内存监控器 - 开发调试用 */}
-                <MemoryMonitor />
+                {/* 统一开发者面板 - 仅在开发模式下可用，通过 Ctrl+M 切换 */}
+                {developerPanel.isDev && (
+                    <DeveloperPanel 
+                        visible={developerPanel.isVisible}
+                        onToggle={developerPanel.toggle}
+                    />
+                )}
             </div>
         </ErrorBoundary>
     );

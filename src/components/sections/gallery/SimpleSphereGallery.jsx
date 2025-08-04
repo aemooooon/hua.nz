@@ -1,6 +1,7 @@
-import { useRef, useEffect, useState, useCallback } from 'react';
+import { useRef, useEffect, useState, useCallback, useMemo } from 'react';
 import * as THREE from 'three';
 import PropTypes from 'prop-types';
+import webglResourceManager from '../../../utils/WebGLResourceManager';
 
 const SimpleSphereGallery = ({ items, onItemClick, isVisible }) => {
     const mountRef = useRef(null);
@@ -317,6 +318,12 @@ const SimpleSphereGallery = ({ items, onItemClick, isVisible }) => {
         animate();
         setIsLoading(false);
 
+        // 注册WebGL资源到资源管理器
+        const resourceId = webglResourceManager.registerResources('SimpleSphereGallery', {
+            renderer,
+            scene
+        });
+
         // 清理函数
         return () => {
             if (animationIdRef.current) {
@@ -338,21 +345,8 @@ const SimpleSphereGallery = ({ items, onItemClick, isVisible }) => {
             // 清理 resize 事件监听
             window.removeEventListener('resize', handleResize);
 
-            // 清理Three.js资源
-            frameGroupsRef.current.forEach(group => {
-                group.children.forEach(child => {
-                    if (child.geometry) child.geometry.dispose();
-                    if (child.material) {
-                        if (Array.isArray(child.material)) {
-                            child.material.forEach(material => material.dispose());
-                        } else {
-                            child.material.dispose();
-                        }
-                    }
-                });
-            });
-
-            renderer.dispose();
+            // 使用资源管理器清理WebGL资源
+            webglResourceManager.cleanup(resourceId);
         };
     }, [isVisible, items, createSpherePositions, createImageFrame, handleMouseDown, handleMouseMove, handleMouseUp, handleClick, handleResize, animate]);
 

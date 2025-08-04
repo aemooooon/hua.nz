@@ -5,6 +5,7 @@ import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.j
 import { useAppStore } from '../../../store/useAppStore';
 import { gsap } from 'gsap';
 import texturePreloader from '../../../utils/texturePreloader';
+import webglResourceManager from '../../../utils/WebGLResourceManager';
 
 const HeroCube = ({ 
     enableOpeningAnimation = false,
@@ -713,6 +714,15 @@ const HeroCube = ({
             }, 100);
         }
         
+        // 注册WebGL资源到资源管理器
+        const resourceId = webglResourceManager.registerResources('HeroCube', {
+            renderer,
+            scene,
+            geometry,
+            materials,
+            textures: materials.map(mat => mat.map).filter(Boolean)
+        });
+        
         animate();
 
         // 清理函数
@@ -729,20 +739,8 @@ const HeroCube = ({
             // 移除事件监听器
             window.removeEventListener('mousemove', handleGlobalMouseMove);
             
-            geometry.dispose();
-            materials.forEach(material => {
-                if (material.map) {
-                    // 如果是视频纹理，停止视频播放
-                    if (material.map.image && material.map.image.tagName === 'VIDEO') {
-                        material.map.image.pause();
-                        material.map.image.src = '';
-                        material.map.image.load();
-                    }
-                    material.map.dispose();
-                }
-                material.dispose();
-            });
-            renderer.dispose();
+            // 使用资源管理器清理
+            webglResourceManager.cleanup(resourceId);
         };
     }, [faces, canvasSize, enableOpeningAnimation, onAnimationComplete, onReady, texturesReady]);
 

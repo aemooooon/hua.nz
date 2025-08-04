@@ -148,18 +148,40 @@ const EffectPixelDistortion = ({ src, style = {} }) => {
         );
 
         window.addEventListener("resize", handleResize);
-        containerRef.current.addEventListener("mousemove", handleMouseMove);
-        containerRef.current.addEventListener("mouseenter", handleMouseEnter);
-        containerRef.current.addEventListener("mouseleave", handleMouseLeave);
+        const container = containerRef.current;
+        if (container) {
+            container.addEventListener("mousemove", handleMouseMove);
+            container.addEventListener("mouseenter", handleMouseEnter);
+            container.addEventListener("mouseleave", handleMouseLeave);
+        }
 
         return () => {
             if (animationFrameId) cancelAnimationFrame(animationFrameId);
+            
+            // 清理Three.js资源
+            if (scene) {
+                scene.children.forEach(child => {
+                    if (child.geometry) child.geometry.dispose();
+                    if (child.material) {
+                        if (Array.isArray(child.material)) {
+                            child.material.forEach(material => {
+                                if (material.map) material.map.dispose();
+                                material.dispose();
+                            });
+                        } else {
+                            if (child.material.map) child.material.map.dispose();
+                            child.material.dispose();
+                        }
+                    }
+                });
+            }
+            
             if (renderer) renderer.dispose();
             window.removeEventListener("resize", handleResize);
-            if (containerRef.current) {
-                containerRef.current.removeEventListener("mousemove", handleMouseMove);
-                containerRef.current.removeEventListener("mouseenter", handleMouseEnter);
-                containerRef.current.removeEventListener("mouseleave", handleMouseLeave);
+            if (container) {
+                container.removeEventListener("mousemove", handleMouseMove);
+                container.removeEventListener("mouseenter", handleMouseEnter);
+                container.removeEventListener("mouseleave", handleMouseLeave);
             }
         };
     }, [src]);

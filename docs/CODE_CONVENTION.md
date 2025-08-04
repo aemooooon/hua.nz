@@ -37,11 +37,12 @@ src/
 │   ├── ui/             # 通用UI组件 (ErrorBoundary, GlobalLoadingIndicator, ThemeLanguageToggle)
 │   ├── features/       # 特殊功能组件 (SmartDirectionalCursor, SmartScrollManager)
 │   ├── sections/       # 页面区块组件 (home/, about/, gallery/, project/, education/, contact/)
-│   └── background/     # 背景效果组件 (BackgroundCanvas, EffectAvatar)
+│   ├── background/     # 背景效果组件 (BackgroundCanvas, EffectAvatar)
+│   └── performancepanel/ # 性能监控面板组件 (DeveloperPanel)
 ├── data/               # 静态数据文件 (hua_icon_base64.js, 配置文件)
-├── hooks/              # 自定义React Hooks (useImagePreloader)
+├── hooks/              # 自定义React Hooks (useImagePreloader, useDeveloperPanel)
 ├── store/              # 状态管理 (useAppStore, galleryData, locations)
-├── utils/              # 工具函数和调试工具 (MemoryMonitor, performance, PerformanceOptimizer)
+├── utils/              # 工具函数和调试工具 (WebGLResourceManager, performance, PerformanceOptimizer)
 ├── styles/             # 样式文件 (index.css, OpeningAnimations.css, SmartScroll.css)
 ├── workers/            # Web Workers (particleWorker.js)
 └── assets/             # 静态资源 (images/, fonts/)
@@ -140,6 +141,31 @@ sections/
 **命名规范**: 
 - 效果组件: `Effect` + 功能名称
 - 管理组件: 功能名称 + `Canvas` 或 `Manager`
+
+### 🛠️ `components/performancepanel/`
+**用途**: 性能监控面板组件
+**特点**:
+- 仅在开发模式下可用
+- 用于调试和性能监控
+- 不会打包到生产版本中
+
+**包含文件**:
+- `DeveloperPanel.jsx` - 统一性能监控面板
+
+**功能说明**:
+- **内存监控**: JS堆内存使用情况、内存限制等
+- **WebGL监控**: WebGL资源状态、上下文状态等  
+- **性能监控**: FPS、性能模式、加载时间等
+- **系统信息**: CPU核心数、设备内存、网络类型等
+
+**使用方式**:
+- 按 `Ctrl+M` (Windows) 或 `Cmd+M` (Mac) 切换显示
+- 按 `Escape` 键关闭面板
+- 支持面板折叠/展开
+- 支持多标签页切换
+
+**命名规范**: 功能名称 + `Panel` 后缀
+**示例**: `DebugPanel.jsx`, `PerformancePanel.jsx`
 
 ## 📊 其他文件夹规范
 

@@ -6,6 +6,7 @@ import EffectHeartBeats from './EffectHeartBeats';
 import { EffectLorenzAttractor } from './EffectLorenzAttractor';
 import { EffectChaos } from './EffectChaos';
 import { debounce } from 'lodash';
+import webglResourceManager from '../../utils/WebGLResourceManager';
 
 const BackgroundCanvas = ({ effectType = 'effectfuse' }) => {
     const canvasRef = useRef(null);
@@ -253,6 +254,9 @@ const BackgroundCanvas = ({ effectType = 'effectfuse' }) => {
                     effectInstanceRef.current = null;
                 }
             }
+            
+            // 使用资源管理器清理背景效果相关的资源
+            webglResourceManager.cleanupByComponent('BackgroundCanvas');
             
             // 强制清理画布
             if (canvas && document.body.contains(canvas)) {
