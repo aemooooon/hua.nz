@@ -223,10 +223,10 @@ const HeroCube = ({
                     const switchToVideoTexture = () => {
                         try {
                             const videoTexture = new THREE.VideoTexture(video);
-                            videoTexture.minFilter = THREE.LinearMipmapLinearFilter;
+                            videoTexture.minFilter = THREE.LinearFilter; // 视频纹理不能使用mipmap
                             videoTexture.magFilter = THREE.LinearFilter;
                             videoTexture.format = THREE.RGBAFormat;
-                            videoTexture.generateMipmaps = true;
+                            videoTexture.generateMipmaps = false; // 视频纹理禁用mipmap
                             videoTexture.flipY = false;
                             videoTexture.colorSpace = THREE.SRGBColorSpace;
                             

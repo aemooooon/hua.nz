@@ -254,15 +254,7 @@ const BackgroundCanvas = ({ effectType = 'effectfuse' }) => {
             // 强制清理画布
             if (canvas && document.body.contains(canvas)) {
                 try {
-                    // 清理canvas上下文
-                    const context = canvas.getContext('webgl') || canvas.getContext('webgl2') || canvas.getContext('2d');
-                    if (context) {
-                        if (context.getExtension && context.getExtension('WEBGL_lose_context')) {
-                            context.getExtension('WEBGL_lose_context').loseContext();
-                        }
-                    }
-                    
-                    // 移除canvas
+                    // 移除canvas（不强制丢失上下文，让渲染器自然清理）
                     document.body.removeChild(canvas);
                 } catch (error) {
                     console.error('Error removing canvas:', error);

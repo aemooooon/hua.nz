@@ -213,11 +213,11 @@ export class EffectChaos {
         event.preventDefault();
         console.warn('WebGL context lost. Attempting to restore...');
         
-        // 停止动画
-        this.stop();
+        // 停止动画循环但不清理资源（避免在上下文丢失时访问null对象）
+        this.animationId = null;
         
-        // 清理资源
-        this.cleanup();
+        // 标记上下文已丢失
+        this.contextLost = true;
     }
 
     onContextRestored() {
@@ -252,7 +252,7 @@ export class EffectChaos {
         }
         
         // 清理网格几何体和材质
-        if (this.mesh) {
+        if (this.mesh && this.scene) {
             this.scene.remove(this.mesh);
             if (this.mesh.geometry) {
                 this.mesh.geometry.dispose();
@@ -282,17 +282,19 @@ export class EffectChaos {
         }
         
         // 清理场景中的所有对象
-        while (this.scene.children.length > 0) {
-            const child = this.scene.children[0];
-            this.scene.remove(child);
-            
-            // 递归清理几何体和材质
-            if (child.geometry) child.geometry.dispose();
-            if (child.material) {
-                if (Array.isArray(child.material)) {
-                    child.material.forEach(material => material.dispose());
-                } else {
-                    child.material.dispose();
+        if (this.scene && this.scene.children) {
+            while (this.scene.children.length > 0) {
+                const child = this.scene.children[0];
+                this.scene.remove(child);
+                
+                // 递归清理几何体和材质
+                if (child.geometry) child.geometry.dispose();
+                if (child.material) {
+                    if (Array.isArray(child.material)) {
+                        child.material.forEach(material => material.dispose());
+                    } else {
+                        child.material.dispose();
+                    }
                 }
             }
         }

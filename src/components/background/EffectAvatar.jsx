@@ -133,12 +133,14 @@ const EffectAvatar = ({ imageSrc, hoverImageSrc }) => {
 
     // 鼠标离开时隐藏图片
     const handleMouseLeave = () => {
-        gsap.to(hoverImgRef.current, {
-            opacity: 0,
-            duration: 0.8,
-            ease: "elastic.out",
-            onComplete: () => setIsHovered(false), // 动画完成后隐藏图片
-        });
+        if (hoverImgRef.current) {
+            gsap.to(hoverImgRef.current, {
+                opacity: 0,
+                duration: 0.8,
+                ease: "elastic.out",
+                onComplete: () => setIsHovered(false), // 动画完成后隐藏图片
+            });
+        }
     };
 
     return (
