@@ -1,6 +1,6 @@
 import { Suspense, lazy, useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import imageSrc from '../../hua_icon_base64';
+import imageSrc from '../../../data/hua_icon_base64';
 import hoverImageSrc from '../../../assets/images/hua_500w1.jpg';
 import { FaSpinner } from 'react-icons/fa';
 import { useAppStore } from '../../../store/useAppStore';

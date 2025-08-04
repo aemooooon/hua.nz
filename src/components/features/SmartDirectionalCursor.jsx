@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback, useRef } from 'react';
-import { useAppStore } from '../store/useAppStore';
+import { useAppStore } from '../../store/useAppStore';
 
 const SmartDirectionalCursor = () => {
     const [cursorPosition, setCursorPosition] = useState({ x: 0, y: 0 });

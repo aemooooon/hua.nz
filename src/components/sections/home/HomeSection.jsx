@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import { useState, useEffect, useCallback } from 'react';
 import { useAppStore } from '../../../store/useAppStore';
 import HeroCube from './HeroCube';
-import GlobalLoadingIndicator from '../../GlobalLoadingIndicator';
+import GlobalLoadingIndicator from '../../ui/GlobalLoadingIndicator';
 import texturePreloader from '../../../utils/texturePreloader';
 import '../../../styles/OpeningAnimations.css';
 

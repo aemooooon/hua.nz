@@ -5,7 +5,7 @@ import SimpleSphereGallery from './SimpleSphereGallery';
 import PhotoSwipeGallery from './PhotoSwipeGallery';
 import { useImagePreloader } from '../../../hooks/useImagePreloader';
 import BackgroundCanvas from '../../background/BackgroundCanvas';
-import GlobalLoadingIndicator from '../../GlobalLoadingIndicator';
+import GlobalLoadingIndicator from '../../ui/GlobalLoadingIndicator';
 
 const GallerySection = ({ language }) => {
     const [allItems, setAllItems] = useState([]);

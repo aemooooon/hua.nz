@@ -1,16 +1,16 @@
 import { useEffect, useCallback, useRef, useState } from 'react';
-import { useAppStore } from '../store/useAppStore';
-import BackgroundCanvas from './background/BackgroundCanvas';
-import '../styles/SmartScroll.css';
+import { useAppStore } from '../../store/useAppStore';
+import BackgroundCanvas from '../background/BackgroundCanvas';
+import '../../styles/SmartScroll.css';
 
 // 懒加载各个栏目组件
 import { lazy, Suspense } from 'react';
-const HomeSection = lazy(() => import('./sections/home/HomeSection'));
-const ProjectSection = lazy(() => import('./sections/project/ProjectSection'));
-const GallerySection = lazy(() => import('./sections/gallery/GallerySection'));
-const EducationSection = lazy(() => import('./sections/education/EducationSection'));
-const ContactSection = lazy(() => import('./sections/contact/ContactSection'));
-const AboutSection = lazy(() => import('./sections/about/AboutSection'));
+const HomeSection = lazy(() => import('../sections/home/HomeSection'));
+const ProjectSection = lazy(() => import('../sections/project/ProjectSection'));
+const GallerySection = lazy(() => import('../sections/gallery/GallerySection'));
+const EducationSection = lazy(() => import('../sections/education/EducationSection'));
+const ContactSection = lazy(() => import('../sections/contact/ContactSection'));
+const AboutSection = lazy(() => import('../sections/about/AboutSection'));
 
 const SmartScrollManager = () => {
     const { 

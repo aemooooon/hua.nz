@@ -1,8 +1,8 @@
 import { useEffect } from "react";
-import SmartScrollManager from "./components/SmartScrollManager";
-import ThemeLanguageToggle from "./components/ThemeLanguageToggle";
-import SmartDirectionalCursor from "./components/SmartDirectionalCursor";
-import ErrorBoundary from "./components/ErrorBoundary";
+import SmartScrollManager from "./components/features/SmartScrollManager";
+import ThemeLanguageToggle from "./components/ui/ThemeLanguageToggle";
+import SmartDirectionalCursor from "./components/features/SmartDirectionalCursor";
+import ErrorBoundary from "./components/ui/ErrorBoundary";
 import MemoryMonitor from "./utils/MemoryMonitor";
 import { useAppStore } from "./store/useAppStore";
 
