@@ -1,5 +1,26 @@
 # 📋 代码规范 (Code Convention)
 
+## 🏗️ 项目概述
+
+这是一个现代化的React + Three.js个人作品集网站，采用以下技术栈：
+
+- **React 18** - 用户界面框架
+- **Three.js** - 3D图形渲染
+- **Vite** - 构建工具
+- **Zustand** - 状态管理
+- **Tailwind CSS** - 样式框架
+- **GSAP** - 动画库
+
+### 🎯 项目特性
+
+- 3D交互式背景效果
+- 响应式设计
+- 多语言支持 (中文/英文)
+- 主题切换 (明亮/暗黑)
+- 智能滚动管理
+- 性能监控和优化
+- Web Workers 支持
+
 ## 📁 文件结构规范
 
 ### 🎯 整体架构原则
@@ -8,23 +29,49 @@
 - **易于维护**：相关功能聚集在一起
 - **符合React最佳实践**
 
-### 📂 文件夹结构
+### 📂 完整文件夹结构
 
-```
+```text
 src/
 ├── components/          # React组件
-│   ├── ui/             # 通用UI组件
-│   ├── features/       # 特殊功能组件
-│   ├── sections/       # 页面区块组件
-│   └── background/     # 背景效果组件
-├── data/               # 静态数据文件
-├── hooks/              # 自定义React Hooks
-├── store/              # 状态管理
-├── utils/              # 工具函数和调试工具
-├── styles/             # 样式文件
-├── workers/            # Web Workers
-└── assets/             # 静态资源
+│   ├── ui/             # 通用UI组件 (ErrorBoundary, GlobalLoadingIndicator, ThemeLanguageToggle)
+│   ├── features/       # 特殊功能组件 (SmartDirectionalCursor, SmartScrollManager)
+│   ├── sections/       # 页面区块组件 (home/, about/, gallery/, project/, education/, contact/)
+│   └── background/     # 背景效果组件 (BackgroundCanvas, EffectAvatar)
+├── data/               # 静态数据文件 (hua_icon_base64.js, 配置文件)
+├── hooks/              # 自定义React Hooks (useImagePreloader)
+├── store/              # 状态管理 (useAppStore, galleryData, locations)
+├── utils/              # 工具函数和调试工具 (MemoryMonitor, performance, PerformanceOptimizer)
+├── styles/             # 样式文件 (index.css, OpeningAnimations.css, SmartScroll.css)
+├── workers/            # Web Workers (particleWorker.js)
+└── assets/             # 静态资源 (images/, fonts/)
+
+docs/                   # 📚 项目文档
+├── CODE_CONVENTION.md  # 代码规范 (本文件)
+└── ...                 # 其他项目文档
+
+public/                 # 静态资源
+├── *.jpg, *.png        # 图片资源
+├── favicon.ico         # 网站图标
+├── particleWorker.js   # Public Worker 文件
+└── ...                 # 其他静态文件
 ```
+
+## 📚 文档管理规范
+
+### 📍 文档存储位置
+
+- **所有项目文档必须存储在 `docs/` 文件夹下**
+- `README.md` 保留在项目根目录作为主入口文档
+- 技术文档、API文档、设计文档等都应放在 `docs/` 下
+
+### 📝 文档类型和命名
+
+- `CODE_CONVENTION.md` - 代码规范文档
+- `API_REFERENCE.md` - API参考文档
+- `DEPLOYMENT.md` - 部署说明文档
+- `CHANGELOG.md` - 更新日志
+- `TROUBLESHOOTING.md` - 问题排查指南
 
 ## 🧩 组件分类规范
 
@@ -118,36 +165,19 @@ sections/
 **包含**: Zustand stores, 全局状态定义
 **示例**: `useAppStore.js`, `galleryData.js`
 
-## 📝 命名规范
+## 📚 文档管理规范
 
-### 文件命名
-- **组件文件**: PascalCase `.jsx`
-- **工具文件**: camelCase `.js`
-- **Hook文件**: camelCase, `use` 前缀 `.js`
-- **样式文件**: camelCase `.css`
-- **数据文件**: camelCase 或 snake_case `.js`
+### 📍 文档存储位置
+- **所有项目文档必须存储在 `docs/` 文件夹下**
+- `README.md` 保留在项目根目录作为主入口文档
+- 技术文档、API文档、设计文档等都应放在 `docs/` 下
 
-### 导入规范
-```jsx
-// ✅ 推荐: 按分类分组导入
-import React, { useState, useEffect } from 'react';
-
-import ErrorBoundary from '../ui/ErrorBoundary';
-import LoadingSpinner from '../ui/LoadingSpinner';
-
-import { useAppStore } from '../../store/useAppStore';
-import { texturePreloader } from '../../utils/texturePreloader';
-
-// ❌ 避免: 混乱的导入顺序
-import { useAppStore } from '../../store/useAppStore';
-import React, { useState } from 'react';
-import ErrorBoundary from '../ui/ErrorBoundary';
-```
-
-### 相对路径规范
-- 同级文件: `./filename`
-- 上级文件夹: `../foldername/filename`
-- 跨多级: 建议使用绝对路径或路径别名
+### 📝 文档类型和命名
+- `CODE_CONVENTION.md` - 代码规范文档
+- `API_REFERENCE.md` - API参考文档
+- `DEPLOYMENT.md` - 部署说明文档
+- `CHANGELOG.md` - 更新日志
+- `TROUBLESHOOTING.md` - 问题排查指南
 
 ## 🔄 文件移动规范
 
