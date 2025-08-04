@@ -13,14 +13,16 @@ class WebGLResourceManager {
      * 注册一个WebGL资源组（渲染器、场景、几何体、材质等）
      * @param {string} componentId - 组件标识符
      * @param {Object} resources - 资源对象
+     * @param {Object} options - 选项 { persistent: boolean }
      * @returns {string} - 资源ID
      */
-    registerResources(componentId, resources) {
+    registerResources(componentId, resources, options = {}) {
         const resourceId = `${componentId}_${this.resourceCounter++}`;
         this.activeResources.set(resourceId, {
             componentId,
             resources,
-            timestamp: Date.now()
+            timestamp: Date.now(),
+            persistent: options.persistent || false // 是否为持久资源，不会被自动清理
         });
         
         if (import.meta.env.DEV) {
@@ -218,8 +220,19 @@ class WebGLResourceManager {
         const resourceCount = this.activeResources.size;
         const memoryInfo = {
             activeResourceGroups: resourceCount,
-            timestamp: Date.now()
+            timestamp: Date.now(),
+            persistentResources: 0,
+            temporaryResources: 0
         };
+
+        // 统计持久和临时资源
+        for (const [, resourceData] of this.activeResources) {
+            if (resourceData.persistent) {
+                memoryInfo.persistentResources++;
+            } else {
+                memoryInfo.temporaryResources++;
+            }
+        }
 
         // 如果支持，获取WebGL内存信息
         if (typeof window !== 'undefined' && window.performance && window.performance.memory) {
@@ -227,7 +240,42 @@ class WebGLResourceManager {
             memoryInfo.jsHeapLimit = Math.round(window.performance.memory.totalJSHeapSize / 1024 / 1024);
         }
 
+        // 添加资源类型统计
+        memoryInfo.resourceStats = this.getResourceTypeStats();
+
         return memoryInfo;
+    }
+
+    /**
+     * 获取资源类型统计
+     * @returns {Object} 资源类型统计
+     */
+    getResourceTypeStats() {
+        const stats = {
+            renderers: 0,
+            scenes: 0,
+            geometries: 0,
+            materials: 0,
+            textures: 0
+        };
+
+        for (const [, resourceData] of this.activeResources) {
+            const resources = resourceData.resources;
+            
+            if (resources.renderer) stats.renderers++;
+            if (resources.scene) stats.scenes++;
+            if (resources.geometry) {
+                stats.geometries += Array.isArray(resources.geometry) ? resources.geometry.length : 1;
+            }
+            if (resources.materials) {
+                stats.materials += Array.isArray(resources.materials) ? resources.materials.length : 1;
+            }
+            if (resources.textures) {
+                stats.textures += Array.isArray(resources.textures) ? resources.textures.length : 1;
+            }
+        }
+
+        return stats;
     }
 
     /**
@@ -239,6 +287,11 @@ class WebGLResourceManager {
         const toDelete = [];
 
         for (const [resourceId, resourceData] of this.activeResources) {
+            // 跳过持久资源的清理
+            if (resourceData.persistent) {
+                continue;
+            }
+            
             if (now - resourceData.timestamp > maxAge) {
                 this.disposeResources(resourceData.resources);
                 toDelete.push(resourceId);

@@ -1,4 +1,5 @@
 import * as THREE from "three";
+import webglResourceManager from "../../utils/WebGLResourceManager";
 
 export class EffectChaos {
     constructor(canvas, params = {}) {
@@ -10,6 +11,7 @@ export class EffectChaos {
         this.mesh = null;
         this.animationFrameId = null;
         this.time = 0;
+        this.resourceId = null;
 
         // 参考早期EffectGalaxy的参数 - 更强的视觉效果
         this.particleCount = params.particleCount || 8000; // 增加粒子数量
@@ -44,6 +46,13 @@ export class EffectChaos {
         });
         this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5)); // 限制像素比
         this.renderer.setSize(this.canvas.width, this.canvas.height, false);
+
+        // 注册WebGL资源
+        this.resourceId = webglResourceManager.registerResources('EffectChaos', {
+            renderer: this.renderer,
+            scene: this.scene,
+            camera: this.camera
+        });
 
         // 添加WebGL上下文丢失/恢复处理（可选，减少控制台警告）
         this.canvas.addEventListener('webglcontextlost', this.onContextLost.bind(this));
@@ -352,5 +361,11 @@ export class EffectChaos {
 
     destroy() {
         this.stop();
+        
+        // 清理WebGL资源管理器中的资源
+        if (this.resourceId) {
+            webglResourceManager.cleanup(this.resourceId);
+            this.resourceId = null;
+        }
     }
 }

@@ -1,7 +1,8 @@
 import * as THREE from "three";
+import webglResourceManager from "../../utils/WebGLResourceManager";
 
 export function EffectMonjori(canvas, params = {}) {
-    let renderer, scene, camera, uniforms, animationFrameId;
+    let renderer, scene, camera, uniforms, animationFrameId, resourceId;
     let lastFrameTime = 0;
     const fps = 30;
     const frameInterval = 1000 / fps;
@@ -86,6 +87,16 @@ export function EffectMonjori(canvas, params = {}) {
         renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
         renderer.setSize(window.innerWidth, window.innerHeight);
 
+        // 注册WebGL资源
+        resourceId = webglResourceManager.registerResources('EffectMonjori', {
+            renderer,
+            scene,
+            camera,
+            geometry,
+            material,
+            mesh
+        });
+
         window.addEventListener("resize", onWindowResize);
 
         animate();
@@ -107,6 +118,11 @@ export function EffectMonjori(canvas, params = {}) {
 
     const stop = () => {
         if (animationFrameId) cancelAnimationFrame(animationFrameId);
+        
+        // 清理WebGL资源管理器中的资源
+        if (resourceId) {
+            webglResourceManager.cleanup(resourceId);
+        }
         
         // 清理Three.js资源
         if (scene) {

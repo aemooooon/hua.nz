@@ -5,7 +5,7 @@ import { useState, useEffect, useCallback } from 'react';
  * Only available in development mode
  */
 export const useDeveloperPanel = () => {
-    const [isVisible, setIsVisible] = useState(false);
+    const [isVisible, setIsVisible] = useState(import.meta.env.DEV); // 开发环境下默认可见
     const isDev = import.meta.env.DEV;
 
     // Toggle function

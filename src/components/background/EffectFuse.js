@@ -1,3 +1,5 @@
+import webglResourceManager from "../../utils/WebGLResourceManager";
+
 export class EffectFuse {
     constructor(canvas, params = {}) {
 
@@ -8,6 +10,12 @@ export class EffectFuse {
             console.error('EffectFuse: Unable to get WebGL context');
             throw new Error('WebGL not supported');
         }
+        
+        // 注册WebGL资源（原生WebGL上下文）
+        this.resourceId = webglResourceManager.registerResources('EffectFuse', {
+            gl: this.gl,
+            canvas: this.canvas
+        });
         
         // 设置默认参数 - 使用原始参数值
         this.params = {
@@ -204,6 +212,12 @@ export class EffectFuse {
         if (this.animationFrameId) {
             cancelAnimationFrame(this.animationFrameId);
             this.animationFrameId = null;
+        }
+
+        // 清理WebGL资源管理器中的资源
+        if (this.resourceId) {
+            webglResourceManager.cleanup(this.resourceId);
+            this.resourceId = null;
         }
 
         // 释放 WebGL 资源

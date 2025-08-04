@@ -3,6 +3,7 @@ import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
+import webglResourceManager from "../../utils/WebGLResourceManager";
 
 export class EffectLorenzAttractor {
     constructor(canvas, params = {}) {
@@ -14,6 +15,7 @@ export class EffectLorenzAttractor {
         this.trailParticles = [];
         this.animationFrameId = null;
         this.time = 0;
+        this.resourceId = null;
 
         // 优化的 Lorenz 参数 - 更经典的设置
         this.sigma = 10;
@@ -72,6 +74,13 @@ export class EffectLorenzAttractor {
         // 不使用 setPixelRatio，直接设置渲染尺寸
         this.renderer.setSize(this.canvas.width, this.canvas.height, false);
         this.renderer.setClearColor(0x000a15, 1.0); // 与场景背景一致
+        
+        // 注册WebGL资源
+        this.resourceId = webglResourceManager.registerResources('EffectLorenzAttractor', {
+            renderer: this.renderer,
+            scene: this.scene,
+            camera: this.camera
+        });
         
         // 设置后处理管道以实现发光效果
         this.composer = new EffectComposer(this.renderer);
@@ -493,6 +502,12 @@ export class EffectLorenzAttractor {
         // 清理场景
         this.scene = null;
         this.camera = null;
+        
+        // 清理WebGL资源管理器中的资源
+        if (this.resourceId) {
+            webglResourceManager.cleanup(this.resourceId);
+            this.resourceId = null;
+        }
         
         // 移除事件监听器
         window.removeEventListener("resize", this.onResize.bind(this));

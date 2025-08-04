@@ -119,14 +119,9 @@ class TexturePreloader {
      * @returns {Promise<THREE.VideoTexture>}
      */
     async preloadVideoTexture(url, options = {}) {
-        if (this.loadedTextures.has(url)) {
-            return this.loadedTextures.get(url);
-        }
-
-        if (this.loadingPromises.has(url)) {
-            return this.loadingPromises.get(url);
-        }
-
+        // 对于视频纹理，每次都创建新的实例，避免缓存导致的问题
+        // 因为视频元素状态在页面切换时可能丢失
+        
         const loadingPromise = new Promise((resolve, reject) => {
             const video = document.createElement('video');
             video.src = url;
@@ -135,6 +130,7 @@ class TexturePreloader {
             video.muted = true;
             video.autoplay = true;
             video.playsInline = true;
+            video.preload = 'metadata';
             
             const createTexture = () => {
                 try {
@@ -142,9 +138,13 @@ class TexturePreloader {
                     this.applyTextureSettings(texture, {
                         ...options,
                         format: THREE.RGBAFormat,
-                        flipY: false // 重要：防止视频抖动
+                        flipY: false, // 重要：防止视频抖动
+                        generateMipmaps: false, // 视频纹理禁用mipmap
+                        minFilter: THREE.LinearFilter,
+                        magFilter: THREE.LinearFilter
                     });
                     
+                    // 对视频纹理，总是存储最新的实例
                     this.loadedTextures.set(url, texture);
                     resolve(texture);
                 } catch (error) {
@@ -155,17 +155,20 @@ class TexturePreloader {
             
             video.addEventListener('loadeddata', createTexture);
             video.addEventListener('canplay', createTexture);
+            video.addEventListener('loadedmetadata', () => {
+                // 元数据加载完成，尝试播放
+                video.play().catch(() => {
+                    // 忽略自动播放失败，但仍创建纹理
+                    createTexture();
+                });
+            });
             video.addEventListener('error', (e) => {
                 console.error(`❌ Video loading failed: ${url}`, e);
                 reject(e);
             });
             
-            // 开始播放视频
-            video.play().catch((error) => {
-                console.warn(`⚠️ Video autoplay failed: ${url}`, error);
-                // 即使autoplay失败，也继续创建纹理
-                createTexture();
-            });
+            // 立即加载视频
+            video.load();
         });
 
         this.loadingPromises.set(url, loadingPromise);

@@ -207,50 +207,65 @@ const HeroCube = ({
                     side: THREE.FrontSide // 只渲染正面，提升性能
                 });
                 
-                if (preloadedTexture) {
-                    // 使用预加载的纹理
-                } else {
-                    // 预加载的纹理未找到，使用fallback
-                    
-                    // 如果预加载失败，仍然尝试动态加载
-                    const video = document.createElement('video');
-                    video.src = face.video;
-                    video.crossOrigin = 'anonymous';
-                    video.loop = true;
-                    video.muted = true;
-                    video.autoplay = true;
-                    video.playsInline = true;
-                    
-                    const switchToVideoTexture = () => {
-                        try {
-                            const videoTexture = new THREE.VideoTexture(video);
-                            videoTexture.minFilter = THREE.LinearFilter; // 视频纹理不能使用mipmap
-                            videoTexture.magFilter = THREE.LinearFilter;
-                            videoTexture.format = THREE.RGBAFormat;
-                            videoTexture.generateMipmaps = false; // 视频纹理禁用mipmap
-                            videoTexture.flipY = false;
-                            videoTexture.colorSpace = THREE.SRGBColorSpace;
-                            
-                            if (material.map && material.map !== fallbackTexture) {
-                                material.map.dispose();
-                            }
-                            material.map = videoTexture;
-                            material.needsUpdate = true;
-                        } catch {
-                            // 忽略fallback纹理创建失败
+                // 创建新的视频元素，确保每次都有一个新的实例
+                const video = document.createElement('video');
+                video.src = face.video;
+                video.crossOrigin = 'anonymous';
+                video.loop = true;
+                video.muted = true;
+                video.autoplay = true;
+                video.playsInline = true;
+                video.preload = 'metadata';
+                
+                const setupVideoTexture = () => {
+                    try {
+                        const videoTexture = new THREE.VideoTexture(video);
+                        videoTexture.minFilter = THREE.LinearFilter; // 视频纹理不能使用mipmap
+                        videoTexture.magFilter = THREE.LinearFilter;
+                        videoTexture.format = THREE.RGBAFormat;
+                        videoTexture.generateMipmaps = false; // 视频纹理禁用mipmap
+                        videoTexture.flipY = false;
+                        videoTexture.colorSpace = THREE.SRGBColorSpace;
+                        
+                        if (material.map && material.map !== fallbackTexture) {
+                            material.map.dispose();
                         }
-                    };
-                    
-                    video.addEventListener('loadeddata', switchToVideoTexture);
-                    video.addEventListener('canplay', switchToVideoTexture);
-                    video.addEventListener('error', () => {
-                        // 忽略视频播放错误，使用静态材质
-                    });
-                    
+                        material.map = videoTexture;
+                        material.needsUpdate = true;
+                        
+                        // 确保视频开始播放
+                        video.play().catch(error => {
+                            console.warn('Video autoplay failed:', error);
+                        });
+                    } catch (error) {
+                        console.warn('Failed to create video texture:', error);
+                        // 保持使用fallback纹理
+                    }
+                };
+                
+                // 多个事件监听确保视频正确加载
+                video.addEventListener('loadeddata', () => {
+                    setupVideoTexture();
+                });
+                
+                video.addEventListener('canplay', () => {
+                    setupVideoTexture();
+                });
+                
+                video.addEventListener('loadedmetadata', () => {
+                    // 视频元数据加载完成，可以尝试播放
                     video.play().catch(() => {
-                        // 忽略视频自动播放失败
+                        // 忽略自动播放失败
                     });
-                }
+                });
+                
+                video.addEventListener('error', (error) => {
+                    console.warn('Video loading error, using fallback texture:', error);
+                    // 保持使用fallback纹理
+                });
+                
+                // 立即尝试加载视频
+                video.load();
                 
                 return material;
             }
@@ -714,14 +729,14 @@ const HeroCube = ({
             }, 100);
         }
         
-        // 注册WebGL资源到资源管理器
+        // 注册WebGL资源到资源管理器 - 标记为持久资源，防止自动清理
         const resourceId = webglResourceManager.registerResources('HeroCube', {
             renderer,
             scene,
             geometry,
             materials,
             textures: materials.map(mat => mat.map).filter(Boolean)
-        });
+        }, { persistent: true }); // 设置为持久资源
         
         animate();
 

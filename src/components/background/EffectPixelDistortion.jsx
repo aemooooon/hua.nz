@@ -1,13 +1,14 @@
 import { useEffect, useRef } from "react";
 import PropTypes from "prop-types";
 import * as THREE from "three";
+import webglResourceManager from "../../utils/WebGLResourceManager";
 
 const EffectPixelDistortion = ({ src, style = {} }) => {
     const containerRef = useRef();
 
     useEffect(() => {
         let renderer, scene, camera, planeMesh;
-        let animationFrameId;
+        let animationFrameId, resourceId;
         let mousePosition = { x: 0.5, y: 0.5 };
         let targetMousePosition = { x: 0.5, y: 0.5 };
         let prevPosition = { x: 0.5, y: 0.5 };
@@ -82,6 +83,14 @@ const EffectPixelDistortion = ({ src, style = {} }) => {
             renderer = new THREE.WebGLRenderer({ antialias: true });
             renderer.setSize(containerRef.current.offsetWidth, containerRef.current.offsetHeight);
             containerRef.current.appendChild(renderer.domElement);
+            
+            // 注册WebGL资源
+            resourceId = webglResourceManager.registerResources('EffectPixelDistortion', {
+                renderer,
+                scene,
+                camera,
+                planeMesh
+            });
         };
 
         const animateScene = () => {
@@ -157,6 +166,11 @@ const EffectPixelDistortion = ({ src, style = {} }) => {
 
         return () => {
             if (animationFrameId) cancelAnimationFrame(animationFrameId);
+            
+            // 清理WebGL资源管理器中的资源
+            if (resourceId) {
+                webglResourceManager.cleanup(resourceId);
+            }
             
             // 清理Three.js资源
             if (scene) {
