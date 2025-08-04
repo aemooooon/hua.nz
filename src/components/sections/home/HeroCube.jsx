@@ -4,10 +4,12 @@ import * as THREE from 'three';
 import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
 import { useAppStore } from '../../../store/useAppStore';
 import { gsap } from 'gsap';
+import texturePreloader from '../../../utils/texturePreloader';
 
 const HeroCube = ({ 
     enableOpeningAnimation = false,
-    onAnimationComplete
+    onAnimationComplete,
+    onReady
 }) => {
     const mountRef = useRef();
     const cubeRef = useRef();
@@ -31,6 +33,7 @@ const HeroCube = ({
     }, []);
     
     const [canvasSize, setCanvasSize] = useState(getCanvasSize());
+    const [texturesReady, setTexturesReady] = useState(false); // 纹理预加载状态
 
     // 固定的6个面配置 - 只用于首页展示，添加高质量图片贴图
     const faces = useMemo(() => [
@@ -38,9 +41,36 @@ const HeroCube = ({
         { name: 'about', label: content.navigation?.about || 'About', color: '#7ca65c', effect: 'effectlorenz', image: '/cube-textures/about.jpg' },
         { name: 'projects', label: content.navigation?.projects || 'Projects', color: '#5d7d4b', effect: 'effectmonjori', image: '/cube-textures/projects.jpg' },
         { name: 'gallery', label: content.navigation?.gallery || 'Gallery', color: '#768e90', effect: 'effectheartbeats', image: '/cube-textures/gallery.jpg' },
-        { name: 'education', label: content.navigation?.education || 'Education', color: '#1d2012', effect: 'effectfuse', image: '/cube-textures/education.jpg' },
-        { name: 'contact', label: content.navigation?.contact || 'Contact', color: '#94a3b8', effect: 'effectpixeldistortion', image: '/cube-textures/contact.jpg' }
+        { name: 'education', label: content.navigation?.education || 'Education', color: '#4a636a', effect: 'effectfuse', image: '/cube-textures/education.jpg' },
+        { name: 'contact', label: content.navigation?.contact || 'Contact', color: '#3a4e55', effect: 'effectpixeldistortion', image: '/cube-textures/contact.jpg' }
     ], [content.navigation]);
+
+    // 预加载所有纹理资源
+    useEffect(() => {
+        const preloadTextures = async () => {
+            console.log('🎯 Starting texture preload for HeroCube...');
+            
+            // 收集所有需要预加载的资源
+            const urls = faces.filter(face => face.video || face.image)
+                             .map(face => face.video || face.image);
+            
+            if (urls.length === 0) {
+                setTexturesReady(true);
+                return;
+            }
+            
+            try {
+                await texturePreloader.preloadBatch(urls);
+                setTexturesReady(true);
+                console.log('✅ All HeroCube textures preloaded successfully');
+            } catch (error) {
+                console.warn('⚠️ Some textures failed to preload, continuing anyway:', error);
+                setTexturesReady(true); // 即使失败也要继续，使用fallback
+            }
+        };
+        
+        preloadTextures();
+    }, [faces]);
 
     // 监听窗口大小变化
     useEffect(() => {
@@ -59,6 +89,14 @@ const HeroCube = ({
     }, [getCanvasSize]);
 
     useEffect(() => {
+        // 等待纹理预加载完成
+        if (!texturesReady) {
+            console.log('⏳ Waiting for textures to be ready...');
+            return;
+        }
+        
+        console.log('🚀 Starting HeroCube rendering with preloaded textures');
+        
         const mountElement = mountRef.current;
         if (!mountElement) return;
 
@@ -158,104 +196,84 @@ const HeroCube = ({
 
         // 为每个面创建材质
         const materials = faces.map((face) => {
-            // 如果是视频贴图
+            // 如果是视频贴图，使用预加载的纹理
             if (face.video) {
+                const preloadedTexture = texturePreloader.getTexture(face.video);
                 const fallbackTexture = createCheckerboardTexture(256);
                 
-                const video = document.createElement('video');
-                video.src = face.video;
-                video.crossOrigin = 'anonymous';
-                video.loop = true;
-                video.muted = true;
-                video.autoplay = true;
-                video.playsInline = true;
-                
                 const material = new THREE.MeshLambertMaterial({
-                    map: fallbackTexture,
+                    map: preloadedTexture || fallbackTexture,
                     transparent: true,
                     opacity: 0.9,
                     side: THREE.FrontSide // 只渲染正面，提升性能
                 });
                 
-                // 视频加载成功后切换到视频纹理 - 修复抖动
-                const switchToVideoTexture = () => {
-                    try {
-                        const videoTexture = new THREE.VideoTexture(video);
-                        // 关键修复：使用高质量mipmap过滤器
-                        videoTexture.minFilter = THREE.LinearMipmapLinearFilter;
-                        videoTexture.magFilter = THREE.LinearFilter;
-                        videoTexture.format = THREE.RGBAFormat; // 使用RGBA格式
-                        videoTexture.generateMipmaps = true; // 开启mipmap
-                        videoTexture.flipY = false; // 禁用Y轴翻转避免抖动
-                        videoTexture.colorSpace = THREE.SRGBColorSpace;
-                        
-                        if (material.map && material.map !== fallbackTexture) {
-                            material.map.dispose();
+                if (preloadedTexture) {
+                    console.log(`✅ Using preloaded video texture for ${face.name} face`);
+                } else {
+                    console.warn(`⚠️ Preloaded texture not found for ${face.video}, using fallback`);
+                    
+                    // 如果预加载失败，仍然尝试动态加载
+                    const video = document.createElement('video');
+                    video.src = face.video;
+                    video.crossOrigin = 'anonymous';
+                    video.loop = true;
+                    video.muted = true;
+                    video.autoplay = true;
+                    video.playsInline = true;
+                    
+                    const switchToVideoTexture = () => {
+                        try {
+                            const videoTexture = new THREE.VideoTexture(video);
+                            videoTexture.minFilter = THREE.LinearMipmapLinearFilter;
+                            videoTexture.magFilter = THREE.LinearFilter;
+                            videoTexture.format = THREE.RGBAFormat;
+                            videoTexture.generateMipmaps = true;
+                            videoTexture.flipY = false;
+                            videoTexture.colorSpace = THREE.SRGBColorSpace;
+                            
+                            if (material.map && material.map !== fallbackTexture) {
+                                material.map.dispose();
+                            }
+                            material.map = videoTexture;
+                            material.needsUpdate = true;
+                            
+                            console.log(`✅ Fallback video texture loaded for ${face.name} face`);
+                        } catch (error) {
+                            console.warn(`❌ Failed to create fallback video texture for ${face.name}:`, error);
                         }
-                        material.map = videoTexture;
-                        material.needsUpdate = true;
-                        
-                        console.log('✅ Video texture loaded successfully for home face');
-                    } catch (error) {
-                        console.warn('❌ Failed to create video texture, using fallback:', error);
-                    }
-                };
-                
-                video.addEventListener('loadeddata', switchToVideoTexture);
-                video.addEventListener('canplay', switchToVideoTexture);
-                video.addEventListener('error', (e) => {
-                    console.warn('❌ Video loading failed, using checkerboard fallback:', e);
-                });
-                
-                video.play().then(() => {
-                    console.log('🎬 Video playback started');
-                }).catch((error) => {
-                    console.warn('❌ Video autoplay failed, using fallback:', error);
-                });
+                    };
+                    
+                    video.addEventListener('loadeddata', switchToVideoTexture);
+                    video.addEventListener('canplay', switchToVideoTexture);
+                    video.addEventListener('error', (e) => {
+                        console.warn(`❌ Fallback video loading failed for ${face.name}:`, e);
+                    });
+                    
+                    video.play().catch((error) => {
+                        console.warn(`⚠️ Fallback video autoplay failed for ${face.name}:`, error);
+                    });
+                }
                 
                 return material;
             }
             
-            // 如果是图片贴图
+            // 如果是图片贴图，使用预加载的纹理
             if (face.image) {
-                const img = new Image();
-                img.crossOrigin = 'anonymous';
+                const preloadedTexture = texturePreloader.getTexture(face.image);
                 
-                // 创建材质，初始使用轻量材质
                 const material = new THREE.MeshLambertMaterial({
+                    map: preloadedTexture || createCheckerboardTexture(256),
                     transparent: true,
                     opacity: 0.9,
-                    side: THREE.FrontSide // 只渲染正面，提升性能
+                    side: THREE.FrontSide
                 });
                 
-                // 图片加载成功后设置纹理
-                img.onload = () => {
-                    try {
-                        const imageTexture = new THREE.Texture(img);
-                        imageTexture.needsUpdate = true;
-                        imageTexture.generateMipmaps = true;
-                        imageTexture.minFilter = THREE.LinearMipmapLinearFilter;
-                        imageTexture.magFilter = THREE.LinearFilter;
-                        imageTexture.wrapS = THREE.ClampToEdgeWrapping;
-                        imageTexture.wrapT = THREE.ClampToEdgeWrapping;
-                        imageTexture.colorSpace = THREE.SRGBColorSpace;
-                        
-                        // 设置纹理到材质
-                        material.map = imageTexture;
-                        material.needsUpdate = true;
-                        
-                        console.log(`✅ Image texture loaded successfully for ${face.name} face`);
-                    } catch (error) {
-                        console.warn(`❌ Failed to create image texture for ${face.name}:`, error);
-                    }
-                };
-                
-                img.onerror = (e) => {
-                    console.warn(`❌ Image loading failed for ${face.name}:`, e);
-                };
-                
-                // 开始加载图片
-                img.src = face.image;
+                if (preloadedTexture) {
+                    console.log(`✅ Using preloaded image texture for ${face.name} face`);
+                } else {
+                    console.warn(`⚠️ Preloaded texture not found for ${face.image}, using fallback`);
+                }
                 
                 return material;
             }
@@ -691,6 +709,15 @@ const HeroCube = ({
             renderer.render(scene, camera);
         };
         
+        // 组件初始化完成后调用onReady
+        if (onReady) {
+            // 使用setTimeout确保在下一帧调用，避免在渲染期间修改state
+            setTimeout(() => {
+                onReady();
+                console.log('🎯 HeroCube initialization completed');
+            }, 100);
+        }
+        
         animate();
 
         // 清理函数
@@ -722,7 +749,7 @@ const HeroCube = ({
             });
             renderer.dispose();
         };
-    }, [faces, canvasSize, enableOpeningAnimation, onAnimationComplete]);
+    }, [faces, canvasSize, enableOpeningAnimation, onAnimationComplete, onReady, texturesReady]);
 
     return (
         <div className="relative">
@@ -739,7 +766,8 @@ const HeroCube = ({
 
 HeroCube.propTypes = {
     enableOpeningAnimation: PropTypes.bool,
-    onAnimationComplete: PropTypes.func
+    onAnimationComplete: PropTypes.func,
+    onReady: PropTypes.func
 };
 
 export default HeroCube;

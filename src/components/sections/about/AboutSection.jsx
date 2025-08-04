@@ -5,7 +5,7 @@ import hoverImageSrc from '../../../assets/images/hua_500w1.jpg';
 import { FaSpinner } from 'react-icons/fa';
 import { useAppStore } from '../../../store/useAppStore';
 
-const Avatar = lazy(() => import('../../Avatar'));
+const EffectAvatar = lazy(() => import('../../background/EffectAvatar'));
 
 const AboutSection = ({ language = 'en' }) => {
     const { getContent } = useAppStore();
@@ -120,7 +120,7 @@ const AboutSection = ({ language = 'en' }) => {
                                         </div>
                                     }
                                 >
-                                    <Avatar imageSrc={imageSrc} hoverImageSrc={hoverImageSrc} />
+                                    <EffectAvatar imageSrc={imageSrc} hoverImageSrc={hoverImageSrc} />
                                 </Suspense>
                             ) : (
                                 <div className="w-full h-full flex items-center justify-center bg-gray-800 rounded-full">

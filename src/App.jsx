@@ -3,7 +3,7 @@ import SmartScrollManager from "./components/SmartScrollManager";
 import ThemeLanguageToggle from "./components/ThemeLanguageToggle";
 import SmartDirectionalCursor from "./components/SmartDirectionalCursor";
 import ErrorBoundary from "./components/ErrorBoundary";
-import MemoryMonitor from "./components/MemoryMonitor";
+import MemoryMonitor from "./utils/MemoryMonitor";
 import { useAppStore } from "./store/useAppStore";
 
 const App = () => {

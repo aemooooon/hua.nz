@@ -2,14 +2,11 @@ import PropTypes from 'prop-types';
 import { useState, useEffect, useCallback } from 'react';
 import { useAppStore } from '../../../store/useAppStore';
 import HeroCube from './HeroCube';
+import GlobalLoadingIndicator from '../../GlobalLoadingIndicator';
+import texturePreloader from '../../../utils/texturePreloader';
 import '../../../styles/OpeningAnimations.css';
 
-// import { Suspense, lazy } from 'react'; // 移动到About页面
-// import { FaSpinner } from 'react-icons/fa'; // 移动到About页面
-// const ShaderLoadingEffect = lazy(() => import('../../ShaderLoadingEffect')); // 移动到About页面
-
 const HomeSection = ({ 
-    section, 
     language, 
     // 开场动画相关属性
     enableOpeningAnimation = false
@@ -17,14 +14,11 @@ const HomeSection = ({
     const { getContent } = useAppStore();
     const content = getContent();
 
-    // 避免未使用变量警告
-    console.log('HomeSection rendered for language:', language);
-    console.log('Section data:', section);
-
     // 控制Cube延迟加载和预加载状态
     const [showCube, setShowCube] = useState(false);
     const [cubeLoading, setCubeLoading] = useState(false);
     const [cubeReady, setCubeReady] = useState(false);
+    const [textureProgress, setTextureProgress] = useState({ loaded: 0, total: 0 });
 
     useEffect(() => {
         // 400ms后开始预加载Cube，600ms后显示
@@ -36,9 +30,21 @@ const HomeSection = ({
             setShowCube(true);
         }, 600);
         
+        // 监听纹理加载进度
+        const progressInterval = setInterval(() => {
+            const progress = texturePreloader.getProgress();
+            setTextureProgress(progress);
+            
+            // 如果纹理加载完成，可以提前准备
+            if (progress.progress === 1 && progress.total > 0) {
+                console.log('🎯 All textures loaded, Cube can render smoothly');
+            }
+        }, 100);
+        
         return () => {
             clearTimeout(preloadTimer);
             clearTimeout(showTimer);
+            clearInterval(progressInterval);
         };
     }, []);
 
@@ -46,6 +52,7 @@ const HomeSection = ({
     const handleCubeReady = useCallback(() => {
         setCubeReady(true);
         setCubeLoading(false);
+        console.log('🎯 Cube loading completed, hiding loading indicator');
     }, []);
 
     return (
@@ -112,14 +119,21 @@ const HomeSection = ({
                 </div>
             </div>
 
-            {/* Loading效果 - 在Cube加载时显示 */}
+            {/* Loading效果 - 使用全局加载组件，显示纹理加载进度 */}
             {cubeLoading && !cubeReady && (
-                <div className="absolute inset-0 z-15 flex items-center justify-center">
-                    <div className="flex flex-col items-center space-y-4">
-                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white/50"></div>
-                        <p className="text-white/70 text-sm">Loading Experience...</p>
-                    </div>
-                </div>
+                <GlobalLoadingIndicator
+                    isVisible={true}
+                    loadedCount={textureProgress.loaded}
+                    totalCount={textureProgress.total}
+                    loadingText="Loading Experience..."
+                    loadingTextChinese="加载体验中..."
+                    language={language}
+                    variant="default"
+                    position="center"
+                    showProgress={textureProgress.total > 0}
+                    showPercentage={textureProgress.total > 0}
+                    showDots={true}
+                />
             )}
 
             {/* Cube延迟加载 */}
@@ -134,9 +148,6 @@ const HomeSection = ({
 };
 
 HomeSection.propTypes = {
-    section: PropTypes.shape({
-        description: PropTypes.object.isRequired
-    }).isRequired,
     language: PropTypes.string.isRequired,
     enableOpeningAnimation: PropTypes.bool
 };

@@ -2,7 +2,11 @@ import { useEffect, useRef, useState } from "react";
 import PropTypes from "prop-types";
 import { gsap } from "gsap";
 
-const ShaderLoadingEffect = ({ imageSrc, hoverImageSrc }) => {
+/**
+ * EffectAvatar - 粒子动画头像效果组件
+ * 移动自原Avatar组件，统一放置在background文件夹下
+ */
+const EffectAvatar = ({ imageSrc, hoverImageSrc }) => {
     const canvasRef = useRef(null);
     const hoverImgRef = useRef(null);
     const [isHovered, setIsHovered] = useState(false);
@@ -11,7 +15,7 @@ const ShaderLoadingEffect = ({ imageSrc, hoverImageSrc }) => {
     const particlesRef = useRef([]);
 
     useEffect(() => {
-        workerRef.current = new Worker(new URL("/particleWorker.js?worker_file&type=classic", import.meta.url));
+        workerRef.current = new Worker(new URL("../../workers/particleWorker.js?worker", import.meta.url));
         workerRef.current.onmessage = (event) => {
             const particles = event.data;
             particles.forEach((particle) => {
@@ -178,9 +182,9 @@ const ShaderLoadingEffect = ({ imageSrc, hoverImageSrc }) => {
     );
 };
 
-ShaderLoadingEffect.propTypes = {
+EffectAvatar.propTypes = {
     imageSrc: PropTypes.string.isRequired,
     hoverImageSrc: PropTypes.string.isRequired,
 };
 
-export default ShaderLoadingEffect;
+export default EffectAvatar;
