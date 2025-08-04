@@ -10,7 +10,27 @@ class WebGLResourceManager {
     }
 
     /**
-     * 注册一个WebGL资源组（渲染器、场景、几何体、材质等）
+        getMemoryInfo() {
+        const resourceCount = this.activeResources.size;
+        let persistentCount = 0;
+        let temporaryCount = 0;
+
+        // 统计持久和临时资源
+        for (const [, resourceData] of this.activeResources) {
+            if (resourceData.persistent) {
+                persistentCount++;
+            } else {
+                temporaryCount++;
+            }
+        }
+
+        const memoryInfo = {
+            activeResourceGroups: temporaryCount, // 只显示临时资源作为活跃资源
+            totalResourceGroups: resourceCount, // 总资源数
+            persistentResources: persistentCount,
+            temporaryResources: temporaryCount,
+            timestamp: Date.now()
+        };染器、场景、几何体、材质等）
      * @param {string} componentId - 组件标识符
      * @param {Object} resources - 资源对象
      * @param {Object} options - 选项 { persistent: boolean }

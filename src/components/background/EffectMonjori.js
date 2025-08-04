@@ -88,7 +88,7 @@ export function EffectMonjori(canvas, params = {}) {
         renderer.setSize(window.innerWidth, window.innerHeight);
 
         // 注册WebGL资源
-        resourceId = webglResourceManager.registerResources('EffectMonjori', {
+        resourceId = webglResourceManager.registerResources('BackgroundCanvas', {
             renderer,
             scene,
             camera,

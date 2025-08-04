@@ -76,7 +76,7 @@ export class EffectLorenzAttractor {
         this.renderer.setClearColor(0x000a15, 1.0); // 与场景背景一致
         
         // 注册WebGL资源
-        this.resourceId = webglResourceManager.registerResources('EffectLorenzAttractor', {
+        this.resourceId = webglResourceManager.registerResources('BackgroundCanvas', {
             renderer: this.renderer,
             scene: this.scene,
             camera: this.camera

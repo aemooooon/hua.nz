@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import PropTypes from 'prop-types';
 import ProjectMapModal from './ProjectMapModal';
+import GlowDivider from '../../ui/GlowDivider';
 import locations from '../../../store/locations';
 
 const ProjectSection = ({ language }) => {
@@ -84,9 +85,7 @@ const ProjectSection = ({ language }) => {
             </div>
 
             {/* 标题与内容之间的分隔线 - 与下面容器宽度一致 */}
-            <div className="flex items-center justify-center my-8 px-4 sm:px-6 lg:px-8">
-                <div className="w-full h-0.5 bg-white/30 backdrop-blur-sm shadow-lg"></div>
-            </div>
+            <GlowDivider className="my-8 px-4 sm:px-6 lg:px-8" width="w-full" />
             
             {/* 全屏内容区域 - 与顶部标题栏保持一致的全屏布局 */}
             <div className="relative z-10 backdrop-protection">

@@ -12,7 +12,7 @@ export class EffectFuse {
         }
         
         // 注册WebGL资源（原生WebGL上下文）
-        this.resourceId = webglResourceManager.registerResources('EffectFuse', {
+        this.resourceId = webglResourceManager.registerResources('BackgroundCanvas', {
             gl: this.gl,
             canvas: this.canvas
         });

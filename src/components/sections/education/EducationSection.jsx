@@ -1,6 +1,7 @@
 import { useState } from "react";
 import PropTypes from "prop-types";
 import { useAppStore } from "../../../store/useAppStore";
+import GlowDivider from "../../ui/GlowDivider";
 import "./EducationSection.css";
 
 const EducationSection = ({ language }) => {
@@ -245,9 +246,7 @@ const EducationSection = ({ language }) => {
             </div>
 
             {/* 标题与内容之间的分隔线 */}
-            <div className="flex items-center justify-center my-8">
-                <div className="w-full max-w-6xl h-0.5 bg-white/30 backdrop-blur-sm shadow-lg"></div>
-            </div>
+            <GlowDivider className="my-8" width="w-full max-w-6xl" />
 
             {/* 学历内容 - 垂直滚动 */}
             <div className="w-full p-4 sm:p-6 lg:p-8 text-white pt-0">
@@ -257,9 +256,7 @@ const EducationSection = ({ language }) => {
                             {renderEducationCard(degree)}
                             {/* 在 Master 和 Bachelor 之间添加分割线 */}
                             {index === 0 && (
-                                <div className="flex items-center justify-center my-16">
-                                    <div className="w-full max-w-6xl h-0.5 bg-white/40 backdrop-blur-md shadow-lg"></div>
-                                </div>
+                                <GlowDivider className="my-16" width="w-full max-w-6xl" />
                             )}
                         </div>
                     ))}

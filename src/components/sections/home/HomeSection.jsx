@@ -113,7 +113,7 @@ const HomeSection = ({
                         animationDelay: '8s',
                         animationFillMode: 'both'
                     } : {}}>
-                        观混沌之纷，立秩序之象；权诸技之衡，启创新之变！
+                        观混沌之纷，立秩序之象；守中庸之衡，启创新之变！
                     </p>
                 </div>
             </div>

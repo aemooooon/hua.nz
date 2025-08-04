@@ -85,7 +85,7 @@ const EffectPixelDistortion = ({ src, style = {} }) => {
             containerRef.current.appendChild(renderer.domElement);
             
             // 注册WebGL资源
-            resourceId = webglResourceManager.registerResources('EffectPixelDistortion', {
+            resourceId = webglResourceManager.registerResources('BackgroundCanvas', {
                 renderer,
                 scene,
                 camera,

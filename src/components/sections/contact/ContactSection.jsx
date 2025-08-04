@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import { useAppStore } from '../../../store/useAppStore';
+import GlowDivider from '../../ui/GlowDivider';
 import './ContactSection.css';
 
 const ContactSection = ({ language }) => {
@@ -64,7 +65,9 @@ const ContactSection = ({ language }) => {
                     </h2>
                     
                     {/* 标题与内容之间的分隔线 */}
-                    <div className="w-full max-w-4xl h-0.5 bg-white/30 backdrop-blur-sm shadow-lg mb-8"></div>
+                    <div className="w-full max-w-4xl mb-8">
+                        <GlowDivider width="w-full" enhanced={true} />
+                    </div>
                     
                     <p className="text-base text-gray-400 max-w-2xl mx-auto">
                         {contactTexts.description}

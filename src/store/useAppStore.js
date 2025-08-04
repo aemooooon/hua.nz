@@ -153,7 +153,7 @@ const contentConfig = {
       description: "I'm a full-stack developer with a strong focus on frontend, especially building interactive web applications and visualisation dashboards. I have experience with modern frontend frameworks such as React, Next.js, and TypeScript, as well as working with libraries such as Three.js and ECharts.",
       location: "New Zealand",
       slogan: {
-        chinese: "观混沌之纷，立秩序之象；权诸技之衡，启创新之变！",
+        chinese: "观混沌之纷，立秩序之象；守中庸之衡，启创新之变！",
         english: "Order from Chaos. Innovation through Tradeoffs."
       }
     },
@@ -365,7 +365,7 @@ const contentConfig = {
       description: "我是一名全栈开发者，专注于前端开发，特别是构建交互式Web应用程序和可视化仪表板。我有使用现代前端框架如React、Next.js和TypeScript的经验，以及使用Three.js和ECharts等库的经验。",
       location: "新西兰",
       slogan: {
-        chinese: "观混沌之纷，立秩序之象；权诸技之衡，启创新之变！",
+        chinese: "观混沌之纷，立秩序之象；守中庸之衡，启创新之变！",
         english: "Order from Chaos. Innovation through Tradeoffs..."
       }
     },

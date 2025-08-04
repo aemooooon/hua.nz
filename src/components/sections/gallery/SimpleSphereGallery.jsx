@@ -353,7 +353,8 @@ const SimpleSphereGallery = ({ items, onItemClick, isVisible }) => {
             // 使用资源管理器清理WebGL资源
             webglResourceManager.cleanup(resourceId);
         };
-    }, [isVisible, items, createSpherePositions, createImageFrame, handleMouseDown, handleMouseMove, handleMouseUp, handleClick, handleResize, animate]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [isVisible, items]); // 简化依赖数组，避免函数引用变化导致重复创建WebGL资源
 
     return (
         <div className="relative w-full h-full">

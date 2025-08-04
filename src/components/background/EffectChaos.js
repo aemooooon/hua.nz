@@ -48,7 +48,7 @@ export class EffectChaos {
         this.renderer.setSize(this.canvas.width, this.canvas.height, false);
 
         // 注册WebGL资源
-        this.resourceId = webglResourceManager.registerResources('EffectChaos', {
+        this.resourceId = webglResourceManager.registerResources('BackgroundCanvas', {
             renderer: this.renderer,
             scene: this.scene,
             camera: this.camera
