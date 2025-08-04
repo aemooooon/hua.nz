@@ -84,7 +84,7 @@ const ContactSection = ({ language }) => {
                                 href={info.href}
                                 target={info.href.startsWith('http') ? '_blank' : '_self'}
                                 rel={info.href.startsWith('http') ? 'noopener noreferrer' : undefined}
-                                className="bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-sm rounded-2xl p-8 hover:from-white/20 hover:to-white/10 transition-all duration-300 hover:scale-105 hover:shadow-2xl group contact-info-card text-center border border-white/10"
+                                className="bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-sm rounded-2xl p-8 hover:from-white/20 hover:to-white/10 transition-all duration-300 hover:scale-105 hover:shadow-2xl group contact-info-card text-center border border-white/10 shine-card shine-blue"
                             >
                                 <div className="text-5xl mb-4 group-hover:scale-110 transition-transform duration-300">
                                     {info.icon}
@@ -119,7 +119,7 @@ const ContactSection = ({ language }) => {
                                     href={social.url}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className={`w-16 h-16 inline-flex items-center justify-center p-4 bg-white/10 backdrop-blur-sm border-2 border-white/20 rounded-2xl text-2xl text-white no-underline transition-all duration-500 hover:shadow-2xl hover:scale-110 social-link ${social.color} hover:border-white/40`}
+                                    className={`w-16 h-16 inline-flex items-center justify-center p-4 bg-white/10 backdrop-blur-sm border-2 border-white/20 rounded-2xl text-2xl text-white no-underline transition-all duration-500 hover:shadow-2xl hover:scale-110 social-link shine-card ${social.color} hover:border-white/40`}
                                     title={social.label}
                                 >
                                     <i className={social.icon}></i>

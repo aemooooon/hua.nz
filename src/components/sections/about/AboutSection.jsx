@@ -30,7 +30,7 @@ const AboutSection = ({ language = 'en' }) => {
                     {/* 内容容器 - 内部也应用黄金比例的留白 */}
                     <div className="about-card-container">
                         {/* 增强毛玻璃背景卡片 */}
-                        <div className="bg-black/40 backdrop-blur-xl rounded-xl border border-white/20 shadow-2xl p-6 lg:p-8 xl:p-10 w-full relative">
+                        <div className="bg-black/40 backdrop-blur-xl rounded-xl border border-white/20 shadow-2xl p-6 lg:p-8 xl:p-10 w-full relative shine-card shine-green">
                             {/* 额外的内层毛玻璃效果 */}
                             <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-black/20 rounded-xl backdrop-blur-sm"></div>
                             {/* 内容层 */}

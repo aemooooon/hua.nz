@@ -496,8 +496,25 @@ body.light {
     border-radius: 16px;
 }
 
+/* 光影跑动效果 - 从Education section移植 */
+.project-card::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 3px;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.9), rgba(59, 130, 246, 0.8), rgba(255,255,255,0.9), transparent);
+    transition: left 0.8s ease-out;
+    z-index: 10;
+}
+
 .project-card:hover::before {
     opacity: 1;
+}
+
+.project-card:hover::after {
+    left: 100%;
 }
 
 .project-card:hover {
@@ -528,8 +545,50 @@ body.light {
     transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.project-card:hover .project-image {
-    transform: scale(1.1);
+/* 为项目卡片添加内部光影扫描效果 */
+.project-image-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, 
+        transparent 0%, 
+        rgba(255,255,255,0.1) 25%, 
+        rgba(59, 130, 246, 0.3) 50%, 
+        rgba(255,255,255,0.1) 75%, 
+        transparent 100%);
+    transition: left 1s ease-out;
+    z-index: 2;
+    pointer-events: none;
+}
+
+.project-card:hover .project-image-container::before {
+    left: 100%;
+    transition-delay: 0.2s; /* 稍微延迟，让顶部光条先跑 */
+}
+
+/* 项目内容区域也添加微妙的光影效果 */
+.project-content {
+    position: relative;
+    z-index: 3;
+}
+
+.project-content::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+    transition: left 0.6s ease-out;
+}
+
+.project-card:hover .project-content::before {
+    left: 100%;
+    transition-delay: 0.4s; /* 最后扫过内容区域 */
 }
 
 .project-status-badge {
@@ -711,6 +770,100 @@ body.light {
     font-weight: 500;
     text-transform: uppercase;
     letter-spacing: 0.05em;
+}
+
+/* 通用光影卡片效果 - 可复用于所有卡片 */
+.shine-card {
+    position: relative;
+    overflow: hidden;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* 顶部光条扫描效果 */
+.shine-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 3px;
+    background: linear-gradient(90deg, 
+        transparent 0%, 
+        rgba(255,255,255,0.9) 25%, 
+        rgba(59, 130, 246, 0.8) 50%, 
+        rgba(255,255,255,0.9) 75%, 
+        transparent 100%);
+    transition: left 0.8s ease-out;
+    z-index: 10;
+    pointer-events: none;
+}
+
+/* 内部光影扫描效果 */
+.shine-card::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, 
+        transparent 0%, 
+        rgba(255,255,255,0.08) 25%, 
+        rgba(59, 130, 246, 0.15) 50%, 
+        rgba(255,255,255,0.08) 75%, 
+        transparent 100%);
+    transition: left 1s ease-out;
+    z-index: 1;
+    pointer-events: none;
+}
+
+.shine-card:hover::before {
+    left: 100%;
+}
+
+.shine-card:hover::after {
+    left: 100%;
+    transition-delay: 0.1s;
+}
+
+/* 不同颜色主题的光影效果 */
+.shine-card.shine-blue::before {
+    background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.9), rgba(139, 92, 246, 0.8), rgba(59, 130, 246, 0.9), transparent);
+}
+
+.shine-card.shine-purple::before {
+    background: linear-gradient(90deg, transparent, rgba(139, 92, 246, 0.9), rgba(236, 72, 153, 0.8), rgba(139, 92, 246, 0.9), transparent);
+}
+
+.shine-card.shine-green::before {
+    background: linear-gradient(90deg, transparent, rgba(16, 185, 129, 0.9), rgba(34, 197, 94, 0.8), rgba(16, 185, 129, 0.9), transparent);
+}
+
+.shine-card.shine-orange::before {
+    background: linear-gradient(90deg, transparent, rgba(251, 146, 60, 0.9), rgba(245, 158, 11, 0.8), rgba(251, 146, 60, 0.9), transparent);
+}
+
+/* 增强版光影 - 更强烈的效果 */
+.shine-card.shine-enhanced::before {
+    height: 4px;
+    background: linear-gradient(90deg, 
+        transparent, 
+        rgba(255,255,255,1), 
+        rgba(59, 130, 246, 1), 
+        rgba(139, 92, 246, 1),
+        rgba(236, 72, 153, 1),
+        rgba(255,255,255,1), 
+        transparent);
+    box-shadow: 0 0 20px rgba(59, 130, 246, 0.5);
+}
+
+.shine-card.shine-enhanced::after {
+    background: linear-gradient(90deg, 
+        transparent 0%, 
+        rgba(255,255,255,0.12) 25%, 
+        rgba(59, 130, 246, 0.25) 50%, 
+        rgba(255,255,255,0.12) 75%, 
+        transparent 100%);
 }
 
 /* Responsive adjustments */

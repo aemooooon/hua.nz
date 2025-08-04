@@ -94,7 +94,7 @@ const ProjectSection = ({ language }) => {
                     {/* 移动端和小屏：所有卡片统一网格布局 */}
                     <div className="stats-grid lg:hidden">
                         <div 
-                            className={`stat-card cursor-pointer ${activeFilter === 'all' ? 'ring-2 ring-white/30' : ''}`}
+                            className={`stat-card shine-card shine-blue cursor-pointer ${activeFilter === 'all' ? 'ring-2 ring-white/30' : ''}`}
                             onClick={() => setActiveFilter('all')}
                         >
                             <span className="stat-number text-blue-400">{projects.length}</span>
@@ -104,7 +104,7 @@ const ProjectSection = ({ language }) => {
                         {Object.entries(projectsByCategory).map(([category, categoryProjects]) => (
                             <div 
                                 key={category}
-                                className={`stat-card cursor-pointer ${activeFilter === category ? 'ring-2 ring-white/30' : ''}`}
+                                className={`stat-card shine-card shine-orange cursor-pointer ${activeFilter === category ? 'ring-2 ring-white/30' : ''}`}
                                 onClick={() => setActiveFilter(category)}
                             >
                                 <span className={`stat-number ${getCategoryColor(category).split(' ')[2]}`}>
@@ -116,7 +116,7 @@ const ProjectSection = ({ language }) => {
 
                         {/* Explore Map 卡片 */}
                         <div 
-                            className="stat-card cursor-pointer bg-gradient-to-br from-purple-600/20 to-blue-600/20 border-purple-400/30 hover:border-purple-400/50 transition-all duration-300"
+                            className="stat-card shine-card shine-purple cursor-pointer bg-gradient-to-br from-purple-600/20 to-blue-600/20 border-purple-400/30 hover:border-purple-400/50 transition-all duration-300"
                             onClick={() => setIsMapOpen(true)}
                             title={language === 'en' ? 'Explore Projects on Interactive Map' : '在交互地图上探索项目'}
                         >
@@ -130,7 +130,7 @@ const ProjectSection = ({ language }) => {
                         {/* 左侧：统计卡片组 */}
                         <div className="flex gap-6">
                             <div 
-                                className={`stat-card cursor-pointer ${activeFilter === 'all' ? 'ring-2 ring-white/30' : ''}`}
+                                className={`stat-card shine-card shine-blue cursor-pointer ${activeFilter === 'all' ? 'ring-2 ring-white/30' : ''}`}
                                 onClick={() => setActiveFilter('all')}
                             >
                                 <span className="stat-number text-blue-400">{projects.length}</span>
@@ -140,7 +140,7 @@ const ProjectSection = ({ language }) => {
                             {Object.entries(projectsByCategory).map(([category, categoryProjects]) => (
                                 <div 
                                     key={category}
-                                    className={`stat-card cursor-pointer ${activeFilter === category ? 'ring-2 ring-white/30' : ''}`}
+                                    className={`stat-card shine-card shine-orange cursor-pointer ${activeFilter === category ? 'ring-2 ring-white/30' : ''}`}
                                     onClick={() => setActiveFilter(category)}
                                 >
                                     <span className={`stat-number ${getCategoryColor(category).split(' ')[2]}`}>
@@ -153,7 +153,7 @@ const ProjectSection = ({ language }) => {
 
                         {/* 右侧：Explore Map 卡片 */}
                         <div 
-                            className="stat-card cursor-pointer bg-gradient-to-br from-purple-600/20 to-blue-600/20 border-purple-400/30 hover:border-purple-400/50 transition-all duration-300"
+                            className="stat-card shine-card shine-purple cursor-pointer bg-gradient-to-br from-purple-600/20 to-blue-600/20 border-purple-400/30 hover:border-purple-400/50 transition-all duration-300"
                             onClick={() => setIsMapOpen(true)}
                             title={language === 'en' ? 'Explore Projects on Interactive Map' : '在交互地图上探索项目'}
                         >
