@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { FaSun, FaMoon, FaGlobe } from 'react-icons/fa';
-import { useAppStore } from '../store/useAppStore';
+import { useAppStore } from '../../store/useAppStore';
 
 const ThemeLanguageToggle = () => {
     const { 
