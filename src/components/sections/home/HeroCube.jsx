@@ -69,12 +69,12 @@ const HeroCube = ({
         const camera = new THREE.PerspectiveCamera(50, 1, 0.1, 1000);
         camera.position.z = 10; // 固定摄像机距离
 
-        // 创建渲染器
+        // 创建渲染器 - 性能优化设置
         const renderer = new THREE.WebGLRenderer({ 
             alpha: true, 
-            antialias: true,
-            powerPreference: "high-performance",
-            precision: "mediump",
+            antialias: true, // 保持抗锯齿开启
+            powerPreference: "high-performance", // 改为高性能模式
+            precision: "mediump", // 使用中等精度
             stencil: false,
             depth: true,
             premultipliedAlpha: false
@@ -83,7 +83,14 @@ const HeroCube = ({
         // 设置透明背景
         renderer.setClearColor(0x000000, 0);
         renderer.setSize(canvasSize, canvasSize);
-        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        // 限制像素比以提升性能
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
+        
+        // 性能优化设置
+        renderer.shadowMap.enabled = false;
+        renderer.physicallyCorrectLights = false;
+        renderer.toneMapping = THREE.NoToneMapping;
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5)); // 限制像素比
         
         // 全屏显示设置
         renderer.domElement.style.position = 'fixed';
@@ -100,10 +107,10 @@ const HeroCube = ({
         camera.aspect = window.innerWidth / window.innerHeight;
         camera.updateProjectionMatrix();
         
-        // 设置渲染质量
+        // 设置渲染质量 - 性能优化
         renderer.shadowMap.enabled = false;
-        renderer.physicallyCorrectLights = false;
-        renderer.toneMapping = THREE.ACESFilmicToneMapping;
+        renderer.physicallyCorrectLights = false; // 关闭物理光照
+        renderer.toneMapping = THREE.NoToneMapping; // 使用最简单的色调映射
         renderer.toneMappingExposure = 1.0;
         renderer.outputColorSpace = THREE.SRGBColorSpace;
         
@@ -163,34 +170,24 @@ const HeroCube = ({
                 video.autoplay = true;
                 video.playsInline = true;
                 
-                const material = new THREE.MeshPhysicalMaterial({
+                const material = new THREE.MeshLambertMaterial({
                     map: fallbackTexture,
                     transparent: true,
                     opacity: 0.9,
-                    transmission: 0.2,
-                    roughness: 0.1,
-                    metalness: 0.05,
-                    reflectivity: 0.8,
-                    clearcoat: 0.8,
-                    clearcoatRoughness: 0.1,
-                    ior: 1.52,
-                    thickness: 1.0,
-                    side: THREE.DoubleSide,
-                    iridescence: 0.1,
-                    iridescenceIOR: 1.3,
-                    iridescenceThicknessRange: [100, 400],
-                    envMapIntensity: 1.5,
-                    specularIntensity: 1.0,
-                    specularColor: new THREE.Color(0xffffff)
+                    side: THREE.FrontSide // 只渲染正面，提升性能
                 });
                 
-                // 视频加载成功后切换到视频纹理
+                // 视频加载成功后切换到视频纹理 - 修复抖动
                 const switchToVideoTexture = () => {
                     try {
                         const videoTexture = new THREE.VideoTexture(video);
-                        videoTexture.minFilter = THREE.LinearFilter;
+                        // 关键修复：使用高质量mipmap过滤器
+                        videoTexture.minFilter = THREE.LinearMipmapLinearFilter;
                         videoTexture.magFilter = THREE.LinearFilter;
-                        videoTexture.format = THREE.RGBFormat;
+                        videoTexture.format = THREE.RGBAFormat; // 使用RGBA格式
+                        videoTexture.generateMipmaps = true; // 开启mipmap
+                        videoTexture.flipY = false; // 禁用Y轴翻转避免抖动
+                        videoTexture.colorSpace = THREE.SRGBColorSpace;
                         
                         if (material.map && material.map !== fallbackTexture) {
                             material.map.dispose();
@@ -224,25 +221,11 @@ const HeroCube = ({
                 const img = new Image();
                 img.crossOrigin = 'anonymous';
                 
-                // 创建材质，初始使用透明纹理
-                const material = new THREE.MeshPhysicalMaterial({
+                // 创建材质，初始使用轻量材质
+                const material = new THREE.MeshLambertMaterial({
                     transparent: true,
                     opacity: 0.9,
-                    transmission: 0.2,
-                    roughness: 0.1,
-                    metalness: 0.05,
-                    reflectivity: 0.8,
-                    clearcoat: 0.8,
-                    clearcoatRoughness: 0.1,
-                    ior: 1.52,
-                    thickness: 1.0,
-                    side: THREE.DoubleSide,
-                    iridescence: 0.1,
-                    iridescenceIOR: 1.3,
-                    iridescenceThicknessRange: [100, 400],
-                    envMapIntensity: 1.5,
-                    specularIntensity: 1.0,
-                    specularColor: new THREE.Color(0xffffff)
+                    side: THREE.FrontSide // 只渲染正面，提升性能
                 });
                 
                 // 图片加载成功后设置纹理
@@ -333,25 +316,11 @@ const HeroCube = ({
             texture.minFilter = THREE.LinearMipmapLinearFilter;
             texture.magFilter = THREE.LinearFilter;
             
-            const material = new THREE.MeshPhysicalMaterial({
+            const material = new THREE.MeshLambertMaterial({
                 map: texture,
                 transparent: true,
-                opacity: 0.85,
-                transmission: 0.3,
-                roughness: 0.1,
-                metalness: 0.05,
-                reflectivity: 0.8,
-                clearcoat: 0.8,
-                clearcoatRoughness: 0.1,
-                ior: 1.52,
-                thickness: 1.0,
-                side: THREE.DoubleSide,
-                iridescence: 0.1,
-                iridescenceIOR: 1.3,
-                iridescenceThicknessRange: [100, 400],
-                envMapIntensity: 1.5,
-                specularIntensity: 1.0,
-                specularColor: new THREE.Color(0xffffff)
+                opacity: 0.9,
+                side: THREE.DoubleSide
             });
             
             return material;
