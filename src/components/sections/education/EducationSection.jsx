@@ -63,17 +63,17 @@ const EducationSection = ({ language }) => {
             <div key={degree.id} className="w-full mb-12 lg:mb-16">
                 {/* 学历标题 */}
                 <div className="mb-8 sm:mb-12 text-center">
-                    <h2 className="text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-bold mb-4 sm:mb-6 bg-gradient-to-r from-emerald-400 via-blue-400 to-purple-400 bg-clip-text text-transparent leading-normal py-1">
+                    <h3 className="text-xl sm:text-2xl lg:text-3xl font-semibold mb-4 sm:mb-6 bg-gradient-to-r from-emerald-400 via-blue-400 to-purple-400 bg-clip-text text-transparent leading-normal py-1">
                         {degree.degree.replace(" with Distinction", "")}
-                    </h2>
+                    </h3>
                     <div className="flex items-center justify-center gap-2 sm:gap-4 mb-3 sm:mb-4 flex-wrap">
                         <span className={`px-3 sm:px-4 py-1.5 sm:py-2 bg-gradient-to-r ${colors.badgeGradient} text-white text-xs sm:text-sm font-semibold rounded-full shadow-lg`}>
                             🏆 With Distinction
                         </span>
                     </div>
-                    <h3 className={`text-lg sm:text-xl lg:text-2xl xl:text-3xl ${colors.accent} font-medium mb-2`}>
+                    <h4 className={`text-base sm:text-lg lg:text-xl ${colors.accent} font-medium mb-2`}>
                         {degree.institution}
-                    </h3>
+                    </h4>
                     <div className="flex items-center justify-center gap-4 sm:gap-6 text-gray-300 text-sm sm:text-base flex-wrap">
                         <span className="flex items-center">
                             <span className={`mr-2 ${colors.iconColor}`}>📍</span>
@@ -232,16 +232,21 @@ const EducationSection = ({ language }) => {
 
     return (
         <div className="relative w-full min-h-screen overflow-auto bg-black/20">
-            {/* Education标题 - 居左显示，与Projects保持一致 */}
+            {/* Education标题 - 居中显示 */}
             <div className="flex flex-col p-8 pt-12">
-                <div className="flex flex-col">
-                    <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 bg-clip-text text-transparent mb-2">
+                <div className="flex flex-col items-center text-center">
+                    <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 bg-clip-text text-transparent mb-3">
                         Education
                     </h1>
-                    <h2 className="text-lg md:text-xl text-white/70 font-light italic pl-1">
+                    <h2 className="text-xl md:text-2xl text-white/70 font-light italic">
                         {language === 'en' ? 'academic background' : '教育背景'}
                     </h2>
                 </div>
+            </div>
+
+            {/* 标题与内容之间的分隔线 */}
+            <div className="flex items-center justify-center my-8">
+                <div className="w-full max-w-6xl h-0.5 bg-white/30 backdrop-blur-sm shadow-lg"></div>
             </div>
 
             {/* 学历内容 - 垂直滚动 */}
@@ -253,11 +258,7 @@ const EducationSection = ({ language }) => {
                             {/* 在 Master 和 Bachelor 之间添加分割线 */}
                             {index === 0 && (
                                 <div className="flex items-center justify-center my-16">
-                                    <div className="flex-1 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent"></div>
-                                    <div className="px-6">
-                                        <div className="w-3 h-3 rounded-full bg-gradient-to-r from-blue-400 to-purple-500 opacity-60"></div>
-                                    </div>
-                                    <div className="flex-1 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent"></div>
+                                    <div className="w-full max-w-6xl h-0.5 bg-white/40 backdrop-blur-md shadow-lg"></div>
                                 </div>
                             )}
                         </div>

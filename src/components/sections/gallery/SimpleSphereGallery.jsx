@@ -1,4 +1,4 @@
-import { useRef, useEffect, useState, useCallback, useMemo } from 'react';
+import { useRef, useEffect, useState, useCallback } from 'react';
 import * as THREE from 'three';
 import PropTypes from 'prop-types';
 import webglResourceManager from '../../../utils/WebGLResourceManager';
@@ -196,7 +196,7 @@ const SimpleSphereGallery = ({ items, onItemClick, isVisible }) => {
         }
     }, [onItemClick]);
 
-    // 动画循环 - 添加帧率限制以提升性能
+    // 动画循环 - 添加帧率限制以提升性能和自动旋转
     const animate = useCallback(() => {
         if (!isVisible) return;
 
@@ -206,6 +206,11 @@ const SimpleSphereGallery = ({ items, onItemClick, isVisible }) => {
         const now = performance.now();
         if (now - (animate.lastTime || 0) < 16.67) return; // ~60fps
         animate.lastTime = now;
+
+        // 自动缓慢向上旋转（仅在没有拖拽时）
+        if (!isDraggingRef.current) {
+            targetRotationRef.current.x -= 0.005; // 反向X轴旋转速度（相反方向的上下转动）
+        }
 
         // 平滑旋转
         const lerpFactor = 0.05;

@@ -55,13 +55,17 @@ const ContactSection = ({ language }) => {
         <div className="min-h-screen w-full p-4 sm:p-8 text-white flex items-center justify-center">
             <div className="max-w-7xl mx-auto w-full">
                 {/* 标题部分 */}
-                <div className="text-center mb-12">
-                    <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold mb-6 bg-gradient-to-r from-blue-400 to-purple-600 bg-clip-text text-transparent">
+                <div className="flex flex-col items-center text-center mb-12">
+                    <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 bg-clip-text text-transparent mb-3">
                         {contactTexts.title}
                     </h1>
-                    {/* <p className="text-lg sm:text-xl text-gray-300 mb-4">
-                        {contactTexts.subtitle}
-                    </p> */}
+                    <h2 className="text-xl md:text-2xl text-white/70 font-light italic mb-8">
+                        {contactTexts.subtitle || (language === 'en' ? 'get in touch' : '联系我')}
+                    </h2>
+                    
+                    {/* 标题与内容之间的分隔线 */}
+                    <div className="w-full max-w-4xl h-0.5 bg-white/30 backdrop-blur-sm shadow-lg mb-8"></div>
+                    
                     <p className="text-base text-gray-400 max-w-2xl mx-auto">
                         {contactTexts.description}
                     </p>

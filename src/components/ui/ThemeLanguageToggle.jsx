@@ -14,21 +14,10 @@ const ThemeLanguageToggle = () => {
     const [isVisible, setIsVisible] = useState(false);
     const content = getContent();
 
-    // 监听cube动画完成事件
+    // 直接显示按钮，不等待动画完成（性能优化）
     useEffect(() => {
-        const handleCubeAnimationComplete = () => {
-            // 延迟一点显示按钮，确保动画完全结束
-            setTimeout(() => {
-                setIsVisible(true);
-            }, 800); // cube动画完成后显示
-        };
-
-        // 监听自定义事件
-        window.addEventListener('cubeAnimationComplete', handleCubeAnimationComplete);
-        
-        return () => {
-            window.removeEventListener('cubeAnimationComplete', handleCubeAnimationComplete);
-        };
+        // 立即显示按钮，不需要等待cube动画完成
+        setIsVisible(true);
     }, []);
 
     return (

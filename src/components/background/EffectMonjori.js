@@ -20,9 +20,9 @@ export function EffectMonjori(canvas, params = {}) {
             animationSpeed: { value: params.animationSpeed || 0.618 },
             colors: {
                 value: params.colors || [
-                    new THREE.Color(0xff0000), // Default red
-                    new THREE.Color(0x00ff00), // Default green
-                    new THREE.Color(0x0000ff), // Default blue
+                    new THREE.Color('#311599'), // 深紫色 - 与首页EffectChaos的紫色一致
+                    new THREE.Color('#6366f1'), // 中紫色 - 过渡色
+                    new THREE.Color('#8b5cf6'), // 浅紫色 - 完成紫色系渐变
                 ],
             },
         };
@@ -30,6 +30,7 @@ export function EffectMonjori(canvas, params = {}) {
         // Shader material
         const material = new THREE.ShaderMaterial({
             uniforms: uniforms,
+            transparent: true, // 启用透明度支持
             vertexShader: `
                 varying vec2 vUv;
                 void main() {
@@ -72,7 +73,7 @@ export function EffectMonjori(canvas, params = {}) {
                     vec3 col = mix(colors[0], colors[1], i);
                     col = mix(col, colors[2], f);
 
-                    gl_FragColor = vec4(col * d, 1.0);
+                    gl_FragColor = vec4(col * d, 0.3);
                 }
             `,
         });

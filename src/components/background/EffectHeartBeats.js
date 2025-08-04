@@ -59,7 +59,8 @@ export class Particle {
         }
 
         const size = image.width * ease(this.age / this.settings.particles.duration);
-        context.globalAlpha = 1 - this.age / this.settings.particles.duration;
+        // 设置60%透明度基础上再应用粒子年龄透明度
+        context.globalAlpha = (1 - this.age / this.settings.particles.duration) * 0.6;
         context.drawImage(image, this.position.x - size / 2, this.position.y - size / 2, size, size);
     }
 }
@@ -134,7 +135,7 @@ export default class EffectHeartBeats {
         this.context = this.canvas.getContext("2d");
         this.width = params.width || 180;
         this.height = params.height || 130;
-        this.color = params.color || "#ea80b0";
+        this.color = params.color || "#311599"; // 改为首页EffectChaos的紫色
         this.settings = {
             particles: {
                 length: params.particles?.length || 500, // maximum amount of particles

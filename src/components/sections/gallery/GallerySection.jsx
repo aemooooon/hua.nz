@@ -74,13 +74,6 @@ const GallerySection = ({ language }) => {
                 />
             )}
 
-            {/* Gallery标题 - 左上角 */}
-            <div className="fixed top-6 left-6 z-50">
-                <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 bg-clip-text text-transparent">
-                    Gallery
-                </h1>
-            </div>
-
             {/* 球形Gallery */}
             <div className="relative w-full h-screen overflow-hidden">
                 {/* 只有当3D Gallery可见且items加载完成时才渲染 */}

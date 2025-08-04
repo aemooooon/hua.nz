@@ -71,59 +71,97 @@ const ProjectSection = ({ language }) => {
 
     return (
         <div className="min-h-screen w-full p-8 text-white relative project-section-bg">
-            {/* 顶部标题栏 - 左右对称布局 */}
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 pt-4 gap-4 sm:gap-0">
-                {/* 左侧：Projects标题和副标题 */}
-                <div className="flex flex-col">
-                    <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 bg-clip-text text-transparent mb-2">
+            {/* Projects标题 - 居中显示，与Education保持一致 */}
+            <div className="flex flex-col p-8 pt-12">
+                <div className="flex flex-col items-center text-center">
+                    <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 bg-clip-text text-transparent mb-3">
                         Projects
                     </h1>
-                    <h2 className="text-lg md:text-xl text-white/70 font-light italic pl-1 project-subtitle">
+                    <h2 className="text-xl md:text-2xl text-white/70 font-light italic">
                         {language === 'en' ? 'showcases' : '作品展示'}
                     </h2>
                 </div>
+            </div>
 
-                {/* 右侧：地图探索按钮 */}
-                <div className="flex items-center self-start sm:self-center">
-                    <button
-                        onClick={() => setIsMapOpen(true)}
-                        className="map-view-button group"
-                        title={language === 'en' ? 'Explore Projects on Interactive Map' : '在交互地图上探索项目'}
-                    >
-                        <svg className="map-view-button-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-1.447-.894L15 4m0 13V4m-6 3l6-3" />
-                        </svg>
-                        <span>
-                            {language === 'en' ? '🗺️ Explore Map' : '🗺️ 探索地图'}
-                        </span>
-                    </button>
-                </div>
+            {/* 标题与内容之间的分隔线 - 与下面容器宽度一致 */}
+            <div className="flex items-center justify-center my-8 px-4 sm:px-6 lg:px-8">
+                <div className="w-full h-0.5 bg-white/30 backdrop-blur-sm shadow-lg"></div>
             </div>
             
             {/* 全屏内容区域 - 与顶部标题栏保持一致的全屏布局 */}
             <div className="relative z-10 backdrop-protection">
-                {/* 动态项目统计卡片 - 全屏宽度 */}
-                <div className="stats-grid px-4 sm:px-6 lg:px-8">
-                    <div 
-                        className={`stat-card cursor-pointer ${activeFilter === 'all' ? 'ring-2 ring-white/30' : ''}`}
-                        onClick={() => setActiveFilter('all')}
-                    >
-                        <span className="stat-number text-blue-400">{projects.length}</span>
-                        <span className="stat-label">{language === 'en' ? 'Total Projects' : '总项目数'}</span>
-                    </div>
-                    
-                    {Object.entries(projectsByCategory).map(([category, categoryProjects]) => (
+                {/* 动态项目统计卡片 + Explore Map卡片 - 响应式布局 */}
+                <div className="px-4 sm:px-6 lg:px-8 mb-12">
+                    {/* 移动端和小屏：所有卡片统一网格布局 */}
+                    <div className="stats-grid lg:hidden">
                         <div 
-                            key={category}
-                            className={`stat-card cursor-pointer ${activeFilter === category ? 'ring-2 ring-white/30' : ''}`}
-                            onClick={() => setActiveFilter(category)}
+                            className={`stat-card cursor-pointer ${activeFilter === 'all' ? 'ring-2 ring-white/30' : ''}`}
+                            onClick={() => setActiveFilter('all')}
                         >
-                            <span className={`stat-number ${getCategoryColor(category).split(' ')[2]}`}>
-                                {categoryProjects.length}
-                            </span>
-                            <span className="stat-label">{category}</span>
+                            <span className="stat-number text-blue-400">{projects.length}</span>
+                            <span className="stat-label">{language === 'en' ? 'Total Projects' : '总项目数'}</span>
                         </div>
-                    ))}
+                        
+                        {Object.entries(projectsByCategory).map(([category, categoryProjects]) => (
+                            <div 
+                                key={category}
+                                className={`stat-card cursor-pointer ${activeFilter === category ? 'ring-2 ring-white/30' : ''}`}
+                                onClick={() => setActiveFilter(category)}
+                            >
+                                <span className={`stat-number ${getCategoryColor(category).split(' ')[2]}`}>
+                                    {categoryProjects.length}
+                                </span>
+                                <span className="stat-label">{category}</span>
+                            </div>
+                        ))}
+
+                        {/* Explore Map 卡片 */}
+                        <div 
+                            className="stat-card cursor-pointer bg-gradient-to-br from-purple-600/20 to-blue-600/20 border-purple-400/30 hover:border-purple-400/50 transition-all duration-300"
+                            onClick={() => setIsMapOpen(true)}
+                            title={language === 'en' ? 'Explore Projects on Interactive Map' : '在交互地图上探索项目'}
+                        >
+                            <span className="stat-number text-purple-400">🗺️</span>
+                            <span className="stat-label">{language === 'en' ? 'Explore Map' : '探索地图'}</span>
+                        </div>
+                    </div>
+
+                    {/* 宽屏：左右分离布局 */}
+                    <div className="hidden lg:flex lg:items-center lg:justify-between">
+                        {/* 左侧：统计卡片组 */}
+                        <div className="flex gap-6">
+                            <div 
+                                className={`stat-card cursor-pointer ${activeFilter === 'all' ? 'ring-2 ring-white/30' : ''}`}
+                                onClick={() => setActiveFilter('all')}
+                            >
+                                <span className="stat-number text-blue-400">{projects.length}</span>
+                                <span className="stat-label">{language === 'en' ? 'Total Projects' : '总项目数'}</span>
+                            </div>
+                            
+                            {Object.entries(projectsByCategory).map(([category, categoryProjects]) => (
+                                <div 
+                                    key={category}
+                                    className={`stat-card cursor-pointer ${activeFilter === category ? 'ring-2 ring-white/30' : ''}`}
+                                    onClick={() => setActiveFilter(category)}
+                                >
+                                    <span className={`stat-number ${getCategoryColor(category).split(' ')[2]}`}>
+                                        {categoryProjects.length}
+                                    </span>
+                                    <span className="stat-label">{category}</span>
+                                </div>
+                            ))}
+                        </div>
+
+                        {/* 右侧：Explore Map 卡片 */}
+                        <div 
+                            className="stat-card cursor-pointer bg-gradient-to-br from-purple-600/20 to-blue-600/20 border-purple-400/30 hover:border-purple-400/50 transition-all duration-300"
+                            onClick={() => setIsMapOpen(true)}
+                            title={language === 'en' ? 'Explore Projects on Interactive Map' : '在交互地图上探索项目'}
+                        >
+                            <span className="stat-number text-purple-400">🗺️</span>
+                            <span className="stat-label">{language === 'en' ? 'Explore Map' : '探索地图'}</span>
+                        </div>
+                    </div>
                 </div>
 
                 {/* 当前筛选指示器 */}
