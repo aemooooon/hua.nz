@@ -56,7 +56,6 @@ const GallerySection = ({ language }) => {
 
     // 处理3D画廊项目点击 - 使用useCallback稳定化
     const handleItemClick = useCallback((item, index) => {
-        console.log('handleItemClick called:', item, index);
         setSelectedImageIndex(index);
         setIsPhotoSwipeOpen(true);
     }, []);

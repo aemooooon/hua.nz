@@ -2,7 +2,7 @@ import * as THREE from "three";
 
 export class EffectChaos {
     constructor(canvas, params = {}) {
-        console.log('EffectChaos: Initializing with params:', params);
+        // 初始化Chaos效果
         this.canvas = canvas;
         this.renderer = null;
         this.scene = null;
@@ -155,8 +155,6 @@ export class EffectChaos {
         // EffectGalaxy的环境光配置
         this.ambientLight = new THREE.AmbientLight(0x404040, 0.2);
         this.scene.add(this.ambientLight);
-        
-        console.log('EffectChaos: Created optimized central light');
     }
 
     updatePositions() {
@@ -184,7 +182,7 @@ export class EffectChaos {
     }
 
     start() {
-        console.log('EffectChaos: Starting animation');
+        // 开始动画循环
         this.animate();
     }
 
@@ -223,7 +221,7 @@ export class EffectChaos {
     }
 
     onContextRestored() {
-        console.log('WebGL context restored. Reinitializing...');
+        // WebGL上下文恢复，重新初始化
         
         // 重新初始化渲染器和场景
         this.init();
@@ -233,7 +231,7 @@ export class EffectChaos {
     }
 
     stop() {
-        console.log('EffectChaos: Stopping and cleaning up resources...');
+        // 停止动画并清理资源
         
         // 停止动画循环
         if (this.animationFrameId) {
@@ -305,8 +303,6 @@ export class EffectChaos {
         
         // 移除事件监听器
         window.removeEventListener("resize", this.onResize.bind(this));
-        
-        console.log('EffectChaos: Resource cleanup completed');
     }
 
     cleanup() {

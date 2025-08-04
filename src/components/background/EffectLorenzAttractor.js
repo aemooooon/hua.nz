@@ -385,7 +385,7 @@ export class EffectLorenzAttractor {
     }
 
     stop() {
-        console.log('EffectLorenzAttractor: Stopping and cleaning up resources...');
+        // 停止动画并清理资源
         
         // 停止动画循环
         if (this.animationFrameId) {
@@ -496,7 +496,5 @@ export class EffectLorenzAttractor {
         
         // 移除事件监听器
         window.removeEventListener("resize", this.onResize.bind(this));
-        
-        console.log('EffectLorenzAttractor: Resource cleanup completed');
     }
 }

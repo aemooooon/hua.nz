@@ -152,7 +152,6 @@ const BackgroundCanvas = ({ effectType = 'effectfuse' }) => {
             try {
 
                   // 创建新效果
-                console.log(`BackgroundCanvas: Creating effect of type: ${effectType}`);
                 switch (effectType) {
                     case 'effectfuse': {
                         effectInstanceRef.current = new EffectFuse(canvas, defaultParams);
@@ -200,7 +199,7 @@ const BackgroundCanvas = ({ effectType = 'effectfuse' }) => {
                 
                 // 如果是WebGL特效失败，回退到简单特效
                 if (effectType === 'effectfuse' || effectType === 'effectlorenz' || effectType === 'effectchaos') {
-                    console.warn(`${effectType} failed, falling back to EffectHeartBeats`);
+                    // WebGL效果失败，使用fallback
                     try {
                         effectInstanceRef.current = new EffectHeartBeats(canvas, defaultParams);
                         if (effectInstanceRef.current?.start) {
@@ -224,7 +223,7 @@ const BackgroundCanvas = ({ effectType = 'effectfuse' }) => {
         window.addEventListener('resize', debouncedResize);
 
         return () => {
-            console.log('BackgroundCanvas: Cleaning up effect and canvas...');
+            // 清理效果和画布
             
             window.removeEventListener('resize', debouncedResize);
             
@@ -237,9 +236,7 @@ const BackgroundCanvas = ({ effectType = 'effectfuse' }) => {
             // 强制清理效果实例
             if (effectInstanceRef.current) {
                 try {
-                    console.log(`BackgroundCanvas: Disposing effect of type: ${effectType}`);
-                    
-                    // 调用stop方法
+                    // 停止当前效果
                     if (typeof effectInstanceRef.current.stop === 'function') {
                         effectInstanceRef.current.stop();
                     } else if (typeof effectInstanceRef.current.destroy === 'function') {
@@ -267,7 +264,6 @@ const BackgroundCanvas = ({ effectType = 'effectfuse' }) => {
                     
                     // 移除canvas
                     document.body.removeChild(canvas);
-                    console.log('BackgroundCanvas: Canvas removed from DOM');
                 } catch (error) {
                     console.error('Error removing canvas:', error);
                 }
@@ -280,8 +276,6 @@ const BackgroundCanvas = ({ effectType = 'effectfuse' }) => {
             if (typeof window !== 'undefined' && window.gc) {
                 setTimeout(() => window.gc(), 100);
             }
-            
-            console.log('BackgroundCanvas: Cleanup completed');
         };
     }, [effectType]);
 

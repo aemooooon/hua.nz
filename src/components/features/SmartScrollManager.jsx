@@ -85,9 +85,6 @@ const SmartScrollManager = () => {
         
         const isOverflowing = container.scrollHeight > container.clientHeight + 10; // 增加10px缓冲区，防止临界状态
         
-        // 添加调试日志，帮助诊断问题
-        console.log(`[ScrollManager] Section: ${currentSectionConfig?.id}, ScrollHeight: ${container.scrollHeight}, ClientHeight: ${container.clientHeight}, IsOverflowing: ${isOverflowing}`);
-        
         setIsContentOverflowing(isOverflowing);
         
         // 混合滚动模式逻辑 - 适用于所有页面
@@ -98,13 +95,11 @@ const SmartScrollManager = () => {
             // 所有其他页面根据内容溢出情况决定滚动模式
             if (isOverflowing) {
                 setScrollMode('content'); // 任何内容溢出的页面都使用内容滚动模式
-                console.log(`[ScrollManager] ${currentSectionConfig?.id} 切换到内容滚动模式`);
             } else {
                 setScrollMode('slide'); // 内容不溢出时使用幻灯片模式
-                console.log(`[ScrollManager] ${currentSectionConfig?.id} 切换到幻灯片模式`);
             }
         }
-    }, [isHomePage, currentSectionConfig?.id]);
+    }, [isHomePage]);
 
     // 处理iOS式回弹动画
     const triggerBounceAnimation = useCallback((direction, intensity = 0.5) => {
@@ -124,8 +119,6 @@ const SmartScrollManager = () => {
         
         setPreviewOffset(offset);
         setIsPreviewingScroll(true);
-        
-        console.log(`[ScrollManager] 触发回弹动画: ${direction}, 强度: ${intensity}, 偏移: ${offset}px`);
         
         // 300ms后开始回弹动画
         bounceTimerRef.current = setTimeout(() => {
@@ -221,7 +214,6 @@ const SmartScrollManager = () => {
                         }
                         
                         if (scrollAccumulatorRef.current >= SCROLL_THRESHOLD && currentSection < sections.length - 1) {
-                            console.log(`[ScrollManager] 到达 ${currentSectionConfig?.id} 底部，切换到下一页`);
                             scrollAccumulatorRef.current = 0;
                             navigateNext();
                         }
@@ -230,7 +222,6 @@ const SmartScrollManager = () => {
                 } else {
                     // 在内容中间滚动向下，完全交给浏览器处理
                     scrollAccumulatorRef.current = 0; // 重置累积器
-                    console.log(`[ScrollManager] 在 ${currentSectionConfig?.id} 向下滚动，ScrollTop: ${currentScrollTop}/${maxScrollTop}`);
                     return; // 让浏览器自然处理滚动
                 }
             } else if (isScrollingUp) {
@@ -252,7 +243,6 @@ const SmartScrollManager = () => {
                         }
                         
                         if (scrollAccumulatorRef.current >= SCROLL_THRESHOLD && currentSection > 0) {
-                            console.log(`[ScrollManager] 到达 ${currentSectionConfig?.id} 顶部，切换到上一页`);
                             scrollAccumulatorRef.current = 0;
                             navigatePrev();
                         }
@@ -261,7 +251,6 @@ const SmartScrollManager = () => {
                 } else {
                     // 在内容中间滚动向上，完全交给浏览器处理
                     scrollAccumulatorRef.current = 0; // 重置累积器
-                    console.log(`[ScrollManager] 在 ${currentSectionConfig?.id} 向上滚动，ScrollTop: ${currentScrollTop}/${maxScrollTop}`);
                     return; // 让浏览器自然处理滚动
                 }
             }

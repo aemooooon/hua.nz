@@ -18,11 +18,7 @@ class VisibilityRenderer {
     // 页面可见性检测
     document.addEventListener('visibilitychange', () => {
       this.isVisible = !document.hidden;
-      if (this.isVisible) {
-        console.log('🎬 恢复渲染');
-      } else {
-        console.log('⏸️ 暂停渲染 - 节省资源');
-      }
+      // 根据页面可见性调整渲染状态
     });
 
     // 窗口焦点检测
@@ -137,7 +133,6 @@ class Float32ArrayPool {
     const pool = this.pools.get(size);
     if (pool.length > 0) {
       const array = pool.pop();
-      console.log(`♻️ 重用 Float32Array[${size}], 池中剩余: ${pool.length}`);
       return array;
     }
     
@@ -147,7 +142,6 @@ class Float32ArrayPool {
     }
     
     this.totalArrays++;
-    console.log(`🆕 创建新 Float32Array[${size}], 总计: ${this.totalArrays}`);
     return new Float32Array(size);
   }
 
@@ -166,11 +160,9 @@ class Float32ArrayPool {
       // 清空数组数据
       array.fill(0);
       pool.push(array);
-      console.log(`🔄 归还 Float32Array[${size}], 池中现有: ${pool.length}`);
     } else {
       // 池满了，直接丢弃
       this.totalArrays--;
-      console.log(`🗑️ 丢弃 Float32Array[${size}], 池已满`);
     }
   }
 
@@ -189,7 +181,6 @@ class Float32ArrayPool {
     if (maxPool) {
       const removed = maxPool.splice(0, Math.floor(maxSize / 2));
       this.totalArrays -= removed.length;
-      console.log(`🧹 清理内存池，释放 ${removed.length} 个数组`);
     }
   }
 

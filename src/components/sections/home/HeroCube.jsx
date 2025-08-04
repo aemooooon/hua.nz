@@ -48,7 +48,7 @@ const HeroCube = ({
     // 预加载所有纹理资源
     useEffect(() => {
         const preloadTextures = async () => {
-            console.log('🎯 Starting texture preload for HeroCube...');
+            // 预加载纹理，减少首次渲染卡顿
             
             // 收集所有需要预加载的资源
             const urls = faces.filter(face => face.video || face.image)
@@ -62,10 +62,9 @@ const HeroCube = ({
             try {
                 await texturePreloader.preloadBatch(urls);
                 setTexturesReady(true);
-                console.log('✅ All HeroCube textures preloaded successfully');
-            } catch (error) {
-                console.warn('⚠️ Some textures failed to preload, continuing anyway:', error);
-                setTexturesReady(true); // 即使失败也要继续，使用fallback
+            } catch {
+                // 部分纹理加载失败，使用fallback继续
+                setTexturesReady(true);
             }
         };
         
@@ -91,11 +90,10 @@ const HeroCube = ({
     useEffect(() => {
         // 等待纹理预加载完成
         if (!texturesReady) {
-            console.log('⏳ Waiting for textures to be ready...');
             return;
         }
         
-        console.log('🚀 Starting HeroCube rendering with preloaded textures');
+        // 开始HeroCube渲染，使用预加载的纹理
         
         const mountElement = mountRef.current;
         if (!mountElement) return;
@@ -209,9 +207,9 @@ const HeroCube = ({
                 });
                 
                 if (preloadedTexture) {
-                    console.log(`✅ Using preloaded video texture for ${face.name} face`);
+                    // 使用预加载的纹理
                 } else {
-                    console.warn(`⚠️ Preloaded texture not found for ${face.video}, using fallback`);
+                    // 预加载的纹理未找到，使用fallback
                     
                     // 如果预加载失败，仍然尝试动态加载
                     const video = document.createElement('video');
@@ -237,21 +235,19 @@ const HeroCube = ({
                             }
                             material.map = videoTexture;
                             material.needsUpdate = true;
-                            
-                            console.log(`✅ Fallback video texture loaded for ${face.name} face`);
-                        } catch (error) {
-                            console.warn(`❌ Failed to create fallback video texture for ${face.name}:`, error);
+                        } catch {
+                            // 忽略fallback纹理创建失败
                         }
                     };
                     
                     video.addEventListener('loadeddata', switchToVideoTexture);
                     video.addEventListener('canplay', switchToVideoTexture);
-                    video.addEventListener('error', (e) => {
-                        console.warn(`❌ Fallback video loading failed for ${face.name}:`, e);
+                    video.addEventListener('error', () => {
+                        // 忽略视频播放错误，使用静态材质
                     });
                     
-                    video.play().catch((error) => {
-                        console.warn(`⚠️ Fallback video autoplay failed for ${face.name}:`, error);
+                    video.play().catch(() => {
+                        // 忽略视频自动播放失败
                     });
                 }
                 
@@ -270,9 +266,9 @@ const HeroCube = ({
                 });
                 
                 if (preloadedTexture) {
-                    console.log(`✅ Using preloaded image texture for ${face.name} face`);
+                    // 使用预加载的纹理
                 } else {
-                    console.warn(`⚠️ Preloaded texture not found for ${face.image}, using fallback`);
+                    // 预加载的纹理未找到，使用fallback
                 }
                 
                 return material;
@@ -714,7 +710,6 @@ const HeroCube = ({
             // 使用setTimeout确保在下一帧调用，避免在渲染期间修改state
             setTimeout(() => {
                 onReady();
-                console.log('🎯 HeroCube initialization completed');
             }, 100);
         }
         

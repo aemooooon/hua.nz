@@ -246,7 +246,7 @@ const SimpleSphereGallery = ({ items, onItemClick, isVisible }) => {
     useEffect(() => {
         if (!isVisible || !mountRef.current || items.length === 0) return;
 
-        console.log('SimpleSphereGallery: Initializing with', items.length, 'items');
+        // 初始化3D画廊场景
         
         const mountElement = mountRef.current; // 保存引用
 
@@ -294,8 +294,7 @@ const SimpleSphereGallery = ({ items, onItemClick, isVisible }) => {
 
         // 创建球形位置
         const positions = createSpherePositions(items.length);
-        console.log('SimpleSphereGallery: Created', positions.length, 'sphere positions');
-
+        
         // 创建图片框架
         frameGroupsRef.current = [];
         items.forEach((item, index) => {

@@ -75,8 +75,6 @@ class TexturePreloader {
                         const texture = new THREE.CanvasTexture(canvas);
                         this.applyTextureSettings(texture, options);
                         
-                        console.log(`✅ Optimized texture loaded: ${url} (${img.width}x${img.height} → ${canvas.width}x${canvas.height})`);
-                        
                         this.loadedTextures.set(url, texture);
                         resolve(texture);
                     } else {
@@ -84,8 +82,6 @@ class TexturePreloader {
                         const texture = new THREE.Texture(img);
                         texture.needsUpdate = true;
                         this.applyTextureSettings(texture, options);
-                        
-                        console.log(`✅ Texture loaded: ${url} (${img.width}x${img.height})`);
                         
                         this.loadedTextures.set(url, texture);
                         resolve(texture);
@@ -149,8 +145,6 @@ class TexturePreloader {
                         flipY: false // 重要：防止视频抖动
                     });
                     
-                    console.log(`✅ Video texture loaded: ${url}`);
-                    
                     this.loadedTextures.set(url, texture);
                     resolve(texture);
                 } catch (error) {
@@ -193,8 +187,6 @@ class TexturePreloader {
      * @returns {Promise<Array<THREE.Texture>>}
      */
     async preloadBatch(urls, options = {}) {
-        console.log(`🔄 Starting batch preload for ${urls.length} textures...`);
-        
         const loadPromises = urls.map(url => {
             if (url.endsWith('.mp4') || url.endsWith('.webm')) {
                 return this.preloadVideoTexture(url, options);
@@ -205,7 +197,6 @@ class TexturePreloader {
         
         try {
             const textures = await Promise.all(loadPromises);
-            console.log(`✅ Batch preload completed: ${textures.length} textures loaded`);
             return textures;
         } catch (error) {
             console.error('❌ Batch preload failed:', error);
@@ -283,8 +274,6 @@ class TexturePreloader {
         
         this.loadedTextures.clear();
         this.loadingPromises.clear();
-        
-        console.log('🧹 TexturePreloader disposed');
     }
 }
 

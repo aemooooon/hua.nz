@@ -37,7 +37,7 @@ const HomeSection = ({
             
             // 如果纹理加载完成，可以提前准备
             if (progress.progress === 1 && progress.total > 0) {
-                console.log('🎯 All textures loaded, Cube can render smoothly');
+                // 纹理加载完成，Cube可以流畅渲染
             }
         }, 100);
         
@@ -52,7 +52,6 @@ const HomeSection = ({
     const handleCubeReady = useCallback(() => {
         setCubeReady(true);
         setCubeLoading(false);
-        console.log('🎯 Cube loading completed, hiding loading indicator');
     }, []);
 
     return (
