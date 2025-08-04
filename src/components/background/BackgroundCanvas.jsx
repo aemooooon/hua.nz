@@ -125,7 +125,7 @@ const BackgroundCanvas = ({ effectType = 'effectfuse' }) => {
                 const currentEffect = effectInstanceRef.current;
                 effectInstanceRef.current = null;
                 
-                // 延迟清理旧效果
+                // 缩短延迟清理时间，减少页面切换时的冲突
                 cleanupTimeoutRef.current = setTimeout(() => {
                     try {
                         if (typeof currentEffect.stop === 'function') {
@@ -134,9 +134,13 @@ const BackgroundCanvas = ({ effectType = 'effectfuse' }) => {
                             currentEffect.destroy();
                         }
                     } catch (error) {
-                        console.error('Error stopping previous effect:', error);
+                        // 静默处理清理错误，避免页面切换时的噪音
+                        // 仅在开发环境输出错误
+                        if (import.meta.env.DEV) {
+                            console.error('Error stopping previous effect:', error);
+                        }
                     }
-                }, 100);
+                }, 50); // 缩短到50ms
             }
 
             // 默认参数配置 - 使用原始参数值
@@ -233,7 +237,7 @@ const BackgroundCanvas = ({ effectType = 'effectfuse' }) => {
                 cleanupTimeoutRef.current = null;
             }
             
-            // 强制清理效果实例
+            // 立即清理效果实例（避免延迟清理导致的竞态条件）
             if (effectInstanceRef.current) {
                 try {
                     // 停止当前效果
@@ -242,11 +246,10 @@ const BackgroundCanvas = ({ effectType = 'effectfuse' }) => {
                     } else if (typeof effectInstanceRef.current.destroy === 'function') {
                         effectInstanceRef.current.destroy();
                     }
-                    
-                    // 强制清空引用
-                    effectInstanceRef.current = null;
                 } catch (error) {
                     console.error('Error cleaning up effect:', error);
+                } finally {
+                    // 确保引用被清空
                     effectInstanceRef.current = null;
                 }
             }

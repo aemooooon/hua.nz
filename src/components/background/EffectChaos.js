@@ -241,13 +241,8 @@ export class EffectChaos {
         
         // 清理渲染器
         if (this.renderer) {
-            // 清理渲染器上下文
-            const context = this.renderer.getContext();
-            if (context && context.getExtension('WEBGL_lose_context')) {
-                context.getExtension('WEBGL_lose_context').loseContext();
-            }
+            // 正常清理渲染器，不强制丢失上下文
             this.renderer.dispose();
-            this.renderer.forceContextLoss();
             this.renderer = null;
         }
         
