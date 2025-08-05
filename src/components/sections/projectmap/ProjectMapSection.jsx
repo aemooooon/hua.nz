@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 
-import locations from '../../../store/locations';
+import useAppStore from '../../../store/useAppStore';
 
 // 修复 Leaflet 默认图标问题
 delete L.Icon.Default.prototype._getIconUrl;
@@ -16,12 +16,14 @@ L.Icon.Default.mergeOptions({
 const ProjectMapSection = ({ section, language }) => {
     const mapRef = useRef(null);
     const mapInstanceRef = useRef(null);
-
+    
+    // 从store获取项目数据
+    const { getAllProjects } = useAppStore();
 
     // 筛选和分类功能
     const [activeCategory, setActiveCategory] = useState('all');
     const [selectedLocation, setSelectedLocation] = useState(null);
-    const [filteredLocations, setFilteredLocations] = useState(locations.locations);
+    const [filteredLocations, setFilteredLocations] = useState(() => getAllProjects());
 
     const filterButtons = [
         { label: "All", value: "all" },
@@ -34,7 +36,7 @@ const ProjectMapSection = ({ section, language }) => {
     const handleFilterChange = (value) => {
         setActiveCategory(value);
         setSelectedLocation(null);
-        const newFilteredLocations = locations.locations.filter((loc) => {
+        const newFilteredLocations = getAllProjects().filter((loc) => {
             return (loc.type === value || value === "all") && loc.coordinates;
         });
         setFilteredLocations(newFilteredLocations);

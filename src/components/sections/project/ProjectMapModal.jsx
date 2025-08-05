@@ -2,7 +2,7 @@ import { useEffect, useRef, useMemo, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import locations from '../../../store/locations';
+import useAppStore from '../../../store/useAppStore';
 
 // 修复 Leaflet 默认图标问题
 delete L.Icon.Default.prototype._getIconUrl;
@@ -17,8 +17,11 @@ const ProjectMapModal = ({ isOpen, onClose, language = 'en' }) => {
   const mapInstanceRef = useRef(null);
   const markersRef = useRef([]);
   
+  // 从store获取项目数据
+  const { getAllProjects } = useAppStore();
+  
   // 获取项目数据
-  const projects = locations.locations.filter(loc => loc.type === 'project');
+  const projects = getAllProjects().filter(loc => loc.type === 'project');
 
   // 类型颜色映射 - 使用 useMemo 避免每次渲染都重新创建
   const typeColors = useMemo(() => ({

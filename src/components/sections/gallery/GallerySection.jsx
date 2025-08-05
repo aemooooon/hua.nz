@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import PropTypes from 'prop-types';
-import { galleryData } from '../../../store/galleryData';
+import useAppStore from '../../../store/useAppStore';
 import SimpleSphereGallery from './SimpleSphereGallery';
 import PhotoSwipeGallery from './PhotoSwipeGallery';
 import { useImagePreloader } from '../../../hooks/useImagePreloader';
@@ -14,11 +14,14 @@ const GallerySection = ({ language }) => {
     const [isGallery3DVisible, setIsGallery3DVisible] = useState(false);
     const [showBackground, setShowBackground] = useState(false); // 控制3D背景显示
 
+    // 从store获取gallery数据
+    const { getAllGalleryItems } = useAppStore();
+
     // 获取所有项目（不分类）
     useEffect(() => {
-        const items = galleryData.getAllItems();
+        const items = getAllGalleryItems();
         setAllItems(items);
-    }, []);
+    }, [getAllGalleryItems]);
 
     // 使用图片预加载优化性能
     const {

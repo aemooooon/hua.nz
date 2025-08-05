@@ -2,14 +2,17 @@ import { useState } from 'react';
 import PropTypes from 'prop-types';
 import ProjectMapModal from './ProjectMapModal';
 import GlowDivider from '../../ui/GlowDivider';
-import locations from '../../../store/locations';
+import useAppStore from '../../../store/useAppStore';
 
 const ProjectSection = ({ language }) => {
     const [isMapOpen, setIsMapOpen] = useState(false);
     const [activeFilter, setActiveFilter] = useState('all');
+    
+    // 从store获取数据和方法
+    const { getProjectsByType } = useAppStore();
 
-    // 用 locations 数据源替换硬编码项目
-    const projects = locations.locations.filter(loc => loc.type === 'project');
+    // 获取项目数据
+    const projects = getProjectsByType('project');
 
     // 根据项目特征进行智能分组
     const getProjectCategory = (project) => {
