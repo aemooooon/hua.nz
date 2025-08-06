@@ -38,9 +38,9 @@ const sectionsConfig = [
   {
     id: "gallery",
     index: 3,
-    name: { en: "Gallery", zh: "作品展示" },
+    name: { en: "GallerySection", zh: "作品展示" },
     description: { en: "Visual showcase", zh: "视觉作品展示" },
-    backgroundEffect: null, // Gallery内部自己管理背景加载时机
+    backgroundEffect: null, // GallerySection 内部自己管理背景加载时机
     cubeImage: "/cube-textures/gallery.jpg", // 修正立方体图片路径
     icon: "🖼️"
   },

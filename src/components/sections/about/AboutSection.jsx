@@ -4,7 +4,6 @@ import imageSrc from '../../../data/hua_icon_base64';
 import hoverImageSrc from '../../../assets/images/hua_500w1.jpg';
 import { FaSpinner } from 'react-icons/fa';
 import { useAppStore } from '../../../store/useAppStore';
-import Gallery from './Gallery';
 
 const EffectAvatar = lazy(() => import('../../background/EffectAvatar'));
 
@@ -17,7 +16,6 @@ const AboutSection = ({ language = 'en' }) => {
 
     // 优化：延迟渲染 Avatar 组件以提升 LCP
     const [showAvatar, setShowAvatar] = useState(false);
-    const [isGalleryOpen, setIsGalleryOpen] = useState(false);
     
     useEffect(() => {
         const timer = setTimeout(() => setShowAvatar(true), 600);
@@ -47,18 +45,8 @@ const AboutSection = ({ language = 'en' }) => {
                                         </p>
                                     ))}
                                 
-                                {/* 按钮区域 - Gallery 和 Resume */}
+                                {/* Resume 链接 */}
                                 <div className="resume-section flex items-center justify-end space-x-4">
-                                    {/* Gallery 按钮 */}
-                                    <button
-                                        onClick={() => setIsGalleryOpen(true)}
-                                        className="inline-block text-purple-400 hover:text-purple-300 font-medium transition-all duration-300 hover:scale-105 border-b border-purple-400/50 hover:border-purple-300 pb-1"
-                                        style={{ fontFamily: 'Figtree, sans-serif', fontWeight: '500' }}
-                                    >
-                                        {language === 'en' ? 'Gallery' : '画廊'}
-                                    </button>
-                                    
-                                    {/* Resume 链接 */}
                                     <a 
                                         href="/Hua_Wang_Full_Stack_Engineer.pdf" 
                                         target="_blank" 
@@ -145,13 +133,6 @@ const AboutSection = ({ language = 'en' }) => {
                     </div>
                 </div>
             </div>
-            
-            {/* Gallery 弹窗 */}
-            <Gallery 
-                isOpen={isGalleryOpen} 
-                onClose={() => setIsGalleryOpen(false)} 
-                language={language} 
-            />
         </div>
     );
 };

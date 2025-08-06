@@ -3,11 +3,13 @@ import PropTypes from 'prop-types';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { useAppStore } from '../../../store/useAppStore';
+import PhotoSwipeGallery from './PhotoSwipeGallery';
 
 const Gallery = ({ isOpen, onClose, language = 'en' }) => {
     const [isVisible, setIsVisible] = useState(false);
     const [loadingProgress, setLoadingProgress] = useState(0);
     const [isDragging, setIsDragging] = useState(false);
+    const [isPhotoSwipeOpen, setIsPhotoSwipeOpen] = useState(false);
     const canvasRef = useRef(null);
     const sceneRef = useRef(null);
     const rendererRef = useRef(null);
@@ -544,6 +546,13 @@ const Gallery = ({ isOpen, onClose, language = 'en' }) => {
             onClick={handleBackgroundClick}
             onMouseDown={handleMouseDown}
         >
+            {/* PhotoSwipeGallery Integration */}
+            <PhotoSwipeGallery 
+                items={galleryData.map(item => ({ src: item.src, thumbnail: item.thumbnail }))}
+                isOpen={isPhotoSwipeOpen}
+                onClose={() => setIsPhotoSwipeOpen(false)}
+            />
+
             {/* 全屏容器 */}
             <div className="w-full h-full flex items-start justify-end p-4">
                 {/* 关闭按钮 - 固定在右上角 */}
