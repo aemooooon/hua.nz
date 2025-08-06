@@ -7,7 +7,7 @@ const DeveloperPanel = ({ visible, onToggle }) => {
     const [memoryInfo, setMemoryInfo] = useState(null);
     const [webglInfo, setWebglInfo] = useState(null);
     const [performanceData, setPerformanceData] = useState({});
-    const [isCollapsed, setIsCollapsed] = useState(true);
+    const [isCollapsed, setIsCollapsed] = useState(false);
     const fpsRef = useRef(0);
     const frameCountRef = useRef(0);
     const lastTimeRef = useRef(performance.now());
@@ -146,7 +146,7 @@ const DeveloperPanel = ({ visible, onToggle }) => {
     );
 
     return (
-        <div className={`fixed bottom-4 left-4 z-[9999] bg-white/10 backdrop-blur-md border border-white/20 rounded-lg text-white font-mono text-xs transition-all duration-300 ${
+        <div className={`fixed top-4 right-4 z-[9999] bg-white/10 backdrop-blur-md border border-white/20 rounded-lg text-white font-mono text-xs transition-all duration-300 ${
             isCollapsed ? 'w-8 h-8' : 'w-80 max-h-96'
         }`}>
             {/* Header */}
