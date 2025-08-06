@@ -180,7 +180,7 @@ const PhotoSwipeGallery = ({
             >
                 {items.map((item, index) => (
                     <a
-                        key={item.id}
+                        key={item.id || index} // 添加唯一的key属性
                         className="pswp-gallery-item"
                         href={item.src}
                         data-pswp-width="1200"
