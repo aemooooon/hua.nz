@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import PropTypes from "prop-types";
 import { gsap } from "gsap";
+import CircularLoadingIndicator from "../ui/CircularLoadingIndicator";
 
 /**
  * EffectAvatar - 粒子动画头像效果组件
@@ -11,6 +12,7 @@ const EffectAvatar = ({ imageSrc, hoverImageSrc }) => {
     const hoverImgRef = useRef(null);
     const [isHovered, setIsHovered] = useState(false);
     const [aspectRatio, setAspectRatio] = useState(1);
+    const [isLoading, setIsLoading] = useState(true); // 添加加载状态
     const workerRef = useRef(null);
     const particlesRef = useRef([]);
 
@@ -49,6 +51,13 @@ const EffectAvatar = ({ imageSrc, hoverImageSrc }) => {
 
             const imageBitmap = offscreen.transferToImageBitmap();
             workerRef.current.postMessage({ imageBitmap, width: png.width, height: png.height }, [imageBitmap]);
+            
+            // 图片加载完成，隐藏加载指示器
+            setIsLoading(false);
+        };
+        png.onerror = () => {
+            // 图片加载失败，也隐藏加载指示器
+            setIsLoading(false);
         };
         png.src = imageSrc;
     }, [imageSrc]);
@@ -149,6 +158,20 @@ const EffectAvatar = ({ imageSrc, hoverImageSrc }) => {
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
         >
+            {/* 加载指示器 */}
+            {isLoading && (
+                <div className="absolute inset-0 flex items-center justify-center bg-gray-800 rounded-full">
+                    <CircularLoadingIndicator
+                        progress={0}
+                        size={60}
+                        strokeWidth={4}
+                        showProgress={false}
+                        showMask={false}
+                        className="opacity-80"
+                    />
+                </div>
+            )}
+            
             {/* Canvas */}
             <canvas
                 ref={canvasRef}
@@ -161,6 +184,8 @@ const EffectAvatar = ({ imageSrc, hoverImageSrc }) => {
                     top: "50%",
                     left: "50%",
                     transform: "translate(-50%, -30%) scale(1.5)", // 初始状态
+                    opacity: isLoading ? 0 : 1, // 加载时隐藏canvas
+                    transition: "opacity 0.3s ease"
                 }}
             />
 

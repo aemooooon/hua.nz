@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import { useState, useEffect, useCallback } from 'react';
 import { useAppStore } from '../../../store/useAppStore';
 import HeroCube from './HeroCube';
-import GlobalLoadingIndicator from '../../ui/GlobalLoadingIndicator';
+import CircularLoadingIndicator from '../../ui/CircularLoadingIndicator';
 import texturePreloader from '../../../utils/texturePreloader';
 import '../../../styles/OpeningAnimations.css';
 
@@ -120,18 +120,13 @@ const HomeSection = ({
 
             {/* Loading效果 - 使用全局加载组件，显示纹理加载进度 */}
             {cubeLoading && !cubeReady && (
-                <GlobalLoadingIndicator
-                    isVisible={true}
-                    loadedCount={textureProgress.loaded}
-                    totalCount={textureProgress.total}
-                    loadingText="Loading Experience..."
-                    loadingTextChinese="加载体验中..."
+                <CircularLoadingIndicator
+                    progress={textureProgress.total > 0 ? Math.round((textureProgress.loaded / textureProgress.total) * 100) : 0}
+                    size={160}
+                    strokeWidth={12}
+                    showProgress={true}
+                    showMask={true}
                     language={language}
-                    variant="default"
-                    position="center"
-                    showProgress={textureProgress.total > 0}
-                    showPercentage={textureProgress.total > 0}
-                    showDots={true}
                 />
             )}
 

@@ -4,6 +4,7 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { useAppStore } from '../../../store/useAppStore';
 import PhotoSwipeGallery from './PhotoSwipeGallery';
+import CircularLoadingIndicator from '../ui/CircularLoadingIndicator';
 
 const Gallery = ({ isOpen, onClose, language = 'en' }) => {
     const [isVisible, setIsVisible] = useState(false);
@@ -581,21 +582,15 @@ const Gallery = ({ isOpen, onClose, language = 'en' }) => {
 
                     {/* 加载提示 */}
                     {loadingProgress < 100 && (
-                        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-white/60 text-center pointer-events-none">
-                            <div className="animate-spin w-8 h-8 border-2 border-white/30 border-t-white/80 rounded-full mx-auto mb-2"></div>
-                            <p className="text-sm mb-2">
-                                {language === 'en' ? 'Loading Turntable Gallery...' : '加载转盘画廊中...'}
-                            </p>
-                            <div className="w-48 bg-white/20 rounded-full h-2 mb-2">
-                                <div 
-                                    className="bg-white/60 h-2 rounded-full transition-all duration-300"
-                                    style={{ width: `${loadingProgress}%` }}
-                                ></div>
-                            </div>
-                            <p className="text-xs opacity-60">
-                                {Math.round(loadingProgress)}% • Loading {Math.min(galleryData?.length || 0, 37)} photos for turntable gallery
-                            </p>
-                        </div>
+                        <CircularLoadingIndicator
+                            progress={loadingProgress}
+                            size={140}
+                            strokeWidth={10}
+                            showProgress={true}
+                            showMask={false}
+                            language={language}
+                            className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 pointer-events-none"
+                        />
                     )}
 
                     {/* 操作提示 */}

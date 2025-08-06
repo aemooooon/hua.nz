@@ -2,7 +2,6 @@ import { Suspense, lazy, useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import imageSrc from '../../../data/hua_icon_base64';
 import hoverImageSrc from '../../../assets/images/hua_500w1.jpg';
-import { FaSpinner } from 'react-icons/fa';
 import { useAppStore } from '../../../store/useAppStore';
 
 const EffectAvatar = lazy(() => import('../../background/EffectAvatar'));
@@ -117,7 +116,7 @@ const AboutSection = ({ language = 'en' }) => {
                                 <Suspense 
                                     fallback={
                                         <div className="w-full h-full flex items-center justify-center bg-gray-800 rounded-full">
-                                            <FaSpinner className="animate-spin text-green-500 text-4xl" />
+                                            <div className="w-full h-full bg-gray-800 rounded-full" />
                                         </div>
                                     }
                                 >
@@ -125,7 +124,7 @@ const AboutSection = ({ language = 'en' }) => {
                                 </Suspense>
                             ) : (
                                 <div className="w-full h-full flex items-center justify-center bg-gray-800 rounded-full">
-                                    <FaSpinner className="animate-spin text-green-500 text-4xl" />
+                                    <div className="w-full h-full bg-gray-800 rounded-full" />
                                 </div>
                             )}
                         </div>

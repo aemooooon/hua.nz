@@ -4,6 +4,7 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { useAppStore } from '../../../store/useAppStore';
 import PhotoSwipeGallery from './PhotoSwipeGallery';
+import CircularLoadingIndicator from '../../ui/CircularLoadingIndicator';
 
 const Gallery = ({ language = 'en' }) => {
     const [loadingProgress, setLoadingProgress] = useState(0);
@@ -34,6 +35,8 @@ const Gallery = ({ language = 'en' }) => {
     // 存储画廊球体的引用
     const previewSphere = useRef(null);
     const galleryGridSpheres = useRef([]);
+    const texturesRef = useRef([]); // 存储纹理引用
+    const selectedTextureIndex = useRef(0); // 存储用户点击选中的贴图索引
     const resizeTimeoutRef = useRef(null); // 防抖定时器
 
     // 初始化场景函数
@@ -301,6 +304,9 @@ const Gallery = ({ language = 'en' }) => {
 
             // 创建纹理
             const textures = await createTextures(currentGalleryData.slice(0, maxGridItems));
+            
+            // 存储纹理到ref中供点击事件使用
+            texturesRef.current = textures;
 
             // 创建右侧预览球 - 响应式尺寸和位置
             if (textures.length > 0) {
@@ -328,6 +334,10 @@ const Gallery = ({ language = 'en' }) => {
                     type: 'preview',
                     currentTextureIndex: 0
                 };
+                
+                // 初始化选中的贴图索引为第一张
+                selectedTextureIndex.current = 0;
+                
                 sceneRef.current.add(previewSphere.current);
             }
 
@@ -419,8 +429,8 @@ const Gallery = ({ language = 'en' }) => {
                         hoveredGridSphere.userData.targetScale = 1.3;
                         
                         // 更新预览球的纹理
-                        if (previewSphere.current && textures[hoveredGridSphere.userData.textureIndex]) {
-                            previewSphere.current.material.map = textures[hoveredGridSphere.userData.textureIndex];
+                        if (previewSphere.current && texturesRef.current[hoveredGridSphere.userData.textureIndex]) {
+                            previewSphere.current.material.map = texturesRef.current[hoveredGridSphere.userData.textureIndex];
                             previewSphere.current.material.needsUpdate = true;
                             previewSphere.current.userData.currentTextureIndex = hoveredGridSphere.userData.textureIndex;
                         }
@@ -430,11 +440,11 @@ const Gallery = ({ language = 'en' }) => {
                     currentHoveredSphere.userData.targetScale = 1.0;
                     currentHoveredSphere = null;
                     
-                    // 恢复预览球到第一张图片
-                    if (previewSphere.current && textures[0]) {
-                        previewSphere.current.material.map = textures[0];
+                    // 恢复预览球到用户选中的图片（而不是第一张）
+                    if (previewSphere.current && texturesRef.current[selectedTextureIndex.current]) {
+                        previewSphere.current.material.map = texturesRef.current[selectedTextureIndex.current];
                         previewSphere.current.material.needsUpdate = true;
-                        previewSphere.current.userData.currentTextureIndex = 0;
+                        previewSphere.current.userData.currentTextureIndex = selectedTextureIndex.current;
                     }
                 }
             };
@@ -464,10 +474,14 @@ const Gallery = ({ language = 'en' }) => {
                 if (gridIntersects.length > 0) {
                     const clickedSphere = gridIntersects[0].object;
                     const textureIndex = clickedSphere.userData.textureIndex;
-                    if (previewSphere.current && textures[textureIndex]) {
-                        previewSphere.current.material.map = textures[textureIndex];
+                    if (previewSphere.current && texturesRef.current[textureIndex]) {
+                        // 更新预览球贴图
+                        previewSphere.current.material.map = texturesRef.current[textureIndex];
                         previewSphere.current.material.needsUpdate = true;
-                        previewSphere.current.userData.currentTextureIndex = textureIndex; // 更新当前索引
+                        previewSphere.current.userData.currentTextureIndex = textureIndex;
+                        
+                        // 记住用户选中的贴图索引
+                        selectedTextureIndex.current = textureIndex;
                     }
                 }
             };
@@ -692,21 +706,14 @@ const Gallery = ({ language = 'en' }) => {
 
                 {/* 加载提示 */}
                 {loadingProgress < 100 && (
-                    <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-white/60 text-center pointer-events-none">
-                        <div className="animate-spin w-8 h-8 border-2 border-white/30 border-t-white/80 rounded-full mx-auto mb-2"></div>
-                        <p className="text-sm mb-2">
-                            {language === 'en' ? 'Loading Turntable Gallery...' : '加载转盘画廊中...'}
-                        </p>
-                        <div className="w-48 bg-white/20 rounded-full h-2 mb-2">
-                            <div 
-                                className="bg-white/60 h-2 rounded-full transition-all duration-300"
-                                style={{ width: `${loadingProgress}%` }}
-                            ></div>
-                        </div>
-                        <p className="text-xs opacity-60">
-                            {Math.round(loadingProgress)}% • Loading {Math.min(galleryData?.length || 0, 37)} photos for turntable gallery
-                        </p>
-                    </div>
+                    <CircularLoadingIndicator
+                        progress={loadingProgress}
+                        size={140}
+                        strokeWidth={10}
+                        showProgress={true}
+                        showMask={true}
+                        language={language}
+                    />
                 )}
 
                 {/* 操作提示 */}
