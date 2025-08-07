@@ -51,7 +51,7 @@ export const THEMES = {
   },
   
   'si-green': {
-    name: { en: 'South Island Green', zh: '南岛绿意' },
+    name: { en: 'South Island Green', zh: '绿意南岛' },
     description: { en: 'Inspired by South Island\'s lush landscapes', zh: '灵感来自南岛的茂密景观' },
     icon: '🏔️',
     colors: {
