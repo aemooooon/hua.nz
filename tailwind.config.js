@@ -22,44 +22,72 @@ export default {
         beauRivage: ['"Beau Rivage"', 'serif'],
         figtree: ['"Figtree"', 'sans-serif'],
         poppins: ['"Poppins"', 'sans-serif'],
+        // 格鲁吉亚字体用于数字
+        georgia: ['Georgia', 'serif'],
       },
       colors: {
-        // 保留原有颜色
-        primaryDark: '#1d2012',
-        primary: '#afcc8f',
-        secondary: '#7ca65c',
-        accent: '#5d7d4b',
-        muted: '#768e90',
-        bg: '#f4f7f4',
-        textDark: '#1a1a1a',
-        textLight: '#ffffff',
-        dark: '#171f2b',
+        // New Zealand Blue 主题色彩
+        'nz-blue': {
+          50: '#eff6ff',
+          100: '#dbeafe',  
+          200: '#bfdbfe',
+          300: '#93c5fd',
+          400: '#60a5fa',
+          500: '#3b82f6', // 主色
+          600: '#2563eb',
+          700: '#1d4ed8',
+          800: '#1e40af',
+          900: '#1e3a8a',
+        },
         
-        // 新增主题色彩系统
-        background: {
-          light: '#ffffff',
-          dark: '#0f0f0f',
-          'light-secondary': '#f8f9fa',
-          'dark-secondary': '#1a1a1a'
+        // South Island Green 主题色彩  
+        'si-green': {
+          50: '#ecfdf5',
+          100: '#d1fae5',
+          200: '#a7f3d0', 
+          300: '#6ee7b7',
+          400: '#34d399',
+          500: '#10b981', // 主色
+          600: '#059669',
+          700: '#047857',
+          800: '#065f46',
+          900: '#064e3b',
         },
-        foreground: {
-          light: '#1a1a1a',
-          dark: '#ffffff',
-          'light-secondary': '#6b7280',
-          'dark-secondary': '#9ca3af'
+
+        // 动态主题色 - CSS变量方式
+        theme: {
+          primary: 'var(--theme-primary)',
+          secondary: 'var(--theme-secondary)',  
+          accent: 'var(--theme-accent)',
+          background: 'var(--theme-background)',
+          surface: 'var(--theme-surface)',
+          'surface-elevated': 'var(--theme-surface-elevated)',
+          'text-primary': 'var(--theme-text-primary)',
+          'text-secondary': 'var(--theme-text-secondary)',
+          'text-muted': 'var(--theme-text-muted)',
+          border: 'var(--theme-border)',
+          divider: 'var(--theme-divider)',
+          hover: 'var(--theme-hover)',
+          button: 'var(--theme-button)', // 新增按钮颜色
+          loading: 'var(--theme-loading)',
+          glow: 'var(--theme-glow)',
+          shadow: 'var(--theme-shadow)',
+          cursor: 'var(--theme-cursor)',
+          'avatar-glow': 'var(--theme-avatar-glow)',
+          // 新增渐变色配置
+          'gradient-from': 'var(--theme-gradient-from)',
+          'gradient-via': 'var(--theme-gradient-via)',
+          'gradient-to': 'var(--theme-gradient-to)',
+          success: 'var(--theme-success)',
+          warning: 'var(--theme-warning)',
+          error: 'var(--theme-error)',
         },
-        border: {
-          light: '#e5e7eb',
-          dark: '#374151'
-        },
-        gray: {
-          800: '#2d3542',
-        },
-        // 黄金分割比例相关的颜色和尺寸 - 更宽松的留白版本
+
+        // 黄金分割比例相关的颜色和尺寸
         golden: {
           ratio: '1.618',
-          content: '58%',    // 调整为更宽松的比例
-          sidebar: '42%',    // 相应增加头像区域
+          content: '58%',
+          sidebar: '42%',
         },
       },
       animation: {

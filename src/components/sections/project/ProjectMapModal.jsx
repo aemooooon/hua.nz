@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import useAppStore from '../../../store/useAppStore';
+import { useTheme } from '../../../hooks/useTheme';
 
 // 修复 Leaflet 默认图标问题
 delete L.Icon.Default.prototype._getIconUrl;
@@ -16,6 +17,8 @@ const ProjectMapModal = ({ isOpen, onClose, language = 'en' }) => {
   const mapRef = useRef(null);
   const mapInstanceRef = useRef(null);
   const markersRef = useRef([]);
+  const { getThemeColors } = useTheme();
+  const themeColors = getThemeColors();
   
   // 从store获取项目数据
   const { getAllProjects } = useAppStore();
@@ -23,13 +26,13 @@ const ProjectMapModal = ({ isOpen, onClose, language = 'en' }) => {
   // 获取项目数据
   const projects = getAllProjects().filter(loc => loc.type === 'project');
 
-  // 类型颜色映射 - 使用 useMemo 避免每次渲染都重新创建
+  // 类型颜色映射 - 使用主题色变量
   const typeColors = useMemo(() => ({
-    'project': '#3b82f6',
-    'work': '#10b981',
-    'education': '#f59e0b',
-    'activity': '#8b5cf6'
-  }), []);
+    'project': themeColors.primary,
+    'work': themeColors.success || '#10b981',
+    'education': themeColors.warning || '#f59e0b',
+    'activity': themeColors.purple || '#8b5cf6'
+  }), [themeColors]);
 
   // 获取双语文本的辅助函数 - 使用 useCallback 避免每次渲染都重新创建
   const getBilingualText = useCallback((field) => {
@@ -107,10 +110,10 @@ const ProjectMapModal = ({ isOpen, onClose, language = 'en' }) => {
                   <img src="${projectImage}" alt="${projectName}" style="width: 100%; height: 120px; object-fit: cover; border-radius: 4px;" />
                 </div>
               ` : ''}
-              <h3 style="margin: 0 0 8px 0; color: #1f2937; font-size: 16px; font-weight: bold;">
+              <h3 style="margin: 0 0 8px 0; color: ${themeColors.text}; font-size: 16px; font-weight: bold;">
                 ${projectName}
               </h3>
-              <p style="margin: 0 0 8px 0; color: #6b7280; font-size: 14px; line-height: 1.4;">
+              <p style="margin: 0 0 8px 0; color: ${themeColors.textSecondary}; font-size: 14px; line-height: 1.4;">
                 ${projectDescription}
               </p>
               <div style="margin-bottom: 8px;">
@@ -140,7 +143,7 @@ const ProjectMapModal = ({ isOpen, onClose, language = 'en' }) => {
               </div>
               ${projectLocation ? `
                 <div style="margin-top: 8px;">
-                  <p style="margin: 0 0 4px 0; color: #374151; font-size: 12px; font-weight: 500;">
+                  <p style="margin: 0 0 4px 0; color: ${themeColors.text}; font-size: 12px; font-weight: 500;">
                     📍 ${projectLocation}
                   </p>
                 </div>
@@ -148,12 +151,11 @@ const ProjectMapModal = ({ isOpen, onClose, language = 'en' }) => {
               ${project.link ? `
                 <div style="margin-top: 8px;">
                   <a href="${project.link}" target="_blank" style="
-                    color: #3b82f6;
+                    color: ${themeColors.primary};
                     text-decoration: none;
                     font-size: 12px;
                     font-weight: 500;
-                  ">
-                    ${language === 'en' ? '🔗 View Project' : '🔗 查看项目'}
+                  ">${language === 'en' ? '🔗 View Project' : '🔗 查看项目'}
                   </a>
                 </div>
               ` : ''}
@@ -184,7 +186,7 @@ const ProjectMapModal = ({ isOpen, onClose, language = 'en' }) => {
         markersRef.current = [];
       }
     };
-  }, [isOpen, language, projects, getBilingualText, typeColors]);
+  }, [isOpen, language, projects, getBilingualText, typeColors, themeColors]);
 
   // 键盘事件处理
   useEffect(() => {
@@ -216,20 +218,20 @@ const ProjectMapModal = ({ isOpen, onClose, language = 'en' }) => {
       />
       
       {/* 地图容器 */}
-      <div className="relative w-[90vw] h-[80vh] max-w-6xl bg-white rounded-lg overflow-hidden shadow-2xl">
+      <div className="relative w-[90vw] h-[80vh] max-w-6xl bg-theme-surface rounded-lg overflow-hidden shadow-2xl">
         {/* 顶部标题栏 */}
-        <div className="absolute top-0 left-0 right-0 z-10 bg-gradient-to-r from-blue-600 to-purple-600 text-white p-4 flex items-center justify-between">
+        <div className="absolute top-0 left-0 right-0 z-10 bg-gradient-to-r from-theme-primary to-theme-accent text-white p-4 flex items-center justify-between">
           <div>
             <h2 className="text-xl font-bold">
               {language === 'en' ? 'Project Locations Map' : '项目地理分布图'}
             </h2>
-            <p className="text-blue-100 text-sm">
+            <p className="text-theme-textSecondary text-sm">
               {language === 'en' ? 'Click on markers to view project details' : '点击标记查看项目详情'}
             </p>
           </div>
           <button
             onClick={onClose}
-            className="p-2 hover:bg-white/20 rounded-full transition-colors duration-200"
+            className="p-2 hover:bg-theme-surface/20 rounded-full transition-colors duration-200"
             aria-label={language === 'en' ? 'Close map' : '关闭地图'}
           >
             <svg 
@@ -256,18 +258,18 @@ const ProjectMapModal = ({ isOpen, onClose, language = 'en' }) => {
         />
 
         {/* 图例 */}
-        <div className="absolute bottom-4 left-4 bg-white/90 backdrop-blur-sm rounded-lg p-3 shadow-lg">
-          <h4 className="text-sm font-semibold text-gray-800 mb-2">
+        <div className="absolute bottom-4 left-4 bg-theme-surface/90 backdrop-blur-sm rounded-lg p-3 shadow-lg">
+          <h4 className="text-sm font-semibold text-theme-text mb-2">
             {language === 'en' ? 'Categories' : '项目类别'}
           </h4>
           <div className="space-y-1">
             {Object.entries(typeColors).map(([type, color]) => (
               <div key={type} className="flex items-center gap-2">
                 <div 
-                  className="w-3 h-3 rounded-full border border-white shadow-sm"
+                  className="w-3 h-3 rounded-full border border-theme-border shadow-sm"
                   style={{ backgroundColor: color }}
                 />
-                <span className="text-xs text-gray-700 capitalize">{type}</span>
+                <span className="text-xs text-theme-textSecondary capitalize">{type}</span>
               </div>
             ))}
           </div>

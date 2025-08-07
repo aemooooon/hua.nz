@@ -1,9 +1,12 @@
 import PropTypes from 'prop-types';
 import { useState, useEffect, useCallback } from 'react';
+import { FaGlobe } from 'react-icons/fa';
 import { useAppStore } from '../../../store/useAppStore';
+import { useTheme } from '../../../hooks/useTheme';
 import HeroCube from './HeroCube';
 import CircularLoadingIndicator from '../../ui/CircularLoadingIndicator';
 import texturePreloader from '../../../utils/texturePreloader';
+import { ThemeTitle, ThemeSubtitle } from '../../ui/ThemeComponents';
 import '../../../styles/OpeningAnimations.css';
 
 const HomeSection = ({ 
@@ -11,8 +14,11 @@ const HomeSection = ({
     // 开场动画相关属性
     enableOpeningAnimation = false
 }) => {
-    const { getContent } = useAppStore();
+    const { getContent, toggleLanguage } = useAppStore();
     const content = getContent();
+    const { toggleTheme, getCurrentTheme } = useTheme();
+    const currentThemeConfig = getCurrentTheme();
+    const [showToggleButtons, setShowToggleButtons] = useState(false);
 
     // 控制Cube延迟加载和预加载状态
     const [showCube, setShowCube] = useState(false);
@@ -29,6 +35,11 @@ const HomeSection = ({
         const showTimer = setTimeout(() => {
             setShowCube(true);
         }, 600);
+
+        // Show toggle buttons after a delay
+        const toggleButtonTimer = setTimeout(() => {
+            setShowToggleButtons(true);
+        }, 2000); // Show after 2 seconds
         
         // 监听纹理加载进度
         const progressInterval = setInterval(() => {
@@ -44,6 +55,7 @@ const HomeSection = ({
         return () => {
             clearTimeout(preloadTimer);
             clearTimeout(showTimer);
+            clearTimeout(toggleButtonTimer);
             clearInterval(progressInterval);
         };
     }, []);
@@ -55,9 +67,9 @@ const HomeSection = ({
     }, []);
 
     return (
-        <div className="h-screen w-screen relative overflow-hidden" style={{ margin: 0, padding: 0, position: 'relative' }}>
+        <div className="h-screen w-screen overflow-hidden" style={{ margin: 0, padding: 0, background: 'transparent' }}>
             {/* 主内容优先渲染 */}
-            <div className={`absolute top-8 left-1/2 transform -translate-x-1/2 text-center text-white z-20 w-full px-4 ${
+            <div className={`absolute top-8 left-1/2 transform -translate-x-1/2 text-center text-white z-50 w-full px-4 ${
                 enableOpeningAnimation ? 'grand-title-entrance' : ''
             }`} style={!enableOpeningAnimation ? {
                 animation: 'movieTitleEntrance 4s ease-out forwards 1s',
@@ -65,13 +77,13 @@ const HomeSection = ({
             } : {}}>
                 <div className="flex flex-col items-center justify-center w-full relative">
                     {/* 姓名 */}
-                    <h1 className={`text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-white font-beauRivage hover:text-green-300 transition-colors duration-300 mb-2 sm:mb-4 leading-tight text-center w-full mt-12 ${
+                    <ThemeTitle level={1} className={`text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold font-beauRivage hover:text-theme-primary transition-colors duration-300 mb-2 sm:mb-4 leading-tight text-center w-full mt-12 ${
                         enableOpeningAnimation ? 'shimmer-text' : ''
                     }`}>
                         {content.home.name}
-                    </h1>
+                    </ThemeTitle>
                     {/* Title - 绝对定位强制居中 */}
-                    <h2 className={`text-lg sm:text-xl md:text-2xl lg:text-3xl font-mono text-green-300 mt-48 ${
+                    <ThemeSubtitle className={`text-lg sm:text-xl md:text-2xl lg:text-3xl font-mono text-theme-accent mt-48 ${
                         enableOpeningAnimation ? 'grand-subtitle-entrance' : ''
                     }`} style={{ 
                         position: 'absolute',
@@ -81,12 +93,12 @@ const HomeSection = ({
                         whiteSpace: 'nowrap'
                     }}>
                         {content.home.title}
-                    </h2>
+                    </ThemeSubtitle>
                 </div>
             </div>
 
             {/* Slogan - 屏幕下方，宽屏一行显示，窄屏两行，闪烁光标 */}
-            <div className={`absolute bottom-16 left-1/2 transform -translate-x-1/2 text-center text-white z-20 w-full px-4 ${
+            <div className={`absolute bottom-16 left-1/2 transform -translate-x-1/2 text-center z-50 w-full px-4 ${
                 enableOpeningAnimation ? 'grand-slogan-entrance' : ''
             }`} style={!enableOpeningAnimation ? {
                 animation: 'sloganEntrance 3s ease-out forwards 5s',
@@ -95,24 +107,30 @@ const HomeSection = ({
                 <div className="space-y-2 sm:space-y-4">
                     {/* 英文slogan - 使用统一的打字机效果解决对齐问题 */}
                     <div className="text-center">
-                        <p className={`text-base sm:text-lg md:text-xl lg:text-2xl font-light text-white/90 tracking-wider leading-relaxed inline-block ${
-                            enableOpeningAnimation ? '' : 'typewriter-text typewriter-optimized'
-                        }`} style={!enableOpeningAnimation ? {
-                            animationDelay: '6s',
-                            animationFillMode: 'both'
-                        } : {}}>
+                        <p 
+                            className={`text-base sm:text-lg md:text-xl lg:text-2xl font-light text-theme-primary tracking-wider leading-relaxed inline-block transition-colors duration-300 ${
+                                enableOpeningAnimation ? '' : 'typewriter-text typewriter-optimized'
+                            }`} 
+                            style={!enableOpeningAnimation ? {
+                                animationDelay: '6s',
+                                animationFillMode: 'both'
+                            } : {}}
+                        >
                             Order from Chaos, Innovation through Tradeoffs.
-                            <span className="inline-block ml-1 w-px h-5 sm:h-6 md:h-7 lg:h-8 bg-white input-cursor"></span>
+                            <span className="inline-block ml-1 w-px h-5 sm:h-6 md:h-7 lg:h-8 bg-theme-cursor input-cursor"></span>
                         </p>
                     </div>
                     
                     {/* 中文slogan */}
-                    <p className={`text-sm sm:text-base md:text-lg lg:text-xl font-light text-green-300/80 tracking-wide leading-relaxed mt-4 ${
-                        enableOpeningAnimation ? '' : 'typewriter-text typewriter-optimized'
-                    }`} style={!enableOpeningAnimation ? {
-                        animationDelay: '8s',
-                        animationFillMode: 'both'
-                    } : {}}>
+                    <p 
+                        className={`text-sm sm:text-base md:text-lg lg:text-xl font-light text-theme-primary tracking-wide leading-relaxed mt-4 transition-colors duration-300 ${
+                            enableOpeningAnimation ? '' : 'typewriter-text typewriter-optimized'
+                        }`} 
+                        style={!enableOpeningAnimation ? {
+                            animationDelay: '8s',
+                            animationFillMode: 'both'
+                        } : {}}
+                    >
                         观混沌之纷，立秩序之象；守中庸之衡，启创新之变！
                     </p>
                 </div>
@@ -136,6 +154,37 @@ const HomeSection = ({
                     enableOpeningAnimation={enableOpeningAnimation}
                     onReady={handleCubeReady}
                 />
+            )}
+
+            {/* Language and Theme Toggle Buttons - Bottom Left Corner */}
+            {showToggleButtons && (
+                <div className="absolute bottom-6 left-6 z-50 flex items-center space-x-3 transition-opacity duration-1000 opacity-100">
+                    {/* Language Toggle */}
+                    <button
+                        onClick={toggleLanguage}
+                        className="w-10 h-10 bg-theme-primary/20 border border-theme-primary/50 rounded-full flex items-center justify-center hover:bg-theme-primary/30 transition-all duration-300 backdrop-blur-sm group"
+                        title={`${content.ui.language}: ${language === 'en' ? 'English' : '中文'}`}
+                    >
+                        <FaGlobe className="text-theme-primary text-sm group-hover:rotate-180 transition-transform duration-300" />
+                        <span className="absolute -top-8 left-1/2 transform -translate-x-1/2 text-xs text-theme-primary opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                            {language === 'en' ? 'EN' : '中文'}
+                        </span>
+                    </button>
+
+                    {/* Theme Toggle */}
+                    <button
+                        onClick={toggleTheme}
+                        className="w-10 h-10 bg-theme-secondary/20 border border-theme-secondary/50 rounded-full flex items-center justify-center hover:bg-theme-secondary/30 transition-all duration-300 backdrop-blur-sm group"
+                        title={`${content.ui.toggleTheme}: ${currentThemeConfig.name[language] || currentThemeConfig.name.en}`}
+                    >
+                        <span className="text-sm group-hover:rotate-180 transition-transform duration-300">
+                            {currentThemeConfig.icon}
+                        </span>
+                        <span className="absolute -top-8 left-1/2 transform -translate-x-1/2 text-xs text-theme-secondary opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap">
+                            {currentThemeConfig.name[language] || currentThemeConfig.name.en}
+                        </span>
+                    </button>
+                </div>
             )}
         </div>
     );

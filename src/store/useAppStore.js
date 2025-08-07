@@ -40,7 +40,7 @@ const sectionsConfig = [
     index: 3,
     name: { en: "GallerySection", zh: "作品展示" },
     description: { en: "Visual showcase", zh: "视觉作品展示" },
-    backgroundEffect: null, // GallerySection 内部自己管理背景加载时机
+    backgroundEffect: "effectmonjori", // 使用与 Projects 相同的 Monjori 背景
     cubeImage: "/cube-textures/gallery.jpg", // 修正立方体图片路径
     icon: "🖼️"
   },
@@ -530,11 +530,17 @@ export const useAppStore = create(
       toggleLanguage: () => 
         set((state) => ({ language: state.language === 'en' ? 'zh' : 'en' })),
 
-      // 主题状态
-      theme: 'dark',
+      // 主题状态 - 使用新的主题名称
+      theme: 'nz-blue',
       setTheme: (theme) => set({ theme }),
-      toggleTheme: () => 
-        set((state) => ({ theme: state.theme === 'light' ? 'dark' : 'light' })),
+      toggleTheme: () => {
+        const themes = ['nz-blue', 'si-green'];
+        return set((state) => {
+          const currentIndex = themes.indexOf(state.theme);
+          const nextIndex = (currentIndex + 1) % themes.length;
+          return { theme: themes[nextIndex] };
+        });
+      },
 
       // 当前活动区块
       currentSection: 0,

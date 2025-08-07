@@ -6,6 +6,7 @@ import { useAppStore } from '../../../store/useAppStore';
 import { gsap } from 'gsap';
 import texturePreloader from '../../../utils/texturePreloader';
 import webglResourceManager from '../../../utils/WebGLResourceManager';
+import { useTheme } from '../../../hooks/useTheme';
 
 const HeroCube = ({ 
     enableOpeningAnimation = false,
@@ -27,6 +28,8 @@ const HeroCube = ({
     
     const { getContent } = useAppStore();
     const content = getContent();
+    const { getThemeColors } = useTheme();
+    const themeColors = getThemeColors();
 
     // 获取全屏画布尺寸
     const getCanvasSize = useCallback(() => {
@@ -117,8 +120,8 @@ const HeroCube = ({
             premultipliedAlpha: false
         });
         
-        // 设置透明背景
-        renderer.setClearColor(0x000000, 0);
+        // 设置透明背景，让3D背景可见
+        renderer.setClearColor(0x000000, 0); // 完全透明背景
         renderer.setSize(canvasSize, canvasSize);
         // 限制像素比以提升性能
         renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
@@ -176,12 +179,13 @@ const HeroCube = ({
             
             for (let i = 0; i < 8; i++) {
                 for (let j = 0; j < 8; j++) {
-                    context.fillStyle = (i + j) % 2 === 0 ? '#333333' : '#666666';
+                    // 使用主题色创建棋盘格效果
+                    context.fillStyle = (i + j) % 2 === 0 ? themeColors.surface : themeColors.muted;
                     context.fillRect(i * squareSize, j * squareSize, squareSize, squareSize);
                 }
             }
             
-            context.fillStyle = '#ff4444';
+            context.fillStyle = themeColors.primary;
             context.font = `bold ${size / 16}px Arial`;
             context.textAlign = 'center';
             context.textBaseline = 'middle';
@@ -329,7 +333,7 @@ const HeroCube = ({
             context.shadowBlur = 6;
             const fontSize = 36;
             context.font = `bold ${fontSize}px "Helvetica Neue", Arial`;
-            context.fillStyle = '#ffffff';
+            context.fillStyle = themeColors.text || '#ffffff';
             context.textAlign = 'center';
             context.textBaseline = 'middle';
             context.fillText(face.label, textureSize / 2, textureSize / 2);
@@ -757,15 +761,16 @@ const HeroCube = ({
             // 使用资源管理器清理
             webglResourceManager.cleanup(resourceId);
         };
-    }, [faces, canvasSize, enableOpeningAnimation, onAnimationComplete, onReady, texturesReady]);
+    }, [faces, canvasSize, enableOpeningAnimation, onAnimationComplete, onReady, texturesReady, themeColors]);
 
     return (
         <div className="relative">
             <div 
                 ref={mountRef}
-                className="fixed inset-0 z-10 w-full h-full overflow-hidden"
+                className="fixed inset-0 w-full h-full overflow-hidden"
                 style={{
-                    pointerEvents: 'none' // 完全去掉交互
+                    pointerEvents: 'none', // 完全去掉交互
+                    zIndex: 5 // 设置比背景高但比内容低的层级
                 }}
             />
         </div>

@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import ProjectMapModal from './ProjectMapModal';
 import GlowDivider from '../../ui/GlowDivider';
 import useAppStore from '../../../store/useAppStore';
+import { ThemeTitle, ThemeSubtitle, ThemeButton } from '../../ui/ThemeComponents';
 
 const ProjectSection = ({ language }) => {
     const [isMapOpen, setIsMapOpen] = useState(false);
@@ -51,14 +52,14 @@ const ProjectSection = ({ language }) => {
         ? projects 
         : projectsByCategory[activeFilter] || [];
 
-    // 状态颜色映射
+    // 状态颜色映射 - 使用主题色
     const getStatusColor = (status) => {
-        if (!status) return 'bg-gray-500/20 text-gray-400 border-gray-500/50';
+        if (!status) return `bg-theme-muted/20 text-theme-textSecondary border-theme-muted/50`;
         const s = String(status).toLowerCase();
-        if (s.includes('完成') || s.includes('2019') || s.includes('2024')) return 'bg-green-500/20 text-green-400 border-green-500/50';
-        if (s.includes('progress') || s.includes('进行') || s.includes('2020-2021')) return 'bg-blue-500/20 text-blue-400 border-blue-500/50';
-        if (s.includes('plan') || s.includes('规划') || s.includes('2024-2025')) return 'bg-yellow-500/20 text-yellow-400 border-yellow-500/50';
-        return 'bg-gray-500/20 text-gray-400 border-gray-500/50';
+        if (s.includes('完成') || s.includes('2019') || s.includes('2024')) return `bg-theme-success/20 text-theme-success border-theme-success/50`;
+        if (s.includes('progress') || s.includes('进行') || s.includes('2020-2021')) return `bg-theme-primary/20 text-theme-primary border-theme-primary/50`;
+        if (s.includes('plan') || s.includes('规划') || s.includes('2024-2025')) return `bg-theme-warning/20 text-theme-warning border-theme-warning/50`;
+        return `bg-theme-muted/20 text-theme-textSecondary border-theme-muted/50`;
     };
 
     // 获取类别颜色
@@ -78,7 +79,7 @@ const ProjectSection = ({ language }) => {
             {/* Projects标题 - 居中显示，与Education保持一致 */}
             <div className="flex flex-col p-8 pt-12">
                 <div className="flex flex-col items-center text-center">
-                    <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 bg-clip-text text-transparent mb-3">
+                    <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold bg-gradient-to-r from-theme-gradient-from via-theme-gradient-via to-theme-gradient-to bg-clip-text text-transparent mb-3">
                         Projects
                     </h1>
                     <h2 className="text-xl md:text-2xl text-white/70 font-light italic">
@@ -209,40 +210,48 @@ const ProjectSection = ({ language }) => {
                             </div>
                             {/* 项目信息 */}
                             <div className="project-content">
-                                <h3 className="project-title">
+                                <ThemeTitle level={3} className="project-title">
                                     {(project.title && project.title[language]) || (project.name && project.name[language]) || project.title || project.name}
-                                </h3>
-                                <p className="project-description">
+                                </ThemeTitle>
+                                <ThemeSubtitle className="project-description">
                                     {(project.description && project.description[language]) || project.description}
-                                </p>
+                                </ThemeSubtitle>
                                 {/* 技术栈（如有） */}
                                 {project.tech && Array.isArray(project.tech) && (
                                     <div className="project-tech-stack">
                                         {project.tech.map((tech, index) => (
-                                            <span key={index} className="tech-badge">
+                                            <span key={index} className="tech-badge bg-theme-surface text-theme-primary border border-theme-border">
                                                 {tech}
                                             </span>
                                         ))}
                                     </div>
                                 )}
                                 {/* 其他字段展示（如地点、年份、链接） */}
-                                <div className="project-meta">
+                                <div className="project-meta text-theme-text-muted">
                                     {project.location && <span>📍 {(project.location && project.location[language]) || project.location}</span>}
                                     {project.year && <span>📅 {project.year}</span>}
                                     {project.link && (
-                                        <a href={project.link} target="_blank" rel="noopener noreferrer" className="project-link">
+                                        <ThemeButton
+                                            as="a"
+                                            href={project.link}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            variant="ghost"
+                                            size="sm"
+                                            className="project-link"
+                                        >
                                             {language === 'en' ? 'Learn more' : '了解更多'}
-                                        </a>
+                                        </ThemeButton>
                                     )}
                                 </div>
                                 {/* 操作按钮（可自定义） */}
-                                <div className="project-actions">
-                                    <button className="btn-primary">
+                                <div className="project-actions flex gap-2 mt-4">
+                                    <ThemeButton variant="primary" size="sm">
                                         {language === 'en' ? 'View Details' : '查看详情'}
-                                    </button>
-                                    <button className="btn-secondary">
+                                    </ThemeButton>
+                                    <ThemeButton variant="secondary" size="sm">
                                         {language === 'en' ? 'Live Demo' : '在线演示'}
-                                    </button>
+                                    </ThemeButton>
                                 </div>
                             </div>
                         </div>

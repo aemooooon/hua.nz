@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types';
 import { useAppStore } from '../../../store/useAppStore';
 import GlowDivider from '../../ui/GlowDivider';
+import { ThemeTitle, ThemeSubtitle, ThemeDescription } from '../../ui/ThemeComponents';
 import './ContactSection.css';
 
 const ContactSection = ({ language }) => {
@@ -36,42 +37,42 @@ const ContactSection = ({ language }) => {
             icon: "ri-github-fill",
             url: contactTexts.social.github.url,
             label: contactTexts.social.github.label,
-            color: "hover:bg-gray-700"
+            color: "hover:bg-theme-surface"
         },
         {
             icon: "ri-linkedin-fill", 
             url: contactTexts.social.linkedin.url,
             label: contactTexts.social.linkedin.label,
-            color: "hover:bg-blue-600"
+            color: "hover:bg-theme-primary/80"
         },
         {
             icon: "ri-google-fill",
             url: contactTexts.social.email.url,
             label: contactTexts.social.email.label,
-            color: "hover:bg-red-600"
+            color: "hover:bg-theme-error/80"
         }
     ];
 
     return (
         <div className="min-h-screen w-full p-4 sm:p-8 text-white flex items-center justify-center">
             <div className="max-w-7xl mx-auto w-full">
-                {/* 标题部分 */}
+                {                /* 标题部分 */}
                 <div className="flex flex-col items-center text-center mb-12">
-                    <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 bg-clip-text text-transparent mb-3">
+                    <ThemeTitle level={1} className="text-5xl md:text-6xl lg:text-7xl font-bold mb-3 bg-gradient-to-r from-theme-gradient-from via-theme-gradient-via to-theme-gradient-to bg-clip-text text-transparent">
                         {contactTexts.title}
-                    </h1>
-                    <h2 className="text-xl md:text-2xl text-white/70 font-light italic mb-8">
+                    </ThemeTitle>
+                    <ThemeSubtitle className="text-xl md:text-2xl font-light italic mb-8 text-theme-text-secondary/70">
                         {contactTexts.subtitle || (language === 'en' ? 'get in touch' : '联系我')}
-                    </h2>
+                    </ThemeSubtitle>
                     
                     {/* 标题与内容之间的分隔线 */}
                     <div className="w-full max-w-4xl mb-8">
                         <GlowDivider width="w-full" enhanced={true} />
                     </div>
                     
-                    <p className="text-base text-gray-400 max-w-2xl mx-auto">
+                    <ThemeDescription className="text-base max-w-2xl mx-auto text-theme-text-muted">
                         {contactTexts.description}
-                    </p>
+                    </ThemeDescription>
                 </div>
 
                 {/* 主要内容区域 - 居中布局 */}
@@ -84,7 +85,7 @@ const ContactSection = ({ language }) => {
                                 href={info.href}
                                 target={info.href.startsWith('http') ? '_blank' : '_self'}
                                 rel={info.href.startsWith('http') ? 'noopener noreferrer' : undefined}
-                                className="bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-sm rounded-2xl p-8 hover:from-white/20 hover:to-white/10 transition-all duration-300 hover:scale-105 hover:shadow-2xl group contact-info-card text-center border border-white/10 shine-card shine-blue"
+                                className="bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-sm rounded-2xl p-8 hover:from-white/20 hover:to-white/10 transition-all duration-300 hover:scale-105 hover:shadow-2xl group contact-info-card text-center border border-white/5 shine-card shine-blue"
                             >
                                 <div className="text-5xl mb-4 group-hover:scale-110 transition-transform duration-300">
                                     {info.icon}
@@ -109,9 +110,9 @@ const ContactSection = ({ language }) => {
 
                     {/* 社交媒体链接 - 居中 */}
                     <div className="text-center">
-                        <h3 className="text-2xl font-bold mb-8 text-white">
+                        <ThemeTitle level={3} className="text-2xl font-bold mb-8">
                             {language === 'en' ? 'Connect with me' : '社交媒体'}
-                        </h3>
+                        </ThemeTitle>
                         <div className="flex justify-center space-x-6">
                             {socialLinks.map((social, index) => (
                                 <a
@@ -119,7 +120,7 @@ const ContactSection = ({ language }) => {
                                     href={social.url}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className={`w-16 h-16 inline-flex items-center justify-center p-4 bg-white/10 backdrop-blur-sm border-2 border-white/20 rounded-2xl text-2xl text-white no-underline transition-all duration-500 hover:shadow-2xl hover:scale-110 social-link shine-card ${social.color} hover:border-white/40`}
+                                    className={`w-16 h-16 inline-flex items-center justify-center p-4 bg-theme-surface/20 backdrop-blur-sm border-2 border-theme-border rounded-full text-2xl text-theme-text-primary no-underline transition-all duration-500 hover:shadow-2xl hover:scale-110 social-link hover:border-theme-primary/60 hover:bg-theme-hover`}
                                     title={social.label}
                                 >
                                     <i className={social.icon}></i>

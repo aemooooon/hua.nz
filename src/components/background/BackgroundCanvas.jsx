@@ -29,7 +29,7 @@ const BackgroundCanvas = ({ effectType = 'effectfuse' }) => {
             canvas.style.left = '0';
             canvas.style.width = '100%';
             canvas.style.height = '100%';
-            canvas.style.zIndex = '-10'; // 背景层级
+            canvas.style.zIndex = '-1'; // 背景层级，在内容后面
             canvas.style.pointerEvents = 'none';
             canvas.style.background = 'transparent'; // 确保背景透明
             

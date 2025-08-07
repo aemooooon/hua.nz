@@ -4,6 +4,7 @@ import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 
 import useAppStore from '../../../store/useAppStore';
+import { useTheme } from '../../../hooks/useTheme';
 
 // 修复 Leaflet 默认图标问题
 delete L.Icon.Default.prototype._getIconUrl;
@@ -16,6 +17,8 @@ L.Icon.Default.mergeOptions({
 const ProjectMapSection = ({ section, language }) => {
     const mapRef = useRef(null);
     const mapInstanceRef = useRef(null);
+    const { getThemeColors } = useTheme();
+    const themeColors = getThemeColors();
     
     // 从store获取项目数据
     const { getAllProjects } = useAppStore();
@@ -77,18 +80,18 @@ const ProjectMapSection = ({ section, language }) => {
         filteredLocations.forEach((loc) => {
             const customIcon = L.divIcon({
                 className: 'custom-marker',
-                html: `<div style="width: 24px; height: 24px; background: #10B981; border: 2px solid white; border-radius: 50%; box-shadow: 0 2px 4px rgba(0,0,0,0.3);"></div>`,
+                html: `<div style="width: 24px; height: 24px; background: ${themeColors.primary}; border: 2px solid white; border-radius: 50%; box-shadow: 0 2px 4px rgba(0,0,0,0.3);"></div>`,
                 iconSize: [24, 24],
                 iconAnchor: [12, 24]
             });
             const marker = L.marker(loc.coordinates, { icon: customIcon }).addTo(map);
             const popupContent = `
-                <div style="color: white; background: linear-gradient(135deg, #1f2937 0%, #374151 100%); padding: 12px; border-radius: 8px; min-width: 200px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
-                    <h3 style="margin: 0 0 8px 0; color: #10B981; font-size: 16px; font-weight: 600;">${loc.title || loc.name}</h3>
-                    <p style="margin: 0 0 8px 0; color: #D1D5DB; font-size: 13px; line-height: 1.4;">${loc.description || ''}</p>
-                    <div style="margin: 8px 0; color: #9CA3AF; font-size: 12px;">${loc.location || ''}</div>
-                    <div style="margin: 8px 0; color: #9CA3AF; font-size: 12px;">${loc.year || ''}</div>
-                    ${loc.link ? `<a href='${loc.link}' target='_blank' style='color:#3B82F6;text-decoration:underline;'>Learn more</a>` : ''}
+                <div style="color: white; background: linear-gradient(135deg, ${themeColors.surface} 0%, ${themeColors.muted} 100%); padding: 12px; border-radius: 8px; min-width: 200px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+                    <h3 style="margin: 0 0 8px 0; color: ${themeColors.primary}; font-size: 16px; font-weight: 600;">${loc.title || loc.name}</h3>
+                    <p style="margin: 0 0 8px 0; color: ${themeColors.textSecondary}; font-size: 13px; line-height: 1.4;">${loc.description || ''}</p>
+                    <div style="margin: 8px 0; color: ${themeColors.textSecondary}; font-size: 12px;">${loc.location || ''}</div>
+                    <div style="margin: 8px 0; color: ${themeColors.textSecondary}; font-size: 12px;">${loc.year || ''}</div>
+                    ${loc.link ? `<a href='${loc.link}' target='_blank' style='color:${themeColors.primary};text-decoration:underline;'>Learn more</a>` : ''}
                     ${loc.img ? `<div style='margin-top:8px;'>${Array.isArray(loc.img) ? loc.img.map(imgSrc => `<img src='${imgSrc}' style='max-width:100px;max-height:80px;margin-right:4px;border-radius:6px;' />`).join('') : `<img src='${loc.img}' style='max-width:100px;max-height:80px;border-radius:6px;' />`}</div>` : ''}
                 </div>
             `;
@@ -114,11 +117,11 @@ const ProjectMapSection = ({ section, language }) => {
                 margin: 0 !important;
             }
             .custom-popup .leaflet-popup-tip {
-                background: #374151 !important;
+                background: ${themeColors.surface} !important;
                 border: none !important;
             }
             .leaflet-container {
-                background: #1f2937 !important;
+                background: ${themeColors.background} !important;
             }
         `;
         document.head.appendChild(style);
@@ -132,7 +135,7 @@ const ProjectMapSection = ({ section, language }) => {
                 style.parentNode.removeChild(style);
             }
         };
-    }, [filteredLocations]);
+    }, [filteredLocations, themeColors]);
 
     return (
         <div className="flex flex-col h-screen w-full text-white">
@@ -145,7 +148,7 @@ const ProjectMapSection = ({ section, language }) => {
                         <button
                             key={category.value}
                             onClick={() => handleFilterChange(category.value)}
-                            className={`px-3 py-1 rounded-lg text-sm font-medium transition-all duration-200 ${activeCategory === category.value ? 'bg-green-600 text-white' : 'bg-gray-800 text-gray-300 hover:bg-gray-700'}`}
+                            className={`px-3 py-1 rounded-lg text-sm font-medium transition-all duration-200 ${activeCategory === category.value ? 'bg-theme-primary text-theme-background' : 'bg-theme-surface text-theme-textSecondary hover:bg-theme-muted'}`}
                         >
                             {category.label}
                         </button>

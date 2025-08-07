@@ -697,7 +697,7 @@ const Gallery = ({ language = 'en' }) => {
             />
 
             {/* Three.js 场景容器 - 全屏 */}
-            <div className="absolute inset-0 w-full h-full">
+            <div className="absolute inset-0 w-full h-full canvas-3d-container">
                 <canvas
                     ref={canvasRef}
                     className="w-full h-full"
@@ -718,7 +718,7 @@ const Gallery = ({ language = 'en' }) => {
 
                 {/* 操作提示 */}
                 {loadingProgress >= 100 && (
-                    <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 text-white/40 text-center pointer-events-none">
+                    <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 text-white/40 text-center pointer-events-none canvas-overlay-ui rounded-lg p-4">
                         <p className="text-sm">
                             {language === 'en' 
                                 ? 'Touch the stars to ignite their radiant glow • Watch them dance in the moon • Click the moon to unveil memories' 

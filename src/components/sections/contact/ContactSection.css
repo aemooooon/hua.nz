@@ -10,20 +10,26 @@
 
 /* 输入框聚焦效果 */
 .contact-input:focus {
-    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5);
+    box-shadow: 0 0 0 2px var(--theme-shadow);
+    border-color: var(--theme-primary);
     transform: translateY(-1px);
+    @apply transition-all duration-300;
 }
 
 /* 联系信息卡片悬停效果 */
 .contact-info-card {
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    border: 1px solid rgba(255,255,255,0.1);
+    border: 1px solid var(--theme-border);
+    background: rgba(255, 255, 255, 0.05);
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
 }
 
 .contact-info-card:hover {
     transform: translateY(-4px);
     box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.1);
-    border-color: rgba(59, 130, 246, 0.3);
+    border-color: var(--theme-primary);
+    background: var(--theme-hover);
 }
 
 /* 社交链接动画 */

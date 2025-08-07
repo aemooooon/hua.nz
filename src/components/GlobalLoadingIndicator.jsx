@@ -67,7 +67,7 @@ const GlobalLoadingIndicator = ({
                 </div>
                 <div className="w-full h-2 bg-white/10 rounded-full overflow-hidden">
                     <div 
-                        className="h-full bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 rounded-full transition-all duration-500 ease-out"
+                        className="h-full bg-theme-primary rounded-full transition-all duration-500 ease-out"
                         style={{ width: `${loadingProgress}%` }}
                     />
                 </div>
@@ -87,15 +87,15 @@ const GlobalLoadingIndicator = ({
         return (
             <div className="flex space-x-2">
                 <div 
-                    className="w-3 h-3 bg-blue-400 rounded-full animate-pulse"
+                    className="w-3 h-3 bg-theme-primary rounded-full animate-pulse"
                     style={{ animationDelay: `${animationDelay}s` }}
                 ></div>
                 <div 
-                    className="w-3 h-3 bg-purple-500 rounded-full animate-pulse" 
+                    className="w-3 h-3 bg-theme-primary rounded-full animate-pulse" 
                     style={{ animationDelay: `${animationDelay + 0.2}s` }}
                 ></div>
                 <div 
-                    className="w-3 h-3 bg-pink-500 rounded-full animate-pulse" 
+                    className="w-3 h-3 bg-theme-primary rounded-full animate-pulse" 
                     style={{ animationDelay: `${animationDelay + 0.4}s` }}
                 ></div>
             </div>
@@ -107,7 +107,7 @@ const GlobalLoadingIndicator = ({
         if (variant !== 'corner') return null;
         
         return (
-            <div className="w-4 h-4 border-2 border-white/30 border-t-blue-400 rounded-full animate-spin"></div>
+            <div className="w-4 h-4 border-2 border-white/30 border-t-theme-primary rounded-full animate-spin"></div>
         );
     };
 

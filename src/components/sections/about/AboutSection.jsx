@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import imageSrc from '../../../data/hua_icon_base64';
 import hoverImageSrc from '../../../assets/images/hua_500w1.jpg';
 import { useAppStore } from '../../../store/useAppStore';
+import { ThemeTitle, ThemeDescription, ThemeButton } from '../../ui/ThemeComponents';
 
 const EffectAvatar = lazy(() => import('../../background/EffectAvatar'));
 
@@ -30,31 +31,33 @@ const AboutSection = ({ language = 'en' }) => {
                     {/* 内容容器 - 内部也应用黄金比例的留白 */}
                     <div className="about-card-container">
                         {/* 增强毛玻璃背景卡片 */}
-                        <div className="bg-black/40 backdrop-blur-xl rounded-xl border border-white/20 shadow-2xl p-6 lg:p-8 xl:p-10 w-full relative shine-card shine-green">
-                            {/* 额外的内层毛玻璃效果 */}
-                            <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-black/20 rounded-xl backdrop-blur-sm"></div>
+                        <div className="content-section p-6 lg:p-8 xl:p-10 w-full relative">
                             {/* 内容层 */}
                             <div className="relative z-10 about-card-content">
                                 {/* 个人陈述内容 */}
                                 <div className="space-y-6">
-                                    <h2 className="text-2xl lg:text-3xl font-bold text-blue-400 font-beauRivage">{greeting}</h2>
+                                    <ThemeTitle level={2} className="font-beauRivage">
+                                        {greeting}
+                                    </ThemeTitle>
                                     {paragraphs.map((paragraph, index) => (
-                                        <p key={index} className="text-base lg:text-lg leading-relaxed text-gray-200" style={{ fontFamily: 'Figtree, sans-serif', fontWeight: '400' }}>
+                                        <ThemeDescription key={index} className="text-base lg:text-lg leading-relaxed" style={{ fontFamily: 'Figtree, sans-serif', fontWeight: '400' }}>
                                             {paragraph}
-                                        </p>
+                                        </ThemeDescription>
                                     ))}
                                 
                                 {/* Resume 链接 */}
                                 <div className="resume-section flex items-center justify-end space-x-4">
-                                    <a 
+                                    <ThemeButton
+                                        as="a"
                                         href="/Hua_Wang_Full_Stack_Engineer.pdf" 
                                         target="_blank" 
                                         rel="noopener noreferrer"
-                                        className="inline-block text-green-400 hover:text-green-300 font-medium transition-all duration-300 hover:scale-105 border-b border-green-400/50 hover:border-green-300 pb-1"
+                                        variant="ghost"
+                                        className="font-medium border-b border-theme-primary/50 hover:border-theme-primary pb-1"
                                         style={{ fontFamily: 'Figtree, sans-serif', fontWeight: '500' }}
                                     >
                                         {language === 'en' ? 'Resume' : '简历'}
-                                    </a>
+                                    </ThemeButton>
                                 </div>
                             </div>
                             </div>
@@ -67,64 +70,29 @@ const AboutSection = ({ language = 'en' }) => {
                     {/* 头像包装器 - 向左移动以与cube对齐 */}
                     <div className="about-avatar-wrapper">
                         <div className="relative">
-                            {/* 头像容器 - 圆形镜子外围绿色灯带效果 */}
-                            <div className="about-avatar-container relative rounded-full overflow-hidden bg-gray-900/50 backdrop-blur-sm border-4 border-green-300"
+                            {/* 头像容器 - 圆形镜子外围主题色灯带效果 */}
+                            <div className="about-avatar-container relative rounded-full overflow-hidden bg-theme-surface/50 backdrop-blur-sm border-4 border-theme-primary transition-all duration-500"
                              style={{
-                                 filter: `
-                                     drop-shadow(0 0 5px rgba(134, 239, 172, 0.8))
-                                     drop-shadow(0 0 10px rgba(134, 239, 172, 0.6))
-                                     drop-shadow(0 0 15px rgba(134, 239, 172, 0.4))
-                                 `,
-                                 boxShadow: `
-                                     0 0 8px rgba(134, 239, 172, 1),
-                                     0 0 15px rgba(134, 239, 172, 0.8),
-                                     0 0 22px rgba(134, 239, 172, 0.6),
-                                     inset 0 0 5px rgba(134, 239, 172, 0.3)
-                                 `,
                                  animation: 'avatar-glow 3s ease-in-out infinite'
                              }}>
-                            {/* 旋转背光效果 - 雷达颜色调浅，保持光晕亮度 */}
-                            <div className="absolute -inset-3 rounded-full pointer-events-none"
-                                 style={{
-                                     background: `
-                                         conic-gradient(
-                                             from 0deg,
-                                             transparent 0deg,
-                                             rgba(134, 239, 172, 0.2) 45deg,
-                                             rgba(134, 239, 172, 0.3) 90deg,
-                                             rgba(134, 239, 172, 0.2) 135deg,
-                                             transparent 180deg,
-                                             transparent 360deg
-                                         )
-                                     `,
-                                     animation: 'rotate-glow 4s linear infinite',
-                                     filter: 'blur(3px)'
-                                 }}>
-                            </div>
-                            {/* 静态内层光晕（保持亮度，减小雷达强度） */}
-                            <div className="absolute -inset-1 rounded-full pointer-events-none" 
-                                 style={{
-                                     background: 'radial-gradient(circle, transparent 70%, rgba(134, 239, 172, 0.15) 85%, transparent 100%)',
-                                     boxShadow: `
-                                         0 0 4px rgba(134, 239, 172, 0.6),
-                                         inset 0 0 4px rgba(134, 239, 172, 0.3)
-                                     `
-                                 }}>
-                            </div>
+                            {/* 旋转背光效果 - 使用主题变量 */}
+                            <div className="avatar-rotating-glow"></div>
+                            {/* 静态内层光晕 - 使用主题变量 */}
+                            <div className="avatar-inner-glow"></div>
                             {/* 延迟渲染 Avatar 以优化 LCP */}
                             {showAvatar ? (
                                 <Suspense 
                                     fallback={
-                                        <div className="w-full h-full flex items-center justify-center bg-gray-800 rounded-full">
-                                            <div className="w-full h-full bg-gray-800 rounded-full" />
+                                        <div className="w-full h-full flex items-center justify-center bg-theme-surface rounded-full">
+                                            <div className="w-full h-full bg-theme-surface rounded-full" />
                                         </div>
                                     }
                                 >
                                     <EffectAvatar imageSrc={imageSrc} hoverImageSrc={hoverImageSrc} />
                                 </Suspense>
                             ) : (
-                                <div className="w-full h-full flex items-center justify-center bg-gray-800 rounded-full">
-                                    <div className="w-full h-full bg-gray-800 rounded-full" />
+                                <div className="w-full h-full flex items-center justify-center bg-theme-surface rounded-full">
+                                    <div className="w-full h-full bg-theme-surface rounded-full" />
                                 </div>
                             )}
                         </div>

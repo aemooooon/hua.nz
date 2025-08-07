@@ -45,13 +45,13 @@ const CircularLoadingIndicator = ({
                     strokeWidth={strokeWidth}
                     className="drop-shadow-sm"
                 />
-                {/* 进度圆环 - 亮绿色 */}
+                {/* 进度圆环 - 使用主题色 */}
                 <circle
                     cx={size / 2}
                     cy={size / 2}
                     r={radius}
                     fill="none"
-                    stroke="#10b981" // 亮绿色 (emerald-500)
+                    stroke="var(--theme-primary)" // 使用主题色
                     strokeWidth={strokeWidth}
                     strokeLinecap="round"
                     strokeDasharray={strokeDasharray}
@@ -60,7 +60,7 @@ const CircularLoadingIndicator = ({
                         progress === 0 ? 'animate-spin' : ''
                     }`}
                     style={{
-                        filter: 'drop-shadow(0 0 6px rgba(16, 185, 129, 0.6))',
+                        filter: 'drop-shadow(0 0 6px var(--theme-primary))',
                         transformOrigin: 'center'
                     }}
                 />

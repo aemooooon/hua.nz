@@ -2,6 +2,11 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer base {
+  /* 导入格鲁吉亚字体 */
+  @import url('https://fonts.googleapis.com/css2?family=Georgia&display=swap');
+}
+
 * {
     margin: 0;
     padding: 0;
@@ -9,20 +14,50 @@
     font-family: "Poppins", sans-serif;
 }
 
+/* 数字使用格鲁吉亚字体 */
+.numeric {
+    font-family: Georgia, serif;
+    font-feature-settings: "lnum" 1;
+}
+
+/* 自动将数字应用格鲁吉亚字体 */
+.tel, .phone, .number {
+    font-family: Georgia, serif;
+}
+
+/* 主题根变量设置 */
+:root {
+  /* 默认为 New Zealand Blue 主题 - 使用最亮颜色和纯黑背景 */
+  --theme-primary: #00ffff;
+  --theme-secondary: #0080ff;
+  --theme-accent: #4dd0e1;
+  --theme-background: #000000;
+  --theme-surface: rgba(255, 255, 255, 0.05);
+  --theme-surface-elevated: rgba(255, 255, 255, 0.1);
+  --theme-text-primary: #ffffff;
+  --theme-text-secondary: #e1e7ef;
+  --theme-text-muted: #888888;
+  --theme-border: #00ffff;
+  --theme-divider: #00ffff;
+  --theme-hover: rgba(0, 255, 255, 0.1);
+  --theme-loading: #00ffff;
+  --theme-glow: #00ffff;
+  --theme-shadow: rgba(0, 255, 255, 0.5);
+  --theme-cursor: #00ffff;
+  --theme-avatar-glow: #00ffff;
+  --theme-success: #00ff00;
+  --theme-warning: #ffff00;
+  --theme-error: #ff0000;
+}
+
 body {
     height: 100vh;
     margin: 0;
     padding: 0;
-    overflow: hidden; /* 防止滚动条 */
-    @apply transition-colors duration-300;
-}
-
-body.dark {
-    @apply bg-background-dark text-foreground-dark;
-}
-
-body.light {
-    @apply bg-background-light text-foreground-light;
+    overflow: hidden;
+    background-color: var(--theme-background); /* 恢复背景色 */
+    color: var(--theme-text-primary);
+    @apply transition-colors duration-500 ease-in-out;
 }
 
 #root {
@@ -31,72 +66,164 @@ body.light {
     width: 100vw;
     margin: 0;
     padding: 0;
-    overflow: hidden; /* 防止滚动条 */
+    overflow: hidden;
     min-width: 375px;
     min-height: 618px;
-    @apply transition-all duration-300;
+    /* 不设置背景色，让3D背景可见 */
+    @apply transition-all duration-500;
 }
 
-/* 内容区域增强毛玻璃效果 */
+/* 内容区域毛玻璃效果 */
 .content-section {
     background: rgba(255, 255, 255, 0.08);
-    border: 1px solid rgba(255, 255, 255, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.1); /* 更透明的边框，避免喧宾夺主 */
     border-radius: 0.75rem;
     -webkit-backdrop-filter: blur(12px);
     backdrop-filter: blur(12px);
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-    @apply transition-all duration-300;
-}
-
-.dark .content-section {
-    background: rgba(255, 255, 255, 0.08);
-    border-color: rgba(255, 255, 255, 0.15);
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    @apply transition-all duration-500;
 }
 
-.light .content-section {
-    background: rgba(0, 0, 0, 0.05);
-    border-color: rgba(0, 0, 0, 0.1);
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+.theme-nz-blue .content-section {
+    background: rgba(0, 239, 255, 0.08);
+    border-color: rgba(0, 239, 255, 0.1); /* 更透明的主题色边框 */
+    box-shadow: 0 8px 32px rgba(0, 239, 255, 0.15);
+}
+
+.theme-si-green .content-section {
+    background: rgba(0, 255, 136, 0.08);
+    border-color: rgba(0, 255, 136, 0.1); /* 更透明的主题色边框 */
+    box-shadow: 0 8px 32px rgba(0, 255, 136, 0.15);
 }
 
 /* 文字背景确保可读性 */
 .text-enhanced {
-    background: rgba(0, 0, 0, 0.4);
+    background: rgba(0, 0, 0, 0.6);
     border-radius: 0.5rem;
     -webkit-backdrop-filter: blur(20px);
     backdrop-filter: blur(20px);
+    color: var(--theme-text-primary);
+    @apply transition-all duration-500;
+}
+
+/* 卡片样式 - 强化毛玻璃效果 */
+.theme-card {
+    background: var(--theme-surface);
+    -webkit-backdrop-filter: blur(20px);
+    backdrop-filter: blur(20px);
+    border: 1px solid var(--theme-border);
+    border-radius: 0.75rem;
+    position: relative;
+    overflow: hidden;
+    @apply transition-all duration-500;
+}
+
+.theme-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(var(--theme-glow-rgb, 0, 255, 255), 0.4),
+        transparent
+    );
+    transition: left 0.8s ease-in-out;
+    pointer-events: none;
+}
+
+.theme-card:hover::before {
+    left: 100%;
+}
+
+.theme-card:hover {
+    background: var(--theme-surface-elevated);
+    box-shadow: 
+        0 8px 25px var(--theme-shadow),
+        0 0 20px var(--theme-glow),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    transform: translateY(-2px);
+    border-color: var(--theme-primary);
+}
+
+/* 按钮样式 - 使用专用按钮颜色 */
+.theme-button {
+    background: var(--theme-button-primary);
+    color: var(--theme-text-primary);
+    border: none;
+    border-radius: 0.5rem;
     @apply transition-all duration-300;
 }
 
-.dark .text-enhanced {
-    background: rgba(0, 0, 0, 0.4);
+.theme-button:hover {
+    background: var(--theme-button-hover);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px var(--theme-shadow);
 }
 
-.light .text-enhanced {
-    background: rgba(255, 255, 255, 0.8);
-    @apply text-gray-800;
+/* 加载进度条 */
+.theme-loading {
+    background: var(--theme-loading);
+    @apply transition-colors duration-300;
 }
 
-/* 全局自定义滚动条 */
+.theme-loading::before {
+    background: linear-gradient(90deg, 
+        transparent, 
+        var(--theme-primary), 
+        transparent);
+}
+
+/* 分割线 */
+.theme-divider {
+    background: var(--theme-divider);
+    height: 1px;
+    @apply transition-colors duration-300;
+}
+
+/* 图标颜色 */
+.theme-icon {
+    color: var(--theme-primary);
+    @apply transition-colors duration-300;
+}
+
+.theme-icon:hover {
+    color: var(--theme-secondary);
+}
+
+/* 3D背景容器 */
+.background-3d {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    @apply transition-opacity duration-1000;
+}
+
+/* 自定义滚动条 - 主题化 */
 ::-webkit-scrollbar {
-    width: 6px; /* 滚动条宽度 */
-    height: 6px; /* 水平滚动条高度 */
+    width: 6px;
+    height: 6px;
 }
 
 ::-webkit-scrollbar-track {
-    background: #1d2012; /* 深绿色 */
-    border-radius: 3px; /* 滚动条轨道圆角 */
+    background: var(--theme-surface);
+    border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb {
-    background: linear-gradient(45deg, #7ca65c, #afcc8f); /* 中绿色到浅绿色渐变 */
-    border-radius: 3px; /* 滚动条拇指圆角 */
-    border: 1px solid #1d2012; /* 外边框颜色 */
+    background: linear-gradient(45deg, var(--theme-primary), var(--theme-secondary));
+    border-radius: 3px;
+    border: 1px solid var(--theme-surface);
 }
 
 ::-webkit-scrollbar-thumb:hover {
-    background: linear-gradient(45deg, #5d7d4b, #768e90); /* 蓝绿色到次中绿色渐变 */
+    background: linear-gradient(45deg, var(--theme-secondary), var(--theme-accent));
 }
 
 ::-webkit-scrollbar-corner {
@@ -1324,9 +1451,10 @@ body.light {
     display: inline-block;
     width: 2px;
     height: 1.2em;
-    background-color: #afcc8f;
+    background-color: var(--theme-cursor);
     margin-left: 2px;
     animation: blink-cursor 1s infinite;
+    @apply transition-colors duration-300;
 }
 
 @keyframes blink-cursor {
@@ -1382,16 +1510,50 @@ body.light {
 @keyframes avatar-glow {
     0%, 100% {
         filter: 
-            drop-shadow(0 0 5px rgba(134, 239, 172, 0.6))
-            drop-shadow(0 0 10px rgba(134, 239, 172, 0.4))
-            drop-shadow(0 0 15px rgba(134, 239, 172, 0.2));
+            drop-shadow(0 0 5px var(--theme-avatar-glow))
+            drop-shadow(0 0 10px var(--theme-avatar-glow))
+            drop-shadow(0 0 15px var(--theme-avatar-glow));
+        opacity: 0.6;
     }
     50% {
         filter: 
-            drop-shadow(0 0 8px rgba(134, 239, 172, 1))
-            drop-shadow(0 0 15px rgba(134, 239, 172, 0.8))
-            drop-shadow(0 0 22px rgba(134, 239, 172, 0.6));
+            drop-shadow(0 0 8px var(--theme-avatar-glow))
+            drop-shadow(0 0 15px var(--theme-avatar-glow))
+            drop-shadow(0 0 22px var(--theme-avatar-glow));
+        opacity: 1;
     }
+}
+
+/* 主题化头像旋转背光效果 */
+.avatar-rotating-glow {
+    position: absolute;
+    inset: -12px;
+    border-radius: 50%;
+    pointer-events: none;
+    background: conic-gradient(
+        from 0deg,
+        transparent 0deg,
+        var(--theme-avatar-glow) 45deg,
+        var(--theme-avatar-glow) 90deg,
+        var(--theme-avatar-glow) 135deg,
+        transparent 180deg,
+        transparent 360deg
+    );
+    opacity: 0.3;
+    animation: rotate-glow 4s linear infinite;
+    filter: blur(3px);
+    transition: opacity 0.3s ease;
+}
+
+/* 主题化静态内层光晕 */
+.avatar-inner-glow {
+    position: absolute;
+    inset: -4px;
+    border-radius: 50%;
+    pointer-events: none;
+    background: radial-gradient(circle, transparent 70%, var(--theme-avatar-glow) 85%, transparent 100%);
+    opacity: 0.2;
+    transition: opacity 0.3s ease;
 }
 
 /* Additional enhancements for better visual hierarchy */
@@ -1620,4 +1782,68 @@ body.light {
 /* 头像容器在包装器内的精确定位 */
 .about-avatar-container {
     margin-left: 0; /* 确保头像在容器内靠左对齐 */
+}
+
+/* Gallery和Contact Section的主题背景支持 */
+/* 这两个section使用3D canvas，但canvas可能不是全屏，需要为非canvas区域提供主题背景 */
+
+/* Gallery Section 主题背景 - 移除可能遮挡3D背景的样式 */
+.gallery-section-background {
+    /* 移除背景色，让3D背景可见 */
+    background: transparent;
+    @apply transition-colors duration-500;
+}
+
+.theme-nz-blue .gallery-section-background {
+    /* 移除背景渐变，让3D背景可见 */
+    background: transparent;
+}
+
+.theme-si-green .gallery-section-background {
+    /* 移除背景渐变，让3D背景可见 */
+    background: transparent;
+}
+
+/* Contact Section 主题背景 - 移除可能遮挡3D背景的样式 */
+.contact-section-background {
+    /* 移除背景色，让3D背景可见 */
+    background: transparent;
+    @apply transition-colors duration-500;
+}
+
+.theme-nz-blue .contact-section-background {
+    /* 移除背景渐变，让3D背景可见 */
+    background: transparent;
+}
+
+.theme-si-green .contact-section-background {
+    /* 移除背景渐变，让3D背景可见 */
+    background: transparent;
+}
+
+/* 3D Canvas容器 - 透明背景让3D背景可见 */
+.canvas-3d-container {
+    background: transparent; /* 改为透明背景 */
+    position: relative;
+    z-index: 10;
+}
+
+/* 确保3D效果下的UI元素使用主题色 */
+.canvas-overlay-ui {
+    color: var(--theme-text-primary);
+    background: var(--theme-surface);
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--theme-border);
+    @apply transition-all duration-300;
+}
+
+.theme-nz-blue .canvas-overlay-ui {
+    background: var(--theme-surface);
+    box-shadow: 0 4px 20px var(--theme-shadow);
+}
+
+.theme-si-green .canvas-overlay-ui {
+    background: var(--theme-surface);
+    box-shadow: 0 4px 20px var(--theme-shadow);
 }

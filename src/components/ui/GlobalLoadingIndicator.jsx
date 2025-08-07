@@ -87,15 +87,15 @@ const GlobalLoadingIndicator = ({
         return (
             <div className="flex space-x-2">
                 <div 
-                    className="w-3 h-3 bg-blue-400 rounded-full animate-pulse"
+                    className="w-3 h-3 bg-theme-primary rounded-full animate-pulse"
                     style={{ animationDelay: `${animationDelay}s` }}
                 ></div>
                 <div 
-                    className="w-3 h-3 bg-purple-500 rounded-full animate-pulse" 
+                    className="w-3 h-3 bg-theme-primary rounded-full animate-pulse" 
                     style={{ animationDelay: `${animationDelay + 0.2}s` }}
                 ></div>
                 <div 
-                    className="w-3 h-3 bg-pink-500 rounded-full animate-pulse" 
+                    className="w-3 h-3 bg-theme-primary rounded-full animate-pulse" 
                     style={{ animationDelay: `${animationDelay + 0.4}s` }}
                 ></div>
             </div>

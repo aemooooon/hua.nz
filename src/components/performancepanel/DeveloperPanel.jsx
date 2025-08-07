@@ -153,7 +153,7 @@ const DeveloperPanel = ({ visible, onToggle }) => {
             <div className="flex items-center justify-between p-2 border-b border-white/20">
                 {!isCollapsed && (
                     <div className="flex items-center space-x-2">
-                        <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                        <div className="w-2 h-2 bg-theme-success rounded-full animate-pulse"></div>
                         <span className="text-green-400 font-semibold">Performance Panel</span>
                     </div>
                 )}

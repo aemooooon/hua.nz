@@ -31,7 +31,7 @@ const WebGLMemoryMonitor = ({ enabled = true }) => {
             onClick={() => setShowDetails(!showDetails)}
         >
             <div className="flex items-center space-x-2">
-                <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                <div className="w-2 h-2 bg-theme-success rounded-full animate-pulse"></div>
                 <span>WebGL资源: {memoryInfo.activeResourceGroups}</span>
             </div>
             

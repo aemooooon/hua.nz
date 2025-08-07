@@ -25,8 +25,8 @@ class ErrorBoundary extends React.Component {
         if (this.state.hasError) {
             // 你可以自定义降级后的 UI 并渲染
             return (
-                <div className="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-gray-900">
-                    <div className="max-w-md w-full bg-white dark:bg-gray-800 shadow-lg rounded-lg p-6">
+                <div className="min-h-screen flex items-center justify-center bg-theme-background">
+                    <div className="max-w-md w-full bg-theme-surface shadow-lg rounded-lg p-6">
                         <div className="flex items-center mb-4">
                             <div className="flex-shrink-0">
                                 <svg className="h-8 w-8 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -45,7 +45,7 @@ class ErrorBoundary extends React.Component {
                         {import.meta.env.DEV && this.state.error && (
                             <details className="text-xs text-gray-500 dark:text-gray-400 mt-4">
                                 <summary className="cursor-pointer mb-2">错误详情（开发模式）</summary>
-                                <pre className="whitespace-pre-wrap bg-gray-100 dark:bg-gray-700 p-2 rounded">
+                                <pre className="whitespace-pre-wrap bg-theme-muted p-2 rounded">
                                     {this.state.error && this.state.error.toString()}
                                     <br />
                                     {this.state.errorInfo.componentStack}
@@ -55,7 +55,7 @@ class ErrorBoundary extends React.Component {
                         <div className="mt-6">
                             <button 
                                 onClick={() => window.location.reload()}
-                                className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline transition duration-200"
+                                className="w-full bg-theme-primary hover:bg-theme-primary/80 text-theme-background font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline transition duration-200"
                             >
                                 刷新页面
                             </button>

@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 import PhotoSwipeLightbox from 'photoswipe/lightbox';
 import 'photoswipe/style.css';
+import { useTheme } from '../../../hooks/useTheme';
 
 const PhotoSwipeGallery = ({ 
     items = [], 
@@ -12,6 +13,8 @@ const PhotoSwipeGallery = ({
 }) => {
     const lightboxRef = useRef(null);
     const galleryRef = useRef(null);
+    const { getThemeColors } = useTheme();
+    const themeColors = getThemeColors();
 
     useEffect(() => {
         if (!items.length) return;
@@ -271,7 +274,7 @@ const PhotoSwipeGallery = ({
                 }
                 
                 .pswp__download:hover {
-                    color: #60a5fa;
+                    color: ${themeColors.primary};
                 }
                 
                 .pswp__bg {
@@ -285,7 +288,7 @@ const PhotoSwipeGallery = ({
                 
                 /* 自定义加载动画 */
                 .pswp__preloader__icn {
-                    background: conic-gradient(from 0deg, transparent, #60a5fa);
+                    background: conic-gradient(from 0deg, transparent, ${themeColors.primary});
                     border-radius: 50%;
                     mask: radial-gradient(circle at center, transparent 40%, black 41%);
                 }
