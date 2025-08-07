@@ -23,7 +23,9 @@ const SmartScrollManager = () => {
         getCurrentSection,
         language,
         // 开场动画相关状态
-        enableOpeningAnimation
+        enableOpeningAnimation,
+        // Modal状态
+        isProjectModalOpen
     } = useAppStore();
     
     const containerRef = useRef(null);
@@ -133,14 +135,41 @@ const SmartScrollManager = () => {
         }, 150);
     }, []);
 
-    // 重置滚动状态（切换section时）- 智能位置恢复
+    // 重置滚动状态（切换section时）- 智能位置恢复，修复视觉故障
     const resetScrollState = useCallback(() => {
         scrollAccumulatorRef.current = 0; // 重置累积器
+        
+        // 立即清除所有动画状态，防止视觉故障
         setIsPreviewingScroll(false);
         setPreviewOffset(0);
+        setIsBouncing(false);
+        setBounceDirection('none');
+        
+        // 清除回弹定时器
+        if (bounceTimerRef.current) {
+            clearTimeout(bounceTimerRef.current);
+        }
         
         if (contentRef.current) {
             const sectionId = currentSectionConfig?.id;
+            
+            // 对于Home页面，确保完全重置状态，防止动画干扰
+            if (sectionId === 'home') {
+                // 立即清除所有transform和动画状态
+                const container = contentRef.current;
+                container.style.transform = 'translateY(0)';
+                container.style.transition = 'none';
+                container.scrollTop = 0;
+                
+                // 强制重排确保状态一致性，然后恢复正常transition
+                requestAnimationFrame(() => {
+                    if (container) {
+                        container.offsetHeight; // 触发重排
+                        container.style.transition = '';
+                    }
+                });
+                return;
+            }
             
             // 根据导航方向和内容长度决定滚动位置 - 适用于所有有溢出内容的页面
             const shouldScrollToBottom = () => {
@@ -163,24 +192,29 @@ const SmartScrollManager = () => {
             };
             
             if (shouldScrollToBottom()) {
-                // 滚动到底部，模拟传统HTML体验
-                setTimeout(() => {
+                // 使用requestAnimationFrame确保DOM完全渲染后再滚动
+                requestAnimationFrame(() => {
                     if (contentRef.current) {
                         const maxScrollTop = contentRef.current.scrollHeight - contentRef.current.clientHeight;
                         contentRef.current.scrollTop = maxScrollTop;
+                        // 强制重排确保滚动位置正确
+                        contentRef.current.offsetHeight;
                     }
-                }, 100);
+                });
             } else {
                 // 默认滚动到顶部
                 contentRef.current.scrollTop = 0;
+                // 强制重排确保滚动位置正确
+                contentRef.current.offsetHeight;
             }
         }
     }, [currentSectionConfig, isContentOverflowing, sectionScrollPositions]);
 
-    // 智能滚轮处理 - 混合滚动模式优化，增加iOS式预览动画
+    // 智能滚轮处理 - 混合滚动模式优化，增加iOS式预览动画，修复竞态条件
     const handleWheel = useCallback((event) => {
         const now = Date.now();
-        if (isScrolling) return;
+        // 在section切换期间或modal打开时阻止所有滚动事件
+        if (isScrolling || isProjectModalOpen) return;
         
         // 内容滚动模式下，优先处理内容滚动，不进行累积计算
         if (scrollMode === 'content' && isContentOverflowing && !isHomePage) {
@@ -345,13 +379,13 @@ const SmartScrollManager = () => {
         } else if (isScrollingUp && currentSection > 0) {
             navigatePrev();
         }
-    }, [isScrolling, scrollMode, isContentOverflowing, isHomePage, currentSection, sections.length, 
+    }, [isScrolling, isProjectModalOpen, scrollMode, isContentOverflowing, isHomePage, currentSection, sections.length, 
         navigateNext, navigatePrev, currentSectionConfig, isPreviewingScroll,
         setSectionScrollPositions, setIsPreviewingScroll, setPreviewOffset, triggerBounceAnimation]);
 
     // 键盘事件处理（混合滚动模式优化）
     const handleKeyDown = useCallback((event) => {
-        if (isScrolling) return;
+        if (isScrolling || isProjectModalOpen) return;
         
         const container = contentRef.current;
         
@@ -437,11 +471,30 @@ const SmartScrollManager = () => {
                 break;
             }
         }
-    }, [isScrolling, scrollMode, isContentOverflowing, isHomePage, currentSection, sections.length, navigateNext, navigatePrev, navigateToSection]);
+    }, [isScrolling, isProjectModalOpen, scrollMode, isContentOverflowing, isHomePage, currentSection, sections.length, navigateNext, navigatePrev, navigateToSection]);
 
-    // 监听section变化，重置滚动状态
+    // 监听section变化，重置滚动状态 - 添加更严格的状态清理
     useEffect(() => {
-        resetScrollState();
+        // 立即清理所有动画状态
+        setIsPreviewingScroll(false);
+        setPreviewOffset(0);
+        setIsBouncing(false);
+        setBounceDirection('none');
+        scrollAccumulatorRef.current = 0;
+        
+        // 清理定时器
+        if (bounceTimerRef.current) {
+            clearTimeout(bounceTimerRef.current);
+        }
+        
+        // 等待DOM稳定后再重置滚动状态
+        const resetTimer = setTimeout(() => {
+            resetScrollState();
+        }, 50);
+        
+        return () => {
+            clearTimeout(resetTimer);
+        };
     }, [currentSection, resetScrollState]);
 
     // 监听内容变化，检测溢出 - 增加多次检测和稳定性保证
@@ -553,13 +606,15 @@ const SmartScrollManager = () => {
                             : 'overflow-hidden'
                 } ${isBouncing ? 'bouncing' : ''}`}
                 style={{
-                    transform: isPreviewingScroll ? `translateY(${previewOffset}px)` : 'translateY(0)',
-                    transition: isPreviewingScroll && !isBouncing
-                        ? 'none' 
-                        : isBouncing
-                            ? 'transform 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55)' // iOS式回弹曲线
-                            : 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)', // 普通过渡
-                    willChange: 'transform'
+                    transform: isPreviewingScroll && !isBouncing ? `translateY(${previewOffset}px)` : 'translateY(0)',
+                    transition: isScrolling
+                        ? 'none' // 在section切换期间禁用所有动画
+                        : isPreviewingScroll && !isBouncing
+                            ? 'none' 
+                            : isBouncing
+                                ? 'transform 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55)' // iOS式回弹曲线
+                                : 'transform 0.2s cubic-bezier(0.4, 0, 0.2, 1)', // 普通过渡
+                    willChange: isScrolling || isPreviewingScroll || isBouncing ? 'transform' : 'auto'
                 }}
             >
                 {renderCurrentSection()}

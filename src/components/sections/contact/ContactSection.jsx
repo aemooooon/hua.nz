@@ -93,7 +93,7 @@ const ContactSection = ({ language }) => {
                                 <h3 className="text-xl font-bold text-white mb-2">
                                     {info.title}
                                 </h3>
-                                <p className="text-blue-300 font-medium mb-3 text-lg">
+                                <p className="text-blue-300 font-medium mb-3 text-lg phone">
                                     {info.value}
                                 </p>
                                 <p className="text-sm text-gray-400">

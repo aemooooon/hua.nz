@@ -81,24 +81,24 @@ const DeveloperPanel = ({ visible, onToggle }) => {
             <div className="grid grid-cols-2 gap-2 text-xs">
                 <div className="bg-white/10 backdrop-blur-md border border-white/20 p-2 rounded-lg">
                     <div className="text-blue-400 font-semibold">JS Heap Used</div>
-                    <div className="text-xl font-mono">{memoryInfo?.used || 0} MB</div>
-                    <div className="text-gray-400 text-xs">
+                    <div className="text-xl font-mono number">{memoryInfo?.used || 0} MB</div>
+                    <div className="text-gray-400 text-xs percentage">
                         {memoryInfo ? Math.round((memoryInfo.used / memoryInfo.limit) * 100) : 0}% of limit
                     </div>
                 </div>
                 <div className="bg-white/10 backdrop-blur-md border border-white/20 p-2 rounded-lg">
                     <div className="text-green-400 font-semibold">JS Heap Total</div>
-                    <div className="text-xl font-mono">{memoryInfo?.total || 0} MB</div>
+                    <div className="text-xl font-mono number">{memoryInfo?.total || 0} MB</div>
                     <div className="text-gray-400 text-xs">Allocated</div>
                 </div>
                 <div className="bg-white/10 backdrop-blur-md border border-white/20 p-2 rounded-lg">
                     <div className="text-yellow-400 font-semibold">JS Heap Limit</div>
-                    <div className="text-xl font-mono">{memoryInfo?.limit || 0} MB</div>
+                    <div className="text-xl font-mono number">{memoryInfo?.limit || 0} MB</div>
                     <div className="text-gray-400 text-xs">Browser limit</div>
                 </div>
                 <div className="bg-white/10 backdrop-blur-md border border-white/20 p-2 rounded-lg">
                     <div className="text-purple-400 font-semibold">FPS</div>
-                    <div className="text-xl font-mono">{performanceData.fps || 0}</div>
+                    <div className="text-xl font-mono number">{performanceData.fps || 0}</div>
                     <div className="text-gray-400 text-xs">Frames/sec</div>
                 </div>
             </div>
@@ -110,12 +110,12 @@ const DeveloperPanel = ({ visible, onToggle }) => {
             <div className="grid grid-cols-2 gap-2 text-xs">
                 <div className="bg-white/10 backdrop-blur-md border border-white/20 p-2 rounded-lg">
                     <div className="text-cyan-400 font-semibold">Active Groups</div>
-                    <div className="text-xl font-mono">{webglInfo?.activeResourceGroups || 0}</div>
+                    <div className="text-xl font-mono number">{webglInfo?.activeResourceGroups || 0}</div>
                     <div className="text-gray-400 text-xs">Resource groups</div>
                 </div>
                 <div className="bg-white/10 backdrop-blur-md border border-white/20 p-2 rounded-lg">
                     <div className="text-orange-400 font-semibold">Persistent</div>
-                    <div className="text-xl font-mono">
+                    <div className="text-xl font-mono number">
                         {webglInfo?.persistentResources || 0}
                     </div>
                     <div className="text-gray-400 text-xs">Persistent resources</div>

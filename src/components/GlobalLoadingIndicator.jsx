@@ -63,7 +63,7 @@ const GlobalLoadingIndicator = ({
             <div className={variant === 'corner' ? 'w-32 space-y-2' : 'w-64 space-y-3'}>
                 <div className="flex justify-between text-white/50 text-sm">
                     <span>{imagesText}</span>
-                    <span>{loadedCount}/{totalCount}</span>
+                    <span className="progress-number">{loadedCount}/{totalCount}</span>
                 </div>
                 <div className="w-full h-2 bg-white/10 rounded-full overflow-hidden">
                     <div 
@@ -72,7 +72,7 @@ const GlobalLoadingIndicator = ({
                     />
                 </div>
                 {showPercentage && (
-                    <div className="text-center text-white/40 text-xs">
+                    <div className="text-center text-white/40 text-xs percentage">
                         {loadingProgress}%
                     </div>
                 )}
@@ -119,7 +119,7 @@ const GlobalLoadingIndicator = ({
                     {renderSpinner()}
                     <span className="text-white">{displayText}</span>
                     {showProgress && totalCount > 0 && (
-                        <span className="text-white/70">{loadedCount}/{totalCount}</span>
+                        <span className="text-white/70 progress-number">{loadedCount}/{totalCount}</span>
                     )}
                 </div>
                 {showProgress && totalCount > 0 && (

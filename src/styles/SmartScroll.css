@@ -48,14 +48,18 @@
     }
 }
 
-/* 模式切换过渡 */
+/* 模式切换过渡 - 优化防止视觉故障 */
 .scroll-mode-transition {
-    transition: all 0.3s ease-in-out;
+    transition: all 0.2s ease-out;
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+    transform-style: preserve-3d;
 }
 
 /* 混合滚动模式 - Home 页面完全隐藏滚动条 */
 .scroll-mode-home {
     overflow: hidden !important;
+    transform: translateZ(0); /* 强制硬件加速 */
 }
 
 .scroll-mode-home::-webkit-scrollbar {
@@ -70,6 +74,7 @@
 /* 其他页面的滚动条样式 - 仅在内容溢出时显示 */
 .scroll-mode-auto {
     overflow-y: auto;
+    transform: translateZ(0); /* 强制硬件加速 */
 }
 
 .scroll-mode-auto::-webkit-scrollbar {

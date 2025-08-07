@@ -380,7 +380,7 @@ const SmartDirectionalCursor = () => {
                             willChange: 'opacity',
                         }}
                     >
-                        {percentage}%
+                        <span className="percentage">{percentage}%</span>
                     </div>
                 )}
 

@@ -27,7 +27,7 @@ const sectionsConfig = [
     icon: "👤"
   },
   {
-    id: "projects", 
+    id: "projects",
     index: 2,
     name: { en: "Projects", zh: "项目" },
     description: { en: "My development projects", zh: "我的开发项目" },
@@ -90,13 +90,13 @@ const contentConfig = {
     },
     projects: {
       title: "My Projects",
-      subtitle: "Explore my portfolio of innovative applications",
-      description: "A collection of web applications and development projects showcasing modern technologies and creative solutions.",
+      subtitle: "Each project represents a unique challenge and learning journey",
+      description: "From Full Stack Web Development to 3D immersive experiences, from computer science to data science, to computer graphics — explore the diverse technology and solutions. Language-agnostic, platform-independent, framework-flexible.",
       viewProject: "View Project",
       learnMore: "Learn more →",
       technologies: "Technologies",
       totalProjects: "Total Projects",
-      exploreMap: "Explore Map",
+      exploreMap: "Map View",
       exploreMapTooltip: "Explore Projects on Interactive Map",
       showing: "Showing",
       viewDetails: "View Details",
@@ -155,7 +155,7 @@ const contentConfig = {
       title: "About Me",
       subtitle: "My journey as a developer",
       description: "Learn more about my background, skills, and passion for technology.",
-      background: "Background", 
+      background: "Background",
       education: "Education",
       interests: "Interests",
       pages: [
@@ -183,7 +183,7 @@ const contentConfig = {
               icon: "ZI"
             },
             {
-              company: "Realibox, GuangZhou", 
+              company: "Realibox, GuangZhou",
               position: "Frontend Developer",
               period: "Aug 2021 - Feb 2023",
               color: "purple",
@@ -191,7 +191,7 @@ const contentConfig = {
             },
             {
               company: "Nuclear Stone Technology",
-              position: "Frontend Developer", 
+              position: "Frontend Developer",
               period: "Aug 2020 - Jul 2021",
               color: "green",
               icon: "NS"
@@ -200,7 +200,7 @@ const contentConfig = {
               company: "Enshi Environmental Agency",
               position: "Full Stack Developer (Contract)",
               period: "Feb 2020 - Jul 2021",
-              color: "orange", 
+              color: "orange",
               icon: "ES"
             }
           ]
@@ -316,13 +316,13 @@ const contentConfig = {
     },
     projects: {
       title: "我的项目",
-      subtitle: "探索我的创新应用程序作品集",
-      description: "展示现代技术和创意解决方案的Web应用程序和开发项目集合。",
+      subtitle: "每个项目都代表着独特的挑战和学习之旅",
+      description: "从全栈Web开发到3D沉浸式体验，从计算机科学到数据科学，到计算机图形学——探索多样的技术与解决方案。语言无关，平台独立，框架灵活。",
       viewProject: "查看项目",
       learnMore: "了解更多 →",
       technologies: "技术栈",
       totalProjects: "总项目数",
-      exploreMap: "探索地图",
+      exploreMap: "地图",
       exploreMapTooltip: "在交互地图上探索项目",
       showing: "显示",
       viewDetails: "查看详情",
@@ -382,7 +382,7 @@ const contentConfig = {
       subtitle: "我的开发者之路",
       description: "了解更多关于我的背景、技能和对技术的热情。",
       background: "背景",
-      education: "教育经历", 
+      education: "教育经历",
       interests: "兴趣爱好",
       pages: [
         {
@@ -409,7 +409,7 @@ const contentConfig = {
             },
             {
               company: "Realibox，广州",
-              position: "前端开发工程师", 
+              position: "前端开发工程师",
               period: "2021年8月 - 2023年2月",
               color: "purple",
               icon: "RB"
@@ -417,7 +417,7 @@ const contentConfig = {
             {
               company: "Nuclear Stone Technology，重庆",
               position: "前端开发工程师",
-              period: "2020年8月 - 2021年7月", 
+              period: "2020年8月 - 2021年7月",
               color: "green",
               icon: "NS"
             },
@@ -527,7 +527,7 @@ export const useAppStore = create(
       // 语言状态
       language: 'en',
       setLanguage: (language) => set({ language }),
-      toggleLanguage: () => 
+      toggleLanguage: () =>
         set((state) => ({ language: state.language === 'en' ? 'zh' : 'en' })),
 
       // 主题状态 - 使用新的主题名称
@@ -545,11 +545,11 @@ export const useAppStore = create(
       // 当前活动区块
       currentSection: 0,
       setCurrentSection: (index) => set({ currentSection: index }),
-      
+
       // 当前背景效果
       currentEffect: 'effectchaos',
       setCurrentEffect: (effect) => set({ currentEffect: effect }),
-      
+
       // 滚动状态
       isScrolling: false,
       setIsScrolling: (scrolling) => set({ isScrolling: scrolling }),
@@ -558,203 +558,175 @@ export const useAppStore = create(
       enableOpeningAnimation: true,
       setEnableOpeningAnimation: (enabled) => set({ enableOpeningAnimation: enabled }),
 
+      // Modal 状态管理
+      selectedProject: null,
+      isProjectModalOpen: false,
+      setSelectedProject: (project) => set({ 
+        selectedProject: project, 
+        isProjectModalOpen: !!project 
+      }),
+      closeProjectModal: () => set({ 
+        selectedProject: null, 
+        isProjectModalOpen: false 
+      }),
+
       // 配置数据
       sections: sectionsConfig,
-      
+
       // 多语言文本内容
       texts: contentConfig,
-      
+
       // 项目数据 (原locations.js，重命名为projects)
       projects: [
         {
-          "type": "work",
-          "title": { en: "Software Engineer", zh: "软件工程师" },
-          "name": { en: "Zespri International", zh: "佳沛国际" },
-          "description": { en: "Built ETL pipelines and developed an interactive GIS-based web application for orchard sampling optimization.", zh: "构建ETL管道，开发交互式GIS网络应用，优化果园采样" },
-          "coordinates": [-37.7866, 176.4416],
-          "location": { en: "Bay of Plenty, New Zealand", zh: "新西兰丰盛湾" },
-          "year": "2024-2025",
-          "link": "https://www.zespri.com",
-          "img": "/zespri_poster.png"
+            "type": "Full Stack",
+            "title": "Software Engineer",
+            "name": "Zespri International",
+            "description": "Built ETL pipelines and developed an interactive GIS-based web application for orchard sampling optimization.",
+            "coordinates": [-37.7866, 176.4416],
+            "location": "Bay of Plenty, New Zealand",
+            "year": "2024-2025",
+            "link": "https://www.zespri.com",
+            "img": "/zespri_poster.png"
         },
-          {
-            "type": "work",
-            "title": { en: "Software Engineer", zh: "软件工程师" },
-            "name": { en: "Realibox", zh: "Realibox" },
-            "description": { en: "Developed and maintained the central hub for Realibox's 3D assets, using React with a WebGL-based library for the frontend and Node.js/Python for the backend. Implemented CI/CD pipelines using GitLab for code integration and deployment. Worked in an Agile environment, collaborating closely with PMs, QAs, and Designers to ensure feature delivery aligned with requirements.", zh: "开发维护Realibox 3D资产中心，前端使用React和WebGL库，后端使用Node.js/Python。使用GitLab实现CI/CD流水线，在敏捷环境中协同工作" },
+        {
+            "type": "Full Stack",
+            "title": "Software Engineer",
+            "name": "Realibox",
+            "description": "Developed and maintained the central hub for Realibox’s 3D assets, using React with a WebGL-based library for the frontend and Node.js/Python for the backend. Implemented CI/CD pipelines using GitLab for code integration and deployment. Worked in an Agile environment, collaborating closely with PMs, QAs, and Designers to ensure feature delivery aligned with requirements.",
             "coordinates": [22.9951158, 113.3335372],
-            "location": { en: "Guangzhou, China", zh: "中国广州" },
+            "location": "Guangzhou, China",
             "year": "2021-2023",
             "link": "https://hub.realibox.com/",
             "img": ["/realibox-00.jpg", "realibox-01.jpeg"]
-          },
-          {
-            "type": "work",
-            "title": { en: "Frontend Developer", zh: "前端开发工程师" },
-            "name": { en: "Chongqing Nuclear Stone Technology", zh: "重庆核石科技" },
-            "description": { en: "Develop H5 micro-apps on the WeChat platform, which include front-end page implementation, 3D scene tour and transition in panorama, and App deployment.", zh: "在微信平台开发H5微应用，包括前端页面实现、3D场景巡游、全景过渡和应用部署" },
-            "coordinates": [29.5638, 106.5505],
-            "location": { en: "Chongqing, China", zh: "中国重庆" },
-            "year": "2020-2021",
-            "link": "",
-            "img": "/stone.jpg"
-          },
-          {
-            "type": "project",
-            "title": { en: "Full Stack Developer", zh: "全栈开发者" },
-            "name": { en: "Real-time Air Quality Index Publish Platform", zh: "实时空气质量指数发布平台" },
-            "description": { en: "Developed a real-time Air Quality Index dashboard for a population of 5 million, involving an ETL workflow to extract XML data from a third-party Web service on schedule, transform it into structured objects, and load it into a MySQL database. The backend, built with Java Spring Boot, provided RESTful APIs for data access, while the front end, developed using React and EChart, visualized AQI trends and geographic distributions through interactive and dynamic charts.", zh: "为500万人口开发实时空气质量指数仪表板，构建ETL工作流从第三方Web服务提取XML数据，转换为结构化对象并加载到MySQL数据库。使用Java Spring Boot构建后端RESTful API，React和EChart开发前端可视化图表" },
-            "coordinates": [30.311395, 109.4795951],
-            "location": { en: "Enshi, Hubei, China", zh: "中国湖北恩施" },
-            "year": "2020",
-            "link": "https://aqi.eseemc.cn/",
-            "img": ["/aqi.jpg", "AQI1.webp", "AQI2.webp", "AQI3.jpg", "AQI4.jpg", "AQI5.jpg"]
-          },
-          {
-            "type": "education",
-            "title": { en: "Master of Applied Data Science", zh: "应用数据科学硕士" },
-            "name": { en: "University of Canterbury", zh: "坎特伯雷大学" },
-            "description": { en: "Focus on Data Engineer, Visualisation and Deep Learning.", zh: "专注数据工程、可视化和深度学习" },
-            "coordinates": [-43.5232, 172.5835],
-            "location": { en: "Christchurch, New Zealand", zh: "新西兰基督城" },
-            "year": "2024-2025",
-            "link": "https://www.canterbury.ac.nz",
-            "img": ["uc-ds-all.jpg", "/hua_presentation.jpg"]
-          },
-          {
-            "type": "education", 
-            "title": { en: "Bachelor of Information Technology", zh: "信息技术学士" },
-            "name": { en: "Otago Polytechnic", zh: "奥塔哥理工学院" },
-            "description": { en: "Graduated with distinction, focuse on Web Development, full stack, and awarded Academic Excellence and Best Programmer.", zh: "优异成绩毕业，专注Web开发和全栈技术，获得学术卓越奖和最佳程序员奖" },
-            "coordinates": [-45.8664633, 170.5182829],
-            "location": { en: "Dunedin, New Zealand", zh: "新西兰但尼丁" },
-            "year": "2017-2021",
-            "link": "https://www.op.ac.nz",
-            "img": ["awared-best-programmer.jpeg", "awared-excellence.jpeg"]
-          },
-          {
-            "type": "project",
-            "title": { en: "Interactive 360° Virtual Tour Application", zh: "互动360°虚拟漫游应用" },
-            "name": { en: "Fenghuangjiayuan", zh: "凤凰嘉苑" },
-            "description": { en: "Developed an interactive 360° virtual tour application using JavaScript and 3D libraries, enabling users to explore panoramic views of buildings, rooms, and outdoor spaces with 720-degree navigation. Implemented clickable markers and hyperlinks to facilitate seamless transitions between multiple scenes, such as moving between rooms or buildings, while providing an immersive experience optimised for both web and mobile platforms.", zh: "使用JavaScript和3D库开发互动360°虚拟漫游应用，支持720度导航探索建筑、房间和户外空间。实现可点击标记和超链接，提供无缝场景切换体验，适配网页和移动平台" },
-            "coordinates": [30.2788597, 109.4846285],
-            "location": { en: "Enshi, Hubei, China", zh: "中国湖北恩施" },
-            "year": "2020-2021",
-            "link": "",
-            "img": "/fhjy.jpg"
-          },
-          {
-            "type": "project",
-            "title": { en: "Interactive 360° Virtual Tour Application", zh: "互动360°虚拟漫游应用" },
-            "name": { en: "Lvcheng", zh: "迎宾华府" },
-            "description": { en: "Developed an interactive 360° virtual tour application using JavaScript and 3D libraries, enabling users to explore panoramic views of buildings, rooms, and outdoor spaces with 720-degree navigation. Implemented clickable markers and hyperlinks to facilitate seamless transitions between multiple scenes, such as moving between rooms or buildings, while providing an immersive experience optimised for both web and mobile platforms.", zh: "使用JavaScript和3D库开发互动360°虚拟漫游应用，支持720度导航探索建筑、房间和户外空间。实现可点击标记和超链接，提供无缝场景切换体验，适配网页和移动平台" },
-            "coordinates": [39.122386, 116.415274],
-            "location": { en: "Langfang, Hebei, China", zh: "中国河北廊坊" },
-            "year": "2020-2021",
-            "link": "",
-            "img": "/ybhf.jpg"
-          },
-          {
-            "type": "project",
-            "title": { en: "Interactive 360° Virtual Tour Application", zh: "互动360°虚拟漫游应用" },
-            "name": { en: "Jiahe", zh: "雲尚星城" },
-            "description": { en: "Developed an interactive 360° virtual tour application using JavaScript and 3D libraries, enabling users to explore panoramic views of buildings, rooms, and outdoor spaces with 720-degree navigation. Implemented clickable markers and hyperlinks to facilitate seamless transitions between multiple scenes, such as moving between rooms or buildings, while providing an immersive experience optimised for both web and mobile platforms.", zh: "使用JavaScript和3D库开发互动360°虚拟漫游应用，支持720度导航探索建筑、房间和户外空间。实现可点击标记和超链接，提供无缝场景切换体验，适配网页和移动平台" },
-            "coordinates": [29.688752, 109.149443],
-            "location": { en: "Enshi, Hubei, China", zh: "中国湖北恩施" },
-            "year": "2020-2021",
-            "link": "",
-            "img": "/ysxc.jpg"
-          },
-          {
-            "type": "project",
-            "title": { en: "Tenglong Cave", zh: "腾龙洞" },
-            "name": { en: "Tenglong Cave", zh: "腾龙洞" },
-            "description": { en: "Official Website", zh: "官方网站" },
-            "coordinates": [30.3335111, 108.98434],
-            "location": { en: "Lichuan, Hubei, China", zh: "中国湖北利川" },
-            "year": "2019",
-            "link": "http://tenglongdong.net.cn/",
-            "img": "/tld.jpg"
-          },
-          {
-            "type": "project",
-            "title": { en: "Badong Tourism Bureau", zh: "巴东县旅游局" },
-            "name": { en: "Badong Tourism Bureau", zh: "巴东县旅游局" },
-            "description": { en: "Official Website", zh: "官方网站" },
-            "coordinates": [31.0419753, 110.3386598],
-            "location": { en: "Badong, Hubei, China", zh: "中国湖北巴东" },
-            "year": "2019",
-            "link": "",
-            "img": ""
-          },
-          {
-            "type": "project",
-            "title": { en: "Jinguo Tea", zh: "金果茶叶" },
-            "name": { en: "Jinguo Tea", zh: "金果茶叶" },
-            "description": { en: "Official Website", zh: "官方网站" },
-            "coordinates": [30.2889132, 110.2148372],
-            "location": { en: "Badong, Hubei, China", zh: "中国湖北巴东" },
-            "year": "2019",
-            "link": "",
-            "img": ""
-          },
-          {
-            "type": "project",
-            "title": { en: "Enshi Central Hospital", zh: "恩施州中心医院" },
-            "name": { en: "Enshi Central Hospital", zh: "恩施州中心医院" },
-            "description": { en: "Official Website", zh: "官方网站" },  
-            "coordinates": [30.297884, 109.4955927],
-            "location": { en: "Enshi, Hubei, China", zh: "中国湖北恩施" },
-            "year": "2019",
-            "link": "https://www.es9e.cn/",
-            "img": "/es9e.jpg"
-          },
-          {
-            "type": "project",
-            "title": { en: "FitsGo", zh: "FitsGo" },
-            "name": { en: "Mobile App", zh: "移动应用" },
-            "description": { en: "This is a mobile application that aims to help get people to start exercising. This App is a cross-platform application which runs both of Android and IOS. It is built using React-Native and Google Firebase real-time database.", zh: "帮助人们开始锻炼的移动应用。这是一个跨平台应用，支持Android和iOS，使用React-Native和Google Firebase实时数据库构建" },
-            "coordinates": [-45.8750186, 170.4973482], 
-            "location": { en: "Dunedin, New Zealand", zh: "新西兰但尼丁" },
-            "year": "2019",
-            "link": "https://github.com/aemooooon/FitsGo",
-            "img": ["/fitsgo.gif", "fitsgo-team.jpg"]
-          },
-          {
-            "type": "project",
-            "title": { en: "ECAN Data Pipeline", zh: "ECAN数据管道" },
-            "name": { en: "University of Canterbury", zh: "坎特伯雷大学" },
-            "description": { en: "Developed a system to aggregate data from over 20 sources, then centralized it into a central database. Web API is provided to the front end, enabling analyses and visualizations: Collect more than 20 people's data from the AWS EC2. Built data pipelines using Apache Airfow to automate ETL processes. Stored data in a PostgreSQL database on AWS RDS. Developed a Node.js API with Swagger documentation to serve endpoints. Implemented Python Streamlit and R Shiny dashboard to visualise data.", zh: "开发系统聚合超过20个数据源，集中到中央数据库。提供Web API支持前端分析和可视化。从AWS EC2收集20多人的数据，使用Apache Airflow构建ETL管道，存储到AWS RDS PostgreSQL数据库，开发Node.js API，实现Python Streamlit和R Shiny仪表板" },
-            "coordinates": [-43.5357406, 172.6358119],
-            "location": { en: "Christchurch, New Zealand", zh: "新西兰基督城" },
-            "year": "2024",
-            "link": "https://github.com/aemooooon/DATA472-Individual-Project-Submission",
-            "img": ["/data472/472.png", "/data472/af01.jpg", "/data472/datapipeline.png", "/data472/FuelPriceData.jpg", "/data472/GasStationData.jpg", "/data472/ProjectManagement.jpg", "/data472/services.png", "/data472/v1.gif", "/data472/v2.gif", "/data472/WebApiResponse.jpg"]
-          },
-          {
-            "type": "activity",
-            "title": { en: "Assisted IT Meetups", zh: "协助IT聚会" },
-            "name": { en: "CITANZ CHCH Volunteer", zh: "CITANZ基督城志愿者" },
-            "description": { en: "Assisted in planning and managing IT community meetups once a month.", zh: "协助规划和管理每月一次的IT社区聚会" },
-            "coordinates": [-43.5828903, 172.5695089],
-            "location": { en: "Halswell Library, Christchurch", zh: "新西兰基督城Halswell图书馆" },
-            "year": "2024-2025",
-            "link": "https://www.cita.org.nz/",
-            "img": ["cita-02.jpg", "cita-01.jpg", "cita-04.jpg", "cita-03.jpg", "cita-05.jpg"]
-          },
-          {
-            "type": "activity",
-            "title": { en: "Save Kiwi", zh: "拯救奇异鸟" },
-            "name": { en: "AI Hackathon 2024", zh: "AI黑客松2024" },
-            "description": { en: "Design an AI solution to help existing organizations improve maintenance and analysis efficiency to better protect kiwi birds. It uses advanced tech to protect kiwi birds by combining smart cages, edge computing, and cloud analytics. Smart cages with RGB cameras monitor wildlife, while edge computing processes images in real-time using a vision-transformer model. This model distinguishes between kiwi birds, predators, and non-threatening animals. Predators are captured; others are released. Data is sent to a cloud platform for monitoring and alerts, enabling quick conservation responses.", zh: "设计AI解决方案帮助现有组织提高维护和分析效率，更好地保护奇异鸟。结合智能笼子、边缘计算和云分析的先进技术。智能笼子配备RGB摄像头监控野生动物，边缘计算使用视觉变换器模型实时处理图像，区分奇异鸟、捕食者和无害动物。捕获捕食者，释放其他动物。数据发送到云平台进行监控和告警" },
-            "coordinates": [-43.5218726, 172.5674936],
-            "location": { en: "University of Canterbury, Christchurch", zh: "新西兰基督城坎特伯雷大学" },
-            "year": "2024",
-            "link": "https://www.cita.org.nz/",
-            "img": ["/UC_F4.001.jpeg", "/UC_F4.002.jpeg", "f4.jpg"]
+        },
+        {
+          "type": "Full Stack",
+          "title": "Full Stack Developer",
+          "name": "Real-time Air Quality Index Publish Platform",
+          "description": "Developed a real-time Air Quality Index dashboard for a population of 5 million, involving an ETL workflow to extract XML data from a third-party Web service on schedule, transform it into structured objects, and load it into a MySQL database. The backend, built with Java Spring Boot, provided RESTful APIs for data access, while the front end, developed using React and EChart, visualized AQI trends and geographic distributions through interactive and dynamic charts.",
+          "coordinates": [30.311395, 109.4795951],
+          "location": "Enshi, Hubei, China",
+          "year": "2020",
+          "link": "https://aqi.eseemc.cn/",
+          "img": ["/aqi.jpg", "AQI1.webp", "AQI2.webp", "AQI3.jpg", "AQI4.jpg", "AQI5.jpg"]
+        },
+        {
+          "type": "VR/360°",
+          "title": "Interactive 360° Virtual Tour Platform",
+          "name": "Real Estate VR Solutions",
+          "description": "Developed a comprehensive 360° virtual tour platform for real estate marketing, serving 18+ property developments across China. Built using JavaScript and WebGL-based 3D libraries, enabling immersive panoramic exploration of buildings, rooms, and outdoor spaces. Implemented advanced features including clickable hotspots, scene transitions, interactive floor plans, and cross-platform compatibility for web and mobile devices. The platform helped property developers showcase their projects remotely, significantly reducing on-site visits while maintaining high engagement rates.",
+          "coordinates": [30.2888597, 109.4846285],
+          "location": "Multiple locations across China",
+          "year": "2020-2021",
+          "link": "",
+          "img": ["/fhjy.jpg", "/changpingli.jpg", "/dalincheng.jpg", "/gyyh.jpg", "/htfxj.jpg", "/jhhy.jpg", "/jlw.jpg", "/jnyp.jpg", "/jxmm.jpg", "/jsjxmm.jpg", "/pzf.jpg", "/tf.jpg", "/tsyhy.jpg", "/wjsf.jpg", "/xcsd.jpg", "/ybhf.jpg", "/ysxc.jpg", "/zyyc.jpg"],
+          "tech": ["JavaScript", "WebGL", "3D Libraries", "HTML5", "CSS3", "Responsive Design"],
+          "stats": {
+            "projects": 18,
+            "locations": "8 provinces", 
+            "clients": "12 real estate developers"
           }
-        ],
-      
+        },
+        {
+          "type": "Website",
+          "title": "Corporate Website Development Platform",
+          "name": "企业网站开发平台",
+          "description": "Comprehensive corporate website development solution serving government agencies, healthcare institutions, tourism bureaus, and private enterprises. Built using CMS platforms with custom database architecture, responsive UI implementation from design mockups, and full deployment management across multiple production servers.",
+          "coordinates": [30.297884, 109.4955927],
+          "location": "Multiple locations across Hubei Province, China",
+          "year": "2019",
+          "link": "https://www.es9e.cn/",
+          "img": ["/es9e.jpg", "/tld.jpg"],
+          "tech": ["CMS Platform", "PHP", "MySQL", "HTML5", "CSS3", "JavaScript", "Responsive Design", "Apache", "Linux"],
+          "stats": {
+            "clients": "6+ organizations",
+            "sectors": "Healthcare, Tourism, Government, Corporate",
+            "features": "Custom CMS, Database Design, Responsive UI",
+            "uptime": "99.8%",
+            "pages": "200+ pages total"
+          },
+          "projects": [
+            {
+              "name": "Enshi Central Hospital",
+              "nameZh": "恩施州中心医院",
+              "description": "Comprehensive healthcare website with patient information management, appointment booking system, and medical department showcase. Implemented complex database structure for patient records and integrated with hospital management systems. Features include online registration, doctor profiles, medical news, and health education resources.",
+              "link": "https://www.es9e.cn/",
+              "img": "/es9e.jpg",
+              "features": ["Patient Management", "Online Appointments", "Medical Departments", "News System", "Health Education", "Doctor Profiles"]
+            },
+            {
+              "name": "Tenglong Cave Official Website",
+              "nameZh": "腾龙洞官方网站",
+              "description": "Tourism attraction website featuring virtual tours, visitor information, booking system, and multilingual support. Integrated with payment gateways and visitor management systems. Includes interactive maps, weather information, and cultural heritage content.",
+              "link": "http://tenglongdong.net.cn/",
+              "img": "/tld.jpg",
+              "features": ["Virtual Tours", "Online Booking", "Multilingual Support", "Payment Integration", "Interactive Maps", "Weather Info"]
+            },
+            {
+              "name": "Badong Tourism Bureau",
+              "nameZh": "巴东县旅游局",
+              "description": "Government tourism portal showcasing local attractions, travel guides, cultural information, and tourism statistics. Built with content management system for easy updates by bureau staff. Features comprehensive destination guides and event management system.",
+              "link": "",
+              "img": "",
+              "features": ["Tourism Information", "Cultural Heritage", "Travel Guides", "Event Management", "Statistics Dashboard", "Photo Gallery"]
+            },
+            {
+              "name": "Jinguo Tea Corporate Site",
+              "nameZh": "金果茶叶企业网站",
+              "description": "Corporate website for tea manufacturer featuring product catalog, company history, quality certifications, and e-commerce integration. Included inventory management and order processing systems with real-time stock updates and customer portal.",
+              "link": "",
+              "img": "",
+              "features": ["Product Catalog", "E-commerce", "Quality Certificates", "Order Management", "Inventory System", "Customer Portal"]
+            }
+          ]
+        },
+        {
+          "type": "Mobile App",
+          "title": "FitsGo",
+          "name": "Mobile App",
+          "description": "This is a mobile application that aims to help get people to start exercising. This App is a cross-platform application which runs both of Android and IOS. It is built using React-Native and Google Firebase real-time database.",
+          "coordinates": [-45.8750186, 170.4973482],
+          "location": "Dunedin, New Zealand",
+          "year": "2019",
+          "link": "https://github.com/aemooooon/FitsGo",
+          "img": ["/fitsgo.gif", "fitsgo-team.jpg"]
+        },
+        {
+          "type": "Full Stack",
+          "title": "ECAN Data Pipeline",
+          "name": "University of Canterbury",
+          "description": "Developed a system to aggregate data from over 20 sources, then centralized it into a central database. Web API is provided to the front end, enabling analyses and visualizations: Collect more than 20 people's data from the AWS EC2. Built data pipelines using Apache Airfow to automate ETL processes. Stored data in a PostgreSQL database on AWS RDS. Developed a Node.js API with Swagger documentation to serve endpoints. Implemented Python Streamlit and R Shiny dashboard to visualise data.",
+          "coordinates": [-43.5357406, 172.6358119],
+          "location": "Christchurch, New Zealand",
+          "year": "2024",
+          "link": "https://github.com/aemooooon/DATA472-Individual-Project-Submission",
+          "img": ["/data472/472.png", "/data472/af01.jpg", "/data472/datapipeline.png", "/data472/FuelPriceData.jpg", "/data472/GasStationData.jpg", "/data472/ProjectManagement.jpg", "/data472/services.png", "/data472/v1.gif", "/data472/v2.gif", "/data472/", "/data472/WebApiResponse.jpg",]
+        },
+        {
+          "type": "activity",
+          "title": "Assisted IT Meetups",
+          "name": "CITANZ CHCH Volunteer",
+          "description": "Assisted in planning and managing IT community meetups once a month.",
+          "coordinates": [-43.5828903, 172.5695089],
+          "location": "Halswell Library, Christchurch",
+          "year": "2024-2025",
+          "link": "https://www.cita.org.nz/",
+          "img": ["cita-02.jpg", "cita-01.jpg", "cita-04.jpg", "cita-03.jpg", "cita-05.jpg"]
+        },
+        {
+          "type": "activity",
+          "title": "Save Kiwi",
+          "name": "AI Hackathon 2024",
+          "description": "Design an AI solution to help existing organizations improve maintenance and analysis efficiency to better protect kiwi birds. It uses advanced tech to protect kiwi birds by combining smart cages, edge computing, and cloud analytics. Smart cages with RGB cameras monitor wildlife, while edge computing processes images in real-time using a vision-transformer model. This model distinguishes between kiwi birds, predators, and non-threatening animals. Predators are captured; others are released. Data is sent to a cloud platform for monitoring and alerts, enabling quick conservation responses.",
+          "coordinates": [-43.5218726, 172.5674936],
+          "location": "University of Canterbury, Christchurch",
+          "year": "2024",
+          "link": "https://www.cita.org.nz/",
+          "img": ["/UC_F4.001.jpeg", "/UC_F4.002.jpeg", "f4.jpg"]
+        }
+      ],
+
       // Gallery数据配置 - 使用真实照片数据
       gallery: [
         {
@@ -1462,46 +1434,46 @@ export const useAppStore = create(
           tags: ['zen', 'peaceful']
         }
       ],
-      
+
       // 项目数据访问方法
       getProjectsByType: (type) => {
         const { projects } = get();
         return projects.filter(project => project.type === type);
       },
-      
+
       getAllProjects: () => {
         const { projects } = get();
         return projects;
       },
-      
+
       // Gallery数据访问方法
       getAllGalleryItems: () => {
         const { gallery } = get();
         return gallery;
       },
-      
+
       getGalleryItemsByTag: (tag) => {
         const { gallery } = get();
-        return gallery.filter(item => 
+        return gallery.filter(item =>
           item.tags && item.tags.includes(tag)
         );
       },
-      
+
       getGalleryItemsByType: (type) => {
         const { gallery } = get();
         return gallery.filter(item => item.type === type);
       },
-      
+
       searchGalleryItems: (query, language = 'en') => {
         const { gallery } = get();
         const lowercaseQuery = query.toLowerCase();
-        return gallery.filter(item => 
+        return gallery.filter(item =>
           item.title[language].toLowerCase().includes(lowercaseQuery) ||
           item.description[language].toLowerCase().includes(lowercaseQuery) ||
           (item.tags && item.tags.some(tag => tag.toLowerCase().includes(lowercaseQuery)))
         );
       },
-      
+
       // 获取当前语言的内容
       getContent: () => {
         const { language } = get();
@@ -1528,23 +1500,23 @@ export const useAppStore = create(
         return section ? section.description[language] : '';
       },
 
-      // 导航到指定区块 - 增加方向跟踪
+      // 导航到指定区块 - 增加方向跟踪，优化时序
       navigateToSection: (index) => {
         const { currentSection, sections } = get();
         const direction = index > currentSection ? 'from-prev' : 'from-next';
-        
+
         // 更新当前section的配置，包含导航方向信息
-        const updatedSections = sections.map((section, i) => 
+        const updatedSections = sections.map((section, i) =>
           i === index ? { ...section, previousDirection: direction } : section
         );
-        
-        set({ 
+
+        set({
           currentSection: index,
           isScrolling: true,
           sections: updatedSections
         });
-        // 设置延迟重置滚动状态
-        setTimeout(() => set({ isScrolling: false }), 1000);
+        // 减少延迟时间，防止视觉故障
+        setTimeout(() => set({ isScrolling: false }), 600);
       },
 
       // 导航到下一个区块

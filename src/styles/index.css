@@ -21,7 +21,7 @@
 }
 
 /* 自动将数字应用格鲁吉亚字体 */
-.tel, .phone, .number {
+.tel, .phone, .number, .progress-number, .percentage {
     font-family: Georgia, serif;
 }
 
@@ -538,6 +538,34 @@ body {
     transform: scale(1.1) rotate(5deg);
 }
 
+/* Explore Map 按钮 - 正圆形样式 */
+.explore-map-button {
+    width: 110px !important;
+    height: 110px !important;
+    border-radius: 50% !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 8px !important;
+}
+
+@media (min-width: 1280px) { /* xl屏幕 */
+    .explore-map-button {
+        width: 115px !important;
+        height: 115px !important;
+        padding: 10px !important;
+    }
+}
+
+@media (min-width: 1536px) { /* 2xl屏幕 */
+    .explore-map-button {
+        width: 120px !important;
+        height: 120px !important;
+        padding: 12px !important;
+    }
+}
+
 /* Project Section Layout Enhancements */
 .project-header {
     display: flex;
@@ -854,996 +882,113 @@ body {
     transform: translateY(-1px);
 }
 
-/* Dynamic Stats Cards - 优化布局 */
-.stats-grid {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: flex-start; /* 居左对齐 */
-    gap: 1.5rem;
-    margin-bottom: 3rem;
-    max-width: 1200px; /* 减小最大宽度 */
-}
-
-/* 统计卡片固定宽度，避免过度拉伸 */
-.stat-card {
+/* 项目分类过滤按钮样式 */
+.category-filter-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.75rem 1.5rem;
+    border-radius: 9999px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    text-align: center;
+    border: 1px solid rgba(255, 255, 255, 0.2);
     background: rgba(255, 255, 255, 0.05);
+    color: rgba(255, 255, 255, 0.8);
     -webkit-backdrop-filter: blur(12px);
     backdrop-filter: blur(12px);
-    border-radius: 12px;
-    padding: 1.5rem;
-    width: 180px; /* 固定宽度 */
-    flex-shrink: 0; /* 防止收缩 */
-    text-align: center;
-    border: 1px solid rgba(255, 255, 255, 0.1);
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.stat-card:hover {
-    transform: translateY(-4px);
-    background: rgba(255, 255, 255, 0.08);
-    border-color: rgba(255, 255, 255, 0.2);
-}
-
-.stat-number {
-    font-size: 2.5rem;
-    font-weight: 700;
-    margin-bottom: 0.5rem;
-    display: block;
-}
-
-.stat-label {
-    color: rgba(255, 255, 255, 0.7);
-    font-size: 0.875rem;
-    font-weight: 500;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-}
-
-/* 通用光影卡片效果 - 可复用于所有卡片 */
-.shine-card {
+    cursor: pointer;
     position: relative;
     overflow: hidden;
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    min-width: max-content;
+    white-space: nowrap;
 }
 
-/* 顶部光条扫描效果 */
-.shine-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 3px;
-    background: linear-gradient(90deg, 
-        transparent 0%, 
-        rgba(255,255,255,0.9) 25%, 
-        rgba(59, 130, 246, 0.8) 50%, 
-        rgba(255,255,255,0.9) 75%, 
-        transparent 100%);
-    transition: left 0.8s ease-out;
-    z-index: 10;
-    pointer-events: none;
+.category-filter-btn:hover {
+    border-color: rgba(255, 255, 255, 0.4);
+    background: rgba(255, 255, 255, 0.1);
+    color: rgba(255, 255, 255, 0.95);
+    transform: translateY(-1px);
 }
 
-/* 内部光影扫描效果 */
-.shine-card::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, 
-        transparent 0%, 
-        rgba(255,255,255,0.08) 25%, 
-        rgba(59, 130, 246, 0.15) 50%, 
-        rgba(255,255,255,0.08) 75%, 
-        transparent 100%);
-    transition: left 1s ease-out;
-    z-index: 1;
-    pointer-events: none;
+.category-filter-btn.active {
+    border-color: #00ffff;
+    background: rgba(0, 255, 255, 0.1);
+    color: #00ffff;
+    box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
 }
 
-.shine-card:hover::before {
-    left: 100%;
+/* 为不同分类按钮添加特定颜色 */
+.category-filter-btn.active.text-blue-400 {
+    color: #60a5fa;
+    border-color: #60a5fa;
+    background: rgba(96, 165, 250, 0.1);
+    box-shadow: 0 0 20px rgba(96, 165, 250, 0.3);
 }
 
-.shine-card:hover::after {
-    left: 100%;
-    transition-delay: 0.1s;
+.category-filter-btn.active.text-green-400 {
+    color: #4ade80;
+    border-color: #4ade80;
+    background: rgba(74, 222, 128, 0.1);
+    box-shadow: 0 0 20px rgba(74, 222, 128, 0.3);
 }
 
-/* 不同颜色主题的光影效果 */
-.shine-card.shine-blue::before {
-    background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.9), rgba(139, 92, 246, 0.8), rgba(59, 130, 246, 0.9), transparent);
+.category-filter-btn.active.text-purple-400 {
+    color: #c084fc;
+    border-color: #c084fc;
+    background: rgba(192, 132, 252, 0.1);
+    box-shadow: 0 0 20px rgba(192, 132, 252, 0.3);
 }
 
-.shine-card.shine-purple::before {
-    background: linear-gradient(90deg, transparent, rgba(139, 92, 246, 0.9), rgba(236, 72, 153, 0.8), rgba(139, 92, 246, 0.9), transparent);
+.category-filter-btn.active.text-orange-400 {
+    color: #fb923c;
+    border-color: #fb923c;
+    background: rgba(251, 146, 60, 0.1);
+    box-shadow: 0 0 20px rgba(251, 146, 60, 0.3);
 }
 
-.shine-card.shine-green::before {
-    background: linear-gradient(90deg, transparent, rgba(16, 185, 129, 0.9), rgba(34, 197, 94, 0.8), rgba(16, 185, 129, 0.9), transparent);
+.category-filter-btn.active.text-red-400 {
+    color: #f87171;
+    border-color: #f87171;
+    background: rgba(248, 113, 113, 0.1);
+    box-shadow: 0 0 20px rgba(248, 113, 113, 0.3);
 }
 
-.shine-card.shine-orange::before {
-    background: linear-gradient(90deg, transparent, rgba(251, 146, 60, 0.9), rgba(245, 158, 11, 0.8), rgba(251, 146, 60, 0.9), transparent);
+.category-filter-btn.active.text-cyan-400 {
+    color: #22d3ee;
+    border-color: #22d3ee;
+    background: rgba(34, 211, 238, 0.1);
+    box-shadow: 0 0 20px rgba(34, 211, 238, 0.3);
 }
 
-/* 增强版光影 - 更强烈的效果 */
-.shine-card.shine-enhanced::before {
-    height: 4px;
-    background: linear-gradient(90deg, 
-        transparent, 
-        rgba(255,255,255,1), 
-        rgba(59, 130, 246, 1), 
-        rgba(139, 92, 246, 1),
-        rgba(236, 72, 153, 1),
-        rgba(255,255,255,1), 
-        transparent);
-    box-shadow: 0 0 20px rgba(59, 130, 246, 0.5);
+.category-filter-btn.active.text-pink-400 {
+    color: #f472b6;
+    border-color: #f472b6;
+    background: rgba(244, 114, 182, 0.1);
+    box-shadow: 0 0 20px rgba(244, 114, 182, 0.3);
 }
 
-.shine-card.shine-enhanced::after {
-    background: linear-gradient(90deg, 
-        transparent 0%, 
-        rgba(255,255,255,0.12) 25%, 
-        rgba(59, 130, 246, 0.25) 50%, 
-        rgba(255,255,255,0.12) 75%, 
-        transparent 100%);
+.category-filter-btn.active.text-yellow-400 {
+    color: #facc15;
+    border-color: #facc15;
+    background: rgba(250, 204, 21, 0.1);
+    box-shadow: 0 0 20px rgba(250, 204, 21, 0.3);
 }
 
-/* Responsive adjustments */
+/* 响应式设计 */
 @media (max-width: 768px) {
-    .project-header {
-        flex-direction: column;
-        align-items: stretch;
-        gap: 1rem;
-    }
-    
-    .project-controls {
-        margin-left: 0;
-        justify-content: center;
-    }
-    
-    .project-main-title {
-        font-size: 2.5rem;
-        text-align: center;
-    }
-    
-    .project-title-container {
-        text-align: center;
-    }
-    
-    .scroll-indicator {
-        right: 1rem;
-    }
-    
-    .scroll-percentage {
-        right: -2.5rem;
-        font-size: 0.625rem;
-        padding: 0.125rem 0.375rem;
+    .category-filter-btn {
+        padding: 0.625rem 1.25rem;
+        font-size: 0.8125rem;
+        min-width: 100px;
     }
 }
 
 @media (max-width: 480px) {
-    .scroll-indicator {
-        right: 0.5rem;
+    .category-filter-btn {
+        padding: 0.5rem 1rem;
+        font-size: 0.75rem;
+        min-width: 80px;
     }
-    
-    .scroll-track {
-        width: 3px;
-        height: 6rem;
-    }
-    
-    .scroll-percentage {
-        right: -2rem;
-    }
-}
-
-/* Landing Page 动画定义 */
-@keyframes slideInLeft {
-    from { 
-        opacity: 0;
-        transform: translateX(-100px) scale(0.8);
-    }
-    to { 
-        opacity: 1;
-        transform: translateX(0) scale(1);
-    }
-}
-
-@keyframes slideInRight {
-    from { 
-        opacity: 0;
-        transform: translateX(100px) scale(0.8);
-    }
-    to { 
-        opacity: 1;
-        transform: translateX(0) scale(1);
-    }
-}
-
-@keyframes fadeInUp {
-    from { 
-        opacity: 0;
-        transform: translateY(30px);
-    }
-    to { 
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-/* 色相旋转动画 - 为头像背景添加彩虹效果 */
-@keyframes hueRotate {
-    0% { 
-        filter: hue-rotate(0deg) brightness(1.1) saturate(1.2);
-    }
-    25% { 
-        filter: hue-rotate(90deg) brightness(1.2) saturate(1.3);
-    }
-    50% { 
-        filter: hue-rotate(180deg) brightness(1.1) saturate(1.2);
-    }
-    75% { 
-        filter: hue-rotate(270deg) brightness(1.2) saturate(1.3);
-    }
-    100% { 
-        filter: hue-rotate(360deg) brightness(1.1) saturate(1.2);
-    }
-}
-
-/* 渐变背景动画 - 更强的视觉效果 */
-@keyframes gradientShift {
-    0% { 
-        background-position: 0% 50%;
-        transform: scale(1.05) rotate(0deg);
-    }
-    25% { 
-        background-position: 100% 50%;
-        transform: scale(1.1) rotate(90deg);
-    }
-    50% { 
-        background-position: 100% 100%;
-        transform: scale(1.05) rotate(180deg);
-    }
-    75% { 
-        background-position: 0% 100%;
-        transform: scale(1.1) rotate(270deg);
-    }
-    100% { 
-        background-position: 0% 50%;
-        transform: scale(1.05) rotate(360deg);
-    }
-}
-
-.animate-slideInLeft {
-    animation: slideInLeft 1.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-}
-
-.animate-slideInRight {
-    animation: slideInRight 1.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-    animation-delay: 0.5s;
-    animation-fill-mode: both;
-}
-
-.animate-fadeInUp {
-    animation: fadeInUp 1s ease-out;
-}
-
-/* 色相旋转动画类 */
-.animate-hueRotate {
-    animation: hueRotate 8s linear infinite;
-}
-
-.animate-gradientShift {
-    animation: gradientShift 10s ease-in-out infinite;
-}
-
-/* 动画延迟类 */
-.animation-delay-500 {
-    animation-delay: 0.5s;
-    animation-fill-mode: both;
-}
-
-.animation-delay-1000 {
-    animation-delay: 1s;
-    animation-fill-mode: both;
-}
-
-/* 立方体切换动画 */
-@keyframes cubeToCorner {
-    0% {
-        transform: scale(1) translate(0, 0);
-        opacity: 1;
-    }
-    50% {
-        transform: scale(0.5) translate(100px, -100px);
-        opacity: 0.8;
-    }
-    100% {
-        transform: scale(0.3) translate(200px, -200px);
-        opacity: 1;
-    }
-}
-
-@keyframes cubeToCenter {
-    0% {
-        transform: scale(0.3) translate(200px, -200px);
-        opacity: 1;
-    }
-    50% {
-        transform: scale(0.5) translate(100px, -100px);
-        opacity: 0.8;
-    }
-    100% {
-        transform: scale(1) translate(0, 0);
-        opacity: 1;
-    }
-}
-
-.cube-to-corner {
-    animation: cubeToCorner 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-}
-
-.cube-to-center {
-    animation: cubeToCenter 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-}
-
-/* 页面切换动画 */
-.page-transition-enter {
-    opacity: 0;
-    transform: translateY(30px);
-}
-
-.page-transition-enter-active {
-    opacity: 1;
-    transform: translateY(0);
-    transition: opacity 0.5s, transform 0.5s;
-}
-
-.page-transition-exit {
-    opacity: 1;
-    transform: translateY(0);
-}
-
-.page-transition-exit-active {
-    opacity: 0;
-    transform: translateY(-30px);
-    transition: opacity 0.5s, transform 0.5s;
-}
-
-/* 滚轮提示动画 */
-@keyframes scrollIndicator {
-    0%, 100% {
-        opacity: 1;
-        transform: translateY(0);
-    }
-    50% {
-        opacity: 0.5;
-        transform: translateY(10px);
-    }
-}
-
-.scroll-indicator {
-    animation: scrollIndicator 2s infinite;
-}
-
-/* 从光源诞生的动画 - 天圆地方概念 */
-@keyframes birthFromLight {
-    0% {
-        transform: translate(50%, 100%) scale(0);
-        opacity: 0;
-        filter: brightness(5) blur(20px);
-    }
-    30% {
-        transform: translate(25%, 50%) scale(0.3);
-        opacity: 0.5;
-        filter: brightness(3) blur(10px);
-    }
-    60% {
-        transform: translate(10%, 20%) scale(0.7);
-        opacity: 0.8;
-        filter: brightness(1.5) blur(5px);
-    }
-    100% {
-        transform: translate(0%, 0%) scale(1);
-        opacity: 1;
-        filter: brightness(1) blur(0px);
-    }
-}
-
-/* 从Galaxy中心光源向左上移动的动画（头像） */
-@keyframes birthFromGalaxyCenterToLeft {
-    0% {
-        /* 从屏幕中心底部开始（Galaxy光源位置） */
-        transform: translate(0vw, calc(50vh)) translateY(-50%) scale(0.1);
-        opacity: 0;
-        filter: brightness(10) blur(30px);
-    }
-    20% {
-        /* 开始向左上移动并放大 */
-        transform: translate(calc(-20vw), calc(20vh)) translateY(-50%) scale(0.3);
-        opacity: 0.3;
-        filter: brightness(5) blur(20px);
-    }
-    50% {
-        /* 继续向左上，接近目标位置 */
-        transform: translate(calc(-35vw), calc(-5vh)) translateY(-50%) scale(0.6);
-        opacity: 0.6;
-        filter: brightness(2) blur(10px);
-    }
-    80% {
-        /* 接近最终位置 */
-        transform: translate(calc(-45vw), calc(-15vh)) translateY(-50%) scale(0.9);
-        opacity: 0.9;
-        filter: brightness(1.2) blur(2px);
-    }
-    100% {
-        /* 到达最终位置 */
-        transform: translateY(-50%) scale(1);
-        opacity: 1;
-        filter: brightness(1) blur(0px);
-    }
-}
-
-/* 从Galaxy中心光源向右上移动的动画（cube） - 修复轨迹版本 */
-@keyframes birthFromGalaxyCenterToRight {
-    0% {
-        /* 从屏幕中心底部开始（Galaxy光源位置） - 与头像同一起点 */
-        transform: translate(0vw, calc(50vh)) translateY(-50%) scale(0.1);
-        opacity: 0;
-        filter: brightness(10) blur(30px);
-    }
-    20% {
-        /* 开始向右上移动并放大 */
-        transform: translate(calc(20vw), calc(20vh)) translateY(-50%) scale(0.3);
-        opacity: 0.3;
-        filter: brightness(5) blur(20px);
-    }
-    50% {
-        /* 继续向右上，接近目标位置 */
-        transform: translate(calc(35vw), calc(-5vh)) translateY(-50%) scale(0.6);
-        opacity: 0.6;
-        filter: brightness(2) blur(10px);
-    }
-    80% {
-        /* 接近最终位置 */
-        transform: translate(calc(45vw), calc(-15vh)) translateY(-50%) scale(0.9);
-        opacity: 0.9;
-        filter: brightness(1.2) blur(2px);
-    }
-    100% {
-        /* 到达最终位置 */
-        transform: translateY(-50%) scale(1);
-        opacity: 1;
-        filter: brightness(1) blur(0px);
-    }
-}
-
-/* 电影片头风格的姓名标题动画 - 从远到近，旋转1080度 */
-@keyframes movieTitleEntrance {
-    0% {
-        /* 从极远处开始，极小尺寸 */
-        transform: translate(-50%, -50%) perspective(1000px) rotateY(0deg) scale(0.05);
-        opacity: 0;
-        filter: blur(20px) brightness(5);
-        text-shadow: 0 0 50px rgba(255, 255, 255, 0.8);
-    }
-    25% {
-        /* 开始靠近，开始旋转 */
-        transform: translate(-50%, -50%) perspective(1000px) rotateY(270deg) scale(0.2);
-        opacity: 0.3;
-        filter: blur(15px) brightness(3);
-        text-shadow: 0 0 30px rgba(255, 255, 255, 0.6);
-    }
-    50% {
-        /* 继续靠近，继续旋转 */
-        transform: translate(-50%, -50%) perspective(1000px) rotateY(540deg) scale(0.5);
-        opacity: 0.6;
-        filter: blur(8px) brightness(2);
-        text-shadow: 0 0 20px rgba(255, 255, 255, 0.4);
-    }
-    75% {
-        /* 接近最终位置，继续旋转 */
-        transform: translate(-50%, -50%) perspective(1000px) rotateY(810deg) scale(0.8);
-        opacity: 0.85;
-        filter: blur(3px) brightness(1.5);
-        text-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
-    }
-    90% {
-        /* 完成旋转，稍微过冲 */
-        transform: translate(-50%, -50%) perspective(1000px) rotateY(1080deg) scale(1.1);
-        opacity: 0.95;
-        filter: blur(1px) brightness(1.2);
-        text-shadow: 0 0 5px rgba(255, 255, 255, 0.1);
-    }
-    100% {
-        /* 最终位置，稳定下来 */
-        transform: translate(-50%, -50%) perspective(1000px) rotateY(1080deg) scale(1);
-        opacity: 1;
-        filter: blur(0px) brightness(1);
-        text-shadow: none;
-    }
-}
-
-/* 头像淡入动画 - 简单的淡入和缩放 */
-@keyframes avatarEntrance {
-    0% {
-        opacity: 0;
-        transform: scale(0.5) translateY(-10px);
-        filter: blur(5px);
-    }
-    100% {
-        opacity: 1;
-        transform: scale(1) translateY(0);
-        filter: blur(0px);
-    }
-}
-
-/* 立方体淡入动画 - 简单的淡入和旋转 */
-@keyframes cubeEntrance {
-    0% {
-        opacity: 0;
-        transform: scale(0.5) rotateX(45deg) rotateY(45deg);
-        filter: blur(5px);
-    }
-    100% {
-        opacity: 1;
-        transform: scale(1) rotateX(0deg) rotateY(0deg);
-        filter: blur(0px);
-    }
-}
-
-/* Slogan 淡入动画 */
-@keyframes sloganEntrance {
-    0% {
-        opacity: 0;
-        transform: translate(-50%, -50%) translateY(20px);
-        filter: blur(5px);
-    }
-    100% {
-        opacity: 1;
-        transform: translate(-50%, -50%) translateY(0);
-        filter: blur(0px);
-    }
-}
-
-/* 打字机效果动画 - 高性能CSS版本 */
-@keyframes typewriter {
-    0% {
-        width: 0;
-    }
-    100% {
-        width: 100%;
-    }
-}
-
-/* 优化的打字机效果 - 使用transform代替width变化 */
-@keyframes typewriterOptimized {
-    0% {
-        clip-path: inset(0 100% 0 0);
-    }
-    100% {
-        clip-path: inset(0 0 0 0);
-    }
-}
-
-/* 打字机效果样式 */
-.typewriter-text {
-    display: inline-block;
-    overflow: hidden;
-    white-space: nowrap;
-    will-change: clip-path; /* 优化GPU加速 */
-    contain: layout style; /* 限制重排影响范围 */
-    opacity: 1; /* 文字始终不透明 */
-}
-
-/* 性能优化的打字机动画 */
-.typewriter-optimized {
-    animation: typewriterOptimized 3.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-}
-
-/* 光标闪烁 - 独立动画，只让光标闪烁 */
-.cursor-blink::after {
-    content: '';
-    display: inline-block;
-    width: 2px;
-    height: 1.2em;
-    background-color: var(--theme-cursor);
-    margin-left: 2px;
-    animation: blink-cursor 1s infinite;
-    @apply transition-colors duration-300;
-}
-
-@keyframes blink-cursor {
-    0%, 50% { 
-        opacity: 1;
-    }
-    51%, 100% { 
-        opacity: 0;
-    }
-}
-
-/* 专用的输入光标动画 - 更像真实的文本输入光标 */
-.input-cursor {
-    animation: inputCursorBlink 1.2s ease-in-out infinite;
-    opacity: 1;
-}
-
-@keyframes inputCursorBlink {
-    0%, 45% { 
-        opacity: 1;
-    }
-    50%, 95% { 
-        opacity: 0;
-    }
-    100% {
-        opacity: 1;
-    }
-}
-
-/* 立方体尺寸缩放工具类 */
-.scale-30 {
-    transform: scale(0.3);
-}
-
-.scale-50 {
-    transform: scale(0.5);
-}
-
-.scale-100 {
-    transform: scale(1);
-}
-
-/* 头像背光效果动画 */
-@keyframes rotate-glow {
-    0% {
-        transform: rotate(0deg);
-    }
-    100% {
-        transform: rotate(360deg);
-    }
-}
-
-@keyframes avatar-glow {
-    0%, 100% {
-        filter: 
-            drop-shadow(0 0 5px var(--theme-avatar-glow))
-            drop-shadow(0 0 10px var(--theme-avatar-glow))
-            drop-shadow(0 0 15px var(--theme-avatar-glow));
-        opacity: 0.6;
-    }
-    50% {
-        filter: 
-            drop-shadow(0 0 8px var(--theme-avatar-glow))
-            drop-shadow(0 0 15px var(--theme-avatar-glow))
-            drop-shadow(0 0 22px var(--theme-avatar-glow));
-        opacity: 1;
-    }
-}
-
-/* 主题化头像旋转背光效果 */
-.avatar-rotating-glow {
-    position: absolute;
-    inset: -12px;
-    border-radius: 50%;
-    pointer-events: none;
-    background: conic-gradient(
-        from 0deg,
-        transparent 0deg,
-        var(--theme-avatar-glow) 45deg,
-        var(--theme-avatar-glow) 90deg,
-        var(--theme-avatar-glow) 135deg,
-        transparent 180deg,
-        transparent 360deg
-    );
-    opacity: 0.3;
-    animation: rotate-glow 4s linear infinite;
-    filter: blur(3px);
-    transition: opacity 0.3s ease;
-}
-
-/* 主题化静态内层光晕 */
-.avatar-inner-glow {
-    position: absolute;
-    inset: -4px;
-    border-radius: 50%;
-    pointer-events: none;
-    background: radial-gradient(circle, transparent 70%, var(--theme-avatar-glow) 85%, transparent 100%);
-    opacity: 0.2;
-    transition: opacity 0.3s ease;
-}
-
-/* Additional enhancements for better visual hierarchy */
-.project-grid-container {
-    animation: fadeInUp 0.8s ease-out;
-}
-
-.project-card {
-    animation: fadeInUp 0.6s ease-out forwards;
-    opacity: 0;
-    transform: translateY(20px);
-}
-
-.project-card:nth-child(1) { animation-delay: 0.1s; }
-.project-card:nth-child(2) { animation-delay: 0.2s; }
-.project-card:nth-child(3) { animation-delay: 0.3s; }
-.project-card:nth-child(4) { animation-delay: 0.4s; }
-.project-card:nth-child(5) { animation-delay: 0.5s; }
-.project-card:nth-child(6) { animation-delay: 0.6s; }
-
-@keyframes fadeInUp {
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-/* Improved backdrop styling to prevent cube overlap */
-.backdrop-protection {
-    position: relative;
-    z-index: 10;
-}
-
-/* Enhanced glow effects */
-.project-card:hover {
-    box-shadow: 
-        0 25px 50px -12px rgba(0, 0, 0, 0.5),
-        0 0 0 1px rgba(255, 255, 255, 0.1),
-        0 0 20px rgba(59, 130, 246, 0.2);
-}
-
-/* Better contrast for dark backgrounds */
-.project-section-bg {
-    background: 
-        radial-gradient(circle at 20% 50%, rgba(59, 130, 246, 0.1) 0%, transparent 50%),
-        radial-gradient(circle at 80% 20%, rgba(139, 92, 246, 0.1) 0%, transparent 50%),
-        radial-gradient(circle at 40% 80%, rgba(16, 185, 129, 0.1) 0%, transparent 50%);
-}
-
-/* Smooth transitions for all interactive elements */
-.stat-card,
-.map-view-button,
-.btn-primary,
-.btn-secondary {
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-/* Enhanced scroll indicator styling */
-.scroll-indicator-enhanced {
-    position: fixed;
-    right: 1rem;
-    top: 50%;
-    transform: translateY(-50%);
-    z-index: 1000;
-    pointer-events: none;
-}
-
-@media (max-width: 768px) {
-    .scroll-indicator-enhanced {
-        right: 0.5rem;
-    }
-}
-
-/* Golden Ratio Layout for About Section - 更宽松的版本 */
-.golden-ratio-container {
-    /* 调整黄金分割比例，增加留白 */
-    --golden-ratio: 1.618;
-    --content-ratio: 58%; /* 从61.8%减少到58% */
-    --avatar-ratio: 42%;  /* 从38.2%增加到42% */
-}
-
-/* 响应式黄金分割布局 */
-@media (min-width: 1024px) {
-    .about-content-area {
-        flex: 0 0 var(--content-ratio);
-        max-width: var(--content-ratio);
-    }
-    
-    .about-avatar-area {
-        flex: 0 0 var(--avatar-ratio);
-        max-width: var(--avatar-ratio);
-    }
-    
-    /* 内容区域的内部黄金比例留白 - 增加更多留白 */
-    .about-card-container {
-        /* 内容占据75%，左右留白更多 */
-        max-width: 75%;
-        margin-left: auto;
-        margin-right: 12.5%;
-    }
-    
-    /* 中等屏幕的优化 */
-    @media (min-width: 1150px) {
-        .about-card-container {
-            max-width: 72%;
-            margin-right: 14%;
-        }
-    }
-    
-    /* 超大屏幕的优化 */
-    @media (min-width: 1280px) {
-        .about-card-container {
-            max-width: 70%;
-            margin-right: 15%;
-        }
-    }
-    
-    /* 更大屏幕的优化 */
-    @media (min-width: 1440px) {
-        .about-card-container {
-            max-width: 68%;
-            margin-right: 16%;
-        }
-    }
-    
-    /* 4K及更大屏幕的优化 */
-    @media (min-width: 1536px) {
-        .about-card-container {
-            max-width: 65%;
-            margin-right: 17.5%;
-        }
-    }
-}
-
-/* 移动设备保持垂直堆叠，无黄金比例限制 */
-@media (max-width: 1023px) {
-    .about-content-area,
-    .about-avatar-area {
-        width: 100%;
-        max-width: 100%;
-    }
-    
-    .about-card-container {
-        max-width: 100%;
-        margin: 0;
-    }
-}
-
-/* 头像尺寸的响应式调整 - 保持与内容区域的比例协调 */
-.about-avatar-container {
-    /* 基础尺寸：18rem (288px) */
-    width: 18rem;
-    height: 18rem;
-}
-
-@media (min-width: 640px) {
-    .about-avatar-container {
-        width: 20rem; /* 320px */
-        height: 20rem;
-    }
-}
-
-@media (min-width: 1024px) {
-    .about-avatar-container {
-        width: 20rem; /* lg: 适应38.2%的空间 */
-        height: 20rem;
-    }
-}
-
-@media (min-width: 1280px) {
-    .about-avatar-container {
-        width: 24rem; /* xl: 384px */
-        height: 24rem;
-    }
-}
-
-@media (min-width: 1536px) {
-    .about-avatar-container {
-        width: 26rem; /* 2xl: 416px */
-        height: 26rem;
-    }
-}
-
-/* 卡片内容的黄金比例排版 */
-.about-card-content {
-    /* 标题占据较小比例，内容占据较大比例 */
-    & h2 {
-        margin-bottom: 1.618rem; /* 使用黄金比例的间距 */
-    }
-    
-    & .space-y-6 > * + * {
-        margin-top: 1.5rem; /* 约为黄金比例的间距 */
-    }
-    
-    & .resume-section {
-        margin-top: 2.618rem; /* 黄金比例 * 1.618 */
-        padding-top: 1.618rem;
-    }
-}
-
-/* 精确的cube对齐 - 让头像右边与cube左边完全对齐 */
-.avatar-cube-alignment {
-    position: relative;
-}
-
-/* 根据cube的典型位置计算精确对齐 */
-@media (min-width: 1024px) {
-    .about-avatar-wrapper {
-        /* 使用精确计算的位置，确保与cube对齐 */
-        padding-right: 6rem; /* 为cube留出空间 */
-    }
-}
-
-@media (min-width: 1280px) {
-    .about-avatar-wrapper {
-        padding-right: 7rem; /* xl屏幕cube可能更大 */
-    }
-}
-
-@media (min-width: 1536px) {
-    .about-avatar-wrapper {
-        padding-right: 8rem; /* 2xl屏幕给更多空间 */
-    }
-}
-
-/* 头像容器在包装器内的精确定位 */
-.about-avatar-container {
-    margin-left: 0; /* 确保头像在容器内靠左对齐 */
-}
-
-/* Gallery和Contact Section的主题背景支持 */
-/* 这两个section使用3D canvas，但canvas可能不是全屏，需要为非canvas区域提供主题背景 */
-
-/* Gallery Section 主题背景 - 移除可能遮挡3D背景的样式 */
-.gallery-section-background {
-    /* 移除背景色，让3D背景可见 */
-    background: transparent;
-    @apply transition-colors duration-500;
-}
-
-.theme-nz-blue .gallery-section-background {
-    /* 移除背景渐变，让3D背景可见 */
-    background: transparent;
-}
-
-.theme-si-green .gallery-section-background {
-    /* 移除背景渐变，让3D背景可见 */
-    background: transparent;
-}
-
-/* Contact Section 主题背景 - 移除可能遮挡3D背景的样式 */
-.contact-section-background {
-    /* 移除背景色，让3D背景可见 */
-    background: transparent;
-    @apply transition-colors duration-500;
-}
-
-.theme-nz-blue .contact-section-background {
-    /* 移除背景渐变，让3D背景可见 */
-    background: transparent;
-}
-
-.theme-si-green .contact-section-background {
-    /* 移除背景渐变，让3D背景可见 */
-    background: transparent;
-}
-
-/* 3D Canvas容器 - 透明背景让3D背景可见 */
-.canvas-3d-container {
-    background: transparent; /* 改为透明背景 */
-    position: relative;
-    z-index: 10;
-}
-
-/* 确保3D效果下的UI元素使用主题色 */
-.canvas-overlay-ui {
-    color: var(--theme-text-primary);
-    background: var(--theme-surface);
-    -webkit-backdrop-filter: blur(10px);
-    backdrop-filter: blur(10px);
-    border: 1px solid var(--theme-border);
-    @apply transition-all duration-300;
-}
-
-.theme-nz-blue .canvas-overlay-ui {
-    background: var(--theme-surface);
-    box-shadow: 0 4px 20px var(--theme-shadow);
-}
-
-.theme-si-green .canvas-overlay-ui {
-    background: var(--theme-surface);
-    box-shadow: 0 4px 20px var(--theme-shadow);
 }
