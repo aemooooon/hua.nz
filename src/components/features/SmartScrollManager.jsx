@@ -625,7 +625,6 @@ const SmartScrollManager = () => {
                 <div className="fixed inset-0 bg-black/20 z-30 transition-opacity duration-300" />
             )}
 
-            {/* 滚动提示已移除 */}
         </div>
     );
 };

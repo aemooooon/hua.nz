@@ -2,6 +2,7 @@ import { useEffect, useRef, useMemo, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
+import "leaflet-extra-markers/dist/css/leaflet.extra-markers.min.css";
 import useAppStore from '../../../store/useAppStore';
 import { useTheme } from '../../../hooks/useTheme';
 
@@ -21,10 +22,10 @@ const ProjectMapModal = ({ isOpen, onClose, language = 'en' }) => {
   const themeColors = getThemeColors();
   
   // 从store获取项目数据
-  const { getAllProjects } = useAppStore();
+  const { getAllLocations } = useAppStore();
   
   // 获取项目数据
-  const projects = getAllProjects().filter(loc => loc.type === 'project');
+  const projects = getAllLocations().filter(loc => loc.type === 'project');
 
   // 类型颜色映射 - 使用主题色变量
   const typeColors = useMemo(() => ({
