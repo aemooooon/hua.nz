@@ -158,29 +158,30 @@ const HomeSection = ({
 
             {/* Language and Theme Toggle Buttons - Bottom Left Corner */}
             {showToggleButtons && (
-                <div className="absolute bottom-6 left-6 z-50 flex items-center space-x-3 transition-opacity duration-1000 opacity-100">
+                <div className="absolute bottom-6 left-6 z-50 flex items-center gap-0 transition-opacity duration-1000 opacity-100">
                     {/* Language Toggle */}
                     <button
                         onClick={toggleLanguage}
-                        className="w-10 h-10 bg-theme-primary/20 hover:border border-theme-primary/50 rounded-full flex items-center justify-center hover:bg-theme-primary/30 transition-all duration-300 backdrop-blur-sm group"
+                        className="w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300 group hover:scale-110"
                         title={`${content.ui.language}: ${language === 'en' ? 'English' : '中文'}`}
                     >
-                        <FaGlobe className="text-theme-primary text-lg group-hover:rotate-180 transition-transform duration-300" />
-                        <span className="absolute -top-8 left-1/2 transform -translate-x-1/2 text-xs text-theme-primary opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                            {language === 'en' ? 'EN' : '中文'}
+                        <FaGlobe className="text-theme-primary text-xl group-hover:rotate-180 transition-transform duration-300" />
+                        <span className="absolute -top-10 left-1/2 transform -translate-x-1/2 px-2 py-1 bg-black/80 text-theme-primary text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap">
+                            {language === 'en' ? 'English' : '中文'}
                         </span>
                     </button>
 
                     {/* Theme Toggle */}
                     <button
                         onClick={toggleTheme}
-                        className="w-10 h-10 bg-theme-secondary/20 hover:border border-theme-secondary/50 rounded-full flex items-center justify-center hover:bg-theme-secondary/30 transition-all duration-300 backdrop-blur-sm group"
+                        className="w-12 h-12 flex items-center justify-center transition-all duration-300 group hover:scale-110"
                         title={`${content.ui.toggleTheme}: ${currentThemeConfig.name[language] || currentThemeConfig.name.en}`}
                     >
-                        <span className="text-xl group-hover:rotate-180 transition-transform duration-300">
-                            {currentThemeConfig.icon}
-                        </span>
-                        <span className="absolute -top-8 left-1/2 transform -translate-x-1/2 text-xs text-theme-secondary opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap">
+                        <div 
+                            className="w-5 h-5 rounded-full group-hover:rotate-180 transition-transform duration-300"
+                            style={{ backgroundColor: 'var(--theme-primary)' }}
+                        ></div>
+                        <span className="absolute -top-10 left-1/2 transform -translate-x-1/2 px-2 py-1 bg-black/80 text-theme-primary text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap">
                             {currentThemeConfig.name[language] || currentThemeConfig.name.en}
                         </span>
                     </button>

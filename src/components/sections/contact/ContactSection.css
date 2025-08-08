@@ -1,5 +1,8 @@
 /* ContactSection 专用样式 */
 
+/* 导入通用的光影卡片效果 */
+@import '../../ui/ShineCard.css';
+
 /* 表单动画效果 */
 .contact-form-container {
     background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%);
@@ -16,7 +19,7 @@
     @apply transition-all duration-300;
 }
 
-/* 联系信息卡片悬停效果 */
+/* 联系信息卡片悬停效果 - 与shine效果配合 */
 .contact-info-card {
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     border: 1px solid var(--theme-border);
@@ -26,8 +29,7 @@
 }
 
 .contact-info-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.1);
+    /* 移除重复的transform，让shine-card处理 */
     border-color: var(--theme-primary);
     background: var(--theme-hover);
 }

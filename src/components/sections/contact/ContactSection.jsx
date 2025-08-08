@@ -11,24 +11,27 @@ const ContactSection = ({ language }) => {
     const contactInfo = [
         {
             icon: "📧",
-            title: "Email",
+            title: contactTexts.contactMethods.email.title,
             value: contactTexts.emailAddress,
             href: `mailto:${contactTexts.emailAddress}`,
-            description: language === 'en' ? 'Send me an email' : '发送邮件'
+            description: contactTexts.contactMethods.email.description,
+            shineColor: "shine-blue"
         },
         {
             icon: "📱",
-            title: language === 'en' ? 'Phone' : '电话',
+            title: contactTexts.contactMethods.phone.title,
             value: contactTexts.phone,
             href: `tel:${contactTexts.phone}`,
-            description: language === 'en' ? 'Give me a call' : '电话联系'
+            description: contactTexts.contactMethods.phone.description,
+            shineColor: "shine-green"
         },
         {
             icon: "📍",
-            title: language === 'en' ? 'Location' : '位置',
+            title: contactTexts.contactMethods.location.title,
             value: contactTexts.location,
             href: "https://maps.google.com/?q=Christchurch,New Zealand",
-            description: language === 'en' ? 'Based in Christchurch' : '位于基督城'
+            description: contactTexts.contactMethods.location.description,
+            shineColor: "shine-purple"
         }
     ];
 
@@ -62,7 +65,7 @@ const ContactSection = ({ language }) => {
                         {contactTexts.title}
                     </ThemeTitle>
                     <ThemeSubtitle className="text-xl md:text-2xl font-light italic mb-8 text-theme-text-secondary/70">
-                        {contactTexts.subtitle || (language === 'en' ? 'get in touch' : '联系我')}
+                        {contactTexts.subtitle}
                     </ThemeSubtitle>
                     
                     {/* 标题与内容之间的分隔线 */}
@@ -85,24 +88,26 @@ const ContactSection = ({ language }) => {
                                 href={info.href}
                                 target={info.href.startsWith('http') ? '_blank' : '_self'}
                                 rel={info.href.startsWith('http') ? 'noopener noreferrer' : undefined}
-                                className="bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-sm rounded-2xl p-8 hover:from-white/20 hover:to-white/10 transition-all duration-300 hover:scale-105 hover:shadow-2xl group contact-info-card text-center border border-white/5 shine-card shine-blue"
+                                className={`bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-sm rounded-2xl p-8 hover:from-white/20 hover:to-white/10 transition-all duration-300 group contact-info-card text-center border border-white/5 shine-card ${info.shineColor}`}
                             >
-                                <div className="text-5xl mb-4 group-hover:scale-110 transition-transform duration-300">
-                                    {info.icon}
-                                </div>
-                                <h3 className="text-xl font-bold text-white mb-2">
-                                    {info.title}
-                                </h3>
-                                <p className="text-blue-300 font-medium mb-3 text-lg phone">
-                                    {info.value}
-                                </p>
-                                <p className="text-sm text-gray-400">
-                                    {info.description}
-                                </p>
-                                <div className="mt-4 text-white/60 group-hover:text-white transition-colors flex justify-center">
-                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                                    </svg>
+                                <div className="shine-content">
+                                    <div className="text-5xl mb-4 group-hover:scale-110 transition-transform duration-300">
+                                        {info.icon}
+                                    </div>
+                                    <h3 className="text-xl font-bold text-white mb-2">
+                                        {info.title}
+                                    </h3>
+                                    <p className="text-blue-300 font-medium mb-3 text-lg phone">
+                                        {info.value}
+                                    </p>
+                                    <p className="text-sm text-gray-400">
+                                        {info.description}
+                                    </p>
+                                    <div className="mt-4 text-white/60 group-hover:text-white transition-colors flex justify-center">
+                                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                                        </svg>
+                                    </div>
                                 </div>
                             </a>
                         ))}
@@ -111,7 +116,7 @@ const ContactSection = ({ language }) => {
                     {/* 社交媒体链接 - 居中 */}
                     <div className="text-center">
                         <ThemeTitle level={3} className="text-2xl font-bold mb-8">
-                            {language === 'en' ? 'Connect with me' : '社交媒体'}
+                            {contactTexts.connectWithMe}
                         </ThemeTitle>
                         <div className="flex justify-center space-x-6">
                             {socialLinks.map((social, index) => (
@@ -135,10 +140,7 @@ const ContactSection = ({ language }) => {
                     <div className="inline-flex items-center space-x-2 text-gray-400">
                         <span className="w-8 h-px bg-gradient-to-r from-transparent to-gray-400 decorative-line"></span>
                         <span className="text-sm">
-                            {language === 'en' 
-                                ? 'Looking forward to hearing from you!' 
-                                : '期待您的联系！'
-                            }
+                            {contactTexts.lookingForward}
                         </span>
                         <span className="w-8 h-px bg-gradient-to-l from-transparent to-gray-400 decorative-line"></span>
                     </div>

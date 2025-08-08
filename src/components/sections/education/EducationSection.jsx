@@ -12,9 +12,8 @@ const EducationSection = ({ language }) => {
     const { getContent } = useAppStore();
     const [hoveredProject, setHoveredProject] = useState(null);
     
-    try {
-        const content = getContent();
-        const educationData = content.education;
+    const content = getContent();
+    const educationData = content.education;
 
         // 添加安全检查，确保数据存在
         const mastersDegree = educationData?.degrees?.find((d) => d.id === "masters");
@@ -73,18 +72,18 @@ const EducationSection = ({ language }) => {
                 {/* 大的透明玻璃卡片容器 - 创建切口效果 */}
                 <div className="relative mt-20">
                     
-                    {/* 标题区域 - 悬浮在边框上方，避免字母下降部伸入边框 */}
-                    <div className="absolute -top-12 left-8 right-8 z-10">
+                    {/* 标题区域 - 骑在边框上 */}
+                    <div className="absolute -top-6 left-8 right-8 z-20">
                         <div className="flex items-center justify-between">
-                            {/* 左边：学历名称 - 纯文字，无背景无边框 */}
+                            {/* 左边：学历名称 */}
                             <div className="flex-1">
-                                <h3 className="text-xl sm:text-2xl lg:text-3xl font-semibold bg-gradient-to-r from-emerald-400 via-blue-400 to-purple-400 bg-clip-text text-transparent leading-normal py-2">
+                                <h3 className="text-xl sm:text-2xl lg:text-3xl font-semibold bg-gradient-to-r from-emerald-400 via-blue-400 to-purple-400 bg-clip-text text-transparent leading-normal py-2 px-2">
                                     {degree.degree.replace(" with Distinction", "")}
                                 </h3>
                             </div>
                             
-                            {/* 右边：徽章 - 无边框，向下移动以适应小字体 */}
-                            <div className="ml-6 mt-2">
+                            {/* 右边：徽章 */}
+                            <div className="ml-6">
                                 <span className={`
                                     inline-flex items-center gap-1
                                     px-3 py-2 
@@ -102,44 +101,32 @@ const EducationSection = ({ language }) => {
                         </div>
                     </div>
 
-                    {/* 卡片主体 - 带切口的顶部边框 */}
-                    <div 
-                        className={`relative ${colors.cardBg} backdrop-blur-lg shadow-2xl shadow-black/20 rounded-3xl overflow-hidden`}
-                        style={{
-                            border: `1px solid var(--theme-border)`,
-                            borderColor: 'var(--theme-border)'
-                        }}>
+                    {/* 卡片主体 - 简单的边框中断效果 */}
+                    <div className="relative">
+                        {/* 自定义顶部边框 - 只在左端显示一小段 */}
+                        <div className="absolute top-0 left-0 right-0 h-px z-10">
+                            {/* 只在左边显示一小段边框 */}
+                            <div className="absolute top-0 left-0 w-16 h-px bg-gradient-to-r from-cyan-400 to-transparent"></div>
+                        </div>
                         
-                        {/* 左侧切口 - 遮盖边框 */}
                         <div 
-                            className="absolute top-0 left-6 h-1 z-20"
+                            className={`relative ${colors.cardBg} backdrop-blur-lg shadow-2xl shadow-black/20 rounded-3xl overflow-hidden`}
                             style={{
-                                width: '60%',
-                                backgroundColor: 'var(--theme-background)',
-                                height: '2px',
-                                top: '-1px'
-                            }}
-                        ></div>
-                        
-                        {/* 右侧切口 - 遮盖边框 */}
-                        <div 
-                            className="absolute top-0 right-6 h-1 z-20"
-                            style={{
-                                width: '25%',
-                                backgroundColor: 'var(--theme-background)',
-                                height: '2px',
-                                top: '-1px'
-                            }}
-                        ></div>
+                                border: `1px solid var(--theme-border)`,
+                                borderTop: 'none' // 移除顶部边框，用自定义边框替代
+                            }}>
 
-                        {/* 卡片内容区域 */}
-                        <div className="pt-12 p-8 sm:p-10">
-                        {/* 学校信息 */}
-                        <div className="mb-8 text-center">
-                            <h4 className="text-lg sm:text-xl lg:text-2xl text-theme-accent font-medium mb-3 transition-colors duration-300">
+                            {/* 卡片内容区域 */}
+                            <div className="pt-12 px-8 sm:px-10 pb-6 sm:pb-8">
+                        {/* 学校信息 - 左右布局 */}
+                        <div className="mb-8 flex items-center justify-between flex-wrap gap-4">
+                            {/* 左边：大学名称 */}
+                            <h4 className="text-lg sm:text-xl lg:text-2xl text-theme-accent font-medium transition-colors duration-300">
                                 {degree.institution}
                             </h4>
-                            <div className="flex items-center justify-center gap-6 text-theme-text-secondary text-sm sm:text-base flex-wrap transition-colors duration-300">
+                            
+                            {/* 右边：地址和时间 */}
+                            <div className="flex items-center gap-6 text-theme-text-secondary text-sm sm:text-base flex-wrap transition-colors duration-300">
                                 <span className="flex items-center">
                                     <span className="mr-2 text-theme-primary">📍</span>
                                     {degree.location}
@@ -149,6 +136,11 @@ const EducationSection = ({ language }) => {
                                     {degree.period}
                                 </span>
                             </div>
+                        </div>
+
+                        {/* 学校信息和项目之间的分割线 */}
+                        <div className="flex justify-center my-8">
+                            <GlowDivider className="w-full" />
                         </div>
 
                         {/* Capstone Projects */}
@@ -288,6 +280,7 @@ const EducationSection = ({ language }) => {
                                 </div>
                             </div>
                         )}
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -320,30 +313,15 @@ const EducationSection = ({ language }) => {
             {/* 学历内容 - 垂直滚动，使用主题化文本颜色 */}
             <div className="w-full p-4 sm:p-6 lg:p-8 text-theme-text-primary pt-0">
                 <div className="max-w-6xl mx-auto">
-                    {degrees.map((degree, index) => (
+                    {degrees.map((degree) => (
                         <div key={degree.id}>
                             {renderEducationCard(degree)}
-                            {/* 在 Master 和 Bachelor 之间添加分割线 */}
-                            {index === 0 && (
-                                <GlowDivider className="my-16" width="w-full max-w-6xl" />
-                            )}
                         </div>
                     ))}
                 </div>
             </div>
         </div>
     );
-    } catch (error) {
-        console.error('Error rendering education section:', error);
-        return (
-            <div className="min-h-screen flex items-center justify-center">
-                <div className="text-center text-white">
-                    <p className="text-xl text-red-400">Error loading education section</p>
-                    <p className="text-sm text-gray-400 mt-2">Please refresh the page</p>
-                </div>
-            </div>
-        );
-    }
 };
 
 EducationSection.propTypes = {

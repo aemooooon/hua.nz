@@ -112,11 +112,6 @@ const contentConfig = {
       title: "Get In Touch",
       subtitle: "Let's discuss your next project",
       description: "Get in touch for opportunities, collaborations, or just to say hello.",
-      name: "Your Name",
-      email: "Your Email",
-      message: "Your Message",
-      send: "Send Message",
-      info: "Contact Information",
       location: "Christchurch, New Zealand",
       emailAddress: "aemooooon@gmail.com",
       phone: "+64 21 037 0520",
@@ -335,19 +330,14 @@ const contentConfig = {
       viewImage: "查看图片"
     },
     contact: {
-      title: "联系我",
-      subtitle: "让我们讨论您的下一个项目",
-      description: "如有机会、合作或只是想打个招呼，请与我联系。",
-      name: "您的姓名",
-      email: "您的邮箱",
-      message: "您的信息",
-      send: "发送信息",
-      info: "联系信息",
-      location: "新西兰基督城",
+      title: "青鸟殷勤",
+      subtitle: "共商鸿猷",
+      description: "倘蒙垂询，或谋事，或叙契，一函可达。",
+      location: "新西兰",
       emailAddress: "aemooooon@gmail.com",
       phone: "+64 21 037 0520",
       connectWithMe: "社交媒体",
-      lookingForward: "期待您的联系！",
+      lookingForward: "翘盼汝之玉音！",
       contactMethods: {
         email: {
           title: "邮箱",
@@ -359,7 +349,7 @@ const contentConfig = {
         },
         location: {
           title: "位置",
-          description: "位于基督城"
+          description: "基督之城"
         }
       },
       social: {
@@ -437,7 +427,7 @@ const contentConfig = {
       degrees: [
         {
           id: "masters",
-          degree: "应用数据科学硕士（优秀毕业）",
+          degree: "应用数据科学硕士学位",
           institution: "坎特伯雷大学",
           location: "新西兰基督城",
           period: "2024年2月 - 2025年2月",
@@ -467,7 +457,7 @@ const contentConfig = {
         },
         {
           id: "bachelors",
-          degree: "信息技术学士（优秀毕业）",
+          degree: "信息技术学士学位",
           institution: "奥塔哥理工学院",
           location: "新西兰达尼丁",
           period: "2017年7月 - 2021年6月",

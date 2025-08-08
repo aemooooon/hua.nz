@@ -73,12 +73,47 @@ const AboutSection = ({ language = 'en' }) => {
                             {/* 头像容器 - 圆形镜子外围主题色灯带效果 */}
                             <div className="about-avatar-container relative rounded-full overflow-hidden bg-theme-surface/50 backdrop-blur-sm border-4 border-theme-primary transition-all duration-500"
                              style={{
+                                 filter: `
+                                     drop-shadow(0 0 5px var(--theme-avatar-glow))
+                                     drop-shadow(0 0 10px rgba(0, 255, 255, 0.6))
+                                     drop-shadow(0 0 15px rgba(0, 255, 255, 0.4))
+                                 `,
+                                 boxShadow: `
+                                     0 0 8px var(--theme-avatar-glow),
+                                     0 0 15px rgba(0, 255, 255, 0.8),
+                                     0 0 22px rgba(0, 255, 255, 0.6),
+                                     inset 0 0 5px rgba(0, 255, 255, 0.3)
+                                 `,
                                  animation: 'avatar-glow 3s ease-in-out infinite'
                              }}>
                             {/* 旋转背光效果 - 使用主题变量 */}
-                            <div className="avatar-rotating-glow"></div>
-                            {/* 静态内层光晕 - 使用主题变量 */}
-                            <div className="avatar-inner-glow"></div>
+                            <div className="absolute -inset-3 rounded-full pointer-events-none"
+                                 style={{
+                                     background: `
+                                         conic-gradient(
+                                             from 0deg,
+                                             transparent 0deg,
+                                             rgba(0, 255, 255, 0.2) 45deg,
+                                             rgba(0, 255, 255, 0.3) 90deg,
+                                             rgba(0, 255, 255, 0.2) 135deg,
+                                             transparent 180deg,
+                                             transparent 360deg
+                                         )
+                                     `,
+                                     animation: 'rotate-glow 4s linear infinite',
+                                     filter: 'blur(3px)'
+                                 }}>
+                            </div>
+                            {/* 静态内层光晕 */}
+                            <div className="absolute -inset-1 rounded-full pointer-events-none" 
+                                 style={{
+                                     background: 'radial-gradient(circle, transparent 70%, rgba(0, 255, 255, 0.15) 85%, transparent 100%)',
+                                     boxShadow: `
+                                         0 0 4px rgba(0, 255, 255, 0.6),
+                                         inset 0 0 4px rgba(0, 255, 255, 0.3)
+                                     `
+                                 }}>
+                            </div>
                             {/* 延迟渲染 Avatar 以优化 LCP */}
                             {showAvatar ? (
                                 <Suspense 

@@ -992,3 +992,191 @@ body {
         min-width: 80px;
     }
 }
+
+/* ========================================
+   About Section Avatar Styles
+   ======================================== */
+
+/* Avatar Area Layout */
+.about-avatar-area {
+    flex: 0.42; /* 黄金分割比例较小部分 */
+}
+
+.about-content-area {
+    flex: 0.58; /* 黄金分割比例较大部分 */
+}
+
+.avatar-cube-alignment {
+    /* 向左偏移以与cube对齐 */
+    transform: translateX(-10%);
+}
+
+.about-avatar-wrapper {
+    position: relative;
+    /* 移除固定尺寸，让容器自适应 */
+}
+
+.about-avatar-container {
+    /* 基础尺寸：18rem (288px) */
+    width: 18rem;
+    height: 18rem;
+    position: relative;
+    z-index: 10;
+}
+
+/* 响应式头像尺寸调整 */
+@media (min-width: 640px) {
+    .about-avatar-container {
+        width: 20rem; /* 320px */
+        height: 20rem;
+    }
+}
+
+@media (min-width: 1024px) {
+    .about-avatar-container {
+        width: 20rem; /* lg: 适应38.2%的空间 */
+        height: 20rem;
+    }
+}
+
+@media (min-width: 1280px) {
+    .about-avatar-container {
+        width: 24rem; /* xl: 384px */
+        height: 24rem;
+    }
+}
+
+@media (min-width: 1536px) {
+    .about-avatar-container {
+        width: 26rem; /* 2xl: 416px */
+        height: 26rem;
+    }
+}
+
+/* Avatar Glow Animation */
+@keyframes avatar-glow {
+    0%, 100% {
+        filter: 
+            drop-shadow(0 0 5px rgba(0, 255, 255, 0.6))
+            drop-shadow(0 0 10px rgba(0, 255, 255, 0.4))
+            drop-shadow(0 0 15px rgba(0, 255, 255, 0.2));
+        box-shadow: 
+            0 0 8px var(--theme-avatar-glow),
+            0 0 15px rgba(0, 255, 255, 0.6),
+            0 0 22px rgba(0, 255, 255, 0.4);
+    }
+    50% {
+        filter: 
+            drop-shadow(0 0 8px rgba(0, 255, 255, 1))
+            drop-shadow(0 0 15px rgba(0, 255, 255, 0.8))
+            drop-shadow(0 0 22px rgba(0, 255, 255, 0.6));
+        box-shadow: 
+            0 0 12px var(--theme-avatar-glow),
+            0 0 25px rgba(0, 255, 255, 0.8),
+            0 0 35px rgba(0, 255, 255, 0.6);
+    }
+}
+
+@keyframes rotate-glow {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+/* Golden Ratio Layout for About Section */
+.golden-ratio-container {
+    /* 确保黄金分割比例布局 */
+}
+
+.about-section-spacing {
+    gap: 2rem;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 1024px) {
+    .about-avatar-wrapper {
+        width: 240px;
+        height: 240px;
+    }
+    
+    .avatar-cube-alignment {
+        transform: translateX(0);
+    }
+    
+    .about-section-spacing {
+        gap: 1.5rem;
+    }
+}
+
+@media (max-width: 640px) {
+    .about-avatar-wrapper {
+        width: 200px;
+        height: 200px;
+    }
+    
+    .about-section-spacing {
+        gap: 1rem;
+    }
+}
+
+/* Education card with real border cutout effect */
+.education-card-cutout-border {
+    position: relative;
+}
+
+.education-card-cutout-border::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(
+        to right, 
+        var(--theme-border) 0%, 
+        var(--theme-border) 10%, 
+        transparent 10%, 
+        transparent 75%, 
+        var(--theme-border) 75%, 
+        var(--theme-border) 88%, 
+        transparent 88%, 
+        transparent 100%
+    );
+    z-index: 1;
+}
+
+/* 响应式调整边框中断的位置 */
+@media (max-width: 768px) {
+    .education-card-cutout-border::before {
+        background: linear-gradient(
+            to right, 
+            var(--theme-border) 0%, 
+            var(--theme-border) 8%, 
+            transparent 8%, 
+            transparent 70%, 
+            var(--theme-border) 70%, 
+            var(--theme-border) 85%, 
+            transparent 85%, 
+            transparent 100%
+        );
+    }
+}
+
+@media (max-width: 480px) {
+    .education-card-cutout-border::before {
+        background: linear-gradient(
+            to right, 
+            var(--theme-border) 0%, 
+            var(--theme-border) 5%, 
+            transparent 5%, 
+            transparent 65%, 
+            var(--theme-border) 65%, 
+            var(--theme-border) 80%, 
+            transparent 80%, 
+            transparent 100%
+        );
+    }
+}
