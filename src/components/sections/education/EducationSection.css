@@ -1,3 +1,26 @@
+/* 导入通用的光影卡片效果 */
+@import '../../ui/ShineCard.css';
+
+/* 强制课程文字颜色 */
+.course-item .course-title {
+    color: #ffffff !important;
+    font-weight: 500 !important;
+}
+
+.course-item .course-details {
+    color: #d1d5db !important;
+}
+
+.course-item .grade-badge {
+    color: inherit !important;
+}
+
+/* 学期标题颜色 */
+.semester-title {
+    color: #ffffff !important;
+    font-weight: bold !important;
+}
+
 /* 3D卡片样式 - 移除3D效果 */
 .education-card-3d {
     transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);

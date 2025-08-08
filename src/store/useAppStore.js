@@ -211,6 +211,39 @@ const contentConfig = {
           institution: "University of Canterbury",
           location: "Christchurch, New Zealand",
           period: "February 2024 - February 2025",
+          gpa: "A Average",
+          totalCredits: 180,
+          courses: [
+            {
+              year: "2024",
+              semester: "Semester 1",
+              courses: [
+                { code: "COSC440", name: "Deep Learning", credits: 15, grade: "A+", level: 4 },
+                { code: "DATA401", name: "Introduction to Data Science", credits: 15, grade: "A", level: 4 },
+                { code: "DATA415", name: "Computational Social Choice", credits: 15, grade: "A", level: 4 },
+                { code: "DATA416", name: "Contemporary Issues in Data Science", credits: 15, grade: "A+", level: 4 }
+              ]
+            },
+            {
+              year: "2024",
+              semester: "Semester 2", 
+              courses: [
+                { code: "COSC473", name: "Special Topic: Decentralised Applications on the Web", credits: 15, grade: "A-", level: 4 },
+                { code: "DATA420", name: "Scalable Data Science", credits: 15, grade: "A-", level: 4 },
+                { code: "DATA429", name: "Data Science Independent Study", credits: 15, grade: "A+", level: 4 },
+                { code: "DATA472", name: "Special Topic", credits: 15, grade: "A+", level: 4 }
+              ]
+            },
+            {
+              year: "2025",
+              semester: "Semester 1",
+              courses: [
+                { code: "DATA605", name: "Applied Data Science Industry Research Project", credits: 45, grade: "A+", level: 6 },
+                { code: "DIGI405", name: "Texts, Discourses and Data: the Humanities and Data Science", credits: 15, grade: "A-", level: 4 },
+                { code: "GISC412", name: "Spatial Data Science", credits: 15, grade: "A", level: 4 }
+              ]
+            }
+          ],
           capstoneProjects: [
             {
               name: "SwapBytes",
@@ -238,9 +271,61 @@ const contentConfig = {
         {
           id: "bachelors",
           degree: "Bachelor of Information Technology with Distinction",
-          institution: "Otago Polytechnic",
+          institution: "Otago Polytechnic", 
           location: "Dunedin, New Zealand",
           period: "July 2017 - June 2021",
+          gpa: "A- Average",
+          totalCredits: 360,
+          courses: [
+            {
+              year: "2017",
+              semester: "Year 1",
+              courses: [
+                { code: "IN501001", name: "Professional Practice for Information Technology", credits: 15, grade: "B+", level: 5 },
+                { code: "IN510001", name: "Programming 1", credits: 15, grade: "A+", level: 5 },
+                { code: "IN520001", name: "PC Maintenance", credits: 15, grade: "A+", level: 5 },
+                { code: "IN521001", name: "Maths For IT", credits: 15, grade: "A+", level: 5 }
+              ]
+            },
+            {
+              year: "2018", 
+              semester: "Year 2",
+              courses: [
+                { code: "IN505001", name: "Introduction to Systems Analysis", credits: 15, grade: "A+", level: 5 },
+                { code: "IN511001", name: "Programming 2", credits: 15, grade: "A+", level: 5 },
+                { code: "IN512001", name: "Web 1 - Technology and Development", credits: 15, grade: "A+", level: 5 },
+                { code: "IN515001", name: "Introduction to Networks", credits: 15, grade: "A+", level: 5 },
+                { code: "IN605001", name: "Databases 2", credits: 15, grade: "A+", level: 6 },
+                { code: "IN610001", name: "Programming 3", credits: 15, grade: "A+", level: 6 },
+                { code: "IN612001", name: "Web 2 - Programming", credits: 15, grade: "A+", level: 6 },
+                { code: "IN617001", name: "Linux Operating Systems", credits: 15, grade: "A+", level: 6 }
+              ]
+            },
+            {
+              year: "2019",
+              semester: "Year 3", 
+              courses: [
+                { code: "IN602001", name: "Software Engineering", credits: 15, grade: "A-", level: 6 },
+                { code: "IN628002", name: "Programming 4", credits: 15, grade: "A+", level: 6 },
+                { code: "IN700001", name: "Project 1", credits: 15, grade: "A+", level: 7 },
+                { code: "IN705002", name: "Databases 3", credits: 15, grade: "A+", level: 7 },
+                { code: "IN711001", name: "Algorithms and Data Structures", credits: 15, grade: "A", level: 7 },
+                { code: "IN712001", name: "Web 3 - Enterprise Development", credits: 15, grade: "A-", level: 7 },
+                { code: "IN719001", name: "Systems Administration", credits: 15, grade: "A", level: 7 },
+                { code: "IN720001", name: "Administering a Virtual Infrastructure", credits: 15, grade: "A", level: 7 }
+              ]
+            },
+            {
+              year: "2021",
+              semester: "Year 4",
+              courses: [
+                { code: "IN608001", name: "Intermediate Application Development Concepts", credits: 15, grade: "A+", level: 6 },
+                { code: "IN721001", name: "Mobile Application Development", credits: 15, grade: "A+", level: 7 },
+                { code: "IN730151", name: "Year Three Special Topic", credits: 15, grade: "A+", level: 7 },
+                { code: "IN732001", name: "Studio 6", credits: 15, grade: "Passed", level: 7 }
+              ]
+            }
+          ],
           awards: [
             {
               title: "Academic Excellence & Best Programmer",
@@ -431,6 +516,39 @@ const contentConfig = {
           institution: "坎特伯雷大学",
           location: "新西兰基督城",
           period: "2024年2月 - 2025年2月",
+          gpa: "A 平均成绩",
+          totalCredits: 180,
+          courses: [
+            {
+              year: "2024",
+              semester: "第一学期",
+              courses: [
+                { code: "COSC440", name: "深度学习", credits: 15, grade: "A+", level: 4 },
+                { code: "DATA401", name: "数据科学导论", credits: 15, grade: "A", level: 4 },
+                { code: "DATA415", name: "计算社会选择", credits: 15, grade: "A", level: 4 },
+                { code: "DATA416", name: "数据科学当代问题", credits: 15, grade: "A+", level: 4 }
+              ]
+            },
+            {
+              year: "2024",
+              semester: "第二学期", 
+              courses: [
+                { code: "COSC473", name: "专题：Web上的去中心化应用", credits: 15, grade: "A-", level: 4 },
+                { code: "DATA420", name: "可扩展数据科学", credits: 15, grade: "A-", level: 4 },
+                { code: "DATA429", name: "数据科学独立研究", credits: 15, grade: "A+", level: 4 },
+                { code: "DATA472", name: "专题", credits: 15, grade: "A+", level: 4 }
+              ]
+            },
+            {
+              year: "2025",
+              semester: "第一学期",
+              courses: [
+                { code: "DATA605", name: "应用数据科学行业研究项目", credits: 45, grade: "A+", level: 6 },
+                { code: "DIGI405", name: "文本、话语与数据：人文学科与数据科学", credits: 15, grade: "A-", level: 4 },
+                { code: "GISC412", name: "空间数据科学", credits: 15, grade: "A", level: 4 }
+              ]
+            }
+          ],
           capstoneProjects: [
             {
               name: "SwapBytes",
@@ -459,8 +577,60 @@ const contentConfig = {
           id: "bachelors",
           degree: "信息技术学士学位",
           institution: "奥塔哥理工学院",
-          location: "新西兰达尼丁",
+          location: "新西兰达尼丁", 
           period: "2017年7月 - 2021年6月",
+          gpa: "A-平均成绩",
+          totalCredits: 360,
+          courses: [
+            {
+              year: "2017",
+              semester: "第一年",
+              courses: [
+                { code: "IN501001", name: "信息技术专业实践", credits: 15, grade: "B+", level: 5 },
+                { code: "IN510001", name: "程序设计 1", credits: 15, grade: "A+", level: 5 },
+                { code: "IN520001", name: "计算机维护", credits: 15, grade: "A+", level: 5 },
+                { code: "IN521001", name: "IT数学", credits: 15, grade: "A+", level: 5 }
+              ]
+            },
+            {
+              year: "2018", 
+              semester: "第二年",
+              courses: [
+                { code: "IN505001", name: "系统分析导论", credits: 15, grade: "A+", level: 5 },
+                { code: "IN511001", name: "程序设计 2", credits: 15, grade: "A+", level: 5 },
+                { code: "IN512001", name: "Web技术与开发", credits: 15, grade: "A+", level: 5 },
+                { code: "IN515001", name: "网络导论", credits: 15, grade: "A+", level: 5 },
+                { code: "IN605001", name: "数据库 2", credits: 15, grade: "A+", level: 6 },
+                { code: "IN610001", name: "程序设计 3", credits: 15, grade: "A+", level: 6 },
+                { code: "IN612001", name: "Web程序设计", credits: 15, grade: "A+", level: 6 },
+                { code: "IN617001", name: "Linux操作系统", credits: 15, grade: "A+", level: 6 }
+              ]
+            },
+            {
+              year: "2019",
+              semester: "第三年", 
+              courses: [
+                { code: "IN602001", name: "软件工程", credits: 15, grade: "A-", level: 6 },
+                { code: "IN628002", name: "程序设计 4", credits: 15, grade: "A+", level: 6 },
+                { code: "IN700001", name: "项目 1", credits: 15, grade: "A+", level: 7 },
+                { code: "IN705002", name: "数据库 3", credits: 15, grade: "A+", level: 7 },
+                { code: "IN711001", name: "算法与数据结构", credits: 15, grade: "A", level: 7 },
+                { code: "IN712001", name: "企业Web开发", credits: 15, grade: "A-", level: 7 },
+                { code: "IN719001", name: "系统管理", credits: 15, grade: "A", level: 7 },
+                { code: "IN720001", name: "虚拟基础设施管理", credits: 15, grade: "A", level: 7 }
+              ]
+            },
+            {
+              year: "2021",
+              semester: "第四年",
+              courses: [
+                { code: "IN608001", name: "中级应用开发概念", credits: 15, grade: "A+", level: 6 },
+                { code: "IN721001", name: "移动应用开发", credits: 15, grade: "A+", level: 7 },
+                { code: "IN730151", name: "三年级特殊主题", credits: 15, grade: "A+", level: 7 },
+                { code: "IN732001", name: "工作室 6", credits: 15, grade: "通过", level: 7 }
+              ]
+            }
+          ],
           awards: [
             {
               title: "学术卓越与最佳程序员奖",
