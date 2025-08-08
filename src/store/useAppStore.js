@@ -204,6 +204,18 @@ const contentConfig = {
     },
     education: {
       title: "Education",
+      subtitle: "academic background",
+      labels: {
+        academicRecords: "Academic Records",
+        totalCredits: "Total Credits",
+        gpa: "GPA",
+        totalCourses: "Total Courses",
+        capstoneProjects: "Capstone Projects",
+        academicAwards: "Academic Awards",
+        academicExcellenceAward: "Academic Excellence Award",
+        level: "Level",
+        credits: "Credits"
+      },
       degrees: [
         {
           id: "masters",
@@ -509,6 +521,18 @@ const contentConfig = {
     },
     education: {
       title: "教育背景",
+      subtitle: "学术背景",
+      labels: {
+        academicRecords: "学术记录",
+        totalCredits: "总学分",
+        gpa: "平均成绩",
+        totalCourses: "课程总数",
+        capstoneProjects: "毕业项目",
+        academicAwards: "学术奖项",
+        academicExcellenceAward: "学术优秀奖",
+        level: "等级",
+        credits: "学分"
+      },
       degrees: [
         {
           id: "masters",

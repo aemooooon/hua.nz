@@ -71,20 +71,20 @@ const EducationSection = ({ language }) => {
                     {/* 标题区域 - 骑在边框上 */}
                     <div
                         className="
-    -top-6 left-4 right-4 sm:left-8 sm:right-8 z-20
-    flex flex-col items-center justify-center gap-3
-    sm:absolute sm:flex-row sm:items-center sm:justify-between sm:gap-6
-  "
+                                    -top-3 left-4 right-4 sm:-top-6 sm:left-8 sm:right-8 z-20
+                                    flex flex-col items-center justify-center gap-1
+                                    sm:absolute sm:flex-row sm:items-center sm:justify-between sm:gap-6
+                                "
                     >
                         {/* 左边：学历名称 */}
                         <div className="flex-1">
                             <h3
                                 className="
-        text-center sm:text-left
-        text-lg sm:text-xl md:text-2xl lg:text-3xl font-semibold
-        bg-gradient-to-r from-emerald-400 via-blue-400 to-purple-400
-        bg-clip-text text-transparent leading-normal py-2 px-2
-      "
+                                        text-center sm:text-left
+                                        text-lg sm:text-xl md:text-2xl lg:text-3xl font-semibold
+                                        bg-gradient-to-r from-theme-gradient-from via-theme-gradient-via to-theme-gradient-to
+                                        bg-clip-text text-transparent leading-normal py-2 px-2
+                                    "
                             >
                                 {degree.degree.replace(" with Distinction", "")}
                             </h3>
@@ -94,15 +94,15 @@ const EducationSection = ({ language }) => {
                         <div className="mt-1 sm:mt-0 sm:ml-6">
                             <span
                                 className={`
-        inline-flex items-center gap-1
-        px-2 py-1 sm:px-3 sm:py-2
-        bg-gradient-to-r ${colors.badgeGradient}
-        text-white text-xs sm:text-sm font-bold
-        rounded-lg sm:rounded-xl
-        shadow-lg shadow-black/30
-        backdrop-blur-sm
-        transform hover:scale-105 transition-transform duration-200
-      `}
+                                        inline-flex items-center gap-1
+                                        px-2 py-1 sm:px-3 sm:py-2
+                                        bg-gradient-to-r ${colors.badgeGradient}
+                                        text-white text-xs sm:text-sm font-bold
+                                        rounded-lg sm:rounded-xl
+                                        shadow-lg shadow-black/30
+                                        backdrop-blur-sm
+                                        transform hover:scale-105 transition-transform duration-200
+                                    `}
                             >
                                 <span className="text-yellow-300">🏆</span>
                                 <span>With Distinction</span>
@@ -156,40 +156,39 @@ const EducationSection = ({ language }) => {
                                 {degree.courses && degree.courses.length > 0 && (
                                     <div className="mb-10">
                                         <h4
-                                            className="text-xl sm:text-2xl font-bold mb-6 flex items-center"
-                                            style={{ color: "#ffffff" }}
+                                            className="text-xl sm:text-2xl font-bold mb-6 flex items-center text-theme-text-primary"
                                         >
                                             <span
                                                 className={`w-2 h-6 bg-gradient-to-b ${colors.projectGradient} rounded-full mr-3`}
                                             ></span>
-                                            {language === "en" ? "Academic Records" : "学术记录"}
+                                            {educationData.labels.academicRecords}
                                         </h4>
 
                                         {/* 总体统计 */}
                                         <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-8">
-                                            <div className="bg-gray-800/80 rounded-xl p-4 border border-gray-600/30 text-center">
-                                                <div className="text-2xl font-bold text-white">
+                                            <div className="bg-theme-surface/80 rounded-xl p-4 border border-theme-border/30 text-center">
+                                                <div className="text-2xl font-bold text-theme-text-primary">
                                                     {degree.totalCredits}
                                                 </div>
-                                                <div className="text-sm text-gray-300">
-                                                    {language === "en" ? "Total Credits" : "总学分"}
+                                                <div className="text-sm text-theme-text-secondary">
+                                                    {educationData.labels.totalCredits}
                                                 </div>
                                             </div>
-                                            <div className="bg-gray-800/80 rounded-xl p-4 border border-gray-600/30 text-center">
-                                                <div className="text-2xl font-bold text-white">{degree.gpa}</div>
-                                                <div className="text-sm text-gray-300">
-                                                    {language === "en" ? "GPA" : "平均成绩"}
+                                            <div className="bg-theme-surface/80 rounded-xl p-4 border border-theme-border/30 text-center">
+                                                <div className="text-2xl font-bold text-theme-text-primary">{degree.gpa}</div>
+                                                <div className="text-sm text-theme-text-secondary">
+                                                    {educationData.labels.gpa}
                                                 </div>
                                             </div>
-                                            <div className="bg-gray-800/80 rounded-xl p-4 border border-gray-600/30 text-center col-span-2 md:col-span-1">
-                                                <div className="text-2xl font-bold text-white">
+                                            <div className="bg-theme-surface/80 rounded-xl p-4 border border-theme-border/30 text-center col-span-2 md:col-span-1">
+                                                <div className="text-2xl font-bold text-theme-text-primary">
                                                     {degree.courses.reduce(
                                                         (total, semester) => total + semester.courses.length,
                                                         0
                                                     )}
                                                 </div>
-                                                <div className="text-sm text-gray-300">
-                                                    {language === "en" ? "Total Courses" : "课程总数"}
+                                                <div className="text-sm text-theme-text-secondary">
+                                                    {educationData.labels.totalCourses}
                                                 </div>
                                             </div>
                                         </div>
@@ -199,9 +198,9 @@ const EducationSection = ({ language }) => {
                                             {degree.courses.map((semester, semesterIdx) => (
                                                 <div
                                                     key={semesterIdx}
-                                                    className="bg-gray-800/80 rounded-xl p-6 border border-gray-600/30"
+                                                    className="bg-theme-surface/80 rounded-xl p-6 border border-theme-border/30"
                                                 >
-                                                    <h5 className="text-lg font-bold mb-4 flex items-center text-white">
+                                                    <h5 className="text-lg font-bold mb-4 flex items-center text-theme-text-primary">
                                                         <span className="text-2xl mr-2">📚</span>
                                                         {semester.year} - {semester.semester}
                                                     </h5>
@@ -209,16 +208,16 @@ const EducationSection = ({ language }) => {
                                                         {semester.courses.map((course, courseIdx) => (
                                                             <div
                                                                 key={courseIdx}
-                                                                className="flex items-center justify-between bg-gray-900/60 border border-gray-600/30 rounded-lg p-3 hover:bg-gray-800/70 transition-colors"
+                                                                className="flex items-center justify-between bg-theme-surface/60 border border-theme-border/30 rounded-lg p-3 hover:bg-theme-surface/70 transition-colors"
                                                             >
                                                                 <div className="flex-1">
-                                                                    <div className="font-medium text-sm leading-tight text-white">
+                                                                    <div className="font-medium text-sm leading-tight text-theme-text-primary">
                                                                         {course.code} - {course.name}
                                                                     </div>
-                                                                    <div className="text-xs mt-1 text-gray-300">
+                                                                    <div className="text-xs mt-1 text-theme-text-secondary">
                                                                         {language === "en"
-                                                                            ? `Level ${course.level} • ${course.credits} Credits`
-                                                                            : `等级 ${course.level} • ${course.credits} 学分`}
+                                                                            ? `${educationData.labels.level} ${course.level} • ${course.credits} ${educationData.labels.credits}`
+                                                                            : `${educationData.labels.level} ${course.level} • ${course.credits} ${educationData.labels.credits}`}
                                                                     </div>
                                                                 </div>
                                                                 <div
@@ -247,11 +246,11 @@ const EducationSection = ({ language }) => {
 
                                 {/* Capstone Projects */}
                                 <div className="mb-10">
-                                    <h4 className="text-xl sm:text-2xl font-bold text-white mb-6 flex items-center">
+                                    <h4 className="text-xl sm:text-2xl font-bold text-theme-text-primary mb-6 flex items-center">
                                         <span
                                             className={`w-2 h-6 bg-gradient-to-b ${colors.projectGradient} rounded-full mr-3`}
                                         ></span>
-                                        {language === "en" ? "Capstone Projects" : "毕业项目"}
+                                        {educationData.labels.capstoneProjects}
                                     </h4>
                                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
                                         {degree.capstoneProjects &&
@@ -308,7 +307,7 @@ const EducationSection = ({ language }) => {
                                                         {/* Hover详情显示 */}
                                                         <div className="absolute inset-0 bg-black/95 opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center p-4">
                                                             <div className="text-center">
-                                                                <p className="text-gray-300 text-sm mb-3 leading-relaxed">
+                                                                <p className="text-theme-text-secondary text-sm mb-3 leading-relaxed">
                                                                     {project.description}
                                                                 </p>
                                                                 <div className="flex flex-wrap justify-center gap-2">
@@ -336,9 +335,9 @@ const EducationSection = ({ language }) => {
                                 {/* Awards部分 - 仅对bachelor显示，不使用单独卡片 */}
                                 {theme === "blue" && degree.awards && degree.awards.length > 0 && (
                                     <div>
-                                        <h4 className="text-xl sm:text-2xl font-bold text-white mb-6 flex items-center">
+                                        <h4 className="text-xl sm:text-2xl font-bold text-theme-text-primary mb-6 flex items-center">
                                             <span className="w-2 h-6 bg-gradient-to-b from-yellow-400 to-orange-600 rounded-full mr-3"></span>
-                                            {language === "en" ? "Academic Awards" : "学术奖项"}
+                                            {educationData.labels.academicAwards}
                                         </h4>
                                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                                             {degree.awards &&
@@ -388,13 +387,11 @@ const EducationSection = ({ language }) => {
                                                                     <h5 className="text-yellow-300 font-bold text-lg mb-2">
                                                                         {award.title}
                                                                     </h5>
-                                                                    <p className="text-gray-300 text-sm">
+                                                                    <p className="text-theme-text-secondary text-sm">
                                                                         {award.year}
                                                                     </p>
                                                                     <div className="mt-3 text-xs text-yellow-200">
-                                                                        {language === "en"
-                                                                            ? "Academic Excellence Award"
-                                                                            : "学术优秀奖"}
+                                                                        {educationData.labels.academicExcellenceAward}
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -424,7 +421,7 @@ const EducationSection = ({ language }) => {
                         Education
                     </ThemeTitle>
                     <ThemeSubtitle className="text-xl md:text-2xl font-light italic">
-                        {language === "en" ? "academic background" : "教育背景"}
+                        {educationData.subtitle}
                     </ThemeSubtitle>
                 </div>
             </div>

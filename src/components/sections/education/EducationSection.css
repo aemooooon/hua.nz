@@ -550,9 +550,7 @@
         transform: none !important;
     }
     
-    .project-image-container {
-        height: 2.5rem !important; /* 移动端更小 */
-    }
+    /* 移除了强制设置project-image-container高度的规则，让Tailwind类正常工作 */
     
     .flex-wrap .flex-1 {
         min-width: 100px;
