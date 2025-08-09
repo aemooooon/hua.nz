@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import PropTypes from 'prop-types';
-import ProjectMapModal from './ProjectMapModal';
-import ProjectModal from './ProjectModal';
+import ProjectGeoViewer from './ProjectGeoViewer';
+import ProjectDetail from './ProjectDetail';
 import GlowDivider from '../../ui/GlowDivider';
 import useAppStore from '../../../store/useAppStore';
 import { ThemeTitle, ThemeSubtitle, ThemeButton } from '../../ui/ThemeComponents';
@@ -110,15 +110,15 @@ const ProjectSection = ({ language }) => {
                     </h2>
                 </div>
 
-                {/* 右侧：Explore Map 按钮 - 与标题同一高度 */}
+                {/* 右侧：Explore Map 按钮 - 恢复原有圆形光晕样式 */}
                 <div className="flex items-center justify-center lg:justify-end mt-8 lg:mt-0">
                     <div 
-                        className="flex flex-col items-center justify-center cursor-pointer bg-gradient-to-br from-purple-600/20 to-blue-600/20 border border-purple-400/30 hover:border-purple-400/50 transition-all duration-300 hover:scale-105 explore-map-button rounded-full backdrop-blur-sm"
+                        className="flex flex-col items-center justify-center cursor-pointer bg-gradient-to-br from-theme-primary/20 to-theme-secondary/20 border border-theme-primary/30 hover:border-theme-primary/50 transition-all duration-300 hover:scale-105 explore-map-button rounded-full backdrop-blur-sm"
                         onClick={() => setIsMapOpen(true)}
                         title={language === 'en' ? 'Explore Projects on Interactive Map' : '在交互地图上探索项目'}
                     >
-                        <div className="text-3xl xl:text-4xl text-purple-400 mb-1 flex items-center justify-center">🗺️</div>
-                        <div className="text-xs xl:text-sm text-purple-400 font-medium text-center leading-tight px-2">
+                        <div className="text-3xl xl:text-4xl text-theme-primary mb-1 flex items-center justify-center">🗺️</div>
+                        <div className="text-xs xl:text-sm text-theme-primary font-medium text-center leading-tight px-2">
                             {language === 'en' ? 'Map View' : '地图'}
                         </div>
                     </div>
@@ -291,14 +291,14 @@ const ProjectSection = ({ language }) => {
             </div>
 
             {/* 地图模态框 */}
-            <ProjectMapModal 
-                isOpen={isMapOpen} 
-                onClose={() => setIsMapOpen(false)} 
+            <ProjectGeoViewer 
+                isOpen={isMapOpen}
+                onClose={() => setIsMapOpen(false)}
                 language={language}
             />
-
+            
             {/* 项目详情弹窗 */}
-            <ProjectModal
+            <ProjectDetail
                 project={selectedProject}
                 isOpen={!!selectedProject}
                 onClose={() => setSelectedProject(null)}

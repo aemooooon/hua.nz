@@ -29,7 +29,9 @@
 :root {
   /* 默认为 New Zealand Blue 主题 - 使用最亮颜色和纯黑背景 */
   --theme-primary: #00ffff;
+  --theme-primary-rgb: 0, 255, 255;
   --theme-secondary: #0080ff;
+  --theme-secondary-rgb: 0, 128, 255;
   --theme-accent: #4dd0e1;
   --theme-background: #000000;
   --theme-surface: rgba(255, 255, 255, 0.05);
@@ -46,6 +48,16 @@
   --theme-cursor: #00ffff;
   --theme-avatar-glow: #00ffff;
   --theme-success: #00ff00;
+  
+  /* 地图专用高对比度颜色 - Map UI High Contrast Colors */
+  --theme-map-button-bg: rgba(0, 0, 0, 0.92);
+  --theme-map-button-bg-hover: rgba(0, 0, 0, 0.98);
+  --theme-map-button-border: #00ffff;
+  --theme-map-button-border-hover: #ffffff;
+  --theme-map-button-text: #00ffff;
+  --theme-map-button-text-hover: #ffffff;
+  --theme-map-button-glow: 0, 255, 255;
+  --theme-map-button-glow-intense: 255, 255, 255;
   --theme-warning: #ffff00;
   --theme-error: #ff0000;
 }
@@ -1136,6 +1148,104 @@ body {
 }
 
 /* Golden Ratio Layout for About Section */
+.about-section {
+    display: grid;
+    grid-template-columns: 1fr 1.618fr; /* Golden ratio */
+    gap: 2rem;
+    align-items: center;
+}
+
+/* Map View Button Glow Effect */
+.explore-map-button {
+    animation: map-button-glow 3s ease-in-out infinite;
+    position: relative;
+}
+
+.explore-map-button:hover {
+    animation: map-button-glow-intense 1.5s ease-in-out infinite;
+}
+
+@keyframes map-button-glow {
+    0%, 100% {
+        box-shadow: 
+            0 0 15px var(--theme-glow),
+            0 0 25px rgba(var(--theme-primary-rgb, 0, 255, 255), 0.3),
+            0 0 35px rgba(var(--theme-primary-rgb, 0, 255, 255), 0.1);
+        filter: 
+            drop-shadow(0 0 8px var(--theme-avatar-glow))
+            drop-shadow(0 0 15px rgba(var(--theme-primary-rgb, 0, 255, 255), 0.4));
+    }
+    50% {
+        box-shadow: 
+            0 0 20px var(--theme-glow),
+            0 0 35px rgba(var(--theme-primary-rgb, 0, 255, 255), 0.5),
+            0 0 50px rgba(var(--theme-primary-rgb, 0, 255, 255), 0.2);
+        filter: 
+            drop-shadow(0 0 12px var(--theme-avatar-glow))
+            drop-shadow(0 0 20px rgba(var(--theme-primary-rgb, 0, 255, 255), 0.6));
+    }
+}
+
+@keyframes map-button-glow-intense {
+    0%, 100% {
+        box-shadow: 
+            0 0 20px var(--theme-glow),
+            0 0 35px rgba(var(--theme-primary-rgb, 0, 255, 255), 0.5),
+            0 0 50px rgba(var(--theme-primary-rgb, 0, 255, 255), 0.3);
+        filter: 
+            drop-shadow(0 0 12px var(--theme-avatar-glow))
+            drop-shadow(0 0 20px rgba(var(--theme-primary-rgb, 0, 255, 255), 0.6));
+    }
+    50% {
+        box-shadow: 
+            0 0 25px var(--theme-glow),
+            0 0 45px rgba(var(--theme-primary-rgb, 0, 255, 255), 0.7),
+            0 0 65px rgba(var(--theme-primary-rgb, 0, 255, 255), 0.4);
+        filter: 
+            drop-shadow(0 0 15px var(--theme-avatar-glow))
+            drop-shadow(0 0 25px rgba(var(--theme-primary-rgb, 0, 255, 255), 0.8));
+    }
+}
+
+/* Marker Pulse Animation - 标记脉冲动画 */
+@keyframes marker-pulse {
+    0%, 100% {
+        opacity: 0.6;
+        transform: scale(1);
+    }
+    50% {
+        opacity: 0.3;
+        transform: scale(1.2);
+    }
+}
+
+/* Cluster Pulse Animation - 聚类脉冲动画 */
+@keyframes cluster-pulse {
+    0%, 100% {
+        opacity: 0.7;
+        transform: scale(1);
+    }
+    50% {
+        opacity: 0.4;
+        transform: scale(1.15);
+    }
+}
+
+/* Cluster Rotate Animation - 聚类旋转动画 */
+@keyframes cluster-rotate {
+    0% {
+        transform: rotate(0deg);
+        opacity: 0.3;
+    }
+    50% {
+        opacity: 0.6;
+    }
+    100% {
+        transform: rotate(360deg);
+        opacity: 0.3;
+    }
+}
+
 .golden-ratio-container {
     /* 确保黄金分割比例布局 */
 }

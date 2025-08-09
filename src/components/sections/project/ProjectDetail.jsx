@@ -33,13 +33,6 @@ const Calendar = ({ className = "w-4 h-4" }) => (
 );
 Calendar.propTypes = { className: PropTypes.string };
 
-const Users = ({ className = "w-4 h-4" }) => (
-  <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a4 4 0 11-8 0 4 4 0 018 0z" />
-  </svg>
-);
-Users.propTypes = { className: PropTypes.string };
-
 const Code = ({ className = "w-4 h-4" }) => (
   <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
@@ -54,7 +47,7 @@ const BarChart3 = ({ className = "w-4 h-4" }) => (
 );
 BarChart3.propTypes = { className: PropTypes.string };
 
-const ProjectModal = ({ project, isOpen, onClose }) => {
+const ProjectDetail = ({ project = null, isOpen, onClose }) => {
   const { language } = useAppStore();
   const [activeImageIndex, setActiveImageIndex] = useState(0);
 
@@ -161,7 +154,7 @@ const ProjectModal = ({ project, isOpen, onClose }) => {
               <div className="text-green-300 text-sm capitalize mb-1">
                 {key.replace(/([A-Z])/g, ' $1').trim()}
               </div>
-              <div className="text-white font-semibold">{value}</div>
+              <div className="text-white text-2xl font-bold">{value}</div>
             </div>
           ))}
         </div>
@@ -174,15 +167,14 @@ const ProjectModal = ({ project, isOpen, onClose }) => {
 
     return (
       <div className="mb-6">
-        <div className="flex items-center gap-2 mb-3">
-          <Users className="w-5 h-5 text-purple-400" />
+        <div className="flex items-center gap-2 mb-4">
           <h3 className="text-lg font-semibold text-white">
-            {language === 'en' ? 'Project Portfolio' : '项目组合'}
+            {language === 'en' ? 'Sub Projects' : '子项目'}
           </h3>
         </div>
         <div className="space-y-4">
           {project.projects.map((subProject, index) => (
-            <div key={index} className="bg-gradient-to-r from-purple-500/10 to-pink-500/10 p-4 rounded-lg border border-purple-500/20">
+            <div key={index} className="bg-gradient-to-br from-purple-500/10 to-pink-500/10 p-4 rounded-lg border border-purple-500/20">
               <div className="flex items-start justify-between mb-2">
                 <h4 className="text-white font-semibold">
                   {language === 'en' ? subProject.name : (subProject.nameZh || subProject.name)}
@@ -252,7 +244,7 @@ const ProjectModal = ({ project, isOpen, onClose }) => {
                       alt={project.title}
                       className="w-full h-64 md:h-80 lg:h-96 xl:h-[500px] object-cover rounded-xl shadow-2xl"
                       onError={(e) => {
-                        e.target.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjI0MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iNDAwIiBoZWlnaHQ9IjI0MCIgZmlsbD0iIzMzNCI+PC9yZWN0Pjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBmaWxsPSJ3aGl0ZSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iIGZvbnQtZmFtaWx5PSJzeXN0ZW0tdWkiIGZvbnQtc2l6ZT0iMThweCIgb3BhY2l0eT0iMC41Ij7wn5q5IFByb2plY3QgSW1hZ2U8L3RleHQ+PC9zdmc+';
+                        e.target.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjI0MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iNDAwIiBoZWlnaHQ9IjI0MCIgZmlsbD0iIzMzNCI+PC9yZWN0Pjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBmaWxsPSJ3aGl0ZSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iIGZvbnQtZmFtaWx5PSJzeXN0ZW0tdWkiIGZvbnQtc2l6ZT0iMTZweCI+SW1hZ2UgTm90IEZvdW5kPC90ZXh0Pjwvc3ZnPg==';
                       }}
                     />
                     {hasMultipleImages && (
@@ -290,7 +282,7 @@ const ProjectModal = ({ project, isOpen, onClose }) => {
                             alt={`${project.title} ${index + 1}`}
                             className="w-full h-full object-cover"
                             onError={(e) => {
-                              e.target.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjQiIGhlaWdodD0iNDgiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9IjY0IiBoZWlnaHQ9IjQ4IiBmaWxsPSIjMzMzIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZpbGw9IndoaXRlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkeT0iLjNlbSIgZm9udC1mYW1pbHk9InN5c3RlbS11aSIgZm9udC1zaXplPSIxMHB4IiBvcGFjaXR5PSIwLjUiPvCfmoU8L3RleHQ+PC9zdmc+';
+                              e.target.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjQiIGhlaWdodD0iNDgiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9IjY0IiBoZWlnaHQ9IjQ4IiBmaWxsPSIjMzMzIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZpbGw9IndoaXRlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkeT0iLjNlbSIgZm9udC1mYW1pbHk9InN5c3RlbS11aSIgZm9udC1zaXplPSIxMHB4Ij5OL0E8L3RleHQ+PC9zdmc+';
                             }}
                           />
                         </button>
@@ -351,7 +343,7 @@ const ProjectModal = ({ project, isOpen, onClose }) => {
   );
 };
 
-ProjectModal.propTypes = {
+ProjectDetail.propTypes = {
   project: PropTypes.shape({
     title: PropTypes.string,
     name: PropTypes.string,
@@ -368,8 +360,4 @@ ProjectModal.propTypes = {
   onClose: PropTypes.func.isRequired
 };
 
-ProjectModal.defaultProps = {
-  project: null
-};
-
-export default ProjectModal;
+export default ProjectDetail;

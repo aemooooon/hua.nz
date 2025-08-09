@@ -81,6 +81,15 @@ export default {
           success: 'var(--theme-success)',
           warning: 'var(--theme-warning)',
           error: 'var(--theme-error)',
+          // 地图专用高对比度颜色
+          'map-button': {
+            bg: 'var(--theme-map-button-bg)',
+            'bg-hover': 'var(--theme-map-button-bg-hover)',
+            border: 'var(--theme-map-button-border)',
+            'border-hover': 'var(--theme-map-button-border-hover)',
+            text: 'var(--theme-map-button-text)',
+            'text-hover': 'var(--theme-map-button-text-hover)',
+          },
         },
 
         // 黄金分割比例相关的颜色和尺寸

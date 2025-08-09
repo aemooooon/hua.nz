@@ -115,6 +115,14 @@ export const useTheme = () => {
     // 设置CSS变量
     Object.entries(themeConfig.colors).forEach(([key, value]) => {
       root.style.setProperty(`--theme-${key}`, value);
+      
+      // 如果是颜色值，也设置对应的RGB变量
+      if (key === 'primary' || key === 'secondary') {
+        const rgbValue = hexToRgb(value);
+        if (rgbValue) {
+          root.style.setProperty(`--theme-${key}-rgb`, `${rgbValue.r}, ${rgbValue.g}, ${rgbValue.b}`);
+        }
+      }
     });
 
     // 设置主题类名
@@ -123,6 +131,16 @@ export const useTheme = () => {
     
     // 更新store
     setTheme(themeKey);
+  };
+
+  // 辅助函数：将十六进制颜色转换为RGB
+  const hexToRgb = (hex) => {
+    const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+    return result ? {
+      r: parseInt(result[1], 16),
+      g: parseInt(result[2], 16),
+      b: parseInt(result[3], 16)
+    } : null;
   };
 
   // 切换主题

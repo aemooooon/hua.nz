@@ -5,7 +5,7 @@ import 'leaflet/dist/leaflet.css';
 import 'leaflet.markercluster/dist/MarkerCluster.css';
 import 'leaflet.markercluster/dist/MarkerCluster.Default.css';
 import 'leaflet.markercluster/dist/leaflet.markercluster';
-import './ProjectMapModal.css';
+import './ProjectGeoViewer.css';
 import useAppStore from '../../../store/useAppStore';
 import { useTheme } from '../../../hooks/useTheme';
 
@@ -17,11 +17,12 @@ L.Icon.Default.mergeOptions({
   shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
 });
 
-const ProjectMapModal = ({ isOpen, onClose, language = 'en' }) => {
+const ProjectGeoViewer = ({ isOpen, onClose, language = 'en' }) => {
   const mapRef = useRef(null);
   const mapInstanceRef = useRef(null);
   const markersRef = useRef([]);
   const clusterGroupRef = useRef(null);
+  const customControlsRef = useRef(null);
   const { getThemeColors } = useTheme();
   const themeColors = getThemeColors();
   
@@ -72,73 +73,277 @@ const ProjectMapModal = ({ isOpen, onClose, language = 'en' }) => {
     });
   }, []);
 
-  // 创建深色自定义marker图标 - 简化版本避免位移问题
-  const createCustomMarkerIcon = useCallback((color) => {
+  // 创建美化的自定义marker图标 - 使用地图高对比度风格
+  const createCustomMarkerIcon = useCallback(() => {
     return L.divIcon({
       className: 'custom-marker-icon',
-      html: `<div style="
-        width: 28px; 
-        height: 28px; 
-        background: ${color}; 
-        border: 3px solid #1f2937; 
-        border-radius: 50%; 
-        box-shadow: 0 4px 12px rgba(0,0,0,0.4), inset 0 2px 4px rgba(255,255,255,0.2);
+      html: `<div class="marker-container" style="
+        width: 32px; 
+        height: 32px; 
+        position: relative;
         display: flex;
         align-items: center;
         justify-content: center;
         cursor: pointer;
+        filter: drop-shadow(0 0 8px var(--theme-map-button-border)) drop-shadow(0 0 12px rgba(var(--theme-map-button-glow), 0.5));
       ">
-        <div style="
-          width: 8px; 
-          height: 8px; 
-          background: #1f2937; 
+        <div class="marker-glow" style="
+          position: absolute;
+          width: 40px;
+          height: 40px;
+          background: radial-gradient(circle, rgba(var(--theme-map-button-glow), 0.4) 0%, rgba(var(--theme-map-button-glow), 0.2) 50%, transparent 70%);
           border-radius: 50%;
-          box-shadow: 0 1px 2px rgba(0,0,0,0.3);
+          animation: marker-pulse 2s ease-in-out infinite;
         "></div>
+        <div class="marker-core" style="
+          width: 24px; 
+          height: 24px; 
+          background: var(--theme-map-button-bg); 
+          border: 2px solid var(--theme-map-button-border); 
+          border-radius: 50%; 
+          box-shadow: 
+            0 0 0 2px rgba(var(--theme-map-button-glow), 0.8),
+            0 4px 12px rgba(0,0,0,0.3),
+            inset 0 1px 0 rgba(255,255,255,0.4);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          position: relative;
+          z-index: 2;
+          backdrop-filter: blur(4px);
+          -webkit-backdrop-filter: blur(4px);
+        ">
+          <div style="
+            width: 6px; 
+            height: 6px; 
+            background: var(--theme-map-button-text); 
+            border-radius: 50%;
+            box-shadow: 0 0 4px rgba(var(--theme-map-button-glow), 0.8);
+          "></div>
+        </div>
       </div>`,
-      iconSize: [34, 34],
-      iconAnchor: [17, 17],    // 保持中心锚定
-      popupAnchor: [0, -20],   // 弹窗在上方
+      iconSize: [40, 40],
+      iconAnchor: [20, 20],    // 保持中心锚定
+      popupAnchor: [0, -25],   // 弹窗在上方
     });
   }, []);
 
-  // 创建深色自定义cluster图标
+  // 创建美化的自定义cluster图标 - 使用地图高对比度风格
   const createCustomClusterIcon = useCallback((cluster) => {
     const childCount = cluster.getChildCount();
-    let size = 40;
-    let fontSize = 14;
+    let size = 50;
+    let fontSize = 16;
+    let glowSize = 70;
     
     if (childCount >= 100) {
-      size = 60;
-      fontSize = 16;
+      size = 70;
+      fontSize = 20;
+      glowSize = 90;
     } else if (childCount >= 10) {
-      size = 50;
-      fontSize = 15;
+      size = 60;
+      fontSize = 18;
+      glowSize = 80;
     }
     
     return L.divIcon({
-      html: `<div style="
-        width: ${size}px;
-        height: ${size}px;
-        background: linear-gradient(135deg, ${themeColors.primary} 0%, #1f2937 100%);
-        border: 4px solid #1f2937;
-        border-radius: 50%;
-        color: white;
-        font-weight: bold;
+      html: `<div class="cluster-container" style="
+        width: ${glowSize}px;
+        height: ${glowSize}px;
+        position: relative;
         display: flex;
-        justify-content: center;
         align-items: center;
-        box-shadow: 0 6px 20px rgba(0,0,0,0.4), inset 0 2px 6px rgba(255,255,255,0.2);
-        font-size: ${fontSize}px;
-        text-shadow: 0 1px 2px rgba(0,0,0,0.7);
+        justify-content: center;
         cursor: pointer;
-        transition: all 0.3s ease;
-      " onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">${childCount}</div>`,
+        filter: drop-shadow(0 0 12px var(--theme-map-button-border)) drop-shadow(0 0 20px rgba(var(--theme-map-button-glow), 0.6));
+      ">
+        <div class="cluster-glow" style="
+          position: absolute;
+          width: ${glowSize}px;
+          height: ${glowSize}px;
+          background: radial-gradient(circle, rgba(var(--theme-map-button-glow), 0.3) 0%, rgba(var(--theme-map-button-glow), 0.15) 40%, transparent 70%);
+          border-radius: 50%;
+          animation: cluster-pulse 3s ease-in-out infinite;
+        "></div>
+        <div class="cluster-ring" style="
+          position: absolute;
+          width: ${size + 10}px;
+          height: ${size + 10}px;
+          border: 2px solid rgba(var(--theme-map-button-glow), 0.6);
+          border-radius: 50%;
+          animation: cluster-rotate 8s linear infinite;
+        "></div>
+        <div class="cluster-core" style="
+          width: ${size}px;
+          height: ${size}px;
+          background: var(--theme-map-button-bg);
+          border: 3px solid var(--theme-map-button-border);
+          border-radius: 50%;
+          color: var(--theme-map-button-text);
+          font-weight: 700;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          box-shadow: 
+            0 0 0 3px rgba(var(--theme-map-button-glow), 0.8),
+            0 8px 25px rgba(0,0,0,0.4),
+            inset 0 2px 0 rgba(255,255,255,0.3),
+            inset 0 -2px 0 rgba(0,0,0,0.2);
+          font-size: ${fontSize}px;
+          text-shadow: 0 0 8px rgba(var(--theme-map-button-glow), 0.8);
+          position: relative;
+          z-index: 2;
+          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+          backdrop-filter: blur(8px);
+          -webkit-backdrop-filter: blur(8px);
+        " onmouseover="this.style.transform='scale(1.1) rotate(5deg)'; this.style.color='var(--theme-map-button-text-hover)'; this.style.borderColor='var(--theme-map-button-border-hover)'; this.style.boxShadow='0 0 0 3px rgba(var(--theme-map-button-glow-intense), 1), 0 12px 35px rgba(0,0,0,0.5), inset 0 2px 0 rgba(255,255,255,0.4)'" 
+           onmouseout="this.style.transform='scale(1) rotate(0deg)'; this.style.color='var(--theme-map-button-text)'; this.style.borderColor='var(--theme-map-button-border)'; this.style.boxShadow='0 0 0 3px rgba(var(--theme-map-button-glow), 0.8), 0 8px 25px rgba(0,0,0,0.4), inset 0 2px 0 rgba(255,255,255,0.3), inset 0 -2px 0 rgba(0,0,0,0.2)'">${childCount}</div>
+      </div>`,
       className: 'custom-cluster-icon',
-      iconSize: [size + 8, size + 8],
-      iconAnchor: [(size + 8) / 2, (size + 8) / 2],
+      iconSize: [glowSize, glowSize],
+      iconAnchor: [glowSize / 2, glowSize / 2],
     });
-  }, [themeColors]);
+  }, []);
+
+  // 创建自定义地图控件
+  const createCustomControls = useCallback(() => {
+    if (!mapInstanceRef.current) return;
+
+    // 移除默认的缩放控件
+    mapInstanceRef.current.zoomControl.remove();
+
+    // 创建自定义控件容器
+    const CustomControl = L.Control.extend({
+      onAdd: function(map) {
+        const container = L.DomUtil.create('div', 'custom-map-controls');
+        
+        container.innerHTML = `
+          <div class="control-group">
+            <button class="control-btn zoom-in" title="${language === 'en' ? 'Zoom in' : '放大'}">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                <line x1="11" y1="8" x2="11" y2="14"></line>
+                <line x1="8" y1="11" x2="14" y2="11"></line>
+              </svg>
+            </button>
+            <button class="control-btn zoom-out" title="${language === 'en' ? 'Zoom out' : '缩小'}">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                <line x1="8" y1="11" x2="14" y2="11"></line>
+              </svg>
+            </button>
+            <button class="control-btn reset-view" title="${language === 'en' ? 'Reset to default view' : '重置到默认视图'}">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"></path>
+                <path d="M21 3v5h-5"></path>
+                <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"></path>
+                <path d="M3 21v-5h5"></path>
+              </svg>
+            </button>
+            <button class="control-btn locate-user" title="${language === 'en' ? 'Locate me' : '定位我的位置'}">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polygon points="3 11 22 2 13 21 11 13 3 11"></polygon>
+              </svg>
+            </button>
+          </div>
+        `;
+
+        // 阻止地图事件冒泡
+        L.DomEvent.disableClickPropagation(container);
+        L.DomEvent.disableScrollPropagation(container);
+
+        // 绑定事件
+        const zoomInBtn = container.querySelector('.zoom-in');
+        const zoomOutBtn = container.querySelector('.zoom-out');
+        const resetViewBtn = container.querySelector('.reset-view');
+        const locateUserBtn = container.querySelector('.locate-user');
+
+        zoomInBtn.addEventListener('click', () => map.zoomIn());
+        zoomOutBtn.addEventListener('click', () => map.zoomOut());
+        
+        resetViewBtn.addEventListener('click', () => {
+          // 重置到默认视图
+          if (projects.length > 0) {
+            if (projects.length === 1) {
+              map.setView(projects[0].coordinates, 10);
+            } else {
+              const bounds = L.latLngBounds(projects.map(p => p.coordinates));
+              map.fitBounds(bounds, { padding: [50, 50] });
+            }
+          } else {
+            const centroid = calculateCentroid(projects);
+            map.setView(centroid, 3);
+          }
+        });
+
+        locateUserBtn.addEventListener('click', () => {
+          // 定位用户位置
+          if (navigator.geolocation) {
+            locateUserBtn.innerHTML = `
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="3"></circle>
+                <circle cx="12" cy="12" r="8"></circle>
+              </svg>
+            `;
+            
+            navigator.geolocation.getCurrentPosition(
+              (position) => {
+                const { latitude, longitude } = position.coords;
+                map.setView([latitude, longitude], 15);
+                
+                // 添加用户位置标记
+                const userMarker = L.marker([latitude, longitude], {
+                  icon: L.divIcon({
+                    className: 'user-location-marker',
+                    html: `<div style="
+                      width: 20px; 
+                      height: 20px; 
+                      background: #3b82f6; 
+                      border: 3px solid white; 
+                      border-radius: 50%; 
+                      box-shadow: 0 2px 8px rgba(59,130,246,0.4);
+                    "></div>`,
+                    iconSize: [26, 26],
+                    iconAnchor: [13, 13],
+                  })
+                }).addTo(map);
+
+                // 3秒后移除用户位置标记
+                setTimeout(() => {
+                  map.removeLayer(userMarker);
+                }, 3000);
+
+                // 恢复按钮图标
+                locateUserBtn.innerHTML = `
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polygon points="3 11 22 2 13 21 11 13 3 11"></polygon>
+                  </svg>
+                `;
+              },
+              (error) => {
+                console.warn('定位失败:', error);
+                // 恢复按钮图标
+                locateUserBtn.innerHTML = `
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polygon points="3 11 22 2 13 21 11 13 3 11"></polygon>
+                  </svg>
+                `;
+              }
+            );
+          }
+        });
+
+        return container;
+      }
+    });
+
+    // 添加控件到地图右下角
+    const customControl = new CustomControl({ position: 'bottomright' });
+    customControl.addTo(mapInstanceRef.current);
+    customControlsRef.current = customControl;
+
+  }, [language, projects, calculateCentroid]);
 
   // 创建项目弹窗内容（深色主题）
   const createPopupContent = useCallback((project) => {
@@ -240,6 +445,9 @@ const ProjectMapModal = ({ isOpen, onClose, language = 'en' }) => {
         maxZoom: 18,
       }).addTo(mapInstanceRef.current);
 
+      // 创建自定义控件
+      createCustomControls();
+
       // 创建聚类组 - 多层级聚类配置
       clusterGroupRef.current = L.markerClusterGroup({
         iconCreateFunction: createCustomClusterIcon,
@@ -263,19 +471,18 @@ const ProjectMapModal = ({ isOpen, onClose, language = 'en' }) => {
 
       // 添加项目标记
       projects.forEach((project) => {
-        const color = typeColors[project.type] || typeColors.project;
-        const customIcon = createCustomMarkerIcon(color);
+        const customIcon = createCustomMarkerIcon();
         
         const marker = L.marker(project.coordinates, { 
           icon: customIcon,
           title: getBilingualText(project.title) || getBilingualText(project.name) // 添加标题提示
         });
         
-        // 绑定弹窗 - 添加边界检测
+        // 绑定弹窗 - 调整为2倍宽度
         const popupContent = createPopupContent(project);
         marker.bindPopup(popupContent, {
-          maxWidth: 400,
-          minWidth: 280,
+          maxWidth: 800,
+          minWidth: 560,
           className: 'custom-popup dark-popup',
           closeButton: true,
           autoClose: false,
@@ -455,7 +662,7 @@ const ProjectMapModal = ({ isOpen, onClose, language = 'en' }) => {
         clusterGroupRef.current = null;
       }
     };
-  }, [isOpen, projects, typeColors, createCustomClusterIcon, createCustomMarkerIcon, createPopupContent, calculateCentroid, flyToMarker, themeColors, getBilingualText]);
+  }, [isOpen, projects, typeColors, createCustomClusterIcon, createCustomMarkerIcon, createPopupContent, calculateCentroid, flyToMarker, themeColors, getBilingualText, createCustomControls]);
 
   // ESC键关闭
   useEffect(() => {
@@ -488,14 +695,14 @@ const ProjectMapModal = ({ isOpen, onClose, language = 'en' }) => {
       
       {/* 地图容器 */}
       <div className="relative w-[95vw] h-[95vh] bg-theme-surface rounded-lg overflow-hidden shadow-2xl">
-        {/* 右上角关闭按钮 - 深色主题 */}
+        {/* 右上角关闭按钮 - 地图专用高对比度设计 */}
         <button
           onClick={onClose}
-          className="absolute top-6 right-6 z-20 group bg-gray-900 hover:bg-theme-primary border-2 border-gray-700 hover:border-theme-primary rounded-full p-4 transition-all duration-300 hover:scale-110 shadow-xl hover:shadow-theme-primary/25"
+          className="absolute top-6 right-6 z-20 group map-close-button"
           aria-label={language === 'en' ? 'Close map' : '关闭地图'}
         >
           <svg 
-            className="w-8 h-8 text-gray-300 group-hover:text-white transition-colors" 
+            className="w-8 h-8 text-theme-map-button-text group-hover:text-theme-map-button-text-hover transition-colors duration-300" 
             fill="none" 
             stroke="currentColor" 
             viewBox="0 0 24 24"
@@ -516,29 +723,32 @@ const ProjectMapModal = ({ isOpen, onClose, language = 'en' }) => {
           style={{ zIndex: 1 }}
         />
 
-        {/* 左下角标题 - 深色主题 */}
-        <div className="absolute bottom-4 left-4 z-10 bg-gray-900/95 backdrop-blur-sm border border-gray-700 rounded-lg p-4 shadow-xl">
-          <h2 className="text-xl font-bold text-white">
+        {/* 左下角标题 - 使用地图高对比度样式 */}
+        <div className="absolute bottom-4 left-4 z-10 map-info-panel">
+          <h2 className="text-lg font-bold">
             Project Geo Distribution
           </h2>
-          <p className="text-sm text-gray-300 mt-1">
+          <p className="text-xs mt-1 opacity-80">
             {language === 'en' ? 'Click clusters to expand' : '点击聚类以展开'}
           </p>
         </div>
 
-        {/* 图例 - 深色主题 */}
-        <div className="absolute bottom-4 right-4 bg-gray-900/95 backdrop-blur-sm border border-gray-700 rounded-lg p-3 shadow-xl">
-          <h4 className="text-sm font-semibold text-white mb-2">
+        {/* 图例 - 使用地图高对比度样式 */}
+        <div className="absolute bottom-4 right-4 map-legend-panel">
+          <h4 className="text-sm font-semibold mb-2">
             {language === 'en' ? 'Categories' : '项目类别'}
           </h4>
           <div className="space-y-1">
             {Object.entries(typeColors).map(([type, color]) => (
               <div key={type} className="flex items-center gap-2">
                 <div 
-                  className="w-3 h-3 rounded-full border-2 border-gray-800 shadow-sm"
-                  style={{ backgroundColor: color }}
+                  className="w-3 h-3 rounded-full border-2 shadow-sm"
+                  style={{ 
+                    backgroundColor: color,
+                    borderColor: 'var(--theme-map-button-border)'
+                  }}
                 />
-                <span className="text-xs text-gray-300 capitalize">{type}</span>
+                <span className="text-xs capitalize opacity-90">{type}</span>
               </div>
             ))}
           </div>
@@ -548,10 +758,10 @@ const ProjectMapModal = ({ isOpen, onClose, language = 'en' }) => {
   );
 };
 
-ProjectMapModal.propTypes = {
+ProjectGeoViewer.propTypes = {
   isOpen: PropTypes.bool.isRequired,
   onClose: PropTypes.func.isRequired,
   language: PropTypes.string
 };
 
-export default ProjectMapModal;
+export default ProjectGeoViewer;

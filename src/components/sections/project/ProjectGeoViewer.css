@@ -1,0 +1,478 @@
+/* Custom styles for ProjectGeoViewer */
+
+/* 深色弹窗样式 */
+.dark-popup .leaflet-popup-content-wrapper {
+  padding: 0 !important;
+  border-radius: 12px !important;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.8), 0 8px 16px rgba(0, 0, 0, 0.4) !important;
+  background: transparent !important;
+  border: 1px solid #374151 !important;
+}
+
+.dark-popup .leaflet-popup-content {
+  margin: 0 !important;
+  width: auto !important;
+  min-width: 280px !important;
+  max-width: 380px !important;
+}
+
+.dark-popup .leaflet-popup-tip {
+  background: #1f2937 !important;
+  border: 1px solid #374151 !important;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4) !important;
+}
+
+.dark-popup .leaflet-popup-close-button {
+  color: #9ca3af !important;
+  font-size: 20px !important;
+  font-weight: bold !important;
+  padding: 8px !important;
+  right: 8px !important;
+  top: 8px !important;
+  width: 32px !important;
+  height: 32px !important;
+  background: rgba(31, 41, 55, 0.9) !important;
+  border-radius: 50% !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  transition: all 0.3s ease !important;
+  border: 1px solid #4b5563 !important;
+  -webkit-backdrop-filter: blur(8px) !important;
+  backdrop-filter: blur(8px) !important;
+}
+
+.dark-popup .leaflet-popup-close-button:hover {
+  color: #f9fafb !important;
+  background: rgba(55, 65, 81, 0.95) !important;
+  border-color: #6b7280 !important;
+  transform: scale(1.1) !important;
+}
+
+/* 深色聚类样式 */
+.custom-cluster-icon {
+  background: transparent !important;
+  border: none !important;
+}
+
+.marker-cluster {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.marker-cluster:hover {
+  transform: scale(1.05) !important;
+  filter: brightness(1.1) !important;
+}
+
+/* 自定义标记样式 - 移除CSS悬停效果，由JavaScript控制 */
+.custom-marker-icon {
+  background: transparent !important;
+  border: none !important;
+  cursor: pointer !important;
+  z-index: 1000 !important;
+}
+
+/* 移除CSS悬停效果 - 完全由JavaScript控制
+.custom-marker-icon:hover {
+} */
+
+/* 确保标记点击区域正确 */
+.custom-marker-icon > div {
+  pointer-events: all !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+}
+
+/* 标记在聚类展开时的样式 */
+.marker-cluster-spiderfy .custom-marker-icon {
+  z-index: 1002 !important;
+}
+
+/* 让Leaflet完全控制位置 */
+.leaflet-marker-icon.custom-marker-icon {
+  /* 无额外样式 */
+}
+
+/* 聚类展开动画 */
+.marker-cluster-spiderfy {
+  transition: all 0.4s ease-in-out !important;
+}
+
+/* 聚类线条样式 */
+.leaflet-cluster-anim .leaflet-marker-icon,
+.leaflet-cluster-anim .leaflet-marker-shadow {
+  transition: all 0.3s ease-out !important;
+}
+
+/* 地图控件深色主题 */
+.leaflet-control-zoom a {
+  background: rgba(31, 41, 55, 0.9) !important;
+  border-color: #4b5563 !important;
+  color: #e5e7eb !important;
+}
+
+.leaflet-control-zoom a:hover {
+  background: rgba(55, 65, 81, 0.95) !important;
+  border-color: #6b7280 !important;
+  color: #f9fafb !important;
+}
+
+.leaflet-control-attribution {
+  background: rgba(31, 41, 55, 0.8) !important;
+  color: #9ca3af !important;
+  border-color: #4b5563 !important;
+}
+
+/* 响应式调整 */
+@media (max-width: 768px) {
+  .dark-popup .leaflet-popup-content-wrapper {
+    max-width: 90vw !important;
+  }
+  
+  .dark-popup .leaflet-popup-content {
+    max-width: 90vw !important;
+    min-width: 250px !important;
+  }
+}
+
+/* Tooltip 样式 */
+.marker-tooltip {
+  background: rgba(31, 41, 55, 0.95) !important;
+  border: 1px solid #4b5563 !important;
+  border-radius: 6px !important;
+  color: #f9fafb !important;
+  font-size: 12px !important;
+  font-weight: 500 !important;
+  padding: 4px 8px !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4) !important;
+  -webkit-backdrop-filter: blur(8px) !important;
+  backdrop-filter: blur(8px) !important;
+}
+
+.marker-tooltip::before {
+  border-top-color: rgba(31, 41, 55, 0.95) !important;
+}
+
+/* 自定义地图控件样式 - 使用主题色 */
+.custom-map-controls {
+  background: var(--theme-surface) !important;
+  border: 1px solid var(--theme-border) !important;
+  border-radius: 8px !important;
+  padding: 8px !important;
+  box-shadow: 0 8px 25px var(--theme-shadow) !important;
+  -webkit-backdrop-filter: blur(12px) !important;
+  backdrop-filter: blur(12px) !important;
+}
+
+.control-group {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 6px !important;
+}
+
+.control-btn {
+  width: 36px !important;
+  height: 36px !important;
+  background: var(--theme-map-button-bg) !important;
+  border: 2px solid var(--theme-map-button-border) !important;
+  border-radius: 6px !important;
+  color: var(--theme-map-button-text) !important;
+  cursor: pointer !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  -webkit-backdrop-filter: blur(10px) !important;
+  backdrop-filter: blur(10px) !important;
+  text-shadow: 0 0 6px rgba(var(--theme-map-button-glow), 0.6) !important;
+  box-shadow: 
+    0 0 8px rgba(var(--theme-map-button-glow), 0.3),
+    0 3px 12px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1) !important;
+}
+
+.control-btn:hover {
+  background: var(--theme-map-button-bg-hover) !important;
+  border-color: var(--theme-map-button-border-hover) !important;
+  color: var(--theme-map-button-text-hover) !important;
+  transform: scale(1.1) !important;
+  text-shadow: 0 0 10px rgba(var(--theme-map-button-glow-intense), 1) !important;
+  box-shadow: 
+    0 0 15px rgba(var(--theme-map-button-glow-intense), 0.6),
+    0 0 25px rgba(var(--theme-map-button-glow), 0.4),
+    0 6px 20px rgba(0, 0, 0, 0.6),
+    inset 0 2px 0 rgba(255, 255, 255, 0.2) !important;
+}
+
+.control-btn:active {
+  transform: scale(0.95) !important;
+  background: var(--theme-map-button-bg-hover) !important;
+  box-shadow: 
+    0 0 10px rgba(var(--theme-map-button-glow), 0.8),
+    0 2px 8px rgba(0, 0, 0, 0.8),
+    inset 0 2px 4px rgba(0, 0, 0, 0.3) !important;
+}
+
+.control-btn svg {
+  width: 16px !important;
+  height: 16px !important;
+  pointer-events: none !important;
+}
+
+/* 用户位置标记样式 */
+.user-location-marker {
+  background: transparent !important;
+  border: none !important;
+  animation: pulse-location 2s infinite !important;
+}
+
+@keyframes pulse-location {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.2);
+    opacity: 0.7;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* Custom cluster styles */
+.custom-cluster-container {
+  background: transparent !important;
+  border: none !important;
+}
+
+/* Line clamp utility */
+.line-clamp-3 {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Leaflet container adjustments */
+.leaflet-container {
+  font-family: inherit !important;
+}
+
+.leaflet-control-zoom {
+  border: none !important;
+  border-radius: 8px !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
+}
+
+.leaflet-control-zoom a {
+  background-color: white !important;
+  border: 1px solid #e5e7eb !important;
+  color: #374151 !important;
+  font-size: 18px !important;
+  line-height: 28px !important;
+  transition: all 0.2s ease !important;
+}
+
+.leaflet-control-zoom a:hover {
+  background-color: #f9fafb !important;
+  color: #111827 !important;
+}
+
+/* Cluster animations */
+.custom-cluster-container div {
+  transition: transform 0.3s ease !important;
+}
+
+.custom-cluster-container:hover div {
+  transform: scale(1.1) !important;
+}
+
+/* Map Marker & Cluster Glow Effects */
+.custom-marker-icon .marker-container {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.custom-marker-icon:hover .marker-container {
+  transform: scale(1.15) !important;
+}
+
+.custom-cluster-icon .cluster-container {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.custom-cluster-icon:hover .cluster-container {
+  transform: scale(1.05) !important;
+}
+
+/* 确保动画在地图上正常显示 */
+.custom-marker-icon,
+.custom-cluster-icon {
+  overflow: visible !important;
+}
+
+/* 优化光晕效果在地图上的表现 */
+.custom-marker-icon .marker-glow,
+.custom-cluster-icon .cluster-glow {
+  pointer-events: none !important;
+}
+
+.custom-cluster-icon .cluster-ring {
+  pointer-events: none !important;
+}
+
+/* 地图专用高对比度按钮样式 - Map UI High Contrast Styles */
+.map-close-button {
+  background: var(--theme-map-button-bg) !important;
+  border: 3px solid var(--theme-map-button-border) !important;
+  border-radius: 50% !important;
+  padding: 12px !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  -webkit-backdrop-filter: blur(12px) !important;
+  backdrop-filter: blur(12px) !important;
+  box-shadow: 
+    0 0 20px rgba(var(--theme-map-button-glow), 0.4),
+    0 8px 25px rgba(0, 0, 0, 0.6),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2) !important;
+  transform: scale(1) !important;
+}
+
+.map-close-button:hover {
+  background: var(--theme-map-button-bg-hover) !important;
+  border-color: var(--theme-map-button-border-hover) !important;
+  transform: scale(1.1) rotate(90deg) !important;
+  box-shadow: 
+    0 0 30px rgba(var(--theme-map-button-glow-intense), 0.8),
+    0 0 50px rgba(var(--theme-map-button-glow), 0.4),
+    0 12px 35px rgba(0, 0, 0, 0.8),
+    inset 0 2px 0 rgba(255, 255, 255, 0.3) !important;
+}
+
+/* Leaflet 地图控件高对比度样式 */
+.leaflet-control-zoom {
+  border: none !important;
+  border-radius: 8px !important;
+  overflow: hidden !important;
+  box-shadow: 
+    0 0 15px rgba(var(--theme-map-button-glow), 0.3),
+    0 6px 20px rgba(0, 0, 0, 0.5) !important;
+}
+
+/* 地图信息面板统一样式 */
+.map-info-panel,
+.map-legend-panel {
+  background: var(--theme-map-button-bg) !important;
+  border: 2px solid var(--theme-map-button-border) !important;
+  color: var(--theme-map-button-text) !important;
+  border-radius: 8px !important;
+  padding: 12px !important;
+  -webkit-backdrop-filter: blur(10px) !important;
+  backdrop-filter: blur(10px) !important;
+  box-shadow: 
+    0 0 15px rgba(var(--theme-map-button-glow), 0.4),
+    0 6px 20px rgba(0, 0, 0, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1) !important;
+}
+
+.map-legend-panel {
+  padding: 10px !important;
+}
+
+.leaflet-control-zoom a {
+  background: var(--theme-map-button-bg) !important;
+  border: 2px solid var(--theme-map-button-border) !important;
+  color: var(--theme-map-button-text) !important;
+  font-weight: bold !important;
+  font-size: 18px !important;
+  width: 40px !important;
+  height: 40px !important;
+  line-height: 36px !important;
+  text-align: center !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  -webkit-backdrop-filter: blur(10px) !important;
+  backdrop-filter: blur(10px) !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  text-shadow: 0 0 8px rgba(var(--theme-map-button-glow), 0.8) !important;
+  box-shadow: 
+    0 0 12px rgba(var(--theme-map-button-glow), 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1) !important;
+}
+
+.leaflet-control-zoom a:hover {
+  background: var(--theme-map-button-bg-hover) !important;
+  border-color: var(--theme-map-button-border-hover) !important;
+  color: var(--theme-map-button-text-hover) !important;
+  transform: scale(1.1) !important;
+  text-shadow: 0 0 12px rgba(var(--theme-map-button-glow-intense), 1) !important;
+  box-shadow: 
+    0 0 20px rgba(var(--theme-map-button-glow-intense), 0.8),
+    0 0 35px rgba(var(--theme-map-button-glow), 0.4),
+    0 8px 25px rgba(0, 0, 0, 0.7),
+    inset 0 2px 0 rgba(255, 255, 255, 0.2) !important;
+}
+
+/* 地图弹窗高对比度样式 */
+.dark-popup .leaflet-popup-close-button {
+  color: var(--theme-map-button-text) !important;
+  font-size: 20px !important;
+  font-weight: bold !important;
+  padding: 10px !important;
+  right: 8px !important;
+  top: 8px !important;
+  width: 36px !important;
+  height: 36px !important;
+  background: var(--theme-map-button-bg) !important;
+  border: 2px solid var(--theme-map-button-border) !important;
+  border-radius: 50% !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  -webkit-backdrop-filter: blur(10px) !important;
+  backdrop-filter: blur(10px) !important;
+  text-shadow: 0 0 6px rgba(var(--theme-map-button-glow), 0.8) !important;
+  box-shadow: 
+    0 0 10px rgba(var(--theme-map-button-glow), 0.3),
+    0 4px 15px rgba(0, 0, 0, 0.5) !important;
+}
+
+.dark-popup .leaflet-popup-close-button:hover {
+  color: var(--theme-map-button-text-hover) !important;
+  background: var(--theme-map-button-bg-hover) !important;
+  border-color: var(--theme-map-button-border-hover) !important;
+  transform: scale(1.15) rotate(90deg) !important;
+  text-shadow: 0 0 10px rgba(var(--theme-map-button-glow-intense), 1) !important;
+  box-shadow: 
+    0 0 15px rgba(var(--theme-map-button-glow-intense), 0.8),
+    0 0 25px rgba(var(--theme-map-button-glow), 0.4),
+    0 6px 20px rgba(0, 0, 0, 0.7) !important;
+}
+
+/* 地图底部信息栏样式 */
+.leaflet-control-attribution {
+  background: var(--theme-map-button-bg) !important;
+  border: 1px solid var(--theme-map-button-border) !important;
+  color: var(--theme-map-button-text) !important;
+  border-radius: 4px !important;
+  padding: 2px 6px !important;
+  font-size: 11px !important;
+  -webkit-backdrop-filter: blur(8px) !important;
+  backdrop-filter: blur(8px) !important;
+  box-shadow: 
+    0 0 8px rgba(var(--theme-map-button-glow), 0.2),
+    0 2px 8px rgba(0, 0, 0, 0.3) !important;
+}
+
+.leaflet-control-attribution a {
+  color: var(--theme-map-button-text) !important;
+  text-decoration: none !important;
+  transition: color 0.2s ease !important;
+}
+
+.leaflet-control-attribution a:hover {
+  color: var(--theme-map-button-text-hover) !important;
+  text-shadow: 0 0 4px rgba(var(--theme-map-button-glow), 0.8) !important;
+}
