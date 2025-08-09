@@ -3,7 +3,8 @@ import PropTypes from 'prop-types';
 import imageSrc from '../../../data/hua_icon_base64';
 import hoverImageSrc from '../../../assets/images/hua_500w1.jpg';
 import { useAppStore } from '../../../store/useAppStore';
-import { ThemeTitle, ThemeDescription, ThemeButton } from '../../ui/ThemeComponents';
+import { ThemeDescription, ThemeButton } from '../../ui/ThemeComponents';
+import '../../ui/ShineCard.css'; // 导入光影效果
 
 const EffectAvatar = lazy(() => import('../../background/EffectAvatar'));
 
@@ -12,7 +13,7 @@ const AboutSection = ({ language = 'en' }) => {
     const content = getContent();
     // 获取个人陈述内容
     const statementPage = content.about.pages.find(page => page.id === 'statement');
-    const { greeting, paragraphs } = statementPage?.content || { greeting: '', paragraphs: [] };
+    const { paragraphs } = statementPage?.content || { paragraphs: [] };
 
     // 优化：延迟渲染 Avatar 组件以提升 LCP
     const [showAvatar, setShowAvatar] = useState(false);
@@ -30,17 +31,82 @@ const AboutSection = ({ language = 'en' }) => {
                 <div className="w-full about-content-area flex flex-col justify-center order-2 lg:order-1">
                     {/* 内容容器 - 内部也应用黄金比例的留白 */}
                     <div className="about-card-container">
-                        {/* 增强毛玻璃背景卡片 */}
-                        <div className="content-section p-6 lg:p-8 xl:p-10 w-full relative">
+                        {/* 增强毛玻璃背景卡片 + 光影效果 */}
+                        <div className="content-section shine-card shine-blue p-6 lg:p-8 xl:p-10 w-full relative">
                             {/* 内容层 */}
-                            <div className="relative z-10 about-card-content">
+                            <div className="relative z-10 about-card-content shine-content">
                                 {/* 个人陈述内容 */}
-                                <div className="space-y-6">
-                                    <ThemeTitle level={2} className="font-beauRivage">
-                                        {greeting}
-                                    </ThemeTitle>
+                                <div className="space-y-6" style={{ overflow: 'visible' }}>
+                                    {/* 简化的一行式问候语 */}
+                                    <div className="greeting-container" style={{ overflow: 'visible' }}>
+                                        <div className="simple-greeting-line" style={{ 
+                                            whiteSpace: 'nowrap', 
+                                            overflow: 'visible',
+                                            fontSize: '0' // 防止inline-block间隙
+                                        }}>
+                                            <span 
+                                                style={{ 
+                                                    fontFamily: 'Fredoka One, cursive',
+                                                    fontSize: '2.5rem',
+                                                    background: 'linear-gradient(135deg, #22d3ee, #06b6d4, #0891b2)',
+                                                    WebkitBackgroundClip: 'text',
+                                                    WebkitTextFillColor: 'transparent',
+                                                    backgroundClip: 'text',
+                                                    display: 'inline-block',
+                                                    fontWeight: '400',
+                                                    verticalAlign: 'baseline'
+                                                }}
+                                            >
+                                                Kia ora
+                                            </span>
+                                            <span 
+                                                style={{ 
+                                                    fontFamily: 'Figtree, sans-serif',
+                                                    fontSize: '1.8rem',
+                                                    color: 'var(--theme-text-secondary)',
+                                                    fontWeight: '300',
+                                                    display: 'inline-block',
+                                                    marginLeft: '0.75rem',
+                                                    verticalAlign: 'baseline'
+                                                }}
+                                            >
+                                                I&apos;m
+                                            </span>
+                                            <span 
+                                                style={{ 
+                                                    fontFamily: 'Beau Rivage, cursive',
+                                                    fontSize: '3rem',
+                                                    background: 'linear-gradient(135deg, #22d3ee, #06b6d4, #0891b2)',
+                                                    WebkitBackgroundClip: 'text',
+                                                    WebkitTextFillColor: 'transparent',
+                                                    backgroundClip: 'text',
+                                                    display: 'inline-block',
+                                                    fontWeight: '400',
+                                                    marginLeft: '0.75rem',
+                                                    verticalAlign: 'baseline'
+                                                }}
+                                            >
+                                                Hua Wang
+                                            </span>
+                                        </div>
+                                    </div>
+                                    
                                     {paragraphs.map((paragraph, index) => (
-                                        <ThemeDescription key={index} className="text-base lg:text-lg leading-relaxed" style={{ fontFamily: 'Figtree, sans-serif', fontWeight: '400' }}>
+                                        <ThemeDescription 
+                                            key={index} 
+                                            className="text-base lg:text-lg leading-relaxed programmer-text" 
+                                            style={{ 
+                                                fontFamily: 'JetBrains Mono, Consolas, Monaco, monospace', 
+                                                fontWeight: '400',
+                                                fontSize: '0.95rem',
+                                                lineHeight: '1.6',
+                                                background: 'linear-gradient(135deg, #22d3ee, #06b6d4, #0891b2)',
+                                                WebkitBackgroundClip: 'text',
+                                                WebkitTextFillColor: 'transparent',
+                                                backgroundClip: 'text',
+                                                display: 'block'
+                                            }}
+                                        >
                                             {paragraph}
                                         </ThemeDescription>
                                     ))}
@@ -52,8 +118,9 @@ const AboutSection = ({ language = 'en' }) => {
                                         href="/Hua_Wang_Full_Stack_Engineer.pdf" 
                                         target="_blank" 
                                         rel="noopener noreferrer"
+                                        download="Hua_Wang_Full_Stack_Engineer.pdf"
                                         variant="ghost"
-                                        className="font-medium border-b border-theme-primary/50 hover:border-theme-primary pb-1"
+                                        className="font-medium border-b border-theme-primary/50 hover:border-theme-primary pb-1 transition-all duration-300"
                                         style={{ fontFamily: 'Figtree, sans-serif', fontWeight: '500' }}
                                     >
                                         {language === 'en' ? 'Resume' : '简历'}

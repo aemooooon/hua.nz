@@ -999,11 +999,56 @@ body {
 
 /* Avatar Area Layout */
 .about-avatar-area {
-    flex: 0.42; /* 黄金分割比例较小部分 */
+    flex: 0.382; /* 黄金分割比例较小部分 (38.2%) */
 }
 
 .about-content-area {
-    flex: 0.58; /* 黄金分割比例较大部分 */
+    flex: 0.618; /* 黄金分割比例较大部分 (61.8%) */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* About Section Card Container */
+.about-card-container {
+    width: 100%;
+    max-width: 42rem; /* 限制卡片最大宽度 */
+    margin: 0 auto;
+    padding: 0 1rem;
+}
+
+.about-card-content {
+    width: 100%;
+    overflow: visible;
+}
+
+.about-card-content .space-y-6 {
+    overflow: visible;
+}
+
+.about-card-content .space-y-6 > * {
+    overflow: visible;
+}
+
+/* 响应式调整卡片容器 */
+@media (min-width: 640px) {
+    .about-card-container {
+        padding: 0 1.5rem;
+    }
+}
+
+@media (min-width: 1024px) {
+    .about-card-container {
+        max-width: 38rem; /* lg屏幕上稍微收窄 */
+        padding: 0 2rem;
+    }
+}
+
+@media (min-width: 1280px) {
+    .about-card-container {
+        max-width: 44rem; /* xl屏幕上适当放宽 */
+        padding: 0 2.5rem;
+    }
 }
 
 .avatar-cube-alignment {
@@ -1013,6 +1058,9 @@ body {
 
 .about-avatar-wrapper {
     position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     /* 移除固定尺寸，让容器自适应 */
 }
 
@@ -1022,6 +1070,7 @@ body {
     height: 18rem;
     position: relative;
     z-index: 10;
+    margin: 0 auto; /* 确保居中 */
 }
 
 /* 响应式头像尺寸调整 */
@@ -1097,28 +1146,351 @@ body {
 
 /* Responsive Adjustments */
 @media (max-width: 1024px) {
+    .about-avatar-area,
+    .about-content-area {
+        flex: none; /* 移除flex布局，使用块级布局 */
+        width: 100%;
+    }
+    
+    .about-avatar-area {
+        padding: 4rem 0; /* 64px 上下间距 */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    
+    .about-content-area {
+        padding-bottom: 4rem; /* 为卡片添加底部间距 */
+    }
+    
     .about-avatar-wrapper {
         width: 240px;
         height: 240px;
+        margin: 0 auto; /* 居中显示 */
     }
     
     .avatar-cube-alignment {
-        transform: translateX(0);
+        transform: translateX(0); /* 移除偏移，确保居中 */
+    }
+    
+    .about-section-spacing {
+        gap: 2rem;
+        flex-direction: column; /* 垂直排列 */
+    }
+    
+    .about-card-container {
+        max-width: 100%;
+        padding: 0 1rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .about-avatar-area {
+        padding: 4.5rem 0; /* 增加间距到72px */
+    }
+    
+    .about-content-area {
+        padding-bottom: 5rem; /* 增加卡片底部间距 */
+    }
+    
+    .about-avatar-wrapper {
+        width: 220px;
+        height: 220px;
+    }
+}
+
+@media (max-width: 640px) {
+    .about-avatar-area {
+        padding: 5rem 0; /* 增加间距到80px */
+    }
+    
+    .about-content-area {
+        padding-bottom: 6rem; /* 更多卡片底部间距 */
+    }
+    
+    .about-avatar-wrapper {
+        width: 200px;
+        height: 200px;
+        margin: 0 auto;
     }
     
     .about-section-spacing {
         gap: 1.5rem;
     }
+    
+    .about-card-container {
+        padding: 0 0.75rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .about-avatar-area {
+        padding: 5.5rem 0; /* 最小屏幕最大间距88px */
+    }
+    
+    .about-content-area {
+        padding-bottom: 7rem; /* 最大卡片底部间距 */
+    }
+    
+    .about-avatar-wrapper {
+        width: 180px;
+        height: 180px;
+    }
+}
+
+@media (max-width: 375px) {
+    .about-avatar-area {
+        padding: 6rem 0; /* 超小屏幕最大间距96px */
+    }
+    
+    .about-content-area {
+        padding-bottom: 8rem; /* 最大卡片底部间距 */
+    }
+    
+    .about-avatar-wrapper {
+        width: 160px;
+        height: 160px;
+    }
+}
+
+/* 简化的问候语样式 */
+.simple-greeting-line {
+    white-space: nowrap;
+    overflow: visible;
+    font-size: 0; /* 消除inline-block间隙 */
+}
+
+.simple-greeting-line span {
+    white-space: nowrap;
+}
+
+/* 响应式调整 - 小屏幕适配 */
+@media (max-width: 768px) {
+    .simple-greeting-line span:nth-child(1) { /* Kia ora */
+        font-size: 2rem !important;
+    }
+    .simple-greeting-line span:nth-child(2) { /* I'm */
+        font-size: 1.4rem !important;
+        margin-left: 0.5rem !important;
+    }
+    .simple-greeting-line span:nth-child(3) { /* Hua Wang */
+        font-size: 2.5rem !important;
+        margin-left: 0.5rem !important;
+    }
 }
 
 @media (max-width: 640px) {
-    .about-avatar-wrapper {
-        width: 200px;
-        height: 200px;
+    .simple-greeting-line span:nth-child(1) { /* Kia ora */
+        font-size: 1.75rem !important;
+    }
+    .simple-greeting-line span:nth-child(2) { /* I'm */
+        font-size: 1.2rem !important;
+    }
+    .simple-greeting-line span:nth-child(3) { /* Hua Wang */
+        font-size: 2.25rem !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .simple-greeting-line span:nth-child(1) { /* Kia ora */
+        font-size: 1.5rem !important;
+    }
+    .simple-greeting-line span:nth-child(2) { /* I'm */
+        font-size: 1rem !important;
+    }
+    .simple-greeting-line span:nth-child(3) { /* Hua Wang */
+        font-size: 2rem !important;
+    }
+}
+
+@media (max-width: 375px) {
+    .simple-greeting-line span:nth-child(1) { /* Kia ora */
+        font-size: 1.3rem !important;
+    }
+    .simple-greeting-line span:nth-child(2) { /* I'm */
+        font-size: 0.9rem !important;
+    }
+    .simple-greeting-line span:nth-child(3) { /* Hua Wang */
+        font-size: 1.6rem !important;
+    }
+}
+
+/* 保留原有的greeting-container样式以防冲突 */
+.greeting-container {
+    margin-bottom: 1.5rem;
+    width: 100%;
+    overflow: visible;
+}
+
+.greeting-container .greeting-line {
+    display: flex;
+    align-items: baseline;
+    flex-wrap: nowrap;
+    gap: 0.75rem;
+    width: 100%;
+    overflow: visible;
+}
+
+.greeting-container .name-line {
+    margin-top: 0.5rem;
+    width: 100% !important;
+    max-width: none !important;
+    min-width: 0 !important;
+    overflow: visible !important;
+    flex-shrink: 0 !important;
+}
+
+.greeting-container .kia-ora-text {
+    font-size: 2.5rem !important;
+}
+
+.greeting-container .i-am-text {
+    font-size: 1.8rem !important;
+}
+
+.greeting-container .name-text {
+    font-size: 3rem !important;
+    line-height: 1.2 !important;
+    white-space: nowrap !important;
+    overflow: visible !important;
+    text-overflow: clip !important;
+    max-width: none !important;
+    width: max-content !important;
+    display: inline-block !important;
+    min-width: max-content !important;
+    flex-shrink: 0 !important;
+    word-break: keep-all !important;
+    -webkit-hyphens: none !important;
+    hyphens: none !important;
+    font-weight: 400 !important;
+    margin: 0 !important;
+    background: linear-gradient(135deg, #22d3ee, #06b6d4, #0891b2) !important;
+    -webkit-background-clip: text !important;
+    -webkit-text-fill-color: transparent !important;
+    background-clip: text !important;
+}
+
+/* 程序员字体样式 */
+.programmer-text {
+    font-family: 'JetBrains Mono', Consolas, 'Courier New', monospace !important;
+    font-size: 0.95rem !important;
+    line-height: 1.6 !important;
+    letter-spacing: 0.025em;
+    font-weight: 400 !important;
+    background: linear-gradient(135deg, #22d3ee, #06b6d4, #0891b2) !important;
+    -webkit-background-clip: text !important;
+    -webkit-text-fill-color: transparent !important;
+    background-clip: text !important;
+    display: block !important;
+}
+
+@media (max-width: 768px) {
+    .greeting-container .kia-ora-text {
+        font-size: 2rem !important;
     }
     
-    .about-section-spacing {
-        gap: 1rem;
+    .greeting-container .i-am-text {
+        font-size: 1.4rem !important;
+    }
+    
+    .greeting-container .name-text {
+        font-size: 2.5rem !important;
+        white-space: nowrap !important;
+        overflow: visible !important;
+        width: max-content !important;
+        min-width: max-content !important;
+        word-break: keep-all !important;
+    }
+    
+    .programmer-text {
+        font-size: 0.9rem !important;
+    }
+}
+
+@media (max-width: 640px) {
+    .greeting-container .greeting-line {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.25rem;
+    }
+    
+    .greeting-container .kia-ora-text {
+        font-size: 1.75rem !important;
+    }
+    
+    .greeting-container .i-am-text {
+        font-size: 1.2rem !important;
+    }
+    
+    .greeting-container .name-text {
+        font-size: 2.25rem !important;
+        white-space: nowrap !important;
+        overflow: visible !important;
+        width: max-content !important;
+        min-width: max-content !important;
+        word-break: keep-all !important;
+    }
+    
+    .programmer-text {
+        font-size: 0.85rem !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .greeting-container .kia-ora-text {
+        font-size: 1.5rem !important;
+    }
+    
+    .greeting-container .i-am-text {
+        font-size: 1rem !important;
+    }
+    
+    .greeting-container .name-text {
+        font-size: 2rem !important;
+        white-space: nowrap !important;
+        overflow: visible !important;
+        width: max-content !important;
+        min-width: max-content !important;
+        word-break: keep-all !important;
+    }
+    
+    .programmer-text {
+        font-size: 0.8rem !important;
+        line-height: 1.5 !important;
+    }
+}
+
+@media (max-width: 375px) {
+    .greeting-container .kia-ora-text {
+        font-size: 1.3rem !important;
+    }
+    
+    .greeting-container .i-am-text {
+        font-size: 0.9rem !important;
+    }
+    
+    .greeting-container .name-text {
+        font-size: 1.6rem !important;
+        white-space: nowrap !important;
+        overflow: visible !important;
+        width: max-content !important;
+        min-width: max-content !important;
+    }
+}
+
+@media (max-width: 320px) {
+    .greeting-container .name-text {
+        font-size: 1.4rem !important;
+        white-space: nowrap !important;
+        overflow: visible !important;
+        width: max-content !important;
+        min-width: max-content !important;
+        word-break: keep-all !important;
+    }
+    
+    .about-card-container {
+        padding: 0 0.5rem;
+        overflow-x: visible;
     }
 }
 

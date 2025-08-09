@@ -213,13 +213,15 @@ const contentConfig = {
         capstoneProjects: "Capstone Projects",
         academicAwards: "Academic Awards",
         academicExcellenceAward: "Academic Excellence Award",
+        withDistinction: "with Distinction",
         level: "Level",
         credits: "Credits"
       },
       degrees: [
         {
           id: "masters",
-          degree: "Master of Applied Data Science with Distinction",
+          degree: "Master of Applied Data Science",
+          degreeHonor: true,
           institution: "University of Canterbury",
           location: "Christchurch, New Zealand",
           period: "Feb 2024 - Feb 2025",
@@ -282,7 +284,8 @@ const contentConfig = {
         },
         {
           id: "bachelors",
-          degree: "Bachelor of Information Technology with Distinction",
+          degree: "Bachelor of Information Technology",
+          degreeHonor: true,
           institution: "Otago Polytechnic", 
           location: "Dunedin, New Zealand",
           period: "July 2017 - June 2021",
@@ -530,6 +533,7 @@ const contentConfig = {
         capstoneProjects: "毕业项目",
         academicAwards: "学术奖项",
         academicExcellenceAward: "学术优秀奖",
+        withDistinction: "优等荣誉",
         level: "等级",
         credits: "学分"
       },
@@ -537,6 +541,7 @@ const contentConfig = {
         {
           id: "masters",
           degree: "应用数据科学硕士学位",
+          degreeHonor: true,
           institution: "坎特伯雷大学",
           location: "新西兰基督城",
           period: "2024年2月 - 2025年2月",
@@ -600,6 +605,7 @@ const contentConfig = {
         {
           id: "bachelors",
           degree: "信息技术学士学位",
+          degreeHonor: true,
           institution: "奥塔哥理工学院",
           location: "新西兰达尼丁", 
           period: "2017年7月 - 2021年6月",

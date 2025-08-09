@@ -123,8 +123,16 @@ const EffectAvatar = ({ imageSrc, hoverImageSrc }) => {
         setIsHovered(true); // 显示图片
         gsap.fromTo(
             hoverImgRef.current,
-            { opacity: 0 }, // 初始状态
-            { opacity: 1, scale: 1.0, duration: 0.8, ease: "elastic.in" } // 结束状态
+            { 
+                opacity: 0, 
+                transform: "translate(-50%, -50%) scale(0.9)" // 保持居中，从小开始
+            },
+            { 
+                opacity: 1, 
+                transform: "translate(-50%, -50%) scale(1.0)", // 保持居中，放大到正常
+                duration: 0.8, 
+                ease: "elastic.out"
+            }
         );
 
         // 重新触发动画
@@ -145,6 +153,7 @@ const EffectAvatar = ({ imageSrc, hoverImageSrc }) => {
         if (hoverImgRef.current) {
             gsap.to(hoverImgRef.current, {
                 opacity: 0,
+                transform: "translate(-50%, -50%) scale(0.9)", // 保持居中，缩小消失
                 duration: 0.8,
                 ease: "elastic.out",
                 onComplete: () => setIsHovered(false), // 动画完成后隐藏图片
@@ -183,7 +192,7 @@ const EffectAvatar = ({ imageSrc, hoverImageSrc }) => {
                     position: "absolute",
                     top: "50%",
                     left: "50%",
-                    transform: "translate(-50%, -30%) scale(1.5)", // 初始状态
+                    transform: "translate(-50%, -50%) scale(1.5)", // 修复：统一使用-50%居中
                     opacity: isLoading ? 0 : 1, // 加载时隐藏canvas
                     transition: "opacity 0.3s ease"
                 }}
@@ -198,11 +207,15 @@ const EffectAvatar = ({ imageSrc, hoverImageSrc }) => {
                     position: "absolute",
                     top: "50%",
                     left: "50%",
-                    transform: "translate(-50%, -40%)", // 初始状态
+                    transform: "translate(-50%, -50%)", // 修复：统一使用-50%居中
                     opacity: 0, // 初始状态
                     visibility: isHovered ? "visible" : "hidden", // 控制可见性
                     transition: "opacity 0.8s ease, transform 0.8s ease", // 添加过渡效果
                     pointerEvents: "none", // 防止图片遮挡 Canvas 的交互
+                    width: "100%",
+                    height: "100%",
+                    objectFit: "cover", // 确保图片正确填充
+                    borderRadius: "inherit" // 继承父容器的圆角
                 }}
             />
         </div>
