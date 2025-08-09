@@ -48,7 +48,7 @@ const AboutSection = ({ language = 'en' }) => {
                                                 style={{ 
                                                     fontFamily: 'Fredoka One, cursive',
                                                     fontSize: '2.5rem',
-                                                    background: 'linear-gradient(135deg, #22d3ee, #06b6d4, #0891b2)',
+                                                    background: 'linear-gradient(135deg, var(--theme-gradient-from), var(--theme-gradient-via), var(--theme-gradient-to))',
                                                     WebkitBackgroundClip: 'text',
                                                     WebkitTextFillColor: 'transparent',
                                                     backgroundClip: 'text',
@@ -76,7 +76,7 @@ const AboutSection = ({ language = 'en' }) => {
                                                 style={{ 
                                                     fontFamily: 'Beau Rivage, cursive',
                                                     fontSize: '3rem',
-                                                    background: 'linear-gradient(135deg, #22d3ee, #06b6d4, #0891b2)',
+                                                    background: 'linear-gradient(135deg, var(--theme-gradient-from), var(--theme-gradient-via), var(--theme-gradient-to))',
                                                     WebkitBackgroundClip: 'text',
                                                     WebkitTextFillColor: 'transparent',
                                                     backgroundClip: 'text',
@@ -100,7 +100,7 @@ const AboutSection = ({ language = 'en' }) => {
                                                 fontWeight: '400',
                                                 fontSize: '0.95rem',
                                                 lineHeight: '1.6',
-                                                background: 'linear-gradient(135deg, #22d3ee, #06b6d4, #0891b2)',
+                                                background: 'linear-gradient(135deg, var(--theme-gradient-from), var(--theme-gradient-via), var(--theme-gradient-to))',
                                                 WebkitBackgroundClip: 'text',
                                                 WebkitTextFillColor: 'transparent',
                                                 backgroundClip: 'text',
