@@ -223,16 +223,17 @@ const contentConfig = {
           institution: "University of Canterbury",
           location: "Christchurch, New Zealand",
           period: "February 2024 - February 2025",
-          gpa: "A Average",
+          gpa: "A avg",
           totalCredits: 180,
           courses: [
             {
               year: "2024",
               semester: "Semester 1",
               courses: [
-                { code: "COSC440", name: "Deep Learning", credits: 15, grade: "A+", level: 4 },
+                
                 { code: "DATA401", name: "Introduction to Data Science", credits: 15, grade: "A", level: 4 },
-                { code: "DATA415", name: "Computational Social Choice", credits: 15, grade: "A", level: 4 },
+                { code: "DIGI405", name: "Texts, Discourses and Data: the Humanities and Data Science", credits: 15, grade: "A-", level: 4 },
+                { code: "DATA472", name: "Based cloud computing and infrastructure data engineering", credits: 15, grade: "A+", level: 4 },
                 { code: "DATA416", name: "Contemporary Issues in Data Science", credits: 15, grade: "A+", level: 4 }
               ]
             },
@@ -240,19 +241,18 @@ const contentConfig = {
               year: "2024",
               semester: "Semester 2", 
               courses: [
-                { code: "COSC473", name: "Special Topic: Decentralised Applications on the Web", credits: 15, grade: "A-", level: 4 },
+                { code: "COSC473", name: "Decentralised Applications on the Web", credits: 15, grade: "A-", level: 4 },
+                { code: "COSC440", name: "Deep Learning", credits: 15, grade: "A+", level: 4 },
                 { code: "DATA420", name: "Scalable Data Science", credits: 15, grade: "A-", level: 4 },
-                { code: "DATA429", name: "Data Science Independent Study", credits: 15, grade: "A+", level: 4 },
-                { code: "DATA472", name: "Special Topic", credits: 15, grade: "A+", level: 4 }
+                { code: "DATA415", name: "Computational Social Choice", credits: 15, grade: "A", level: 4 },
+                { code: "GISC412", name: "Spatial Data Science", credits: 15, grade: "A", level: 4 }
               ]
             },
             {
               year: "2025",
               semester: "Semester 1",
               courses: [
-                { code: "DATA605", name: "Applied Data Science Industry Research Project", credits: 45, grade: "A+", level: 6 },
-                { code: "DIGI405", name: "Texts, Discourses and Data: the Humanities and Data Science", credits: 15, grade: "A-", level: 4 },
-                { code: "GISC412", name: "Spatial Data Science", credits: 15, grade: "A", level: 4 }
+                { code: "DATA605", name: "Applied Data Science Industry Research Project · Zespri International", credits: 45, grade: "A+", level: 6 },
               ]
             }
           ],
@@ -520,8 +520,8 @@ const contentConfig = {
       ]
     },
     education: {
-      title: "教育背景",
-      subtitle: "学术背景",
+      title: "修业之路",
+      subtitle: "杏坛踪迹",
       labels: {
         academicRecords: "学术记录",
         totalCredits: "总学分",
@@ -540,36 +540,36 @@ const contentConfig = {
           institution: "坎特伯雷大学",
           location: "新西兰基督城",
           period: "2024年2月 - 2025年2月",
-          gpa: "A 平均成绩",
+          gpa: "A",
           totalCredits: 180,
           courses: [
             {
               year: "2024",
               semester: "第一学期",
               courses: [
-                { code: "COSC440", name: "深度学习", credits: 15, grade: "A+", level: 4 },
+                
                 { code: "DATA401", name: "数据科学导论", credits: 15, grade: "A", level: 4 },
-                { code: "DATA415", name: "计算社会选择", credits: 15, grade: "A", level: 4 },
-                { code: "DATA416", name: "数据科学当代问题", credits: 15, grade: "A+", level: 4 }
+                { code: "DATA416", name: "数据科学当代问题", credits: 15, grade: "A+", level: 4 },
+                { code: "DIGI405", name: "人文学科与数据科学", credits: 15, grade: "A-", level: 4 },
+                { code: "DATA472", name: "基于云基础架构的数据工程", credits: 15, grade: "A+", level: 4 },
               ]
             },
             {
               year: "2024",
               semester: "第二学期", 
               courses: [
-                { code: "COSC473", name: "专题：Web上的去中心化应用", credits: 15, grade: "A-", level: 4 },
+                { code: "COSC473", name: "Web3，区块链及去中心化应用", credits: 15, grade: "A-", level: 4 },
                 { code: "DATA420", name: "可扩展数据科学", credits: 15, grade: "A-", level: 4 },
-                { code: "DATA429", name: "数据科学独立研究", credits: 15, grade: "A+", level: 4 },
-                { code: "DATA472", name: "专题", credits: 15, grade: "A+", level: 4 }
+                { code: "COSC440", name: "深度学习", credits: 15, grade: "A+", level: 4 },
+                { code: "DATA415", name: "计算社会选择", credits: 15, grade: "A", level: 4 },
+                { code: "GISC412", name: "空间数据科学", credits: 15, grade: "A", level: 4 }
               ]
             },
             {
-              year: "2025",
-              semester: "第一学期",
+              year: "2024 Summer",
+              semester: "2024-2025 暑假",
               courses: [
-                { code: "DATA605", name: "应用数据科学行业研究项目", credits: 45, grade: "A+", level: 6 },
-                { code: "DIGI405", name: "文本、话语与数据：人文学科与数据科学", credits: 15, grade: "A-", level: 4 },
-                { code: "GISC412", name: "空间数据科学", credits: 15, grade: "A", level: 4 }
+                { code: "DATA605", name: "应用数据科学行业研究项目 · 佳沛国际", credits: 45, grade: "A+", level: 6 },
               ]
             }
           ],

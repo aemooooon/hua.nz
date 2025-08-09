@@ -86,11 +86,12 @@ const EducationSection = ({ language }) => {
                                         bg-clip-text text-transparent leading-normal py-2 px-2
                                     "
                             >
-                                {degree.degree.replace(" with Distinction", "")}
+                                {degree.degree}
                             </h3>
                         </div>
 
                         {/* 右边：徽章 */}
+                        {degree.degreeHonor && (
                         <div className="mt-1 sm:mt-0 sm:ml-6">
                             <span
                                 className={`
@@ -105,9 +106,10 @@ const EducationSection = ({ language }) => {
                                     `}
                             >
                                 <span className="text-yellow-300">🏆</span>
-                                <span>With Distinction</span>
+                                <span>{educationData.labels.withDistinction}</span>
                             </span>
                         </div>
+                        )}
                     </div>
 
                     {/* 卡片主体 - 简单的边框中断效果 */}
@@ -166,7 +168,7 @@ const EducationSection = ({ language }) => {
 
                                         {/* 总体统计 */}
                                         <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-8">
-                                            <div className="bg-theme-surface/80 rounded-xl p-4 border border-theme-border/30 text-center">
+                                            <div className="bg-theme-surface/60 backdrop-blur-md rounded-xl p-4 text-center shadow-lg">
                                                 <div className="text-2xl font-bold text-theme-text-primary">
                                                     {degree.totalCredits}
                                                 </div>
@@ -174,13 +176,13 @@ const EducationSection = ({ language }) => {
                                                     {educationData.labels.totalCredits}
                                                 </div>
                                             </div>
-                                            <div className="bg-theme-surface/80 rounded-xl p-4 border border-theme-border/30 text-center">
+                                            <div className="bg-theme-surface/60 backdrop-blur-md rounded-xl p-4 text-center shadow-lg">
                                                 <div className="text-2xl font-bold text-theme-text-primary">{degree.gpa}</div>
                                                 <div className="text-sm text-theme-text-secondary">
                                                     {educationData.labels.gpa}
                                                 </div>
                                             </div>
-                                            <div className="bg-theme-surface/80 rounded-xl p-4 border border-theme-border/30 text-center col-span-2 md:col-span-1">
+                                            <div className="bg-theme-surface/60 backdrop-blur-md rounded-xl p-4 text-center shadow-lg col-span-2 md:col-span-1">
                                                 <div className="text-2xl font-bold text-theme-text-primary">
                                                     {degree.courses.reduce(
                                                         (total, semester) => total + semester.courses.length,
@@ -198,7 +200,7 @@ const EducationSection = ({ language }) => {
                                             {degree.courses.map((semester, semesterIdx) => (
                                                 <div
                                                     key={semesterIdx}
-                                                    className="bg-theme-surface/80 rounded-xl p-6 border border-theme-border/30"
+                                                    className="bg-theme-surface/50 backdrop-blur-md rounded-xl p-6 shadow-lg"
                                                 >
                                                     <h5 className="text-lg font-bold mb-4 flex items-center text-theme-text-primary">
                                                         <span className="text-2xl mr-2">📚</span>
@@ -208,7 +210,7 @@ const EducationSection = ({ language }) => {
                                                         {semester.courses.map((course, courseIdx) => (
                                                             <div
                                                                 key={courseIdx}
-                                                                className="flex items-center justify-between bg-theme-surface/60 border border-theme-border/30 rounded-lg p-3 hover:bg-theme-surface/70 transition-colors"
+                                                                className="flex items-center justify-between bg-gradient-to-r from-theme-surface/35 via-theme-primary/18 to-theme-accent/22 backdrop-blur-sm rounded-lg p-3 hover:from-theme-primary/15 hover:via-theme-surface/35 hover:to-theme-accent/20 hover:shadow-md transition-all duration-200 border border-white/10"
                                                             >
                                                                 <div className="flex-1">
                                                                     <div className="font-medium text-sm leading-tight text-theme-text-primary">
@@ -221,17 +223,22 @@ const EducationSection = ({ language }) => {
                                                                     </div>
                                                                 </div>
                                                                 <div
-                                                                    className={`px-2 py-1 rounded text-xs font-bold ml-3 ${
-                                                                        course.grade === "A+" || course.grade === "A"
-                                                                            ? "bg-green-600/40 text-green-200 border border-green-500/30"
-                                                                            : course.grade === "A-" ||
-                                                                              course.grade === "B+"
-                                                                            ? "bg-yellow-600/40 text-yellow-200 border border-yellow-500/30"
-                                                                            : course.grade === "Passed" ||
-                                                                              course.grade === "通过"
-                                                                            ? "bg-blue-600/40 text-blue-200 border border-blue-500/30"
-                                                                            : "bg-gray-600/40 text-gray-200 border border-gray-500/30"
-                                                                    }`}
+                                                                    className={`
+                                                                        text-sm ml-3 font-audiowide
+                                                                        ${
+                                                                            course.grade === "A+"
+                                                                                ? "text-emerald-300"
+                                                                                : course.grade === "A"
+                                                                                ? "text-green-300"
+                                                                                : course.grade === "A-"
+                                                                                ? "text-lime-300"
+                                                                                : course.grade === "B+"
+                                                                                ? "text-yellow-300"
+                                                                                : course.grade === "Passed" || course.grade === "通过"
+                                                                                ? "text-blue-300"
+                                                                                : "text-gray-300"
+                                                                        }
+                                                                    `}
                                                                 >
                                                                     {course.grade}
                                                                 </div>
@@ -267,7 +274,7 @@ const EducationSection = ({ language }) => {
                                                     onMouseLeave={() => setHoveredProject(null)}
                                                 >
                                                     <div
-                                                        className="relative h-80 sm:h-80 md:h-40 lg:h-36 xl:h-40 rounded-xl overflow-hidden group cursor-pointer project-image-container"
+                                                        className="relative h-48 sm:h-48 md:h-40 lg:h-36 xl:h-40 rounded-xl overflow-hidden group cursor-pointer project-image-container"
                                                         style={{
                                                             backgroundImage: `url(${project.image})`,
                                                             backgroundSize: "cover",
@@ -354,7 +361,7 @@ const EducationSection = ({ language }) => {
                                                         onMouseLeave={() => setHoveredProject(null)}
                                                     >
                                                         <div
-                                                            className="relative h-32 sm:h-40 rounded-xl overflow-hidden group cursor-pointer"
+                                                            className="relative h-48 sm:h-48 rounded-xl overflow-hidden group cursor-pointer"
                                                             style={{
                                                                 backgroundImage: `url(${award.image})`,
                                                                 backgroundSize: "cover",
@@ -418,7 +425,7 @@ const EducationSection = ({ language }) => {
                         level={1}
                         className="text-5xl md:text-6xl lg:text-7xl font-bold bg-gradient-to-r from-theme-gradient-from via-theme-gradient-via to-theme-gradient-to bg-clip-text text-transparent mb-3"
                     >
-                        Education
+                        {educationData.title}
                     </ThemeTitle>
                     <ThemeSubtitle className="text-xl md:text-2xl font-light italic">
                         {educationData.subtitle}
