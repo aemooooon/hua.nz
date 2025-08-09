@@ -86,12 +86,12 @@ const EducationSection = ({ language }) => {
                                         bg-clip-text text-transparent leading-normal py-2 px-2
                                     "
                             >
-                                {degree.degree.replace(" with Distinction", "")}
+                                {degree.degree}
                             </h3>
                         </div>
 
                         {/* 右边：徽章 */}
-                        {degree.degree.includes(" with Distinction") && (
+                        {degree.degreeHonor && (
                         <div className="mt-1 sm:mt-0 sm:ml-6">
                             <span
                                 className={`
@@ -121,7 +121,7 @@ const EducationSection = ({ language }) => {
                         </div>
 
                         <div
-                            className={`relative ${colors.cardBg} backdrop-blur-lg shadow-2xl shadow-black/20 rounded-3xl overflow-hidden z-0`}
+                            className={`relative ${colors.cardBg} backdrop-blur-lg shadow-2xl shadow-black/20 rounded-3xl overflow-hidden`}
                             style={{
                                 border: `1px solid var(--theme-border)`,
                                 borderTop: "none", // 移除顶部边框，用自定义边框替代
@@ -151,7 +151,7 @@ const EducationSection = ({ language }) => {
 
                                 {/* 学校信息和项目之间的分割线 */}
                                 <div className="flex justify-center my-8">
-                                    <GlowDivider className="w-full" animated={true} />
+                                    <GlowDivider className="w-full" />
                                 </div>
 
                                 {/* Course Records */}
@@ -274,7 +274,7 @@ const EducationSection = ({ language }) => {
                                                     onMouseLeave={() => setHoveredProject(null)}
                                                 >
                                                     <div
-                                                        className="relative h-48 sm:h-48 md:h-48 lg:h-36 xl:h-48 rounded-xl overflow-hidden group cursor-pointer project-image-container z-10"
+                                                        className="relative h-48 sm:h-48 md:h-48 lg:h-36 xl:h-48 rounded-xl overflow-hidden group cursor-pointer"
                                                         style={{
                                                             backgroundImage: `url(${project.image})`,
                                                             backgroundSize: "cover",
@@ -311,26 +311,12 @@ const EducationSection = ({ language }) => {
                                                             </a>
                                                         </div>
 
-                                                        {/* Hover详情显示 */}
-                                                        <div className="absolute inset-0 bg-black/95 opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center p-4">
-                                                            <div className="text-center">
-                                                                <p className="text-theme-text-secondary text-sm mb-3 leading-relaxed">
+                                                        {/* Hover详情显示 - 只显示项目描述，无背景闪光 */}
+                                                        <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center p-4">
+                                                            <div className="text-center bg-black/80 rounded-lg px-4 py-2 backdrop-blur-sm">
+                                                                <p className="text-white text-sm leading-relaxed">
                                                                     {project.description}
                                                                 </p>
-                                                                <div className="flex flex-wrap justify-center gap-2">
-                                                                    {project.technologies &&
-                                                                        Array.isArray(project.technologies) &&
-                                                                        project.technologies
-                                                                            .slice(0, 3)
-                                                                            .map((tech, techIdx) => (
-                                                                                <span
-                                                                                    key={techIdx}
-                                                                                    className={`px-2 py-1 ${colors.techBg} text-xs rounded border`}
-                                                                                >
-                                                                                    {tech}
-                                                                                </span>
-                                                                            ))}
-                                                                </div>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -361,7 +347,7 @@ const EducationSection = ({ language }) => {
                                                         onMouseLeave={() => setHoveredProject(null)}
                                                     >
                                                         <div
-                                                            className="relative h-48 sm:h-48 rounded-xl overflow-hidden group cursor-pointer z-10"
+                                                            className="relative h-48 sm:h-48 rounded-xl overflow-hidden group cursor-pointer"
                                                             style={{
                                                                 backgroundImage: `url(${award.image})`,
                                                                 backgroundSize: "cover",

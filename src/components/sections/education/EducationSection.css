@@ -120,7 +120,7 @@
     animation-delay: 1s;
 }
 
-/* 项目图片容器 */
+/* 项目图片容器 - 移除光影效果 */
 .project-image-container {
     position: relative;
     overflow: hidden;
@@ -130,6 +130,8 @@
     /* 移除固定高度，让Tailwind类控制 */
 }
 
+/* 移除光影扫过效果 */
+/*
 .project-image-container::before {
     content: '';
     position: absolute;
@@ -145,6 +147,7 @@
 .project-thumbnail-card:hover .project-image-container::before {
     left: 100%;
 }
+*/
 
 /* GitHub链接样式 */
 .github-link {

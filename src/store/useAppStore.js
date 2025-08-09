@@ -213,7 +213,6 @@ const contentConfig = {
         capstoneProjects: "Capstone Projects",
         academicAwards: "Academic Awards",
         academicExcellenceAward: "Academic Excellence Award",
-        withDistinction: "With Distinction",
         level: "Level",
         credits: "Credits"
       },
@@ -531,7 +530,6 @@ const contentConfig = {
         capstoneProjects: "毕业项目",
         academicAwards: "学术奖项",
         academicExcellenceAward: "学术优秀奖",
-        withDistinction: "优异成绩",
         level: "等级",
         credits: "学分"
       },

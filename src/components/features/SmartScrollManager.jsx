@@ -50,7 +50,6 @@ const SmartScrollManager = () => {
     // 滚动敏感度配置 - 优化后的参数
     const SCROLL_THRESHOLD = 600; // 进一步提高滚动阈值，防止误触发（从400增加到600）
     const SCROLL_RESET_TIME = 300; // 增加重置时间间隔，提高稳定性
-    const PREVIEW_THRESHOLD = 200; // 提高预览动画阈值
     const PREVIEW_MAX_OFFSET = 80; // 最大预览偏移
     
     // 将回弹状态存储到全局状态，以便光标组件访问
@@ -134,6 +133,77 @@ const SmartScrollManager = () => {
             }, 300);
         }, 150);
     }, []);
+
+    // 处理预览滚动的自动回弹 - 改进版，统一处理所有回弹情况
+    const triggerPreviewBounceBack = useCallback(() => {
+        // 清除之前的预览回弹定时器
+        if (bounceTimerRef.current) {
+            clearTimeout(bounceTimerRef.current);
+        }
+        
+        // 设置回弹延迟 - 更短的延迟确保响应性
+        bounceTimerRef.current = setTimeout(() => {
+            // 只要在预览状态且未达到阈值，就执行回弹
+            if (isPreviewingScroll && scrollAccumulatorRef.current < SCROLL_THRESHOLD) {
+                setIsPreviewingScroll(false);
+                setPreviewOffset(0);
+                // 同时重置累积器，确保状态一致性
+                scrollAccumulatorRef.current = 0;
+            }
+        }, 150); // 缩短到150ms，更快响应
+    }, [isPreviewingScroll]);
+
+    // 统一的预览和回弹处理函数
+    const handleScrollPreview = useCallback((event) => {
+        // 任何滚动都应该有预览效果，不仅仅是达到预览阈值后
+        if (scrollMode !== 'content') {
+            const direction = event.deltaY > 0 ? 1 : -1;
+            
+            // 检查边界条件
+            const atBottomBoundary = direction > 0 && currentSection >= sections.length - 1;
+            const atTopBoundary = direction < 0 && currentSection <= 0;
+            
+            // 计算预览偏移量 - 基于累积滚动和边界状态
+            let offsetMultiplier = 1;
+            if (atBottomBoundary || atTopBoundary) {
+                // 在边界处，偏移量稍小，表示"无法继续"的感觉
+                offsetMultiplier = 0.5;
+            }
+            
+            // 根据累积量计算偏移 - 从第一次滚动就开始预览
+            const progress = Math.min(scrollAccumulatorRef.current / SCROLL_THRESHOLD, 1);
+            const maxOffset = (atBottomBoundary || atTopBoundary) ? 15 : PREVIEW_MAX_OFFSET; // 边界时偏移更小
+            const offset = direction * progress * maxOffset * offsetMultiplier;
+            
+            // 设置预览状态
+            if (!isPreviewingScroll) {
+                setIsPreviewingScroll(true);
+            }
+            setPreviewOffset(offset);
+            
+            // 在边界处，使用专用的回弹动画
+            if (atBottomBoundary || atTopBoundary) {
+                const intensity = Math.min(scrollAccumulatorRef.current / SCROLL_THRESHOLD, 1);
+                const bounceDirection = atBottomBoundary ? 'down' : 'up';
+                
+                // 使用更短的延迟启动边界回弹
+                if (bounceTimerRef.current) {
+                    clearTimeout(bounceTimerRef.current);
+                }
+                
+                bounceTimerRef.current = setTimeout(() => {
+                    triggerBounceAnimation(bounceDirection, intensity);
+                }, 100);
+                
+                return true; // 表示已处理边界情况
+            } else {
+                // 非边界情况，使用常规预览回弹
+                triggerPreviewBounceBack();
+                return false; // 表示不在边界
+            }
+        }
+        return false;
+    }, [scrollMode, currentSection, sections.length, isPreviewingScroll, triggerPreviewBounceBack, triggerBounceAnimation]);
 
     // 重置滚动状态（切换section时）- 智能位置恢复，修复视觉故障
     const resetScrollState = useCallback(() => {
@@ -296,11 +366,14 @@ const SmartScrollManager = () => {
             event.preventDefault();
         }
         
-        // 重置累积器如果时间间隔太长
+        // 重置累积器如果时间间隔太长 - 但保留预览状态让回弹完成
         if (now - lastWheelTimeRef.current > SCROLL_RESET_TIME) {
-            scrollAccumulatorRef.current = 0;
-            // 重置预览状态
+            // 如果当前有预览状态，先触发回弹再重置
             if (isPreviewingScroll) {
+                triggerPreviewBounceBack();
+            } else {
+                // 没有预览状态时直接重置
+                scrollAccumulatorRef.current = 0;
                 setIsPreviewingScroll(false);
                 setPreviewOffset(0);
             }
@@ -326,35 +399,13 @@ const SmartScrollManager = () => {
             }));
         }
         
-        // 预览动画逻辑 - 在达到阈值前显示方向提示（仅在非内容滚动模式下）
-        if (scrollMode !== 'content' && scrollAccumulatorRef.current >= PREVIEW_THRESHOLD && scrollAccumulatorRef.current < SCROLL_THRESHOLD) {
-            if (!isPreviewingScroll) {
-                setIsPreviewingScroll(true);
-            }
-            // 计算预览偏移量
-            const progress = (scrollAccumulatorRef.current - PREVIEW_THRESHOLD) / (SCROLL_THRESHOLD - PREVIEW_THRESHOLD);
-            const offset = Math.min(progress * PREVIEW_MAX_OFFSET, PREVIEW_MAX_OFFSET);
-            setPreviewOffset(event.deltaY > 0 ? offset : -offset);
-        }
-        
-        // 检查边界条件并触发回弹动画（幻灯片模式）
+        // 统一的预览和回弹处理（仅在非内容滚动模式下）
         if (scrollMode !== 'content') {
-            const atBottomBoundary = event.deltaY > 0 && currentSection >= sections.length - 1;
-            const atTopBoundary = event.deltaY < 0 && currentSection <= 0;
+            const isAtBoundary = handleScrollPreview(event);
             
-            if (atBottomBoundary || atTopBoundary) {
-                // 在边界时触发回弹动画
-                const intensity = Math.min(scrollAccumulatorRef.current / SCROLL_THRESHOLD, 1);
-                const direction = atBottomBoundary ? 'down' : 'up';
-                triggerBounceAnimation(direction, intensity);
-                
-                // 如果累积足够大，重置累积器（防止持续触发）
-                if (scrollAccumulatorRef.current >= SCROLL_THRESHOLD) {
-                    scrollAccumulatorRef.current = 0;
-                    setIsPreviewingScroll(false);
-                    setPreviewOffset(0);
-                }
-                return; // 边界状态不进行页面切换
+            // 如果在边界处，不继续处理翻页逻辑
+            if (isAtBoundary) {
+                return;
             }
         }
         
@@ -381,7 +432,7 @@ const SmartScrollManager = () => {
         }
     }, [isScrolling, isProjectModalOpen, scrollMode, isContentOverflowing, isHomePage, currentSection, sections.length, 
         navigateNext, navigatePrev, currentSectionConfig, isPreviewingScroll,
-        setSectionScrollPositions, setIsPreviewingScroll, setPreviewOffset, triggerBounceAnimation]);
+        setSectionScrollPositions, setIsPreviewingScroll, setPreviewOffset, triggerBounceAnimation, handleScrollPreview, triggerPreviewBounceBack]);
 
     // 键盘事件处理（混合滚动模式优化）
     const handleKeyDown = useCallback((event) => {

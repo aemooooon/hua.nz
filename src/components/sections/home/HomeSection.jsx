@@ -1,10 +1,11 @@
 import PropTypes from 'prop-types';
 import { useState, useEffect, useCallback } from 'react';
-import { FaGlobe } from 'react-icons/fa';
+import { FaGlobe, FaPalette } from 'react-icons/fa';
 import { useAppStore } from '../../../store/useAppStore';
 import { useTheme } from '../../../hooks/useTheme';
 import HeroCube from './HeroCube';
 import CircularLoadingIndicator from '../../ui/CircularLoadingIndicator';
+import Tooltip from '../../ui/Tooltip';
 import texturePreloader from '../../../utils/texturePreloader';
 import { ThemeTitle, ThemeSubtitle } from '../../ui/ThemeComponents';
 import '../../../styles/OpeningAnimations.css';
@@ -158,34 +159,41 @@ const HomeSection = ({
 
             {/* Language and Theme Toggle Buttons - Bottom Left Corner */}
             {showToggleButtons && (
-                <div className="absolute bottom-6 left-6 z-50 flex items-center gap-0 transition-opacity duration-1000 opacity-100">
-                    {/* Language Toggle */}
-                    <button
-                        onClick={toggleLanguage}
-                        className="w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300 group hover:scale-110"
-                        title={`${content.ui.language}: ${language === 'en' ? 'English' : '中文'}`}
-                    >
-                        <FaGlobe className="text-theme-primary text-xl group-hover:rotate-180 transition-transform duration-300" />
-                        <span className="absolute -top-10 left-1/2 transform -translate-x-1/2 px-2 py-1 bg-black/80 text-theme-primary text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap">
-                            {language === 'en' ? 'English' : '中文'}
-                        </span>
-                    </button>
+                <>
+                    {/* Language Toggle - 左下角 */}
+                    <div className="absolute bottom-6 left-6 z-50 transition-opacity duration-1000 opacity-100">
+                        <Tooltip 
+                            content={language === 'en' ? 'English' : '中文'} 
+                            placement="top"
+                            delay={200}
+                        >
+                            <button
+                                onClick={toggleLanguage}
+                                className="w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300 group hover:scale-110"
+                                title={`${content.ui.language}: ${language === 'en' ? 'English' : '中文'}`}
+                            >
+                                <FaGlobe className="text-theme-primary text-xl group-hover:rotate-180 transition-transform duration-300" />
+                            </button>
+                        </Tooltip>
+                    </div>
 
-                    {/* Theme Toggle */}
-                    <button
-                        onClick={toggleTheme}
-                        className="w-12 h-12 flex items-center justify-center transition-all duration-300 group hover:scale-110"
-                        title={`${content.ui.toggleTheme}: ${currentThemeConfig.name[language] || currentThemeConfig.name.en}`}
-                    >
-                        <div 
-                            className="w-5 h-5 rounded-full group-hover:rotate-180 transition-transform duration-300"
-                            style={{ backgroundColor: 'var(--theme-primary)' }}
-                        ></div>
-                        <span className="absolute -top-10 left-1/2 transform -translate-x-1/2 px-2 py-1 bg-black/80 text-theme-primary text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap">
-                            {currentThemeConfig.name[language] || currentThemeConfig.name.en}
-                        </span>
-                    </button>
-                </div>
+                    {/* Theme Toggle - 右下角 */}
+                    <div className="absolute bottom-6 right-6 z-50 transition-opacity duration-1000 opacity-100">
+                        <Tooltip 
+                            content={currentThemeConfig.name[language] || currentThemeConfig.name.en} 
+                            placement="left"
+                            delay={200}
+                        >
+                            <button
+                                onClick={toggleTheme}
+                                className="w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300 group hover:scale-110"
+                                title={`${content.ui.toggleTheme}: ${currentThemeConfig.name[language] || currentThemeConfig.name.en}`}
+                            >
+                                <FaPalette className="text-theme-primary text-xl group-hover:rotate-180 transition-transform duration-300" />
+                            </button>
+                        </Tooltip>
+                    </div>
+                </>
             )}
         </div>
     );
