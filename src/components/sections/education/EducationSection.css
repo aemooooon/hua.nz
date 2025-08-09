@@ -100,6 +100,7 @@
     border-radius: 8px;
     overflow: hidden;
     position: relative;
+    z-index: 10; /* 确保项目卡片在合适的层级 */
     animation: gentle-float 4s ease-in-out infinite;
 }
 
@@ -125,6 +126,7 @@
     overflow: hidden;
     border-radius: 8px;
     transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 10; /* 确保图片容器在标题下方 */
     /* 移除固定高度，让Tailwind类控制 */
 }
 

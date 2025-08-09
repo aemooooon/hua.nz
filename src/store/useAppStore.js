@@ -213,6 +213,7 @@ const contentConfig = {
         capstoneProjects: "Capstone Projects",
         academicAwards: "Academic Awards",
         academicExcellenceAward: "Academic Excellence Award",
+        withDistinction: "With Distinction",
         level: "Level",
         credits: "Credits"
       },
@@ -222,8 +223,8 @@ const contentConfig = {
           degree: "Master of Applied Data Science with Distinction",
           institution: "University of Canterbury",
           location: "Christchurch, New Zealand",
-          period: "February 2024 - February 2025",
-          gpa: "A avg",
+          period: "Feb 2024 - Feb 2025",
+          gpa: "A average",
           totalCredits: 180,
           courses: [
             {
@@ -249,8 +250,8 @@ const contentConfig = {
               ]
             },
             {
-              year: "2025",
-              semester: "Semester 1",
+              year: "2024 - 2025",
+              semester: "Summer",
               courses: [
                 { code: "DATA605", name: "Applied Data Science Industry Research Project · Zespri International", credits: 45, grade: "A+", level: 6 },
               ]
@@ -272,7 +273,7 @@ const contentConfig = {
               image: "/jlw.jpg"
             },
             {
-              name: "Data Pipeline Project",
+              name: "ECAN Data Pipeline",
               description: "A collaborative cloud-based automation system for collecting and processing environmental data from 17 different sources.",
               technologies: ["Apache Airflow", "Python", "GraphQL", "AWS"],
               githubUrl: "https://github.com/aemooooon/data-pipeline",
@@ -286,7 +287,7 @@ const contentConfig = {
           institution: "Otago Polytechnic", 
           location: "Dunedin, New Zealand",
           period: "July 2017 - June 2021",
-          gpa: "A- Average",
+          gpa: "A average",
           totalCredits: 360,
           courses: [
             {
@@ -310,7 +311,7 @@ const contentConfig = {
                 { code: "IN605001", name: "Databases 2", credits: 15, grade: "A+", level: 6 },
                 { code: "IN610001", name: "Programming 3", credits: 15, grade: "A+", level: 6 },
                 { code: "IN612001", name: "Web 2 - Programming", credits: 15, grade: "A+", level: 6 },
-                { code: "IN617001", name: "Linux Operating Systems", credits: 15, grade: "A+", level: 6 }
+                { code: "IN617001", name: "Linux Operating Systems - Ubuntu", credits: 15, grade: "A+", level: 6 }
               ]
             },
             {
@@ -356,7 +357,7 @@ const contentConfig = {
               description: "An Android app using Kotlin, Jetpack, Google Maps, and Room DB for trip planning.",
               technologies: ["Kotlin", "Android", "Google Maps"],
               githubUrl: "https://github.com/aemooooon/travel-assistant",
-              image: "/dalincheng.jpg"
+              image: "/TravelAssistant.jpg"
             },
             {
               name: "FitsGo",
@@ -530,6 +531,7 @@ const contentConfig = {
         capstoneProjects: "毕业项目",
         academicAwards: "学术奖项",
         academicExcellenceAward: "学术优秀奖",
+        withDistinction: "优异成绩",
         level: "等级",
         credits: "学分"
       },

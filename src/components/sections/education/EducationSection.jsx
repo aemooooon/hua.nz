@@ -86,12 +86,12 @@ const EducationSection = ({ language }) => {
                                         bg-clip-text text-transparent leading-normal py-2 px-2
                                     "
                             >
-                                {degree.degree}
+                                {degree.degree.replace(" with Distinction", "")}
                             </h3>
                         </div>
 
                         {/* 右边：徽章 */}
-                        {degree.degreeHonor && (
+                        {degree.degree.includes(" with Distinction") && (
                         <div className="mt-1 sm:mt-0 sm:ml-6">
                             <span
                                 className={`
@@ -121,7 +121,7 @@ const EducationSection = ({ language }) => {
                         </div>
 
                         <div
-                            className={`relative ${colors.cardBg} backdrop-blur-lg shadow-2xl shadow-black/20 rounded-3xl overflow-hidden`}
+                            className={`relative ${colors.cardBg} backdrop-blur-lg shadow-2xl shadow-black/20 rounded-3xl overflow-hidden z-0`}
                             style={{
                                 border: `1px solid var(--theme-border)`,
                                 borderTop: "none", // 移除顶部边框，用自定义边框替代
@@ -151,7 +151,7 @@ const EducationSection = ({ language }) => {
 
                                 {/* 学校信息和项目之间的分割线 */}
                                 <div className="flex justify-center my-8">
-                                    <GlowDivider className="w-full" />
+                                    <GlowDivider className="w-full" animated={true} />
                                 </div>
 
                                 {/* Course Records */}
@@ -210,7 +210,7 @@ const EducationSection = ({ language }) => {
                                                         {semester.courses.map((course, courseIdx) => (
                                                             <div
                                                                 key={courseIdx}
-                                                                className="flex items-center justify-between bg-gradient-to-r from-theme-surface/35 via-theme-primary/18 to-theme-accent/22 backdrop-blur-sm rounded-lg p-3 hover:from-theme-primary/15 hover:via-theme-surface/35 hover:to-theme-accent/20 hover:shadow-md transition-all duration-200 border border-white/10"
+                                                                className="flex items-center justify-between bg-gradient-to-r from-theme-surface/35 via-theme-primary/18 to-theme-accent/22 backdrop-blur-sm rounded-lg p-3 hover:from-theme-primary/15 hover:via-theme-surface/35 hover:to-theme-accent/20 hover:shadow-md transition-all duration-200 border border-white/5"
                                                             >
                                                                 <div className="flex-1">
                                                                     <div className="font-medium text-sm leading-tight text-theme-text-primary">
@@ -274,7 +274,7 @@ const EducationSection = ({ language }) => {
                                                     onMouseLeave={() => setHoveredProject(null)}
                                                 >
                                                     <div
-                                                        className="relative h-48 sm:h-48 md:h-40 lg:h-36 xl:h-40 rounded-xl overflow-hidden group cursor-pointer project-image-container"
+                                                        className="relative h-48 sm:h-48 md:h-48 lg:h-36 xl:h-48 rounded-xl overflow-hidden group cursor-pointer project-image-container z-10"
                                                         style={{
                                                             backgroundImage: `url(${project.image})`,
                                                             backgroundSize: "cover",
@@ -361,7 +361,7 @@ const EducationSection = ({ language }) => {
                                                         onMouseLeave={() => setHoveredProject(null)}
                                                     >
                                                         <div
-                                                            className="relative h-48 sm:h-48 rounded-xl overflow-hidden group cursor-pointer"
+                                                            className="relative h-48 sm:h-48 rounded-xl overflow-hidden group cursor-pointer z-10"
                                                             style={{
                                                                 backgroundImage: `url(${award.image})`,
                                                                 backgroundSize: "cover",

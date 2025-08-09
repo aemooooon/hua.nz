@@ -16,22 +16,23 @@
     min-height: 2px;
     position: relative;
     z-index: 10;
+    /* 优化性能和减少闪烁 */
+    will-change: opacity, transform;
+    transform: translateZ(0);
+    backface-visibility: hidden;
 }
 
 @keyframes glow-pulse {
     0% { 
         opacity: 0.4;
-        filter: blur(0.5px);
         transform: scaleX(0.95);
     }
     50% {
         opacity: 0.9;
-        filter: blur(0px);
         transform: scaleX(1);
     }
     100% { 
         opacity: 0.6;
-        filter: blur(0.3px);
         transform: scaleX(0.98);
     }
 }
@@ -55,22 +56,23 @@
     min-height: 2px;
     position: relative;
     z-index: 10;
+    /* 优化性能和减少闪烁 */
+    will-change: opacity, transform;
+    transform: translateZ(0);
+    backface-visibility: hidden;
 }
 
 @keyframes enhanced-glow-pulse {
     0% { 
         opacity: 0.6;
-        filter: blur(0.5px);
         transform: scaleX(0.95);
     }
     50% {
         opacity: 1;
-        filter: blur(0px);
         transform: scaleX(1.02);
     }
     100% { 
         opacity: 0.8;
-        filter: blur(0.3px);
         transform: scaleX(0.98);
     }
 }
