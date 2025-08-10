@@ -317,6 +317,8 @@ const GallerySection = ({ language = 'en' }) => {
                     paintingWithFrame.receiveShadow = false;
                     scene.add(paintingWithFrame);
                     
+                    console.log(`🖼️ 创建画作: ${wallType} 位置${positionIndex} 坐标(${paintingWithFrame.position.x.toFixed(1)}, ${paintingWithFrame.position.y.toFixed(1)}, ${paintingWithFrame.position.z.toFixed(1)})`);
+                    
                     // 创建射灯
                     setTimeout(() => {
                         createPaintingSpotlight(paintingWithFrame);
@@ -394,9 +396,6 @@ const GallerySection = ({ language = 'en' }) => {
                 }
             };
             
-            // 启动异步画作创建
-            createPaintingsAsync();
-
             // 创建一个函数来异步获取图片尺寸
             const getImageDimensions = (src) => {
                 return new Promise((resolve) => {
@@ -490,7 +489,7 @@ const GallerySection = ({ language = 'en' }) => {
                 return frameGroup;
             };
 
-            // 启动异步画作创建
+            // 启动异步画作创建（只调用一次）
             createPaintingsAsync();
         };
 
@@ -731,18 +730,19 @@ const GallerySection = ({ language = 'en' }) => {
                 const createWangCharacterLights = () => {
                     const characterLights = [];
                     
-                    console.log('🏮 开始创建"王"字灯光系统...');
+                    console.log('🏮 开始创建标准"王"字灯光系统...');
+                    console.log('📏 王字结构: 第一横(6米) < 第二横(5米) < 第三横最长(7米), 竖线不出头, 整体修长1.5倍');
                     
-                    // "王"字的结构：三条横线 + 一条竖线
+                    // "王"字的正确结构：三条横线 + 一条竖线（竖线不出头，整体修长）
                     const wangLines = [
-                        // 上横线（短一些）
-                        { start: { x: -2, z: -1.5 }, end: { x: 2, z: -1.5 }, name: '王-上横' },
-                        // 中横线（长一些） 
-                        { start: { x: -3, z: 0 }, end: { x: 3, z: 0 }, name: '王-中横' },
-                        // 下横线（长一些）
-                        { start: { x: -3, z: 1.5 }, end: { x: 3, z: 1.5 }, name: '王-下横' },
-                        // 竖线（贯穿三横线）
-                        { start: { x: 0, z: -2 }, end: { x: 0, z: 2 }, name: '王-竖线' }
+                        // 第一横（6米）
+                        { start: { x: -3, z: -2.25 }, end: { x: 3, z: -2.25 }, name: '王-上横' },
+                        // 第二横（5米，比第一横短一点） 
+                        { start: { x: -2.5, z: 0 }, end: { x: 2.5, z: 0 }, name: '王-中横' },
+                        // 第三横（7米，最长）
+                        { start: { x: -3.5, z: 2.25 }, end: { x: 3.5, z: 2.25 }, name: '王-下横' },
+                        // 竖线（只连接三条横线，不出头，修长1.5倍）
+                        { start: { x: 0, z: -2.25 }, end: { x: 0, z: 2.25 }, name: '王-竖线' }
                     ];
 
                     wangLines.forEach((line) => {
