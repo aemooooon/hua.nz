@@ -358,8 +358,8 @@ const ProjectGeoViewer = ({ isOpen, onClose, language = 'en' }) => {
         background: linear-gradient(135deg, #1f2937 0%, #111827 100%); 
         padding: 16px; 
         border-radius: 12px; 
-        min-width: 280px; 
-        max-width: 380px; 
+        min-width: 560px; 
+        max-width: 760px; 
         font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
         border: 1px solid #374151;
         box-shadow: 0 20px 40px rgba(0,0,0,0.8), 0 8px 16px rgba(0,0,0,0.4);
@@ -370,8 +370,8 @@ const ProjectGeoViewer = ({ isOpen, onClose, language = 'en' }) => {
           </div>
         ` : ''}
         
-        <div style="position: relative;">
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+        <div style="position: relative; padding-right: 50px;">
+          <div style="display: flex; justify-content: flex-start; align-items: center; margin-bottom: 12px; gap: 12px;">
             <span style="
               background: linear-gradient(45deg, ${themeColors.primary}, ${themeColors.accent || themeColors.primary}); 
               color: white; 
@@ -490,7 +490,7 @@ const ProjectGeoViewer = ({ isOpen, onClose, language = 'en' }) => {
           keepInView: true,           // 自动保持弹窗在视图内
           autoPan: true,             // 自动平移地图以显示弹窗
           autoPanPadding: [20, 20],  // 平移时的边距
-          offset: [0, -10],          // 弹窗偏移
+          offset: [0, -25],          // 重新调整偏移量，让弹窗跟随marker
         });
 
         // 添加事件监听器
@@ -565,7 +565,7 @@ const ProjectGeoViewer = ({ isOpen, onClose, language = 'en' }) => {
       // 添加自定义CSS样式 - 深色主题
       const style = document.createElement('style');
       style.textContent = `
-        /* 深色弹窗样式 */
+        /* 深色弹窗样式 - 简化覆盖策略 */
         .dark-popup .leaflet-popup-content-wrapper {
           background: transparent !important;
           border-radius: 12px !important;
@@ -579,28 +579,49 @@ const ProjectGeoViewer = ({ isOpen, onClose, language = 'en' }) => {
           padding: 0 !important;
         }
         
+        /* 重新定位箭头到弹窗中心 */
         .dark-popup .leaflet-popup-tip {
           background: #1f2937 !important;
           border: 1px solid #374151 !important;
           box-shadow: 0 4px 8px rgba(0,0,0,0.4) !important;
         }
         
+        /* 关键修复：强制所有弹窗的tip居中 */
+        .leaflet-popup-tip {
+          left: 50% !important;
+          margin-left: -7px !important;
+          transform: none !important;
+        }
+        
+        /* 移除之前的复杂tip容器定位 */
+        
+        /* 覆盖Leaflet的popup整体定位 */
+        .leaflet-popup {
+          margin-bottom: 20px !important;
+        }
+        
+        /* 关闭按钮 - 基于新的宽度重新定位 */
         .dark-popup .leaflet-popup-close-button {
           color: #9ca3af !important;
-          font-size: 20px !important;
+          font-size: 18px !important;
           font-weight: bold !important;
-          padding: 8px !important;
-          right: 8px !important;
-          top: 8px !important;
-          width: 32px !important;
-          height: 32px !important;
-          background: rgba(31, 41, 55, 0.8) !important;
+          padding: 0 !important;
+          /* 基于实际内容宽度定位 */
+          right: 12px !important;
+          top: 12px !important;
+          width: 28px !important;
+          height: 28px !important;
+          background: rgba(31, 41, 55, 0.9) !important;
           border-radius: 50% !important;
           display: flex !important;
           align-items: center !important;
           justify-content: center !important;
           transition: all 0.3s ease !important;
           border: 1px solid #4b5563 !important;
+          z-index: 10000 !important;
+          position: absolute !important;
+          text-decoration: none !important;
+          line-height: 1 !important;
         }
         
         .dark-popup .leaflet-popup-close-button:hover {
@@ -728,9 +749,6 @@ const ProjectGeoViewer = ({ isOpen, onClose, language = 'en' }) => {
           <h2 className="text-lg font-bold">
             Project Geo Distribution
           </h2>
-          <p className="text-xs mt-1 opacity-80">
-            {language === 'en' ? 'Click clusters to expand' : '点击聚类以展开'}
-          </p>
         </div>
 
         {/* 图例 - 使用地图高对比度样式 */}
