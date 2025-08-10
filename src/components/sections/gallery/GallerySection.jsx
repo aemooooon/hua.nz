@@ -167,11 +167,120 @@ const GallerySection = ({ language = 'en' }) => {
 
             // 增加画作数量，最多12幅
             const maxPaintings = Math.min(galleryData.length, 12);
-            const paintingWidth = 3;
-            const paintingHeight = 2;
+            const basePaintingHeight = 2.2; // 基础高度
+            const maxPaintingWidth = 4; // 最大宽度限制
             const paintingCenterHeight = 1.6; // 画作中心高度，与摄像机视线水平
             
-            console.log(`Creating ${maxPaintings} paintings at eye level (${paintingCenterHeight}m)...`);
+            console.log(`Creating ${maxPaintings} paintings with dynamic aspect ratios at eye level (${paintingCenterHeight}m)...`);
+
+            // 创建一个函数来异步获取图片尺寸
+            const getImageDimensions = (src) => {
+                return new Promise((resolve) => {
+                    const img = new Image();
+                    img.onload = () => {
+                        resolve({ width: img.width, height: img.height });
+                    };
+                    img.onerror = () => {
+                        // 如果加载失败，返回默认比例
+                        resolve({ width: 300, height: 200 });
+                    };
+                    img.src = src;
+                });
+            };
+
+            // 为每个图片创建射灯（合并版本）
+            const createPaintingSpotlight = (paintingMesh) => {
+                const spotLight = new THREE.SpotLight(0xfff8e7, 3.2, 15, Math.PI / 6, 0.2, 1.5);
+                const position = paintingMesh.position;
+                const rotation = paintingMesh.rotation;
+                
+                // 根据画作朝向计算射灯位置
+                let lightPos = new THREE.Vector3();
+                const lightHeight = 6.5;
+                const offset = 2.5;
+                
+                if (Math.abs(rotation.y) < 0.1) { // 后墙
+                    lightPos.set(position.x, lightHeight, position.z + offset);
+                } else if (Math.abs(rotation.y - Math.PI) < 0.1) { // 前墙
+                    lightPos.set(position.x, lightHeight, position.z - offset);
+                } else if (Math.abs(rotation.y + Math.PI/2) < 0.1) { // 右墙
+                    lightPos.set(position.x - offset, lightHeight, position.z);
+                } else if (Math.abs(rotation.y - Math.PI/2) < 0.1) { // 左墙
+                    lightPos.set(position.x + offset, lightHeight, position.z);
+                }
+                
+                spotLight.position.copy(lightPos);
+                spotLight.target = paintingMesh;
+                spotLight.castShadow = true;
+                spotLight.shadow.mapSize.width = 1024;
+                spotLight.shadow.mapSize.height = 1024;
+                
+                scene.add(spotLight);
+                scene.add(spotLight.target);
+                return spotLight;
+            };
+
+            // 动态创建画框的函数
+            const createDynamicPaintingFrame = (painting, imageWidth, imageHeight) => {
+                const frameGroup = new THREE.Group();
+                
+                // 根据图片真实比例计算画作尺寸
+                const aspectRatio = imageWidth / imageHeight;
+                let paintingWidth, paintingHeight;
+                
+                if (aspectRatio > 1.5) {
+                    // 宽幅横向图片：限制宽度
+                    paintingWidth = Math.min(maxPaintingWidth, basePaintingHeight * aspectRatio);
+                    paintingHeight = paintingWidth / aspectRatio;
+                } else if (aspectRatio < 0.7) {
+                    // 纵向图片：限制高度
+                    paintingHeight = basePaintingHeight;
+                    paintingWidth = paintingHeight * aspectRatio;
+                } else {
+                    // 接近正方形的图片：保持合理比例
+                    paintingHeight = basePaintingHeight * 0.9;
+                    paintingWidth = paintingHeight * aspectRatio;
+                }
+                
+                console.log(`🖼️ Frame ${aspectRatio.toFixed(2)} ratio: ${paintingWidth.toFixed(1)}×${paintingHeight.toFixed(1)}m`);
+                
+                // 调整画作平面几何体以匹配新尺寸
+                painting.geometry.dispose();
+                painting.geometry = new THREE.PlaneGeometry(paintingWidth, paintingHeight);
+                
+                // 画框材质
+                const frameMaterial = new THREE.MeshLambertMaterial({ color: 0x1a1a1a });
+                const frameWidth = 0.08;
+                const frameThickness = 0.04;
+                
+                // 四条画框边 - 动态尺寸
+                const frameGeometries = [
+                    new THREE.BoxGeometry(paintingWidth + frameWidth * 2, frameWidth, frameThickness), // 上边
+                    new THREE.BoxGeometry(paintingWidth + frameWidth * 2, frameWidth, frameThickness), // 下边
+                    new THREE.BoxGeometry(frameWidth, paintingHeight, frameThickness), // 左边
+                    new THREE.BoxGeometry(frameWidth, paintingHeight, frameThickness)  // 右边
+                ];
+                
+                const framePositions = [
+                    { x: 0, y: (paintingHeight + frameWidth) / 2, z: frameThickness / 2 },  // 上
+                    { x: 0, y: -(paintingHeight + frameWidth) / 2, z: frameThickness / 2 }, // 下
+                    { x: -(paintingWidth + frameWidth) / 2, y: 0, z: frameThickness / 2 },  // 左
+                    { x: (paintingWidth + frameWidth) / 2, y: 0, z: frameThickness / 2 }    // 右
+                ];
+                
+                frameGeometries.forEach((geometry, i) => {
+                    const frame = new THREE.Mesh(geometry, frameMaterial);
+                    frame.position.set(framePositions[i].x, framePositions[i].y, framePositions[i].z);
+                    frame.castShadow = true;
+                    frame.receiveShadow = true;
+                    frameGroup.add(frame);
+                });
+                
+                frameGroup.add(painting);
+                frameGroup.userData = { paintingWidth, paintingHeight, aspectRatio };
+                
+                return frameGroup;
+            };
             
             for (let i = 0; i < maxPaintings; i++) {
                 const item = galleryData[i];
@@ -180,7 +289,10 @@ const GallerySection = ({ language = 'en' }) => {
                     continue;
                 }
 
-                // 创建画作平面 - 更好的材质响应光照
+                // 创建画作平面 - 使用默认尺寸，稍后会根据图片调整
+                let paintingWidth = 2.5;  // 默认宽度
+                let paintingHeight = 2.0; // 默认高度
+                
                 const paintingGeometry = new THREE.PlaneGeometry(paintingWidth, paintingHeight);
                 const paintingMaterial = new THREE.MeshPhongMaterial({ // 改用Phong材质，更好的光照效果
                     color: 0x888888,
@@ -190,10 +302,41 @@ const GallerySection = ({ language = 'en' }) => {
                 });
                 const painting = new THREE.Mesh(paintingGeometry, paintingMaterial);
                 
-                // 创建现代简约画框
+                // 异步获取图片尺寸并调整画作
+                const adjustPaintingSize = async () => {
+                    try {
+                        const dimensions = await getImageDimensions(item.src || item.thumbnail);
+                        const aspectRatio = dimensions.width / dimensions.height;
+                        
+                        // 根据比例重新计算尺寸
+                        if (aspectRatio > 1.5) {
+                            paintingWidth = Math.min(maxPaintingWidth, basePaintingHeight * aspectRatio * 0.8);
+                            paintingHeight = paintingWidth / aspectRatio;
+                        } else if (aspectRatio < 0.7) {
+                            paintingHeight = basePaintingHeight;
+                            paintingWidth = paintingHeight * aspectRatio;
+                        } else {
+                            paintingHeight = basePaintingHeight * 0.9;
+                            paintingWidth = paintingHeight * aspectRatio;
+                        }
+                        
+                        // 更新几何体
+                        painting.geometry.dispose();
+                        painting.geometry = new THREE.PlaneGeometry(paintingWidth, paintingHeight);
+                        
+                        console.log(`📐 Adjusted painting ${i + 1} size: ${paintingWidth.toFixed(1)}×${paintingHeight.toFixed(1)}m (ratio: ${aspectRatio.toFixed(2)})`);
+                    } catch (error) {
+                        console.warn(`Failed to adjust size for painting ${i + 1}:`, error);
+                    }
+                };
+                
+                // 启动异步尺寸调整
+                adjustPaintingSize();
+                
+                // 创建现代简约画框 - 使用默认尺寸
                 const frameThickness = 0.05;
                 const frameWidth = 0.1;
-                const createPaintingFrame = (painting) => {
+                const createPaintingFrame = (painting, pWidth = 2.5, pHeight = 2.0) => {
                     const frameGroup = new THREE.Group();
                     
                     // 画框材质 - 深色现代风格
@@ -201,19 +344,19 @@ const GallerySection = ({ language = 'en' }) => {
                         color: 0x1a1a1a 
                     });
                     
-                    // 四条画框边
+                    // 四条画框边 - 使用传入的尺寸参数
                     const frameGeometries = [
-                        new THREE.BoxGeometry(paintingWidth + frameWidth * 2, frameWidth, frameThickness), // 上边
-                        new THREE.BoxGeometry(paintingWidth + frameWidth * 2, frameWidth, frameThickness), // 下边
-                        new THREE.BoxGeometry(frameWidth, paintingHeight, frameThickness), // 左边
-                        new THREE.BoxGeometry(frameWidth, paintingHeight, frameThickness)  // 右边
+                        new THREE.BoxGeometry(pWidth + frameWidth * 2, frameWidth, frameThickness), // 上边
+                        new THREE.BoxGeometry(pWidth + frameWidth * 2, frameWidth, frameThickness), // 下边
+                        new THREE.BoxGeometry(frameWidth, pHeight, frameThickness), // 左边
+                        new THREE.BoxGeometry(frameWidth, pHeight, frameThickness)  // 右边
                     ];
                     
                     const framePositions = [
-                        { x: 0, y: (paintingHeight + frameWidth) / 2, z: frameThickness / 2 },  // 上
-                        { x: 0, y: -(paintingHeight + frameWidth) / 2, z: frameThickness / 2 }, // 下
-                        { x: -(paintingWidth + frameWidth) / 2, y: 0, z: frameThickness / 2 },  // 左
-                        { x: (paintingWidth + frameWidth) / 2, y: 0, z: frameThickness / 2 }    // 右
+                        { x: 0, y: (pHeight + frameWidth) / 2, z: frameThickness / 2 },  // 上
+                        { x: 0, y: -(pHeight + frameWidth) / 2, z: frameThickness / 2 }, // 下
+                        { x: -(pWidth + frameWidth) / 2, y: 0, z: frameThickness / 2 },  // 左
+                        { x: (pWidth + frameWidth) / 2, y: 0, z: frameThickness / 2 }    // 右
                     ];
                     
                     frameGeometries.forEach((geometry, i) => {
@@ -277,7 +420,31 @@ const GallerySection = ({ language = 'en' }) => {
                 
                 // 添加到场景
                 scene.add(paintingWithFrame);
-                console.log(`✅ Added painting ${i + 1} with frame to scene at eye level:`, paintingWithFrame.position);
+                
+                // 存储画作信息用于射灯创建
+                const paintingInfo = {
+                    position: paintingWithFrame.position.clone(),
+                    rotationY: paintingWithFrame.rotation.y,
+                    size: { width: paintingWidth, height: paintingHeight },
+                    index: i
+                };
+                
+                // 为射灯传递旋转信息
+                paintingInfo.position.rotationY = paintingInfo.rotationY;
+                
+                // 创建专用射灯照亮这幅画作
+                setTimeout(() => {
+                    const paintingSpotlight = createPaintingSpotlight(paintingWithFrame);
+                    
+                    // 将旋转信息传递给射灯，让它能够正确定位
+                    paintingSpotlight.userData = { 
+                        paintingRotation: paintingInfo.rotationY,
+                        paintingIndex: i 
+                    };
+                    
+                }, 100); // 稍微延迟创建射灯，确保画作已经正确放置
+                
+                console.log(`✅ Added painting ${i + 1} with frame and spotlight at:`, paintingWithFrame.position, `rotation: ${(paintingWithFrame.rotation.y * 180 / Math.PI).toFixed(1)}°`);
 
                 // 异步加载纹理
                 const textureLoader = new THREE.TextureLoader();
@@ -395,195 +562,78 @@ const GallerySection = ({ language = 'en' }) => {
                     setIsPointerLocked(false);
                 });
 
-                // 添加专业画廊灯光系统 - 平衡版本
-                const setupGalleryLighting = (scene) => {
-                    // 环境光 - 柔和的基础照明
-                    const ambientLight = new THREE.AmbientLight(0x404040, 0.4);
+                // 设置基础环境光照（简化版本，因为主要照明由画作射灯提供）
+                const setupBasicLighting = (scene) => {
+                    // 柔和的环境光 - 提供基础照明
+                    const ambientLight = new THREE.AmbientLight(0x404040, 0.6);
                     scene.add(ambientLight);
-
-                    // 主方向光 - 模拟天窗
-                    const directionalLight = new THREE.DirectionalLight(0xffffff, 0.5);
-                    directionalLight.position.set(0, 10, 5);
-                    directionalLight.castShadow = true;
-                    directionalLight.shadow.mapSize.width = 2048;
-                    directionalLight.shadow.mapSize.height = 2048;
-                    directionalLight.shadow.camera.near = 0.5;
-                    directionalLight.shadow.camera.far = 50;
-                    directionalLight.shadow.camera.left = -20;
-                    directionalLight.shadow.camera.right = 20;
-                    directionalLight.shadow.camera.top = 20;
-                    directionalLight.shadow.camera.bottom = -20;
-                    scene.add(directionalLight);
-
-                    // 画廊专用射灯系统 - 优化版本，更细更高的光束
-                    const createSpotlightForPainting = (position, target, enableShadow = true) => {
-                        const spotLight = new THREE.SpotLight(0xffffff, 2.8); // 提升亮度
-                        
-                        // 射灯位置 - 在画作上方
-                        spotLight.position.copy(position);
-                        
-                        // 射灯目标 - 画作中心
-                        spotLight.target.position.copy(target);
-                        scene.add(spotLight.target);
-                        
-                        // 射灯参数 - 更细更高的光束
-                        spotLight.angle = Math.PI / 8; // 22.5度角锥 - 更集中更细
-                        spotLight.penumbra = 0.15; // 更锐利的边缘，减少阴影重叠
-                        spotLight.decay = 1.8; // 稍微减少衰减，保持亮度
-                        spotLight.distance = 12; // 适中的照射距离
-                        
-                        // 只有部分射灯启用阴影，减少纹理单元使用
-                        if (enableShadow) {
-                            spotLight.castShadow = true;
-                            spotLight.shadow.mapSize.width = 512;
-                            spotLight.shadow.mapSize.height = 512;
-                            spotLight.shadow.camera.near = 0.5;
-                            spotLight.shadow.camera.far = 12;
-                        }
-                        
-                        scene.add(spotLight);
-                        return spotLight;
-                    };
-
-                    // 为每面墙创建优化的射灯系统 - 更高位置，更大间距
-                    const spotlights = [];
                     
-                    // 后墙射灯 (3盏) - 只有中间的启用阴影，更高位置
-                    for (let i = 0; i < 3; i++) {
-                        const lightPos = new THREE.Vector3(-8 + i * 8, 7.0, -10); // 提高高度，远离墙面
-                        const targetPos = new THREE.Vector3(-8 + i * 8, 1.6, -14.5); // 视线高度
-                        const enableShadow = i === 1; // 只有中间的启用阴影
-                        spotlights.push(createSpotlightForPainting(lightPos, targetPos, enableShadow));
-                    }
+                    // 顶部主光源 - 提供整体照明
+                    const mainLight = new THREE.DirectionalLight(0xffffff, 0.8);
+                    mainLight.position.set(0, 10, 5);
+                    mainLight.castShadow = true;
+                    mainLight.shadow.mapSize.width = 2048;
+                    mainLight.shadow.mapSize.height = 2048;
+                    mainLight.shadow.camera.near = 0.5;
+                    mainLight.shadow.camera.far = 20;
+                    mainLight.shadow.camera.left = -20;
+                    mainLight.shadow.camera.right = 20;
+                    mainLight.shadow.camera.top = 20;
+                    mainLight.shadow.camera.bottom = -20;
+                    scene.add(mainLight);
                     
-                    // 右墙射灯 (3盏) - 只有中间的启用阴影，更高位置
-                    for (let i = 0; i < 3; i++) {
-                        const lightPos = new THREE.Vector3(10, 7.0, -8 + i * 8); // 提高高度，远离墙面
-                        const targetPos = new THREE.Vector3(14.5, 1.6, -8 + i * 8);
-                        const enableShadow = i === 1; // 只有中间的启用阴影
-                        spotlights.push(createSpotlightForPainting(lightPos, targetPos, enableShadow));
-                    }
+                    console.log('✨ Set up basic lighting system - paintings will have individual spotlights');
                     
-                    // 左墙射灯 (3盏) - 只有中间的启用阴影，更高位置
-                    for (let i = 0; i < 3; i++) {
-                        const lightPos = new THREE.Vector3(-10, 7.0, 8 - i * 8); // 提高高度，远离墙面
-                        const targetPos = new THREE.Vector3(-14.5, 1.6, 8 - i * 8);
-                        const enableShadow = i === 1; // 只有中间的启用阴影
-                        spotlights.push(createSpotlightForPainting(lightPos, targetPos, enableShadow));
-                    }
-                    
-                    // 前墙射灯 (2盏，入口两侧) - 不启用阴影，更高位置
-                    const frontLightLeft = new THREE.Vector3(-12, 7.0, 10); // 提高高度，远离墙面
-                    const frontTargetLeft = new THREE.Vector3(-12, 1.6, 14.5);
-                    spotlights.push(createSpotlightForPainting(frontLightLeft, frontTargetLeft, false));
-                    
-                    const frontLightRight = new THREE.Vector3(12, 7.0, 10); // 提高高度，远离墙面
-                    const frontTargetRight = new THREE.Vector3(12, 1.6, 14.5);
-                    spotlights.push(createSpotlightForPainting(frontLightRight, frontTargetRight, false));
-
-                    console.log(`✅ Created ${spotlights.length} gallery spotlights`);
-                    
-                    // "王"字形天花板灯管系统 - 简洁高效
-                    const createWangCharacterLights = () => {
-                        const wangLights = [];
-                        
-                        // "王"字的三条横线 + 一条竖线
-                        const tubeConfigs = [
-                            // 上横线
-                            { start: { x: -6, z: -4 }, end: { x: 6, z: -4 }, name: '上横' },
-                            // 中横线  
-                            { start: { x: -6, z: 0 }, end: { x: 6, z: 0 }, name: '中横' },
-                            // 下横线
-                            { start: { x: -6, z: 4 }, end: { x: 6, z: 4 }, name: '下横' },
-                            // 竖线
-                            { start: { x: 0, z: -4 }, end: { x: 0, z: 4 }, name: '竖线' }
-                        ];
-                        
-                        tubeConfigs.forEach((config) => {
-                            // 创建扁平的灯管几何体，贴在天花板上
-                            const length = Math.sqrt(
-                                Math.pow(config.end.x - config.start.x, 2) + 
-                                Math.pow(config.end.z - config.start.z, 2)
-                            );
-                            
-                            // 使用扁平的盒子几何体代替圆柱体，模拟贴在天花板的灯管
-                            const tubeGeometry = new THREE.BoxGeometry(
-                                config.name === '竖线' ? 0.3 : length, // 宽度
-                                0.1, // 厚度 - 很薄，贴在天花板
-                                config.name === '竖线' ? length : 0.3  // 深度
-                            );
-                            
-                            // 发光材质
-                            const tubeMaterial = new THREE.MeshBasicMaterial({ 
-                                color: 0xffffff,
-                                transparent: true,
-                                opacity: 0.9
-                            });
-                            
-                            const tube = new THREE.Mesh(tubeGeometry, tubeMaterial);
-                            
-                            // 设置位置 - 贴在天花板表面
-                            const centerX = (config.start.x + config.end.x) / 2;
-                            const centerZ = (config.start.z + config.end.z) / 2;
-                            tube.position.set(centerX, 7.95, centerZ); // 贴在天花板下方
-                            
-                            scene.add(tube);
-                            
-                            // 添加点光源效果 - 沿着灯管分布多个光源
-                            const numLights = Math.ceil(length / 2); // 每2米一个光源
-                            for (let i = 0; i < numLights; i++) {
-                                const t = i / (numLights - 1); // 插值比例
-                                const lightX = config.start.x + t * (config.end.x - config.start.x);
-                                const lightZ = config.start.z + t * (config.end.z - config.start.z);
-                                
-                                const pointLight = new THREE.PointLight(0xffffff, 1.5, 8);
-                                pointLight.position.set(lightX, 7.6, lightZ);
-                                scene.add(pointLight);
-                            }
-                            
-                            wangLights.push({
-                                tube: tube,
-                                name: config.name
-                            });
-                            
-                            console.log(`✨ Created "王" character light: ${config.name} at (${centerX}, 7.8, ${centerZ})`);
-                        });
-                        
-                        return wangLights;
-                    };
-                    
-                    const wangLights = createWangCharacterLights();
-                    console.log(`✨ Created "王" character lighting with ${wangLights.length} light tubes`);
-
-                    return spotlights;
+                    return [ambientLight, mainLight];
                 };
 
-                // 设置专业画廊灯光
-                setupGalleryLighting(scene);
+                // 获取图片的原始尺寸 - 用于动态调整画框
+                const getImageDimensions = (imagePath) => {
+                    return new Promise((resolve) => {
+                        const img = new Image();
+                        img.onload = () => {
+                            resolve({ width: img.width, height: img.height });
+                        };
+                        img.onerror = () => {
+                            console.warn(`Failed to load image: ${imagePath}, using default dimensions`);
+                            resolve({ width: 800, height: 600 }); // 默认尺寸
+                        };
+                        img.src = imagePath;
+                    });
+                };
 
                 // 添加艺术装饰元素
+                // 添加艺术装饰元素
                 const addArtisticElements = (scene) => {
-                    // 中心艺术装置 - 代表技术与艺术的融合
+                const addArtisticElements = (scene) => {
+                    // 透明反射球装置 - 现代艺术中心装置
                     const createCenterPiece = () => {
                         const group = new THREE.Group();
                         
-                        // 主体 - 透明反射球体
+                        // 创建高反射透明球体
                         const sphereGeometry = new THREE.SphereGeometry(0.8, 32, 32);
-                        const glassMaterial = new THREE.MeshPhysicalMaterial({
+                        const sphereMaterial = new THREE.MeshPhysicalMaterial({
                             color: 0xffffff,
-                            metalness: 0.0,
+                            metalness: 0.1,
                             roughness: 0.05,
-                            transmission: 0.9,       // 高透明度
-                            transparent: true,
-                            opacity: 0.3,           // 部分透明
-                            reflectivity: 1.0,      // 高反射率
-                            refractionRatio: 0.9,   // 折射率
-                            clearcoat: 1.0,         // 清漆层
-                            clearcoatRoughness: 0.1
+                            transmission: 0.8,        // 高透明度
+                            thickness: 0.5,           // 材质厚度
+                            ior: 1.4,                 // 折射率 
+                            reflectivity: 0.9,        // 反射率
+                            clearcoat: 1.0,           // 透明涂层
+                            clearcoatRoughness: 0.1,   // 涂层粗糙度
                         });
                         
-                        const sphere = new THREE.Mesh(sphereGeometry, glassMaterial);
-                        sphere.position.y = 0;
+                        const sphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
+                        sphere.position.y = -0.3;
+                        
+                        // 给球添加缓慢旋转和浮动动画
+                        const floatSphere = (time) => {
+                            sphere.rotation.y = time * 0.001;
+                            sphere.rotation.x = Math.sin(time * 0.002) * 0.1;
+                            sphere.position.y = -0.3 + Math.sin(time * 0.003) * 0.1;
+                        };
+                        
                         sphere.castShadow = true;
                         sphere.receiveShadow = true;
                         group.add(sphere);
@@ -595,15 +645,10 @@ const GallerySection = ({ language = 'en' }) => {
                         });
                         const base = new THREE.Mesh(baseGeometry, baseMaterial);
                         base.position.y = -0.9;
+                        base.castShadow = true;
                         base.receiveShadow = true;
                         group.add(base);
                         
-                        // 添加缓慢的悬浮动画
-                        const floatSphere = () => {
-                            sphere.position.y = Math.sin(Date.now() * 0.001) * 0.1;
-                        };
-                        
-                        // 存储动画函数以便后续使用
                         group.userData = { animate: floatSphere };
                         
                         group.position.set(0, 1.6, 0); // 画廊中心，视线高度
@@ -615,15 +660,19 @@ const GallerySection = ({ language = 'en' }) => {
                     
                     // 角落装饰 - 现代极简主义立柱
                     const createCornerPillars = () => {
-                        const pillarPositions = [
-                            { x: -12, z: -12 }, // 后左角
-                            { x: 12, z: -12 },  // 后右角
+                        const positions = [
+                            { x: -13, z: -13 },  // 后左角
+                            { x: 13, z: -13 },   // 后右角
+                            { x: -13, z: 13 },   // 前左角
+                            { x: 13, z: 13 }     // 前右角
                         ];
                         
-                        pillarPositions.forEach((pos) => {
-                            const pillarGeometry = new THREE.CylinderGeometry(0.3, 0.3, 6, 12);
+                        positions.forEach(pos => {
+                            const pillarGeometry = new THREE.CylinderGeometry(0.15, 0.2, 4, 8);
                             const pillarMaterial = new THREE.MeshLambertMaterial({ 
-                                color: 0x666666 
+                                color: 0x888888,
+                                transparent: true,
+                                opacity: 0.7
                             });
                             const pillar = new THREE.Mesh(pillarGeometry, pillarMaterial);
                             pillar.position.set(pos.x, 1, pos.z);
@@ -646,7 +695,221 @@ const GallerySection = ({ language = 'en' }) => {
                     return centerPiece;
                 };
 
+                // 创建"王华"字形天花板灯管系统
+                const createWangHuaCharacterLights = () => {
+                    const characterLights = [];
+                    
+                    // "王"字的三条横线 + 一条竖线 (左侧) - 蓝色
+                    const wangConfigs = [
+                        // 上横线 (最短)
+                        { start: { x: -8, z: -2 }, end: { x: -4, z: -2 }, name: '王-上横' },
+                        // 中横线 (中长)  
+                        { start: { x: -8.5, z: 0 }, end: { x: -3.5, z: 0 }, name: '王-中横' },
+                        // 下横线 (最长)
+                        { start: { x: -9, z: 2 }, end: { x: -3, z: 2 }, name: '王-下横' },
+                        // 竖线 (连接三条横线)
+                        { start: { x: -6, z: -2.5 }, end: { x: -6, z: 2.5 }, name: '王-竖线' }
+                    ];
+
+                        // "华"字结构 (右侧) - 更复杂的字形
+                        const huaConfigs = [
+                            // 上部 "人" 字形
+                            { start: { x: 3, z: -2.5 }, end: { x: 4.5, z: -1 }, name: '华-人左', isAngled: true },
+                            { start: { x: 6, z: -2.5 }, end: { x: 4.5, z: -1 }, name: '华-人右', isAngled: true },
+                            // 中间横线
+                            { start: { x: 3.5, z: -0.5 }, end: { x: 5.5, z: -0.5 }, name: '华-中横' },
+                            // 下部 "十" 字形
+                            { start: { x: 4.5, z: 0.5 }, end: { x: 4.5, z: 2.5 }, name: '华-下竖' },
+                            { start: { x: 3.5, z: 1.5 }, end: { x: 5.5, z: 1.5 }, name: '华-下横' },
+                            // 底部装饰
+                            { start: { x: 3, z: 2.8 }, end: { x: 6, z: 2.8 }, name: '华-底横' }
+                        ];
+                        
+                        // 创建"王"字灯管 (蓝色)
+                        wangConfigs.forEach((config) => {
+                            const length = Math.sqrt(
+                                Math.pow(config.end.x - config.start.x, 2) + 
+                                Math.pow(config.end.z - config.start.z, 2)
+                            );
+                            
+                            const tubeGeometry = new THREE.BoxGeometry(
+                                config.name.includes('竖') ? 0.3 : length,
+                                0.12, // 稍厚一些，更显眼
+                                config.name.includes('竖') ? length : 0.3
+                            );
+                            
+                            // "王"字用蓝色
+                            const tubeMaterial = new THREE.MeshBasicMaterial({ 
+                                color: 0x4488ff,
+                                emissive: 0x2244bb,
+                                transparent: true,
+                                opacity: 0.9
+                            });
+                            
+                            const tube = new THREE.Mesh(tubeGeometry, tubeMaterial);
+                            
+                            const centerX = (config.start.x + config.end.x) / 2;
+                            const centerZ = (config.start.z + config.end.z) / 2;
+                            tube.position.set(centerX, 7.94, centerZ);
+                            
+                            scene.add(tube);
+                            
+                            // 添加蓝色光源
+                            const numLights = Math.ceil(length / 2.5);
+                            for (let i = 0; i < numLights; i++) {
+                                const t = i / (numLights - 1);
+                                const lightX = config.start.x + t * (config.end.x - config.start.x);
+                                const lightZ = config.start.z + t * (config.end.z - config.start.z);
+                                
+                                const pointLight = new THREE.PointLight(0x4488ff, 1.2, 6);
+                                pointLight.position.set(lightX, 7.5, lightZ);
+                                scene.add(pointLight);
+                            }
+                            
+                            characterLights.push({ tube, name: config.name });
+                        });
+
+                        // 创建"华"字灯管 (粉红色)
+                        huaConfigs.forEach((config) => {
+                            let tubeGeometry, tube;
+                            
+                            if (config.isAngled) {
+                                // 处理倾斜线条
+                                const dx = config.end.x - config.start.x;
+                                const dz = config.end.z - config.start.z;
+                                const length = Math.sqrt(dx * dx + dz * dz);
+                                const angle = Math.atan2(dz, dx);
+                                
+                                tubeGeometry = new THREE.BoxGeometry(length, 0.12, 0.2);
+                                const tubeMaterial = new THREE.MeshBasicMaterial({ 
+                                    color: 0xff4488,
+                                    emissive: 0xbb2244,
+                                    transparent: true,
+                                    opacity: 0.9
+                                });
+                                
+                                tube = new THREE.Mesh(tubeGeometry, tubeMaterial);
+                                tube.position.set(
+                                    (config.start.x + config.end.x) / 2,
+                                    7.94,
+                                    (config.start.z + config.end.z) / 2
+                                );
+                                tube.rotation.y = angle;
+                                
+                            } else {
+                                // 处理直线
+                                const length = Math.sqrt(
+                                    Math.pow(config.end.x - config.start.x, 2) + 
+                                    Math.pow(config.end.z - config.start.z, 2)
+                                );
+                                
+                                tubeGeometry = new THREE.BoxGeometry(
+                                    config.name.includes('竖') ? 0.3 : length,
+                                    0.12,
+                                    config.name.includes('竖') ? length : 0.3
+                                );
+                                
+                                const tubeMaterial = new THREE.MeshBasicMaterial({ 
+                                    color: 0xff4488,
+                                    emissive: 0xbb2244,
+                                    transparent: true,
+                                    opacity: 0.9
+                                });
+                                
+                                tube = new THREE.Mesh(tubeGeometry, tubeMaterial);
+                                const centerX = (config.start.x + config.end.x) / 2;
+                                const centerZ = (config.start.z + config.end.z) / 2;
+                                tube.position.set(centerX, 7.94, centerZ);
+                            }
+                            
+                            scene.add(tube);
+                            
+                            // 添加粉色光源
+                            const length = Math.sqrt(
+                                Math.pow(config.end.x - config.start.x, 2) + 
+                                Math.pow(config.end.z - config.start.z, 2)
+                            );
+                            const numLights = Math.ceil(length / 2.5);
+                            
+                            for (let i = 0; i < numLights; i++) {
+                                const t = i / (numLights - 1);
+                                const lightX = config.start.x + t * (config.end.x - config.start.x);
+                                const lightZ = config.start.z + t * (config.end.z - config.start.z);
+                                
+                                const pointLight = new THREE.PointLight(0xff4488, 1.2, 6);
+                                pointLight.position.set(lightX, 7.5, lightZ);
+                                scene.add(pointLight);
+                            }
+                            
+                            characterLights.push({ tube, name: config.name });
+                        });
+                        
+                        return characterLights;
+                    };
+
+                    // 创建图片尺寸检测函数
+                    const getImageDimensions = (url) => {
+                        return new Promise((resolve) => {
+                            const img = new Image();
+                            img.onload = () => {
+                                resolve({ width: img.width, height: img.height });
+                            };
+                            img.onerror = () => {
+                                // 如果加载失败，返回默认比例
+                                resolve({ width: 800, height: 600 });
+                            };
+                            img.src = url;
+                        });
+                    };
+
+                // 设置基础画廊灯光
+                setupBasicLighting(scene);
+
+                // 添加艺术装饰元素
                 addArtisticElements(scene);
+
+                // 创建"王华"字形天花板灯管系统
+                const nameCharacterLights = createWangHuaCharacterLights();
+                console.log(`✨ Created "王华" character lighting - illuminating the world! ${nameCharacterLights.length} light tubes`);
+
+                // 创建射灯增强函数（为每个画作添加聚光灯）
+                const createSpotlightForPainting = (painting, paintingMesh) => {
+                    // 根据墙面位置计算射灯角度和位置
+                    const position = paintingMesh.position;
+                    const isBackWall = position.z < -8;
+                    const isFrontWall = position.z > 8;
+                    const isLeftWall = position.x < -8;
+                    const isRightWall = position.x > 8;
+
+                    // 计算射灯位置（距离画作2米，高度6米）
+                    let lightPosition = new THREE.Vector3();
+                    let targetPosition = new THREE.Vector3(position.x, position.y, position.z);
+
+                    if (isBackWall) {
+                        lightPosition.set(position.x, 6, position.z + 2);
+                    } else if (isFrontWall) {
+                        lightPosition.set(position.x, 6, position.z - 2);
+                    } else if (isLeftWall) {
+                        lightPosition.set(position.x + 2, 6, position.z);
+                    } else if (isRightWall) {
+                        lightPosition.set(position.x - 2, 6, position.z);
+                    }
+
+                    // 创建聚光灯
+                    const spotlight = new THREE.SpotLight(0xffffff, 3, 15, Math.PI / 6, 0.5, 2);
+                    spotlight.position.copy(lightPosition);
+                    spotlight.target = paintingMesh;
+                    spotlight.castShadow = true;
+                    spotlight.shadow.mapSize.width = 1024;
+                    spotlight.shadow.mapSize.height = 1024;
+                    
+                    scene.add(spotlight);
+                    scene.add(spotlight.target);
+
+                    console.log(`💡 Added spotlight for "${painting.title}" at (${lightPosition.x.toFixed(1)}, ${lightPosition.y.toFixed(1)}, ${lightPosition.z.toFixed(1)})`);
+                    return spotlight;
+                };
+                };
 
                 // 创建简单的房间
                 createSimpleRoom(scene);
@@ -703,7 +966,7 @@ const GallerySection = ({ language = 'en' }) => {
                        event.code === 'KeyA' ? 'a' :
                        event.code === 'KeyS' ? 's' :
                        event.code === 'KeyD' ? 'd' :
-                       event.key;
+                       event.key.toLowerCase();
                        
             if (key in keysPressed.current) {
                 keysPressed.current[key] = true;
