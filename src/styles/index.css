@@ -42,12 +42,22 @@
   --theme-border: #00ffff;
   --theme-divider: #00ffff;
   --theme-hover: rgba(0, 255, 255, 0.1);
+  --theme-button: rgba(0, 255, 255, 0.8);
+  --theme-button-primary: rgba(0, 255, 255, 0.8);
+  --theme-button-hover: rgba(0, 255, 255, 0.9);
   --theme-loading: #00ffff;
   --theme-glow: #00ffff;
   --theme-shadow: rgba(0, 255, 255, 0.5);
   --theme-cursor: #00ffff;
   --theme-avatar-glow: #00ffff;
   --theme-success: #00ff00;
+  --theme-warning: #ffff00;
+  --theme-error: #ff0000;
+  
+  /* 渐变色配置 */
+  --theme-gradient-from: #00ffff;
+  --theme-gradient-via: #0080ff;
+  --theme-gradient-to: #4dd0e1;
   
   /* 地图专用高对比度颜色 - Map UI High Contrast Colors */
   --theme-map-button-bg: rgba(0, 0, 0, 0.92);
@@ -58,8 +68,6 @@
   --theme-map-button-text-hover: #ffffff;
   --theme-map-button-glow: 0, 255, 255;
   --theme-map-button-glow-intense: 255, 255, 255;
-  --theme-warning: #ffff00;
-  --theme-error: #ff0000;
 }
 
 body {
@@ -106,6 +114,34 @@ body {
     background: rgba(0, 255, 136, 0.08);
     border-color: rgba(0, 255, 136, 0.1); /* 更透明的主题色边框 */
     box-shadow: 0 8px 32px rgba(0, 255, 136, 0.15);
+}
+
+/* NZ Blue 主题变量 */
+.theme-nz-blue {
+  --theme-primary: #00ffff;
+  --theme-secondary: #0080ff;
+  --theme-accent: #4dd0e1;
+  --theme-success: #00ff00;
+  --theme-warning: #ffff00;
+  --theme-error: #ff0000;
+  --theme-button: rgba(0, 255, 255, 0.8);
+  --theme-gradient-from: #00ffff;
+  --theme-gradient-via: #0080ff;
+  --theme-gradient-to: #4dd0e1;
+}
+
+/* SI Green 主题变量 */
+.theme-si-green {
+  --theme-primary: #00ff88;
+  --theme-secondary: #10b981;
+  --theme-accent: #34d399;
+  --theme-success: #00ff00;
+  --theme-warning: #ffff00;
+  --theme-error: #ff0000;
+  --theme-button: rgba(0, 255, 136, 0.8);
+  --theme-gradient-from: #00ff88;
+  --theme-gradient-via: #10b981;
+  --theme-gradient-to: #34d399;
 }
 
 /* 文字背景确保可读性 */

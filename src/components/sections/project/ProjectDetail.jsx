@@ -48,8 +48,11 @@ const BarChart3 = ({ className = "w-4 h-4" }) => (
 BarChart3.propTypes = { className: PropTypes.string };
 
 const ProjectDetail = ({ project = null, isOpen, onClose }) => {
-  const { language } = useAppStore();
+  const { language, getProjectsText, getProjectDescription } = useAppStore();
   const [activeImageIndex, setActiveImageIndex] = useState(0);
+
+  // 获取当前语言的项目文本
+  const projectText = getProjectsText();
 
   // 当模态框打开时禁用背景滚动并保存滚动位置
   useEffect(() => {
@@ -118,16 +121,16 @@ const ProjectDetail = ({ project = null, isOpen, onClose }) => {
     return (
       <div className="mb-6">
         <div className="flex items-center gap-2 mb-3">
-          <Code className="w-5 h-5 text-blue-400" />
-          <h3 className="text-lg font-semibold text-white">
-            {language === 'en' ? 'Technology Stack' : '技术栈'}
+          <Code className="w-5 h-5 text-theme-primary" />
+          <h3 className="text-lg font-semibold text-theme-text-primary">
+            {projectText.detail.technologyStack}
           </h3>
         </div>
         <div className="flex flex-wrap gap-2">
           {project.tech.map((tech, index) => (
             <span
               key={index}
-              className="px-3 py-1 bg-blue-500/20 text-blue-300 text-sm rounded-full border border-blue-500/30"
+              className="px-3 py-1 bg-theme-primary/20 text-theme-primary text-sm rounded-full border border-theme-primary/30"
             >
               {tech}
             </span>
@@ -143,18 +146,18 @@ const ProjectDetail = ({ project = null, isOpen, onClose }) => {
     return (
       <div className="mb-6">
         <div className="flex items-center gap-2 mb-3">
-          <BarChart3 className="w-5 h-5 text-green-400" />
-          <h3 className="text-lg font-semibold text-white">
-            {language === 'en' ? 'Project Statistics' : '项目统计'}
+          <BarChart3 className="w-5 h-5 text-theme-success" />
+          <h3 className="text-lg font-semibold text-theme-text-primary">
+            {projectText.detail.projectStatistics}
           </h3>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {Object.entries(project.stats).map(([key, value]) => (
-            <div key={key} className="bg-gradient-to-br from-green-500/10 to-blue-500/10 p-4 rounded-lg border border-green-500/20">
-              <div className="text-green-300 text-sm capitalize mb-1">
+            <div key={key} className="bg-gradient-to-br from-theme-success/10 to-theme-primary/10 p-4 rounded-lg border border-theme-success/20">
+              <div className="text-theme-success text-sm capitalize mb-1">
                 {key.replace(/([A-Z])/g, ' $1').trim()}
               </div>
-              <div className="text-white text-2xl font-bold">{value}</div>
+              <div className="text-theme-text-primary text-2xl font-bold">{value}</div>
             </div>
           ))}
         </div>
@@ -168,15 +171,15 @@ const ProjectDetail = ({ project = null, isOpen, onClose }) => {
     return (
       <div className="mb-6">
         <div className="flex items-center gap-2 mb-4">
-          <h3 className="text-lg font-semibold text-white">
-            {language === 'en' ? 'Sub Projects' : '子项目'}
+          <h3 className="text-lg font-semibold text-theme-text-primary">
+            {projectText.detail.subProjects}
           </h3>
         </div>
         <div className="space-y-4">
           {project.projects.map((subProject, index) => (
-            <div key={index} className="bg-gradient-to-br from-purple-500/10 to-pink-500/10 p-4 rounded-lg border border-purple-500/20">
+            <div key={index} className="bg-gradient-to-br from-theme-secondary/10 to-theme-primary/5 p-4 rounded-lg border border-theme-secondary/20">
               <div className="flex items-start justify-between mb-2">
-                <h4 className="text-white font-semibold">
+                <h4 className="text-theme-text-primary font-semibold">
                   {language === 'en' ? subProject.name : (subProject.nameZh || subProject.name)}
                 </h4>
                 {subProject.link && (
@@ -184,20 +187,20 @@ const ProjectDetail = ({ project = null, isOpen, onClose }) => {
                     href={subProject.link}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-purple-400 hover:text-purple-300 transition-colors"
+                    className="text-theme-secondary hover:text-theme-primary transition-colors"
                     style={{ cursor: 'pointer' }}
                   >
                     <ExternalLink className="w-4 h-4" />
                   </a>
                 )}
               </div>
-              <p className="text-gray-300 text-sm mb-3">{subProject.description}</p>
+              <p className="text-theme-text-secondary text-sm mb-3">{subProject.description}</p>
               {subProject.features && (
                 <div className="flex flex-wrap gap-2">
                   {subProject.features.map((feature, featureIndex) => (
                     <span
                       key={featureIndex}
-                      className="px-2 py-1 bg-purple-500/20 text-purple-300 text-xs rounded border border-purple-500/30"
+                      className="px-2 py-1 bg-theme-secondary/20 text-theme-secondary text-xs rounded border border-theme-secondary/30"
                     >
                       {feature}
                     </span>
@@ -218,17 +221,17 @@ const ProjectDetail = ({ project = null, isOpen, onClose }) => {
         onClick={onClose}
         className="fixed top-6 right-6 z-[100000] group bg-theme-primary/20 hover:bg-theme-primary/30 border-2 border-theme-primary/50 hover:border-theme-primary rounded-full p-4 transition-all duration-300 hover:scale-110 backdrop-blur-sm shadow-lg hover:shadow-theme-primary/25"
         style={{ cursor: 'pointer' }}
-        aria-label="Close modal"
+        aria-label={projectText.detail.closeModal}
       >
-        <X className="w-8 h-8 text-theme-primary group-hover:text-white transition-colors" />
+        <X className="w-8 h-8 text-theme-primary group-hover:text-theme-text-primary transition-colors" />
       </button>
 
       {/* Content */}
       <div className="h-full overflow-y-auto pt-6 pb-6 px-6 md:px-12 lg:px-16 xl:px-24" style={{ cursor: 'default' }}>
         {/* Header */}
         <div className="mb-8 pt-16 md:pt-8">
-          <h2 className="text-4xl md:text-5xl font-bold text-white mb-3 leading-tight">{project.title}</h2>
-          <p className="text-xl text-slate-400">{language === 'en' ? project.name : project.name}</p>
+          <h2 className="text-4xl md:text-5xl font-bold text-theme-text-primary mb-3 leading-tight">{project.title}</h2>
+          <p className="text-xl text-theme-text-secondary">{language === 'en' ? project.name : project.name}</p>
         </div>
 
         {/* Content Container */}
@@ -255,7 +258,7 @@ const ProjectDetail = ({ project = null, isOpen, onClose }) => {
                           key={index}
                           onClick={() => setActiveImageIndex(index)}
                           className={`w-3 h-3 rounded-full transition-colors ${
-                            index === activeImageIndex ? 'bg-white' : 'bg-white/50'
+                            index === activeImageIndex ? 'bg-theme-primary' : 'bg-theme-primary/50'
                           }`}
                           style={{ cursor: 'pointer' }}
                         />
@@ -272,8 +275,8 @@ const ProjectDetail = ({ project = null, isOpen, onClose }) => {
                             onClick={() => setActiveImageIndex(index)}
                             className={`flex-shrink-0 w-20 h-16 rounded-lg border-2 overflow-hidden transition-all ${
                               index === activeImageIndex 
-                                ? 'border-blue-400 opacity-100 shadow-lg shadow-blue-400/25' 
-                                : 'border-slate-600 opacity-60 hover:opacity-80'
+                                ? 'border-theme-primary opacity-100 shadow-lg shadow-theme-primary/25' 
+                                : 'border-theme-border opacity-60 hover:opacity-80'
                             }`}
                             style={{ cursor: 'pointer' }}
                           >
@@ -297,12 +300,12 @@ const ProjectDetail = ({ project = null, isOpen, onClose }) => {
             <div className={`order-2 ${images.length === 0 ? 'lg:col-span-2' : ''}`}>
               {/* Project Info */}
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
-                <div className="flex items-center gap-3 text-slate-300 bg-slate-800/50 p-4 rounded-lg">
-                  <MapPin className="w-5 h-5 text-blue-400" />
+                <div className="flex items-center gap-3 text-theme-text-secondary bg-theme-surface/50 p-4 rounded-lg">
+                  <MapPin className="w-5 h-5 text-theme-primary" />
                   <span className="text-sm font-medium">{project.location}</span>
                 </div>
-                <div className="flex items-center gap-3 text-slate-300 bg-slate-800/50 p-4 rounded-lg">
-                  <Calendar className="w-5 h-5 text-green-400" />
+                <div className="flex items-center gap-3 text-theme-text-secondary bg-theme-surface/50 p-4 rounded-lg">
+                  <Calendar className="w-5 h-5 text-theme-success" />
                   <span className="text-sm font-medium">{project.year}</span>
                 </div>
                 {project.link && (
@@ -310,12 +313,12 @@ const ProjectDetail = ({ project = null, isOpen, onClose }) => {
                     href={project.link}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center gap-3 text-blue-400 hover:text-blue-300 transition-colors bg-blue-500/10 hover:bg-blue-500/20 p-4 rounded-lg border border-blue-500/30"
+                    className="flex items-center gap-3 text-theme-primary hover:text-theme-secondary transition-colors bg-theme-primary/10 hover:bg-theme-primary/20 p-4 rounded-lg border border-theme-primary/30"
                     style={{ cursor: 'pointer' }}
                   >
                     <ExternalLink className="w-5 h-5" />
                     <span className="text-sm font-medium">
-                      {language === 'en' ? 'Visit Site' : '访问网站'}
+                      {projectText.detail.visitSite}
                     </span>
                   </a>
                 )}
@@ -323,7 +326,9 @@ const ProjectDetail = ({ project = null, isOpen, onClose }) => {
 
               {/* Description */}
               <div className="mb-8">
-                <p className="text-slate-300 text-lg leading-relaxed">{project.description}</p>
+                <p className="text-theme-text-secondary text-lg leading-relaxed">
+                  {getProjectDescription(project, language)}
+                </p>
               </div>
 
               {/* Technology Stack */}

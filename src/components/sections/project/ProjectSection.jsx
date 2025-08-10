@@ -11,7 +11,10 @@ const ProjectSection = ({ language }) => {
     const [activeFilter, setActiveFilter] = useState('all');
     
     // 从store获取数据和方法
-    const { getAllProjects, selectedProject, setSelectedProject } = useAppStore();
+    const { getAllProjects, selectedProject, setSelectedProject, getProjectsText, getProjectDescription } = useAppStore();
+
+    // 获取当前语言的项目文本
+    const projectText = getProjectsText();
 
     // 获取所有项目数据
     const projects = getAllProjects();
@@ -103,10 +106,10 @@ const ProjectSection = ({ language }) => {
                 {/* 左侧：Projects标题和副标题 */}
                 <div className="flex flex-col text-center lg:text-left">
                     <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold bg-gradient-to-r from-theme-gradient-from via-theme-gradient-via to-theme-gradient-to bg-clip-text text-transparent mb-3">
-                        Projects
+                        {projectText.title}
                     </h1>
                     <h2 className="text-xl md:text-2xl text-white/70 font-light italic">
-                        {language === 'en' ? 'showcases' : '作品展示'}
+                        {projectText.subtitle}
                     </h2>
                 </div>
 
@@ -115,11 +118,11 @@ const ProjectSection = ({ language }) => {
                     <div 
                         className="flex flex-col items-center justify-center cursor-pointer bg-gradient-to-br from-theme-primary/20 to-theme-secondary/20 border border-theme-primary/30 hover:border-theme-primary/50 transition-all duration-300 hover:scale-105 explore-map-button rounded-full backdrop-blur-sm"
                         onClick={() => setIsMapOpen(true)}
-                        title={language === 'en' ? 'Explore Projects on Interactive Map' : '在交互地图上探索项目'}
+                        title={projectText.exploreMapTooltip}
                     >
                         <div className="text-3xl xl:text-4xl text-theme-primary mb-1 flex items-center justify-center">🗺️</div>
                         <div className="text-xs xl:text-sm text-theme-primary font-medium text-center leading-tight px-2">
-                            {language === 'en' ? 'Map View' : '地图'}
+                            {projectText.exploreMap}
                         </div>
                     </div>
                 </div>
@@ -139,7 +142,7 @@ const ProjectSection = ({ language }) => {
                             className={`category-filter-btn ${activeFilter === 'all' ? 'active' : ''}`}
                             onClick={() => setActiveFilter('all')}
                         >
-                            {language === 'en' ? 'All Projects' : '全部项目'}
+                            {projectText.filter.allProjects}
                         </button>
                         
                         {/* 各个分类按钮 */}
@@ -194,7 +197,7 @@ const ProjectSection = ({ language }) => {
                                     {project.name || project.title}
                                 </ThemeTitle>
                                 <ThemeSubtitle className="project-description">
-                                    {project.description}
+                                    {getProjectDescription(project, language)}
                                 </ThemeSubtitle>
                                 {/* 技术栈（如有） */}
                                 {project.tech && Array.isArray(project.tech) && (
@@ -236,7 +239,7 @@ const ProjectSection = ({ language }) => {
                                             size="sm"
                                             className="project-link"
                                         >
-                                            {language === 'en' ? 'Learn more' : '了解更多'}
+                                            {projectText.learnMore}
                                         </ThemeButton>
                                     )}
                                 </div>
@@ -250,7 +253,7 @@ const ProjectSection = ({ language }) => {
                                             setSelectedProject(project);
                                         }}
                                     >
-                                        {language === 'en' ? 'View Details' : '查看详情'}
+                                        {projectText.viewDetails}
                                     </ThemeButton>
                                     {project.link && (
                                         <ThemeButton 
@@ -262,7 +265,7 @@ const ProjectSection = ({ language }) => {
                                             size="sm"
                                             onClick={(e) => e.stopPropagation()}
                                         >
-                                            {language === 'en' ? 'Live Demo' : '在线演示'}
+                                            {projectText.liveDemo}
                                         </ThemeButton>
                                     )}
                                 </div>
@@ -275,16 +278,10 @@ const ProjectSection = ({ language }) => {
                 <div className="text-center py-12 border-t border-white/10 bg-black/20 backdrop-blur-sm rounded-xl mt-8 mx-4 sm:mx-6 lg:mx-8">
                     <div className="max-w-4xl mx-auto px-4">
                         <p className="text-white/80 text-lg mb-3 font-medium">
-                            {language === 'en' 
-                                ? 'Each project represents a unique challenge and learning journey' 
-                                : '每个项目都代表着独特的挑战和学习之旅'
-                            }
+                            {projectText.subtitle}
                         </p>
                         <p className="text-white/60 text-base leading-relaxed">
-                            {language === 'en' 
-                                ? 'From Full Stack Web Development to 3D immersive experiences, from computer science to data science, to computer graphics — explore the diverse technology and solutions. Language-agnostic, platform-independent, framework-flexible.' 
-                                : '从全栈Web开发到3D沉浸式体验，从计算机科学到数据科学，到计算机图形学——探索多样的技术与解决方案。语言无关，平台独立，框架灵活。'
-                            }
+                            {projectText.description}
                         </p>
                     </div>
                 </div>

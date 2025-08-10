@@ -27,7 +27,10 @@ const ProjectGeoViewer = ({ isOpen, onClose, language = 'en' }) => {
   const themeColors = getThemeColors();
   
   // 从store获取项目数据
-  const { getAllLocations } = useAppStore();
+  const { getAllLocations, getProjectsText } = useAppStore();
+  
+  // 获取当前语言的项目文本
+  const projectText = getProjectsText();
   
   // 获取项目数据，只取有坐标的项目
   const projects = useMemo(() => {
@@ -233,7 +236,7 @@ const ProjectGeoViewer = ({ isOpen, onClose, language = 'en' }) => {
                 <line x1="8" y1="11" x2="14" y2="11"></line>
               </svg>
             </button>
-            <button class="control-btn reset-view" title="${language === 'en' ? 'Reset to default view' : '重置到默认视图'}">
+            <button class="control-btn reset-view" title="${projectText.map.resetToDefaultView}">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"></path>
                 <path d="M21 3v5h-5"></path>
@@ -343,7 +346,7 @@ const ProjectGeoViewer = ({ isOpen, onClose, language = 'en' }) => {
     customControl.addTo(mapInstanceRef.current);
     customControlsRef.current = customControl;
 
-  }, [language, projects, calculateCentroid]);
+  }, [language, projects, calculateCentroid, projectText.map.resetToDefaultView]);
 
   // 创建项目弹窗内容（深色主题）
   const createPopupContent = useCallback((project) => {
@@ -720,7 +723,7 @@ const ProjectGeoViewer = ({ isOpen, onClose, language = 'en' }) => {
         <button
           onClick={onClose}
           className="absolute top-6 right-6 z-20 group map-close-button"
-          aria-label={language === 'en' ? 'Close map' : '关闭地图'}
+          aria-label={projectText.map.closeMap}
         >
           <svg 
             className="w-8 h-8 text-theme-map-button-text group-hover:text-theme-map-button-text-hover transition-colors duration-300" 
@@ -747,7 +750,7 @@ const ProjectGeoViewer = ({ isOpen, onClose, language = 'en' }) => {
         {/* 左下角标题 - 使用地图高对比度样式 */}
         <div className="absolute bottom-4 left-4 z-10 map-info-panel">
           <h2 className="text-lg font-bold">
-            Project Geo Distribution
+            {projectText.map.title}
           </h2>
         </div>
 
