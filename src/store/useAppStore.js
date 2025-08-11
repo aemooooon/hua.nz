@@ -38,8 +38,8 @@ const sectionsConfig = [
   {
     id: "gallery",
     index: 3,
-    name: { en: "GallerySection", zh: "作品展示" },
-    description: { en: "Visual showcase", zh: "视觉作品展示" },
+    name: { en: "Corridor of Light and Shadow", zh: "浮生长廊" },
+    description: { en: "Immersive 3D art experience", zh: "沉浸式3D艺术体验" },
     backgroundEffect: "effectmonjori", // 使用与 Projects 相同的 Monjori 背景
     cubeImage: "/cube-textures/gallery.jpg", // 修正立方体图片路径
     icon: "🖼️"
@@ -124,7 +124,28 @@ const contentConfig = {
       title: "Photo Gallery",
       subtitle: "Visual journey through my work and experiences",
       description: "A curated collection of visual projects and creative works.",
-      viewImage: "View Image"
+      viewImage: "View Image",
+      // 3D Gallery 配置
+      gallery3D: {
+        title: "Corridor of Light and Shadow",
+        subtitle: "Immersive 3D Art Experience",
+        description: "Enter a professionally curated virtual gallery space showcasing visual works in an interactive 3D environment.",
+        instructions: {
+          clickToStart: "Click to enter the gallery",
+          navigation: {
+            movement: "Movement Navigation",
+            wasd: "WASD / Arrow Keys - Move through the gallery",
+            mouse: "Mouse - Look around and explore",
+            esc: "ESC - Exit pointer lock mode"
+          },
+          experience: {
+            title: "Gallery Features",
+            lighting: "Professional museum lighting system",
+            layout: "Curated artwork placement and spacing",
+            interaction: "First-person exploration experience"
+          }
+        }
+      }
     },
     contact: {
       title: "Get In Touch",
@@ -463,7 +484,28 @@ const contentConfig = {
       title: "照片画廊",
       subtitle: "通过视觉展示我的工作和经历",
       description: "精心策划的视觉项目和创意作品集合。",
-      viewImage: "查看图片"
+      viewImage: "查看图片",
+      // 3D Gallery 配置
+      gallery3D: {
+        title: "浮生长廊",
+        subtitle: "沉浸式3D艺术体验",
+        description: "步入专业策展的虚拟画廊空间，在交互式3D环境中欣赏视觉作品。",
+        instructions: {
+          clickToStart: "点击进入画廊",
+          navigation: {
+            movement: "移动导航",
+            wasd: "WASD / 方向键 - 在画廊中移动",
+            mouse: "鼠标 - 环视和探索",
+            esc: "ESC - 退出指针锁定模式"
+          },
+          experience: {
+            title: "画廊特色",
+            lighting: "专业美术馆照明系统",
+            layout: "精心策划的艺术品布局",
+            interaction: "第一人称沉浸式体验"
+          }
+        }
+      }
     },
     contact: {
       title: "青鸟殷勤",

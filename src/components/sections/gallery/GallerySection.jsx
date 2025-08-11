@@ -8,8 +8,11 @@ const GallerySection = ({ language = 'en' }) => {
     const [isLoading, setIsLoading] = useState(true);
     const [isPointerLocked, setIsPointerLocked] = useState(false);
     
-    // 获取 gallery 数据
+    // 获取 gallery 数据和3D画廊文案
     const galleryData = useAppStore(state => state.getAllGalleryItems());
+    const gallery3DTexts = useAppStore(state => 
+        language === 'en' ? state.texts.en.gallery.gallery3D : state.texts.zh.gallery.gallery3D
+    );
     
     // Three.js 引用
     const containerRef = useRef(null);
@@ -47,13 +50,15 @@ const GallerySection = ({ language = 'en' }) => {
             scene.add(wallGroup);
             wallsRef.current = wallGroup;
 
-            // 地板 - 高端艺术画廊深色大理石风格 (调整尺寸)
+            // 地板 - 现代美术馆高级反光地板（优化性能）
             const floorWidth = 32;  // 左右宽度32米
             const floorDepth = 64;  // 前后深度64米
             const floorGeometry = new THREE.PlaneGeometry(floorWidth, floorDepth);
-            const floorMaterial = new THREE.MeshLambertMaterial({ 
-                color: 0x2c2c2c, // 深灰色大理石风
-                transparent: false
+            const floorMaterial = new THREE.MeshStandardMaterial({ 
+                color: 0x1a1a1a, // 深色现代地板
+                metalness: 0.3,        // 适度金属质感
+                roughness: 0.02,       // 极低粗糙度，强反光
+                envMapIntensity: 1.5   // 增强环境映射，更好反射天花板灯光
             });
             const floor = new THREE.Mesh(floorGeometry, floorMaterial);
             floor.rotation.x = -Math.PI / 2;
@@ -61,11 +66,11 @@ const GallerySection = ({ language = 'en' }) => {
             floor.receiveShadow = true;
             scene.add(floor);
 
-            // 天花板 - 深色艺术画廊风格 (调整尺寸)
+            // 天花板 - 现代美术馆天花板（黑色无反光）
             const ceiling = new THREE.Mesh(
                 new THREE.PlaneGeometry(floorWidth, floorDepth),
                 new THREE.MeshLambertMaterial({ 
-                    color: 0x1a1a1a, // 深色天花板，突出灯光效果
+                    color: 0x0a0a0a, // 深黑色天花板
                     side: THREE.DoubleSide
                 })
             );
@@ -193,7 +198,7 @@ const GallerySection = ({ language = 'en' }) => {
                                 isLandscape: aspectRatio > 1.3, // 横版图片
                                 isSquare: aspectRatio >= 0.8 && aspectRatio <= 1.3 // 方形图片
                             });
-                        } catch (error) {
+                        } catch {
                             imageAnalysis.push({
                                 index: i,
                                 item: item,
@@ -317,9 +322,13 @@ const GallerySection = ({ language = 'en' }) => {
                     }
                     
                     const paintingGeometry = new THREE.PlaneGeometry(paintingWidth, paintingHeight);
-                    // 使用简单材质，避免纹理单元超限
-                    const paintingMaterial = new THREE.MeshLambertMaterial({
-                        color: 0x888888,
+                    // 使用高质量材质，确保画作清晰明亮
+                    const paintingMaterial = new THREE.MeshPhysicalMaterial({
+                        color: 0xffffff,     // 纯白色基础
+                        metalness: 0.0,      // 无金属质感
+                        roughness: 0.1,      // 低粗糙度，类似画布质感
+                        clearcoat: 0.2,      // 轻微清漆效果，模拟画作保护层
+                        clearcoatRoughness: 0.05,
                         side: THREE.DoubleSide
                     });
                     const painting = new THREE.Mesh(paintingGeometry, paintingMaterial);
@@ -458,16 +467,16 @@ const GallerySection = ({ language = 'en' }) => {
                 });
             };
 
-            // 简化射灯系统，提高射灯高度
+            // 优化射灯系统，平衡质量与性能
             const createPaintingSpotlight = (paintingMesh) => {
-                const spotLight = new THREE.SpotLight(0xfff8e7, 2.0, 12, Math.PI / 8, 0.3, 1.5);
+                const spotLight = new THREE.SpotLight(0xffffff, 3.5, 15, Math.PI / 7, 0.2, 1.0); // 略微降低亮度但保持清晰
                 const position = paintingMesh.position;
                 const rotation = paintingMesh.rotation;
                 
-                // 根据画作朝向计算射灯位置，提高高度
+                // 根据画作朝向计算射灯位置
                 let lightPos = new THREE.Vector3();
-                const lightHeight = 7.5; // 提高射灯高度从6.0到7.5
-                const offset = 2.0;
+                const lightHeight = 7.0;
+                const offset = 1.8;
                 
                 if (Math.abs(rotation.y) < 0.1) { // 后墙
                     lightPos.set(position.x, lightHeight, position.z + offset);
@@ -481,11 +490,13 @@ const GallerySection = ({ language = 'en' }) => {
                 
                 spotLight.position.copy(lightPos);
                 spotLight.target = paintingMesh;
-                // 简化阴影设置
                 spotLight.castShadow = false; // 关闭阴影以节省GPU资源
                 
                 scene.add(spotLight);
                 scene.add(spotLight.target);
+                
+                // 移除额外的填充光，减少光源数量提升性能
+                
                 return spotLight;
             };
 
@@ -603,7 +614,7 @@ const GallerySection = ({ language = 'en' }) => {
                 camera.position.set(0, 1.6, 0); // 移动到房间中央，视线高度1.6米
                 cameraRef.current = camera;
 
-                // 创建优化的渲染器 - 减少纹理单元使用
+                // 创建平衡性能与质量的渲染器
                 const renderer = new THREE.WebGLRenderer({ 
                     antialias: true,
                     alpha: false,
@@ -613,8 +624,12 @@ const GallerySection = ({ language = 'en' }) => {
                 renderer.setSize(container.clientWidth, container.clientHeight);
                 renderer.setClearColor(0xf0f0f0, 1);
                 renderer.shadowMap.enabled = true;
-                renderer.shadowMap.type = THREE.BasicShadowMap; // 使用基础阴影，减少纹理使用
+                renderer.shadowMap.type = THREE.PCFShadowMap; // 平衡质量和性能
                 renderer.outputColorSpace = THREE.SRGBColorSpace;
+                // 移除可能导致卡顿的高级设置
+                // renderer.physicallyCorrectLights = true; // 注释掉，减少计算负担
+                renderer.toneMapping = THREE.ReinhardToneMapping; // 更轻量的色调映射
+                renderer.toneMappingExposure = 1.0;
                 
                 // 检查WebGL上下文是否正常
                 const webglContext = renderer.getContext();
@@ -643,45 +658,38 @@ const GallerySection = ({ language = 'en' }) => {
                     setIsPointerLocked(false);
                 });
 
-                // 设置基础环境光照（简化版本，因为主要照明由画作射灯提供）
+                // 设置平衡性能的美术馆光照系统
                 const setupBasicLighting = (scene) => {
-                    // 柔和的环境光 - 提供基础照明
-                    const ambientLight = new THREE.AmbientLight(0x404040, 0.6);
+                    // 适度的环境光
+                    const ambientLight = new THREE.AmbientLight(0x404040, 0.8);
                     scene.add(ambientLight);
                     
-                    // 顶部主光源 - 提供整体照明
-                    const mainLight = new THREE.DirectionalLight(0xffffff, 0.8);
-                    mainLight.position.set(0, 10, 5);
+                    // 主光源 - 适度亮度
+                    const mainLight = new THREE.DirectionalLight(0xffffff, 0.9);
+                    mainLight.position.set(0, 12, 5);
                     mainLight.castShadow = true;
-                    mainLight.shadow.mapSize.width = 2048;
-                    mainLight.shadow.mapSize.height = 2048;
+                    mainLight.shadow.mapSize.width = 1024; // 降低阴影分辨率提升性能
+                    mainLight.shadow.mapSize.height = 1024;
                     mainLight.shadow.camera.near = 0.5;
-                    mainLight.shadow.camera.far = 20;
-                    mainLight.shadow.camera.left = -20;
-                    mainLight.shadow.camera.right = 20;
-                    mainLight.shadow.camera.top = 20;
-                    mainLight.shadow.camera.bottom = -20;
+                    mainLight.shadow.camera.far = 25;
+                    mainLight.shadow.camera.left = -25;
+                    mainLight.shadow.camera.right = 25;
+                    mainLight.shadow.camera.top = 25;
+                    mainLight.shadow.camera.bottom = -25;
                     scene.add(mainLight);
                     
-                    console.log('✨ Set up basic lighting system - paintings will have individual spotlights');
+                    // 只保留一个补充光源，减少光源数量
+                    const fillLight = new THREE.DirectionalLight(0xffffff, 0.2);
+                    fillLight.position.set(-10, 8, -10);
+                    scene.add(fillLight);
                     
-                    return [ambientLight, mainLight];
+                    console.log('✨ Set up optimized gallery lighting system');
+                    
+                    return [ambientLight, mainLight, fillLight];
                 };
 
                 // 获取图片的原始尺寸 - 用于动态调整画框
-                const getImageDimensions = (imagePath) => {
-                    return new Promise((resolve) => {
-                        const img = new Image();
-                        img.onload = () => {
-                            resolve({ width: img.width, height: img.height });
-                        };
-                        img.onerror = () => {
-                            console.warn(`Failed to load image: ${imagePath}, using default dimensions`);
-                            resolve({ width: 800, height: 600 }); // 默认尺寸
-                        };
-                        img.src = imagePath;
-                    });
-                };
+                // 已移动到analyzeImageDimensions函数内部
 
                 // 添加艺术装饰元素
                 const addArtisticElements = (scene) => {
@@ -802,49 +810,13 @@ const GallerySection = ({ language = 'en' }) => {
                 setupBasicLighting(scene);
 
                 // 添加艺术装饰元素
-                const artisticElements = addArtisticElements(scene);
+                addArtisticElements(scene);
 
                 // 创建"王"字形天花板灯管系统
                 const nameCharacterLights = createWangCharacterLights();
                 console.log(`✨ Created "王" character lighting - illuminating the world! ${nameCharacterLights.length} light tubes`);
 
-                // 创建射灯增强函数（为每个画作添加聚光灯）
-                const createSpotlightForPainting = (painting, paintingMesh) => {
-                    // 根据墙面位置计算射灯角度和位置
-                    const position = paintingMesh.position;
-                    const isBackWall = position.z < -8;
-                    const isFrontWall = position.z > 8;
-                    const isLeftWall = position.x < -8;
-                    const isRightWall = position.x > 8;
-
-                    // 计算射灯位置（距离画作2米，高度6米）
-                    let lightPosition = new THREE.Vector3();
-                    let targetPosition = new THREE.Vector3(position.x, position.y, position.z);
-
-                    if (isBackWall) {
-                        lightPosition.set(position.x, 6, position.z + 2);
-                    } else if (isFrontWall) {
-                        lightPosition.set(position.x, 6, position.z - 2);
-                    } else if (isLeftWall) {
-                        lightPosition.set(position.x + 2, 6, position.z);
-                    } else if (isRightWall) {
-                        lightPosition.set(position.x - 2, 6, position.z);
-                    }
-
-                    // 创建聚光灯
-                    const spotlight = new THREE.SpotLight(0xffffff, 3, 15, Math.PI / 6, 0.5, 2);
-                    spotlight.position.copy(lightPosition);
-                    spotlight.target = paintingMesh;
-                    spotlight.castShadow = true;
-                    spotlight.shadow.mapSize.width = 1024;
-                    spotlight.shadow.mapSize.height = 1024;
-                    
-                    scene.add(spotlight);
-                    scene.add(spotlight.target);
-
-                    console.log(`💡 Added spotlight for "${painting.title}" at (${lightPosition.x.toFixed(1)}, ${lightPosition.y.toFixed(1)}, ${lightPosition.z.toFixed(1)})`);
-                    return spotlight;
-                };
+                // 射灯增强函数已移动到createPaintingSpotlight中
 
                 // 创建简单的房间
                 createSimpleRoom(scene);
@@ -997,8 +969,11 @@ const GallerySection = ({ language = 'en' }) => {
                     <div className="absolute inset-0 flex items-center justify-center">
                         <div className="text-center">
                             <h2 className="text-4xl font-bold text-gray-800 mb-4">
-                                {language === 'en' ? '3D Art Gallery' : '3D 艺术馆'}
+                                {gallery3DTexts.title}
                             </h2>
+                            <p className="text-gray-600 mb-2">
+                                {gallery3DTexts.subtitle}
+                            </p>
                             <p className="text-gray-600">
                                 {language === 'en' ? 'Gallery data loaded:' : '画廊数据已加载:'} {galleryData?.length || 0} {language === 'en' ? 'items' : '项'}
                             </p>
@@ -1013,21 +988,14 @@ const GallerySection = ({ language = 'en' }) => {
                 {!isLoading && !isPointerLocked && (
                     <div className="absolute bottom-6 left-6 bg-black/50 backdrop-blur-md rounded-xl p-4 text-white z-20 max-w-sm">
                         <p className="text-lg font-medium mb-2">
-                            {language === 'en' ? '🎨 3D Art Gallery' : '🎨 3D 艺术馆'}
+                            {gallery3DTexts.title}
                         </p>
                         <div className="space-y-1 text-sm">
-                            <p>
-                                {language === 'en' ? '• Click to start exploring' : '• 点击开始探索'}
-                            </p>
-                            <p>
-                                {language === 'en' ? '• WASD / Arrow keys to move' : '• WASD / 方向键移动'}
-                            </p>
-                            <p>
-                                {language === 'en' ? '• Mouse to look around' : '• 鼠标环视'}
-                            </p>
-                            <p>
-                                {language === 'en' ? '• ESC to unlock cursor' : '• ESC 解锁光标'}
-                            </p>
+                            <p className="font-medium mb-2">{gallery3DTexts.instructions.navigation.movement}</p>
+                            <p>• {gallery3DTexts.instructions.clickToStart}</p>
+                            <p>• {gallery3DTexts.instructions.navigation.wasd}</p>
+                            <p>• {gallery3DTexts.instructions.navigation.mouse}</p>
+                            <p>• {gallery3DTexts.instructions.navigation.esc}</p>
                         </div>
                     </div>
                 )}
@@ -1039,12 +1007,14 @@ const GallerySection = ({ language = 'en' }) => {
                         onClick={() => controlsRef.current?.lock()}
                     >
                         <div className="bg-white/10 backdrop-blur-md rounded-2xl p-8 text-center hover:bg-white/20 transition-all duration-300 border border-white/20">
-                            <div className="text-6xl mb-4">🎨</div>
-                            <h2 className="text-2xl font-bold text-white mb-4">
-                                {language === 'en' ? '3D Art Gallery' : '3D 艺术馆'}
+                            <h2 className="text-2xl font-bold text-white mb-2">
+                                {gallery3DTexts.title}
                             </h2>
+                            <p className="text-white/90 mb-4 text-lg">
+                                {gallery3DTexts.subtitle}
+                            </p>
                             <p className="text-white/80 mb-6">
-                                {language === 'en' ? 'Click to start exploring' : '点击开始探索'}
+                                {gallery3DTexts.instructions.clickToStart}
                             </p>
                             <div className="animate-bounce">
                                 <svg className="w-8 h-8 text-white mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
