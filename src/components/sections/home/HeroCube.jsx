@@ -4,6 +4,7 @@ import * as THREE from 'three';
 import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
 import { useAppStore } from '../../../store/useAppStore';
 import { gsap } from 'gsap';
+import { debounce } from 'lodash';
 import texturePreloader from '../../../utils/texturePreloader';
 import webglResourceManager from '../../../utils/WebGLResourceManager';
 import { useTheme } from '../../../hooks/useTheme';
@@ -75,7 +76,7 @@ const HeroCube = ({
         preloadTextures();
     }, [faces]);
 
-    // 监听窗口大小变化
+    // 监听窗口大小变化和用户活动
     useEffect(() => {
         const handleResize = () => {
             setCanvasSize(getCanvasSize());
@@ -86,9 +87,32 @@ const HeroCube = ({
                 canvas.style.height = '100vh';
             }
         };
+
+        // 用户活动检测 - 刷新WebGL资源时间戳防止清理
+        const handleUserActivity = () => {
+            // 刷新WebGL资源管理器中的资源时间戳
+            if (webglResourceManager.isPageVisible) {
+                webglResourceManager.refreshActiveResources();
+            }
+        };
+
+        // 监听多种用户活动事件
+        const activityEvents = ['mousedown', 'mousemove', 'keydown', 'scroll', 'touchstart'];
         
         window.addEventListener('resize', handleResize);
-        return () => window.removeEventListener('resize', handleResize);
+        
+        // 添加用户活动监听器，使用防抖避免频繁调用
+        const debouncedActivityHandler = debounce(handleUserActivity, 30000); // 30秒防抖
+        activityEvents.forEach(event => {
+            document.addEventListener(event, debouncedActivityHandler);
+        });
+        
+        return () => {
+            window.removeEventListener('resize', handleResize);
+            activityEvents.forEach(event => {
+                document.removeEventListener(event, debouncedActivityHandler);
+            });
+        };
     }, [getCanvasSize]);
 
     useEffect(() => {
@@ -156,13 +180,35 @@ const HeroCube = ({
         
         mountElement.appendChild(renderer.domElement);
         
-        // 光照系统
-        const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+        // 增强光照系统 - 更亮更丰富的灯光
+        // 环境光 - 提升基础亮度
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.8); // 从0.5提升到0.8
         scene.add(ambientLight);
         
-        const mainLight = new THREE.DirectionalLight(0xffffff, 0.8);
+        // 主方向光 - 增强强度
+        const mainLight = new THREE.DirectionalLight(0xffffff, 1.2); // 从0.8提升到1.2
         mainLight.position.set(5, 5, 5);
+        mainLight.castShadow = true;
         scene.add(mainLight);
+
+        // 添加补光 - 从不同角度照亮立方体
+        const fillLight1 = new THREE.DirectionalLight(0x88ccff, 0.6); // 蓝色调补光
+        fillLight1.position.set(-5, 2, -3);
+        scene.add(fillLight1);
+        
+        const fillLight2 = new THREE.DirectionalLight(0xffaa88, 0.5); // 暖色调补光
+        fillLight2.position.set(3, -4, 5);
+        scene.add(fillLight2);
+        
+        // 添加点光源增强中央区域亮度
+        const pointLight = new THREE.PointLight(0xffffff, 1.5, 15); // 强度1.5，范围15
+        pointLight.position.set(0, 0, 8);
+        scene.add(pointLight);
+        
+        // 添加背景点光源增强粒子可见度
+        const backLight = new THREE.PointLight(0xaaccff, 0.8, 20);
+        backLight.position.set(0, 0, -10);
+        scene.add(backLight);
 
         // 创建圆角立方体几何体
         const cubeSize = 2.8;

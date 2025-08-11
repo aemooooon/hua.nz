@@ -7,6 +7,44 @@ class WebGLResourceManager {
     constructor() {
         this.activeResources = new Map(); // 活跃的资源映射
         this.resourceCounter = 0;
+        this.isPageVisible = !document.hidden; // 页面可见性状态
+        
+        // 监听页面可见性变化
+        this.initPageVisibilityListener();
+    }
+
+    /**
+     * 初始化页面可见性监听器
+     */
+    initPageVisibilityListener() {
+        if (typeof document !== 'undefined') {
+            document.addEventListener('visibilitychange', () => {
+                this.isPageVisible = !document.hidden;
+                
+                if (import.meta.env.DEV) {
+                    console.log(`📄 页面可见性变化: ${this.isPageVisible ? '可见' : '隐藏'}`);
+                }
+                
+                // 如果页面重新变为可见，刷新资源时间戳，防止被清理
+                if (this.isPageVisible) {
+                    this.refreshActiveResources();
+                }
+            });
+        }
+    }
+
+    /**
+     * 刷新所有活跃资源的时间戳，防止被清理
+     */
+    refreshActiveResources() {
+        const now = Date.now();
+        for (const [, resourceData] of this.activeResources) {
+            resourceData.timestamp = now;
+        }
+        
+        if (import.meta.env.DEV) {
+            console.log(`🔄 已刷新 ${this.activeResources.size} 个资源的时间戳`);
+        }
     }
 
     /**
@@ -303,6 +341,14 @@ class WebGLResourceManager {
      * @param {number} maxAge - 最大年龄（毫秒）
      */
     cleanupOldResources(maxAge = 300000) { // 默认5分钟
+        // 如果页面当前可见，不执行清理
+        if (this.isPageVisible) {
+            if (import.meta.env.DEV) {
+                console.log(`👁️ 页面可见，跳过资源清理`);
+            }
+            return;
+        }
+        
         const now = Date.now();
         const toDelete = [];
 
@@ -321,7 +367,7 @@ class WebGLResourceManager {
         toDelete.forEach(id => this.activeResources.delete(id));
 
         if (toDelete.length > 0 && import.meta.env.DEV) {
-            console.log(`🧹 清理了 ${toDelete.length} 个过期资源`);
+            console.log(`🧹 清理了 ${toDelete.length} 个过期资源 (页面不可见)`);
         }
     }
 }

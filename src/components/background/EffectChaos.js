@@ -131,17 +131,17 @@ export class EffectChaos {
         
         const texture = new THREE.CanvasTexture(canvas);
         
-        // 创建材质 - 完全参考EffectGalaxy的设置
+        // 创建材质 - 增强亮度和可见度
         const material = new THREE.PointsMaterial({
-            size: this.size * 1.5, // EffectGalaxy的尺寸补偿
+            size: this.size * 2.0, // 从1.5增加到2.0，粒子更大更可见
             sizeAttenuation: true,
             depthWrite: false,
             blending: THREE.AdditiveBlending,
             vertexColors: true,
             transparent: true,
-            opacity: 0.6, // EffectGalaxy的透明度设置
+            opacity: 0.9, // 从0.6提升到0.9，增强不透明度
             map: texture,
-            alphaTest: 0.1 // EffectGalaxy的alpha测试设置
+            alphaTest: 0.05 // 从0.1降到0.05，让更多粒子可见
         });
         
         // 创建粒子系统
@@ -151,19 +151,33 @@ export class EffectChaos {
         // 初始化位置
         this.updatePositions();
         
-        // 创建强力光源系统 - 完全参考EffectGalaxy的光照配置
-        this.centralLight = new THREE.PointLight(new THREE.Color('#ffffff'), 1.5, 30);
+        // 创建增强的光源系统 - 更亮更丰富的照明
+        this.centralLight = new THREE.PointLight(new THREE.Color('#ffffff'), 2.5, 40); // 强度从1.5提升到2.5，范围增加到40
         this.centralLight.position.set(0, -1, 0);
         this.scene.add(this.centralLight);
         
-        // EffectGalaxy的橙色光源
-        const orangeLight = new THREE.PointLight(this.colorInside, 1.0, 25);
+        // 增强的橙色光源
+        const orangeLight = new THREE.PointLight(this.colorInside, 1.8, 35); // 强度从1.0提升到1.8
         orangeLight.position.set(0, -1, 0);
         this.scene.add(orangeLight);
         
-        // EffectGalaxy的环境光配置
-        this.ambientLight = new THREE.AmbientLight(0x404040, 0.2);
+        // 增强环境光照亮所有粒子
+        this.ambientLight = new THREE.AmbientLight(0x606060, 0.4); // 从0x404040,0.2提升到0x606060,0.4
         this.scene.add(this.ambientLight);
+        
+        // 添加额外的补光源增强粒子可见度
+        const fillLight1 = new THREE.PointLight(0x88ccff, 1.2, 25);
+        fillLight1.position.set(-5, 0, 5);
+        this.scene.add(fillLight1);
+        
+        const fillLight2 = new THREE.PointLight(0xffaa88, 1.2, 25);
+        fillLight2.position.set(5, 0, 5);
+        this.scene.add(fillLight2);
+        
+        // 背景补光增强整体亮度
+        const backLight = new THREE.PointLight(0xffffff, 0.8, 50);
+        backLight.position.set(0, 2, -10);
+        this.scene.add(backLight);
     }
 
     updatePositions() {
