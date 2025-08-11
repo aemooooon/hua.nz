@@ -47,8 +47,10 @@ const GallerySection = ({ language = 'en' }) => {
             scene.add(wallGroup);
             wallsRef.current = wallGroup;
 
-            // 地板 - 高端艺术画廊深色大理石风格
-            const floorGeometry = new THREE.PlaneGeometry(30, 30);
+            // 地板 - 高端艺术画廊深色大理石风格 (调整尺寸)
+            const floorWidth = 32;  // 左右宽度32米
+            const floorDepth = 64;  // 前后深度64米
+            const floorGeometry = new THREE.PlaneGeometry(floorWidth, floorDepth);
             const floorMaterial = new THREE.MeshLambertMaterial({ 
                 color: 0x2c2c2c, // 深灰色大理石风
                 transparent: false
@@ -59,9 +61,9 @@ const GallerySection = ({ language = 'en' }) => {
             floor.receiveShadow = true;
             scene.add(floor);
 
-            // 天花板 - 深色艺术画廊风格
+            // 天花板 - 深色艺术画廊风格 (调整尺寸)
             const ceiling = new THREE.Mesh(
-                new THREE.PlaneGeometry(30, 30),
+                new THREE.PlaneGeometry(floorWidth, floorDepth),
                 new THREE.MeshLambertMaterial({ 
                     color: 0x1a1a1a, // 深色天花板，突出灯光效果
                     side: THREE.DoubleSide
@@ -78,59 +80,60 @@ const GallerySection = ({ language = 'en' }) => {
                 side: THREE.FrontSide,
                 transparent: false
             });
-            const wallSize = 30;
+            const frontBackWallWidth = 32;  // 前后墙宽度32米
+            const leftRightWallWidth = 64;  // 左右墙宽度64米
             const wallHeight = 12;
             const wallThickness = 0.5;
 
-            // 后墙（北）
+            // 后墙（北）- 32米宽
             const backWall = new THREE.Mesh(
-                new THREE.BoxGeometry(wallSize, wallHeight, wallThickness),
+                new THREE.BoxGeometry(frontBackWallWidth, wallHeight, wallThickness),
                 wallMaterial
             );
-            backWall.position.set(0, 3, -15);
+            backWall.position.set(0, 3, -32); // 位置调整到-32 (64/2)
             backWall.receiveShadow = true;
             backWall.castShadow = false;
             wallGroup.add(backWall);
             scene.add(backWall);
 
-            // 前墙（南）- 留个缺口作为入口
+            // 前墙（南）- 留个缺口作为入口，32米宽
             const frontWallLeft = new THREE.Mesh(
-                new THREE.BoxGeometry(10, wallHeight, wallThickness),
+                new THREE.BoxGeometry(10, wallHeight, wallThickness), // 左段10米
                 wallMaterial
             );
-            frontWallLeft.position.set(-10, 3, 15);
+            frontWallLeft.position.set(-11, 3, 32); // 左段位置调整
             frontWallLeft.receiveShadow = true;
             frontWallLeft.castShadow = false;
             wallGroup.add(frontWallLeft);
             scene.add(frontWallLeft);
 
             const frontWallRight = new THREE.Mesh(
-                new THREE.BoxGeometry(10, wallHeight, wallThickness),
+                new THREE.BoxGeometry(10, wallHeight, wallThickness), // 右段10米
                 wallMaterial
             );
-            frontWallRight.position.set(10, 3, 15);
+            frontWallRight.position.set(11, 3, 32); // 右段位置调整
             frontWallRight.receiveShadow = true;
             frontWallRight.castShadow = false;
             wallGroup.add(frontWallRight);
             scene.add(frontWallRight);
 
-            // 左墙（西）
+            // 左墙（西）- 64米深
             const leftWall = new THREE.Mesh(
-                new THREE.BoxGeometry(wallThickness, wallHeight, wallSize),
+                new THREE.BoxGeometry(wallThickness, wallHeight, leftRightWallWidth),
                 wallMaterial
             );
-            leftWall.position.set(-15, 3, 0);
+            leftWall.position.set(-16, 3, 0); // 位置调整到-16 (32/2)
             leftWall.receiveShadow = true;
             leftWall.castShadow = false;
             wallGroup.add(leftWall);
             scene.add(leftWall);
 
-            // 右墙（东）
+            // 右墙（东）- 64米深
             const rightWall = new THREE.Mesh(
-                new THREE.BoxGeometry(wallThickness, wallHeight, wallSize),
+                new THREE.BoxGeometry(wallThickness, wallHeight, leftRightWallWidth),
                 wallMaterial
             );
-            rightWall.position.set(15, 3, 0);
+            rightWall.position.set(16, 3, 0); // 位置调整到16 (32/2)
             rightWall.receiveShadow = true;
             rightWall.castShadow = false;
             wallGroup.add(rightWall);
@@ -165,8 +168,8 @@ const GallerySection = ({ language = 'en' }) => {
 
             console.log(`Loading ${galleryData.length} gallery items`);
 
-            // 增加画作数量，最多12幅
-            const maxPaintings = Math.min(galleryData.length, 12);
+            // 增加画作数量，最多20幅
+            const maxPaintings = Math.min(galleryData.length, 20);
             const basePaintingHeight = 2.2; // 基础高度
             const maxPaintingWidth = 4; // 最大宽度限制
             const paintingCenterHeight = 1.6; // 画作中心高度，与摄像机视线水平
@@ -208,37 +211,73 @@ const GallerySection = ({ language = 'en' }) => {
             // 智能分配图片到墙面位置
             const assignPaintingsToWalls = (imageAnalysis) => {
                 const wallAssignments = {
-                    backWall: [], // 后墙
-                    rightWall: [], // 右墙
-                    leftWall: [], // 左墙
-                    frontWall: [] // 前墙（中间光源区域）
+                    backWall: [], // 后墙 (32米宽，放3幅竖版)
+                    rightWall: [], // 右墙 (64米深，放5幅横版)
+                    leftWall: [], // 左墙 (64米深，放5幅横版)
+                    frontWall: [] // 前墙 (32米宽，放2幅竖版)
                 };
 
-                // 优先将竖版图片分配到前墙（中间光源区域）
                 const portraitImages = imageAnalysis.filter(img => img.isPortrait);
                 const landscapeImages = imageAnalysis.filter(img => img.isLandscape);
                 const squareImages = imageAnalysis.filter(img => img.isSquare);
 
-                // 前墙优先分配竖版图片（最多2幅）
-                portraitImages.slice(0, 2).forEach(img => wallAssignments.frontWall.push(img));
+                console.log(`📊 图片类型统计: 竖版${portraitImages.length}张, 横版${landscapeImages.length}张, 方形${squareImages.length}张`);
+
+                // 32米窄墙优先分配竖版图片
+                // 后墙分配3幅竖版
+                portraitImages.slice(0, 3).forEach(img => wallAssignments.backWall.push(img));
+                // 前墙分配2幅竖版
+                portraitImages.slice(3, 5).forEach(img => wallAssignments.frontWall.push(img));
+
+                // 如果竖版图片不够，用方形图片补充32米墙面
+                const backWallRemaining = 3 - wallAssignments.backWall.length;
+                if (backWallRemaining > 0) {
+                    squareImages.slice(0, backWallRemaining).forEach(img => wallAssignments.backWall.push(img));
+                }
                 
-                // 如果前墙还有空位，用方形图片补充
                 const frontWallRemaining = 2 - wallAssignments.frontWall.length;
                 if (frontWallRemaining > 0) {
-                    squareImages.slice(0, frontWallRemaining).forEach(img => wallAssignments.frontWall.push(img));
+                    const usedSquares = wallAssignments.backWall.filter(img => img.isSquare).length;
+                    squareImages.slice(usedSquares, usedSquares + frontWallRemaining).forEach(img => wallAssignments.frontWall.push(img));
                 }
 
-                // 其他墙面分配剩余图片
+                // 64米长墙分配横版图片（每边5幅）
+                // 右墙分配5幅横版
+                landscapeImages.slice(0, 5).forEach(img => wallAssignments.rightWall.push(img));
+                // 左墙分配5幅横版
+                landscapeImages.slice(5, 10).forEach(img => wallAssignments.leftWall.push(img));
+
+                // 如果横版图片不够，用剩余的方形或竖版图片补充长墙
+                const rightWallRemaining = 5 - wallAssignments.rightWall.length;
+                const leftWallRemaining = 5 - wallAssignments.leftWall.length;
+                
+                // 收集剩余图片
+                const usedImages = [
+                    ...wallAssignments.backWall,
+                    ...wallAssignments.frontWall,
+                    ...wallAssignments.rightWall,
+                    ...wallAssignments.leftWall
+                ];
                 const remainingImages = imageAnalysis.filter(img => 
-                    !wallAssignments.frontWall.some(assigned => assigned.index === img.index)
+                    !usedImages.some(used => used.index === img.index)
                 );
 
-                // 后墙分配3幅
-                remainingImages.slice(0, 3).forEach(img => wallAssignments.backWall.push(img));
-                // 右墙分配3幅
-                remainingImages.slice(3, 6).forEach(img => wallAssignments.rightWall.push(img));
-                // 左墙分配剩余的
-                remainingImages.slice(6, 9).forEach(img => wallAssignments.leftWall.push(img));
+                // 补充右墙
+                if (rightWallRemaining > 0) {
+                    remainingImages.slice(0, rightWallRemaining).forEach(img => wallAssignments.rightWall.push(img));
+                }
+
+                // 补充左墙
+                if (leftWallRemaining > 0) {
+                    remainingImages.slice(rightWallRemaining, rightWallRemaining + leftWallRemaining).forEach(img => wallAssignments.leftWall.push(img));
+                }
+
+                console.log('🎨 智能分配结果:', {
+                    '后墙(32m,竖版)': wallAssignments.backWall.length,
+                    '前墙(32m,竖版)': wallAssignments.frontWall.length,
+                    '右墙(64m,横版)': wallAssignments.rightWall.length,
+                    '左墙(64m,横版)': wallAssignments.leftWall.length
+                });
 
                 return wallAssignments;
             };
@@ -288,26 +327,34 @@ const GallerySection = ({ language = 'en' }) => {
                     // 创建画框
                     const paintingWithFrame = createPaintingFrame(painting, paintingWidth, paintingHeight);
                     
-                    // 设置位置
-                    const wallOffset = 14.5;
+                    // 设置位置（更新为新分配方案）
+                    const backWallOffset = 31.5;   // 后墙偏移量
+                    const frontWallOffset = 31.5;  // 前墙偏移量
+                    const leftWallOffset = 15.5;   // 左墙偏移量
+                    const rightWallOffset = 15.5;  // 右墙偏移量
+                    
                     switch(wallType) {
                         case 'backWall':
-                            paintingWithFrame.position.set(-8 + positionIndex * 8, paintingCenterHeight, -wallOffset);
+                            // 后墙：在32米宽的墙面上分布3幅竖版画
+                            paintingWithFrame.position.set(-12 + positionIndex * 12, paintingCenterHeight, -backWallOffset);
                             paintingWithFrame.rotation.y = 0;
                             break;
                         case 'rightWall':
-                            paintingWithFrame.position.set(wallOffset, paintingCenterHeight, -8 + positionIndex * 8);
+                            // 右墙：在64米深的墙面上分布5幅横版画
+                            paintingWithFrame.position.set(rightWallOffset, paintingCenterHeight, -24 + positionIndex * 12);
                             paintingWithFrame.rotation.y = -Math.PI / 2;
                             break;
                         case 'leftWall':
-                            paintingWithFrame.position.set(-wallOffset, paintingCenterHeight, 8 - positionIndex * 8);
+                            // 左墙：在64米深的墙面上分布5幅横版画
+                            paintingWithFrame.position.set(-leftWallOffset, paintingCenterHeight, 24 - positionIndex * 12);
                             paintingWithFrame.rotation.y = Math.PI / 2;
                             break;
                         case 'frontWall':
+                            // 前墙：在两侧墙段上分布2幅竖版画，远离中央灯箱
                             if (positionIndex === 0) {
-                                paintingWithFrame.position.set(-12, paintingCenterHeight, wallOffset);
+                                paintingWithFrame.position.set(-12, paintingCenterHeight, frontWallOffset); // 向左移动到-12
                             } else {
-                                paintingWithFrame.position.set(12, paintingCenterHeight, wallOffset);
+                                paintingWithFrame.position.set(12, paintingCenterHeight, frontWallOffset);  // 向右移动到12
                             }
                             paintingWithFrame.rotation.y = Math.PI;
                             break;
@@ -411,15 +458,15 @@ const GallerySection = ({ language = 'en' }) => {
                 });
             };
 
-            // 简化射灯系统，减少GPU负担
+            // 简化射灯系统，提高射灯高度
             const createPaintingSpotlight = (paintingMesh) => {
                 const spotLight = new THREE.SpotLight(0xfff8e7, 2.0, 12, Math.PI / 8, 0.3, 1.5);
                 const position = paintingMesh.position;
                 const rotation = paintingMesh.rotation;
                 
-                // 根据画作朝向计算射灯位置
+                // 根据画作朝向计算射灯位置，提高高度
                 let lightPos = new THREE.Vector3();
-                const lightHeight = 6.0;
+                const lightHeight = 7.5; // 提高射灯高度从6.0到7.5
                 const offset = 2.0;
                 
                 if (Math.abs(rotation.y) < 0.1) { // 后墙
@@ -523,14 +570,15 @@ const GallerySection = ({ language = 'en' }) => {
             camera.position.y = 1.6;
         };
 
-        // 简单的边界碰撞检测
+        // 简单的边界碰撞检测（更新为新房间尺寸）
         const checkCollision = (camera) => {
             const position = camera.position;
-            const boundary = 13.5; // 距离墙的最小距离
+            const boundaryX = 14.5; // 左右边界 (32/2 - 1.5米安全距离)
+            const boundaryZ = 30.5; // 前后边界 (64/2 - 1.5米安全距离)
             
             // 检查是否撞到墙边界
-            if (position.x > boundary || position.x < -boundary ||
-                position.z > boundary || position.z < -boundary) {
+            if (position.x > boundaryX || position.x < -boundaryX ||
+                position.z > boundaryZ || position.z < -boundaryZ) {
                 return true;
             }
             
@@ -552,7 +600,7 @@ const GallerySection = ({ language = 'en' }) => {
                     0.1,
                     1000
                 );
-                camera.position.set(0, 1.6, 10); // 视线高度1.6米，与画作中心对齐
+                camera.position.set(0, 1.6, 0); // 移动到房间中央，视线高度1.6米
                 cameraRef.current = camera;
 
                 // 创建优化的渲染器 - 减少纹理单元使用
@@ -637,93 +685,49 @@ const GallerySection = ({ language = 'en' }) => {
 
                 // 添加艺术装饰元素
                 const addArtisticElements = (scene) => {
-                    // 透明反射球装置 - 现代艺术中心装置
-                    const createCenterPiece = () => {
-                        const group = new THREE.Group();
+                    // 创建完全填充入口的墙面发光区域（灯箱）- 更新为新尺寸
+                    const createWallLightBox = () => {
+                        // 入口尺寸：宽12米（从x=-6到x=6），高12米（与墙体高度一致）
+                        const entranceWidth = 12;  // 新的入口宽度（中间12米开口）
+                        const entranceHeight = 12; // 入口高度与墙体高度一致
+                        const lightBoxDepth = 0.4;  // 灯箱厚度
                         
-                        // 创建高反射透明球体
-                        const sphereGeometry = new THREE.SphereGeometry(0.8, 32, 32);
-                        const sphereMaterial = new THREE.MeshPhysicalMaterial({
-                            color: 0xffffff,
-                            metalness: 0.1,
-                            roughness: 0.05,
-                            transmission: 0.8,        // 高透明度
-                            thickness: 0.5,           // 材质厚度
-                            ior: 1.4,                 // 折射率 
-                            reflectivity: 0.9,        // 反射率
-                            clearcoat: 1.0,           // 透明涂层
-                            clearcoatRoughness: 0.1,   // 涂层粗糙度
+                        // 创建填充整个入口的发光面
+                        const lightBoxGeometry = new THREE.BoxGeometry(entranceWidth, entranceHeight, lightBoxDepth);
+                        const lightBoxMaterial = new THREE.MeshBasicMaterial({
+                            color: 0xffffff,        // 纯白色
+                            emissive: 0xffffff,     // 自发光白色
+                            emissiveIntensity: 1.2   // 增强发光强度
                         });
                         
-                        const sphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
-                        sphere.position.y = -0.3;
+                        const lightBox = new THREE.Mesh(lightBoxGeometry, lightBoxMaterial);
+                        // 位置：入口中心 (x=0, y=3是墙体中心高度, z=32是前墙位置)
+                        lightBox.position.set(0, 3, 32 - lightBoxDepth/2);
+                        scene.add(lightBox);
                         
-                        // 给球添加缓慢旋转和浮动动画
-                        const floatSphere = (time) => {
-                            sphere.rotation.y = time * 0.001;
-                            sphere.rotation.x = Math.sin(time * 0.002) * 0.1;
-                            sphere.position.y = -0.3 + Math.sin(time * 0.003) * 0.1;
-                        };
-                        
-                        sphere.castShadow = true;
-                        sphere.receiveShadow = true;
-                        group.add(sphere);
-                        
-                        // 底座 - 简洁的现代底座
-                        const baseGeometry = new THREE.CylinderGeometry(0.4, 0.5, 0.15, 16);
-                        const baseMaterial = new THREE.MeshLambertMaterial({ 
-                            color: 0x333333 
-                        });
-                        const base = new THREE.Mesh(baseGeometry, baseMaterial);
-                        base.position.y = -0.9;
-                        base.castShadow = true;
-                        base.receiveShadow = true;
-                        group.add(base);
-                        
-                        group.userData = { animate: floatSphere };
-                        
-                        group.position.set(0, 1.6, 0); // 画廊中心，视线高度
-                        scene.add(group);
-                        
-                        console.log('✨ Added transparent reflective sphere centerpiece');
-                        return group;
-                    };
-                    
-                    // 角落装饰 - 现代极简主义立柱
-                    const createCornerPillars = () => {
-                        const positions = [
-                            { x: -13, z: -13 },  // 后左角
-                            { x: 13, z: -13 },   // 后右角
-                            { x: -13, z: 13 },   // 前左角
-                            { x: 13, z: 13 }     // 前右角
+                        // 添加更多光源照亮整个入口区域
+                        const lightSources = [
+                            { pos: [0, 6, 31], intensity: 3.0 },   // 上方中心
+                            { pos: [-4, 3, 31], intensity: 2.5 },  // 左侧中央
+                            { pos: [4, 3, 31], intensity: 2.5 },   // 右侧中央
+                            { pos: [0, 0, 31], intensity: 2.0 },   // 下方中心
+                            { pos: [-2, 1, 31], intensity: 2.0 },  // 左下
+                            { pos: [2, 1, 31], intensity: 2.0 }    // 右下
                         ];
                         
-                        positions.forEach(pos => {
-                            const pillarGeometry = new THREE.CylinderGeometry(0.15, 0.2, 4, 8);
-                            const pillarMaterial = new THREE.MeshLambertMaterial({ 
-                                color: 0x888888,
-                                transparent: true,
-                                opacity: 0.7
-                            });
-                            const pillar = new THREE.Mesh(pillarGeometry, pillarMaterial);
-                            pillar.position.set(pos.x, 1, pos.z);
-                            pillar.castShadow = true;
-                            pillar.receiveShadow = true;
-                            scene.add(pillar);
-                            
-                            // 添加顶部装饰光源
-                            const topLight = new THREE.PointLight(0x4a90e2, 0.5, 5);
-                            topLight.position.set(pos.x, 4, pos.z);
-                            scene.add(topLight);
+                        lightSources.forEach(light => {
+                            const lightSource = new THREE.PointLight(0xffffff, light.intensity, 25);
+                            lightSource.position.set(...light.pos);
+                            scene.add(lightSource);
                         });
                         
-                        console.log('🏛️ Added corner decorative pillars');
+                        console.log('💡 Added entrance-filling lightbox (12m × 12m) - updated for full wall height');
+                        return lightBox;
                     };
                     
-                    const centerPiece = createCenterPiece();
-                    createCornerPillars();
+                    const wallLightBox = createWallLightBox();
                     
-                    return centerPiece;
+                    return { wallLightBox };
                 };
 
                 // 创建简化的"王"字形天花板灯光系统
@@ -763,10 +767,11 @@ const GallerySection = ({ language = 'en' }) => {
                             tubeGeometry = new THREE.BoxGeometry(length, 0.2, 0.4);
                         }
                         
-                        // 更明显的发光材质 - 加强发光效果
+                        // 白色冷光源发光材质 - 增强发光效果
                         const tubeMaterial = new THREE.MeshBasicMaterial({ 
-                            color: 0xffff00,        // 明亮的黄色
+                            color: 0xffffff,        // 纯白色
                             emissive: 0xffffff,     // 白色强烈发光
+                            emissiveIntensity: 1.5, // 增强发光强度
                             transparent: false
                         });
                         
@@ -781,15 +786,15 @@ const GallerySection = ({ language = 'en' }) => {
                         
                         scene.add(tube);
                         
-                        // 添加更强的点光源
-                        const pointLight = new THREE.PointLight(0xffd700, 3.0, 15);
+                        // 添加更强的白色冷光源，扩大照射范围
+                        const pointLight = new THREE.PointLight(0xffffff, 5.0, 40); // 增强亮度到5.0，照射范围扩大到40米
                         pointLight.position.set(centerX, 5.5, centerZ);
                         scene.add(pointLight);
                         
                         characterLights.push({ tube, name: line.name });
                     });
                     
-                    console.log(`✨ "王"字灯光系统创建完成! 共 ${characterLights.length} 个灯管`);
+                    console.log(`✨ "王"字白色冷光灯光系统创建完成! 共 ${characterLights.length} 个灯管`);
                     return characterLights;
                 };
 
@@ -797,7 +802,7 @@ const GallerySection = ({ language = 'en' }) => {
                 setupBasicLighting(scene);
 
                 // 添加艺术装饰元素
-                addArtisticElements(scene);
+                const artisticElements = addArtisticElements(scene);
 
                 // 创建"王"字形天花板灯管系统
                 const nameCharacterLights = createWangCharacterLights();
