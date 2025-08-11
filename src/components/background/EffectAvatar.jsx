@@ -171,10 +171,8 @@ const EffectAvatar = ({ imageSrc, hoverImageSrc }) => {
             {isLoading && (
                 <div className="absolute inset-0 flex items-center justify-center bg-gray-800 rounded-full">
                     <CircularLoadingIndicator
-                        progress={0}
                         size={60}
                         strokeWidth={4}
-                        showProgress={false}
                         showMask={false}
                         className="opacity-80"
                     />

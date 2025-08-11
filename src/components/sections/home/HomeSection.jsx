@@ -6,7 +6,6 @@ import { useTheme } from '../../../hooks/useTheme';
 import HeroCube from './HeroCube';
 import CircularLoadingIndicator from '../../ui/CircularLoadingIndicator';
 import Tooltip from '../../ui/Tooltip';
-import texturePreloader from '../../../utils/texturePreloader';
 import { ThemeTitle, ThemeSubtitle } from '../../ui/ThemeComponents';
 import '../../../styles/OpeningAnimations.css';
 
@@ -25,7 +24,6 @@ const HomeSection = ({
     const [showCube, setShowCube] = useState(false);
     const [cubeLoading, setCubeLoading] = useState(false);
     const [cubeReady, setCubeReady] = useState(false);
-    const [textureProgress, setTextureProgress] = useState({ loaded: 0, total: 0 });
 
     useEffect(() => {
         // 400ms后开始预加载Cube，600ms后显示
@@ -42,22 +40,10 @@ const HomeSection = ({
             setShowToggleButtons(true);
         }, 2000); // Show after 2 seconds
         
-        // 监听纹理加载进度
-        const progressInterval = setInterval(() => {
-            const progress = texturePreloader.getProgress();
-            setTextureProgress(progress);
-            
-            // 如果纹理加载完成，可以提前准备
-            if (progress.progress === 1 && progress.total > 0) {
-                // 纹理加载完成，Cube可以流畅渲染
-            }
-        }, 100);
-        
         return () => {
             clearTimeout(preloadTimer);
             clearTimeout(showTimer);
             clearTimeout(toggleButtonTimer);
-            clearInterval(progressInterval);
         };
     }, []);
 
@@ -137,15 +123,12 @@ const HomeSection = ({
                 </div>
             </div>
 
-            {/* Loading效果 - 使用全局加载组件，显示纹理加载进度 */}
+            {/* Loading效果 - 使用统一的加载组件 */}
             {cubeLoading && !cubeReady && (
                 <CircularLoadingIndicator
-                    progress={textureProgress.total > 0 ? Math.round((textureProgress.loaded / textureProgress.total) * 100) : 0}
                     size={160}
                     strokeWidth={12}
-                    showProgress={true}
                     showMask={true}
-                    language={language}
                 />
             )}
 

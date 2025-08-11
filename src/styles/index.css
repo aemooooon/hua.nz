@@ -1183,6 +1183,20 @@ body {
     }
 }
 
+/* 呼吸光晕动画 - 用于CircularLoadingIndicator，增强效果 */
+@keyframes breathing-glow {
+    0%, 100% {
+        opacity: 0.7;
+        transform: scale(0.98);
+        filter: blur(3px);
+    }
+    50% {
+        opacity: 1;
+        transform: scale(1.08);
+        filter: blur(1px);
+    }
+}
+
 /* Golden Ratio Layout for About Section */
 .about-section {
     display: grid;

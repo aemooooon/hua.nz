@@ -8,8 +8,6 @@ import CircularLoadingIndicator from '../../ui/CircularLoadingIndicator';
 const GallerySection = ({ language = 'en' }) => {
     const [isLoading, setIsLoading] = useState(true);
     const [isPointerLocked, setIsPointerLocked] = useState(false);
-    const [loadingProgress, setLoadingProgress] = useState({ loaded: 0, total: 0 });
-    const [isResourcesLoaded, setIsResourcesLoaded] = useState(false);
     const [isIntroAnimationComplete, setIsIntroAnimationComplete] = useState(false);
     const [showUICards, setShowUICards] = useState(false);
     
@@ -672,17 +670,7 @@ const GallerySection = ({ language = 'en' }) => {
                 const loadingManager = new THREE.LoadingManager();
                 loadingManagerRef.current = loadingManager;
                 
-                loadingManager.onStart = (url, itemsLoaded, itemsTotal) => {
-                    setLoadingProgress({ loaded: itemsLoaded, total: itemsTotal });
-                };
-                
-                loadingManager.onProgress = (url, itemsLoaded, itemsTotal) => {
-                    setLoadingProgress({ loaded: itemsLoaded, total: itemsTotal });
-                };
-                
                 loadingManager.onLoad = () => {
-                    setIsResourcesLoaded(true);
-                    
                     requestAnimationFrame(() => {
                         if (rendererRef.current && sceneRef.current && cameraRef.current) {
                             rendererRef.current.render(sceneRef.current, cameraRef.current);
@@ -1018,18 +1006,13 @@ const GallerySection = ({ language = 'en' }) => {
             id="gallery" 
             className="min-h-screen flex flex-col justify-center items-center bg-gray-100 relative overflow-hidden"
         >
-            {/* 全屏加载指示器 - 使用与HomeSection相同的CircularLoadingIndicator */}
+            {/* 全屏加载指示器 - 使用统一的加载组件 */}
             {(isLoading || !isIntroAnimationComplete) && (
                 <CircularLoadingIndicator
-                    progress={loadingProgress.total > 0 ? Math.round((loadingProgress.loaded / loadingProgress.total) * 100) : 0}
                     size={160}
                     strokeWidth={12}
-                    showProgress={!isResourcesLoaded}
                     showMask={true}
                     maskColor="black-solid"
-                    language={language}
-                    loadingText={isResourcesLoaded ? (isIntroAnimationComplete ? "Ready!" : "Preparing Experience...") : "Loading Gallery..."}
-                    loadingTextChinese={isResourcesLoaded ? (isIntroAnimationComplete ? "准备完成！" : "正在准备体验...") : "加载画廊中..."}
                 />
             )}
 
