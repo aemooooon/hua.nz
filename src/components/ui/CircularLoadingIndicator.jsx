@@ -67,7 +67,7 @@ const CircularLoadingIndicator = ({
                     fill="none"
                     stroke="var(--theme-primary)" // 使用主题色
                     strokeWidth={strokeWidth}
-                    strokeLinecap="round"
+                    strokeLinecap={progress >= 99 ? "butt" : "round"} // 接近满圆时使用butt避免重叠
                     strokeDasharray={strokeDasharray}
                     strokeDashoffset={strokeDashoffset}
                     className={`transition-all duration-300 ease-out drop-shadow-lg ${

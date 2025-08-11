@@ -11,13 +11,11 @@ const GallerySection = ({ language = 'en' }) => {
     const [loadingProgress, setLoadingProgress] = useState({ loaded: 0, total: 0 });
     const [isResourcesLoaded, setIsResourcesLoaded] = useState(false);
     const [isIntroAnimationComplete, setIsIntroAnimationComplete] = useState(false);
-    const [showUICards, setShowUICards] = useState(false); // 控制UI卡片显示时机
+    const [showUICards, setShowUICards] = useState(false);
     
-    // 获取 gallery 数据和文本
     const galleryData = useAppStore(state => state.getAllGalleryItems());
     const texts = useAppStore(state => state.texts);
     
-    // Three.js 引用
     const containerRef = useRef(null);
     const sceneRef = useRef(null);
     const rendererRef = useRef(null);
@@ -25,13 +23,11 @@ const GallerySection = ({ language = 'en' }) => {
     const controlsRef = useRef(null);
     const animationFrameRef = useRef(null);
     const clockRef = useRef(new THREE.Clock());
-    const wallsRef = useRef(null); // 用于碰撞检测
+    const wallsRef = useRef(null);
     
-    // 动画控制引用
     const introAnimationRef = useRef(null);
     const loadingManagerRef = useRef(null);
 
-    // 按键状态
     const keysPressed = useRef({
         w: false,
         a: false,
@@ -155,21 +151,15 @@ const GallerySection = ({ language = 'en' }) => {
         // 添加测试画作
         const addTestPaintings = (scene, loadingManager = null) => {
             if (!galleryData || galleryData.length === 0) {
-                console.log('No gallery data available, creating placeholder paintings');
-                
-                // 创建几个占位符画作
                 for (let i = 0; i < 6; i++) {
                     const paintingGeometry = new THREE.PlaneGeometry(3, 2);
                     const paintingMaterial = new THREE.MeshLambertMaterial({ color: 0x666666 });
                     const painting = new THREE.Mesh(paintingGeometry, paintingMaterial);
                     
-                    // 分布在不同墙面
                     if (i < 3) {
-                        // 后墙
                         painting.position.set(-6 + i * 6, 3, -14.9);
                         painting.rotation.y = 0;
                     } else {
-                        // 左墙  
                         painting.position.set(-14.9, 3, -6 + (i-3) * 6);
                         painting.rotation.y = Math.PI / 2;
                     }
@@ -178,15 +168,10 @@ const GallerySection = ({ language = 'en' }) => {
                 return;
             }
 
-            console.log(`Loading ${galleryData.length} gallery items`);
-
-            // 增加画作数量，最多20幅
             const maxPaintings = Math.min(galleryData.length, 20);
-            const basePaintingHeight = 2.2; // 基础高度
-            const maxPaintingWidth = 4; // 最大宽度限制
-            const paintingCenterHeight = 1.6; // 画作中心高度，与摄像机视线水平
-            
-            console.log(`Creating ${maxPaintings} paintings with dynamic aspect ratios at eye level (${paintingCenterHeight}m)...`);
+            const basePaintingHeight = 2.2;
+            const maxPaintingWidth = 4;
+            const paintingCenterHeight = 1.6;
 
             // 首先分析所有图片的长宽比，为智能分配做准备
             const analyzeImageDimensions = async () => {
@@ -202,10 +187,10 @@ const GallerySection = ({ language = 'en' }) => {
                                 item: item,
                                 aspectRatio: aspectRatio,
                                 isPortrait: aspectRatio < 0.8, // 竖版图片
-                                isLandscape: aspectRatio > 1.3, // 横版图片
-                                isSquare: aspectRatio >= 0.8 && aspectRatio <= 1.3 // 方形图片
+                                isLandscape: aspectRatio > 1.3,
+                                isSquare: aspectRatio >= 0.8 && aspectRatio <= 1.3
                             });
-                        } catch (error) {
+                        } catch {
                             imageAnalysis.push({
                                 index: i,
                                 item: item,
@@ -220,95 +205,82 @@ const GallerySection = ({ language = 'en' }) => {
                 return imageAnalysis;
             };
 
-            // 智能分配图片到墙面位置
+            // 硬编码分配逻辑 - 按指定需求精确分配17张画
             const assignPaintingsToWalls = (imageAnalysis) => {
                 const wallAssignments = {
-                    backWall: [], // 后墙 (32米宽，放3幅竖版)
-                    rightWall: [], // 右墙 (64米深，放6幅横版)
-                    leftWall: [], // 左墙 (64米深，放6幅横版)
-                    frontWall: [] // 前墙 (32米宽，放2幅竖版)
+                    backWall: [],   // 后墙32米：3张（优先竖图）
+                    rightWall: [],  // 右墙64米：6张
+                    leftWall: [],   // 左墙64米：6张  
+                    frontWall: []   // 前墙入口两侧：2张竖图
                 };
 
+                // 分离竖图和其他图
                 const portraitImages = imageAnalysis.filter(img => img.isPortrait);
-                const landscapeImages = imageAnalysis.filter(img => img.isLandscape);
-                const squareImages = imageAnalysis.filter(img => img.isSquare);
-
-                console.log(`📊 图片类型统计: 竖版${portraitImages.length}张, 横版${landscapeImages.length}张, 方形${squareImages.length}张`);
-
-                // 32米窄墙优先分配竖版图片
-                // 后墙分配3幅竖版
-                portraitImages.slice(0, 3).forEach(img => wallAssignments.backWall.push(img));
-                // 前墙分配2幅竖版
-                portraitImages.slice(3, 5).forEach(img => wallAssignments.frontWall.push(img));
-
-                // 如果竖版图片不够，用方形图片补充32米墙面
-                const backWallRemaining = 3 - wallAssignments.backWall.length;
-                if (backWallRemaining > 0) {
-                    squareImages.slice(0, backWallRemaining).forEach(img => wallAssignments.backWall.push(img));
+                const otherImages = imageAnalysis.filter(img => !img.isPortrait);
+                
+                // 1. 后墙32米 - 优先分配3张竖图
+                const backWallPortraits = portraitImages.slice(0, 3);
+                wallAssignments.backWall = backWallPortraits;
+                
+                // 如果竖图不够3张，用其他图补充
+                if (backWallPortraits.length < 3) {
+                    const needed = 3 - backWallPortraits.length;
+                    const supplementImages = otherImages.slice(0, needed);
+                    wallAssignments.backWall.push(...supplementImages);
+                    // 从其他图中移除已使用的
+                    supplementImages.forEach(img => {
+                        const index = otherImages.indexOf(img);
+                        if (index > -1) otherImages.splice(index, 1);
+                    });
                 }
                 
-                const frontWallRemaining = 2 - wallAssignments.frontWall.length;
-                if (frontWallRemaining > 0) {
-                    const usedSquares = wallAssignments.backWall.filter(img => img.isSquare).length;
-                    squareImages.slice(usedSquares, usedSquares + frontWallRemaining).forEach(img => wallAssignments.frontWall.push(img));
-                }
-
-                // 64米长墙分配横版图片（每边6幅）
-                // 右墙分配6幅横版
-                landscapeImages.slice(0, 6).forEach(img => wallAssignments.rightWall.push(img));
-                // 左墙分配6幅横版
-                landscapeImages.slice(6, 12).forEach(img => wallAssignments.leftWall.push(img));
-
-                // 如果横版图片不够，用剩余的方形或竖版图片补充长墙
-                const rightWallRemaining = 6 - wallAssignments.rightWall.length;
-                const leftWallRemaining = 6 - wallAssignments.leftWall.length;
+                // 2. 前墙入口两侧 - 分配2张竖图
+                const frontWallPortraits = portraitImages.slice(3, 5);
+                wallAssignments.frontWall = frontWallPortraits;
                 
-                // 收集剩余图片
-                const usedImages = [
-                    ...wallAssignments.backWall,
-                    ...wallAssignments.frontWall,
-                    ...wallAssignments.rightWall,
-                    ...wallAssignments.leftWall
-                ];
-                const remainingImages = imageAnalysis.filter(img => 
-                    !usedImages.some(used => used.index === img.index)
+                // 如果剩余竖图不够2张，用其他图补充
+                if (frontWallPortraits.length < 2) {
+                    const needed = 2 - frontWallPortraits.length;
+                    const supplementImages = otherImages.slice(0, needed);
+                    wallAssignments.frontWall.push(...supplementImages);
+                    // 从其他图中移除已使用的
+                    supplementImages.forEach(img => {
+                        const index = otherImages.indexOf(img);
+                        if (index > -1) otherImages.splice(index, 1);
+                    });
+                }
+                
+                // 3. 收集剩余所有图片（包括未使用的竖图和其他图）
+                const usedPortraits = [...backWallPortraits, ...frontWallPortraits];
+                const remainingPortraits = portraitImages.filter(img => 
+                    !usedPortraits.some(used => used.index === img.index)
                 );
+                const allRemainingImages = [...remainingPortraits, ...otherImages];
+                
+                // 4. 右墙64米 - 分配6张
+                wallAssignments.rightWall = allRemainingImages.slice(0, 6);
+                
+                // 5. 左墙64米 - 分配剩余6张
+                wallAssignments.leftWall = allRemainingImages.slice(6, 12);
 
-                // 补充右墙
-                if (rightWallRemaining > 0) {
-                    remainingImages.slice(0, rightWallRemaining).forEach(img => wallAssignments.rightWall.push(img));
-                }
-
-                // 补充左墙
-                if (leftWallRemaining > 0) {
-                    remainingImages.slice(rightWallRemaining, rightWallRemaining + leftWallRemaining).forEach(img => wallAssignments.leftWall.push(img));
-                }
-
-                console.log('🎨 智能分配结果:', {
-                    '后墙(32m,竖版)': wallAssignments.backWall.length,
-                    '前墙(32m,竖版)': wallAssignments.frontWall.length,
-                    '右墙(64m,横版)': wallAssignments.rightWall.length,
-                    '左墙(64m,横版)': wallAssignments.leftWall.length
+                console.log('画作分配结果：', {
+                    后墙: wallAssignments.backWall.length,
+                    右墙: wallAssignments.rightWall.length,
+                    左墙: wallAssignments.leftWall.length,
+                    前墙: wallAssignments.frontWall.length,
+                    总计: wallAssignments.backWall.length + wallAssignments.rightWall.length + 
+                          wallAssignments.leftWall.length + wallAssignments.frontWall.length
                 });
 
                 return wallAssignments;
             };
 
-            // 异步创建所有画作
             const createPaintingsAsync = async () => {
                 const imageAnalysis = await analyzeImageDimensions();
                 const wallAssignments = assignPaintingsToWalls(imageAnalysis);
                 
-                console.log('🎨 智能图片分配结果:', {
-                    前墙竖版: wallAssignments.frontWall.length,
-                    后墙: wallAssignments.backWall.length,
-                    右墙: wallAssignments.rightWall.length,
-                    左墙: wallAssignments.leftWall.length
-                });
-
-                // 创建共享的纹理加载器，使用全局加载管理器
                 const textureLoader = new THREE.TextureLoader(loadingManager || undefined);
-                const loadedTextures = new Map(); // 缓存已加载的纹理
+                const loadedTextures = new Map();
 
                 // 创建画作的函数
                 const createPaintingAtPosition = async (imageData, wallType, positionIndex) => {
@@ -351,26 +323,26 @@ const GallerySection = ({ language = 'en' }) => {
                     
                     switch(wallType) {
                         case 'backWall':
-                            // 后墙：在32米宽的墙面上分布3幅竖版画
-                            paintingWithFrame.position.set(-12 + positionIndex * 12, paintingCenterHeight, -backWallOffset);
+                            // 后墙32米：3张画均匀分布 (x: -10, 0, 10)
+                            paintingWithFrame.position.set(-10 + positionIndex * 10, paintingCenterHeight, -backWallOffset);
                             paintingWithFrame.rotation.y = 0;
                             break;
                         case 'rightWall':
-                            // 右墙：在64米深的墙面上分布6幅横版画 (从-27.5到27.5，间距11米)
+                            // 右墙64米：6张画均匀分布 (z: -27.5到27.5，间距11米)
                             paintingWithFrame.position.set(rightWallOffset, paintingCenterHeight, -27.5 + positionIndex * 11);
                             paintingWithFrame.rotation.y = -Math.PI / 2;
                             break;
                         case 'leftWall':
-                            // 左墙：在64米深的墙面上分布6幅横版画 (从27.5到-27.5，间距11米)
+                            // 左墙64米：6张画均匀分布 (z: 27.5到-27.5，间距11米)
                             paintingWithFrame.position.set(-leftWallOffset, paintingCenterHeight, 27.5 - positionIndex * 11);
                             paintingWithFrame.rotation.y = Math.PI / 2;
                             break;
                         case 'frontWall':
-                            // 前墙：在两侧墙段上分布2幅竖版画，远离中央灯箱
+                            // 前墙入口两侧：左右各1张竖图 (x: -12, 12)
                             if (positionIndex === 0) {
-                                paintingWithFrame.position.set(-12, paintingCenterHeight, frontWallOffset); // 向左移动到-12
+                                paintingWithFrame.position.set(-12, paintingCenterHeight, frontWallOffset); // 左侧
                             } else {
-                                paintingWithFrame.position.set(12, paintingCenterHeight, frontWallOffset);  // 向右移动到12
+                                paintingWithFrame.position.set(12, paintingCenterHeight, frontWallOffset);  // 右侧
                             }
                             paintingWithFrame.rotation.y = Math.PI;
                             break;
@@ -380,18 +352,13 @@ const GallerySection = ({ language = 'en' }) => {
                     paintingWithFrame.receiveShadow = false;
                     scene.add(paintingWithFrame);
                     
-                    console.log(`🖼️ 创建画作: ${wallType} 位置${positionIndex} 坐标(${paintingWithFrame.position.x.toFixed(1)}, ${paintingWithFrame.position.y.toFixed(1)}, ${paintingWithFrame.position.z.toFixed(1)})`);
-                    
-                    // 创建射灯
                     setTimeout(() => {
                         createPaintingSpotlight(paintingWithFrame);
                     }, 100);
                     
-                    // 批量加载纹理，限制同时加载的数量
                     const imageSrc = item.src || item.thumbnail;
                     if (!loadedTextures.has(imageSrc)) {
                         try {
-                            // 预检查图片是否存在
                             const checkImageExists = (src) => {
                                 return new Promise((resolve, reject) => {
                                     const img = new Image();
@@ -412,7 +379,6 @@ const GallerySection = ({ language = 'en' }) => {
                                 );
                             });
                             
-                            // 设置纹理参数
                             texture.generateMipmaps = false;
                             texture.minFilter = THREE.LinearFilter;
                             texture.magFilter = THREE.LinearFilter;
@@ -421,15 +387,11 @@ const GallerySection = ({ language = 'en' }) => {
                             painting.material.map = texture;
                             painting.material.color.setHex(0xffffff);
                             painting.material.needsUpdate = true;
-                            console.log(`✅ 已加载${wallType}图片: ${item.title?.zh || item.title?.en || 'Untitled'}`);
-                        } catch (error) {
-                            console.warn(`❌ 图片加载失败 (${imageSrc}):`, error);
-                            // 使用灰色占位符
+                        } catch {
                             painting.material.color.setHex(0x666666);
                             painting.material.needsUpdate = true;
                         }
                     } else {
-                        // 重用已加载的纹理
                         painting.material.map = loadedTextures.get(imageSrc);
                         painting.material.color.setHex(0xffffff);
                         painting.material.needsUpdate = true;
@@ -608,58 +570,48 @@ const GallerySection = ({ language = 'en' }) => {
             const camera = cameraRef.current;
             if (!camera) return;
             
-            console.log('🎬 开始摄像机开场动画...');
-            
-            // 动画阶段定义
             const phases = {
-                // 第一阶段：从墙边开始，向上看天花板的王字灯光
                 phase1: {
                     duration: 2500,
-                    startPos: { x: 0, y: 1.6, z: 15 },  // 从后墙边开始
-                    endPos: { x: 0, y: 1.6, z: 12 },    // 稍微向前移动
-                    startLookAt: { x: 0, y: 8, z: 0 },  // 向上看天花板（12点钟方向）
-                    endLookAt: { x: 0, y: 8, z: 0 }     // 保持向上看
+                    startPos: { x: 0, y: 1.6, z: 15 },
+                    endPos: { x: 0, y: 1.6, z: 12 },
+                    startLookAt: { x: 0, y: 8, z: 0 },
+                    endLookAt: { x: 0, y: 8, z: 0 }
                 },
-                // 第二阶段：继续向前走，视角开始下降
                 phase2: {
                     duration: 3000,
-                    startPos: { x: 0, y: 1.6, z: 12 },  // 从第一阶段结束位置开始
-                    endPos: { x: 0, y: 1.6, z: 5 },     // 向画廊中心移动
-                    startLookAt: { x: 0, y: 8, z: 0 },  // 从向上看开始
-                    endLookAt: { x: 0, y: 4, z: 0 }     // 视角开始下降
+                    startPos: { x: 0, y: 1.6, z: 12 },
+                    endPos: { x: 0, y: 1.6, z: 5 },
+                    startLookAt: { x: 0, y: 8, z: 0 },
+                    endLookAt: { x: 0, y: 4, z: 0 }
                 },
-                // 第三阶段：到达中心位置，视角降到水平
                 phase3: {
                     duration: 2000,
-                    startPos: { x: 0, y: 1.6, z: 5 },   // 从第二阶段结束位置
-                    endPos: { x: 0, y: 1.6, z: 0 },     // 画廊中心位置
-                    startLookAt: { x: 0, y: 4, z: 0 },  // 从45度角开始
-                    endLookAt: { x: 0, y: 1.6, z: -1 }  // 最终水平向前看
+                    startPos: { x: 0, y: 1.6, z: 5 },
+                    endPos: { x: 0, y: 1.6, z: 0 },
+                    startLookAt: { x: 0, y: 4, z: 0 },
+                    endLookAt: { x: 0, y: 1.6, z: -1 }
                 }
             };
             
-            // 设置初始位置和朝向
             camera.position.set(phases.phase1.startPos.x, phases.phase1.startPos.y, phases.phase1.startPos.z);
             camera.lookAt(phases.phase1.startLookAt.x, phases.phase1.startLookAt.y, phases.phase1.startLookAt.z);
             
             let currentPhase = 1;
             let phaseStartTime = Date.now();
             
-            const executePhase = (phaseConfig, phaseNumber) => {
+            const executePhase = (phaseConfig) => {
                 const elapsed = Date.now() - phaseStartTime;
                 const progress = Math.min(elapsed / phaseConfig.duration, 1);
                 
-                // 使用平滑的缓动函数
                 const easeInOutCubic = progress < 0.5 
                     ? 4 * progress * progress * progress 
                     : 1 - Math.pow(-2 * progress + 2, 3) / 2;
                 
-                // 插值位置
                 camera.position.x = phaseConfig.startPos.x + (phaseConfig.endPos.x - phaseConfig.startPos.x) * easeInOutCubic;
                 camera.position.y = phaseConfig.startPos.y + (phaseConfig.endPos.y - phaseConfig.startPos.y) * easeInOutCubic;
                 camera.position.z = phaseConfig.startPos.z + (phaseConfig.endPos.z - phaseConfig.startPos.z) * easeInOutCubic;
                 
-                // 插值朝向（关键：实现从向上看到水平看的平滑过渡）
                 const currentLookAt = {
                     x: phaseConfig.startLookAt.x + (phaseConfig.endLookAt.x - phaseConfig.startLookAt.x) * easeInOutCubic,
                     y: phaseConfig.startLookAt.y + (phaseConfig.endLookAt.y - phaseConfig.startLookAt.y) * easeInOutCubic,
@@ -667,11 +619,6 @@ const GallerySection = ({ language = 'en' }) => {
                 };
                 
                 camera.lookAt(currentLookAt.x, currentLookAt.y, currentLookAt.z);
-                
-                // 调试信息
-                if (Math.floor(elapsed / 100) !== Math.floor((elapsed - 16) / 100)) {
-                    console.log(`🎥 Phase ${phaseNumber}: ${Math.round(progress * 100)}% - Pos(${camera.position.x.toFixed(1)}, ${camera.position.y.toFixed(1)}, ${camera.position.z.toFixed(1)}) LookY: ${currentLookAt.y.toFixed(1)}`);
-                }
                 
                 return progress >= 1;
             };
@@ -681,42 +628,34 @@ const GallerySection = ({ language = 'en' }) => {
                 
                 switch(currentPhase) {
                     case 1:
-                        phaseComplete = executePhase(phases.phase1, 1);
+                        phaseComplete = executePhase(phases.phase1);
                         if (phaseComplete) {
-                            console.log('✨ Phase 1 完成：观察天花板王字');
                             currentPhase = 2;
                             phaseStartTime = Date.now();
                         }
                         break;
                     case 2:
-                        phaseComplete = executePhase(phases.phase2, 2);
+                        phaseComplete = executePhase(phases.phase2);
                         if (phaseComplete) {
-                            console.log('🚶‍♂️ Phase 2 完成：向前移动，视角下降');
                             currentPhase = 3;
                             phaseStartTime = Date.now();
                         }
                         break;
                     case 3:
-                        phaseComplete = executePhase(phases.phase3, 3);
+                        phaseComplete = executePhase(phases.phase3);
                         if (phaseComplete) {
-                            console.log('🎉 开场动画完成，启用用户控制');
-                            console.log('⏳ UI卡片将在9秒后渐现显示，确保王字灯光欣赏不被干扰...');
                             setIsIntroAnimationComplete(true);
                             setIsLoading(false);
                             
-                            // 延迟显示UI卡片，让用户充分欣赏"王"字灯光和场景
                             setTimeout(() => {
-                                console.log('✨ 开始渐现显示UI卡片 - 用户现在可以看到操作提示');
                                 setShowUICards(true);
-                            }, 9000); // 9秒后渐现显示UI卡片，确保用户有充分时间欣赏王字灯光效果
+                            }, 9000);
                             
-                            // 重新设置控制器并恢复正常功能
                             if (controlsRef.current) {
                                 controlsRef.current.getObject().position.copy(camera.position);
-                                // 恢复控制器的连接功能
                                 controlsRef.current.connect = controlsRef.current.connect.__original || controlsRef.current.connect;
                             }
-                            return; // 结束动画
+                            return;
                         }
                         break;
                 }
@@ -724,45 +663,34 @@ const GallerySection = ({ language = 'en' }) => {
                 introAnimationRef.current = requestAnimationFrame(animateCamera);
             };
             
-            // 开始动画
             animateCamera();
         };
         
         // 初始化Three.js场景
         const initScene = () => {
             try {
-                // 创建资源加载管理器
                 const loadingManager = new THREE.LoadingManager();
                 loadingManagerRef.current = loadingManager;
                 
-                // 设置加载管理器回调
                 loadingManager.onStart = (url, itemsLoaded, itemsTotal) => {
-                    console.log(`🚀 开始加载资源: ${url} (${itemsLoaded}/${itemsTotal})`);
                     setLoadingProgress({ loaded: itemsLoaded, total: itemsTotal });
                 };
                 
                 loadingManager.onProgress = (url, itemsLoaded, itemsTotal) => {
-                    console.log(`📦 加载进度: ${url} (${itemsLoaded}/${itemsTotal})`);
                     setLoadingProgress({ loaded: itemsLoaded, total: itemsTotal });
                 };
                 
                 loadingManager.onLoad = () => {
-                    console.log('✅ 所有资源加载完成！开始GPU准备...');
                     setIsResourcesLoaded(true);
                     
-                    // 等待下一帧，确保所有资源都已经准备好
                     requestAnimationFrame(() => {
-                        // 强制渲染一帧，让GPU编译所有着色器和上传纹理
                         if (rendererRef.current && sceneRef.current && cameraRef.current) {
-                            console.log('🎮 执行GPU预热渲染...');
                             rendererRef.current.render(sceneRef.current, cameraRef.current);
                             
-                            // 再等待一帧确保GPU处理完成
                             requestAnimationFrame(() => {
-                                console.log('🚀 GPU准备完成，开始摄像机动画');
                                 setTimeout(() => {
                                     startIntroAnimation();
-                                }, 300); // 稍微延迟让用户看到100%完成状态
+                                }, 300);
                             });
                         } else {
                             setTimeout(() => {
@@ -772,26 +700,21 @@ const GallerySection = ({ language = 'en' }) => {
                     });
                 };
                 
-                loadingManager.onError = (url) => {
-                    console.error('❌ 资源加载失败:', url);
-                };
+                loadingManager.onError = () => {};
                 
-                // 创建场景
                 const scene = new THREE.Scene();
-                scene.background = new THREE.Color(0x1a1a1a); // 深色背景，让天花板灯光更显眼
+                scene.background = new THREE.Color(0x1a1a1a);
                 sceneRef.current = scene;
 
-                // 创建相机 - 设置视线高度与画作中心对齐
                 const camera = new THREE.PerspectiveCamera(
                     75,
                     container.clientWidth / container.clientHeight,
                     0.1,
                     1000
                 );
-                camera.position.set(0, 1.6, 0); // 移动到房间中央，视线高度1.6米
+                camera.position.set(0, 1.6, 0);
                 cameraRef.current = camera;
 
-                // 创建平衡性能与质量的渲染器
                 const renderer = new THREE.WebGLRenderer({ 
                     antialias: true,
                     alpha: false,
@@ -808,7 +731,6 @@ const GallerySection = ({ language = 'en' }) => {
                 renderer.toneMapping = THREE.ReinhardToneMapping; // 更轻量的色调映射
                 renderer.toneMappingExposure = 1.0;
                 
-                // 检查WebGL上下文是否正常
                 const webglContext = renderer.getContext();
                 if (!webglContext) {
                     throw new Error('WebGL context creation failed');
@@ -816,11 +738,6 @@ const GallerySection = ({ language = 'en' }) => {
                 
                 container.appendChild(renderer.domElement);
                 rendererRef.current = renderer;
-                
-                // 检查WebGL纹理限制
-                const maxTextureUnits = webglContext.getParameter(webglContext.MAX_TEXTURE_IMAGE_UNITS);
-                console.log(`WebGL Max Texture Units: ${maxTextureUnits}`);
-                console.log('Reduced shadow-casting lights to stay within texture limits');
 
                 // 创建第一人称控制器
                 const controls = new PointerLockControls(camera, renderer.domElement);
@@ -864,32 +781,13 @@ const GallerySection = ({ language = 'en' }) => {
                     mainLight.shadow.camera.bottom = -25;
                     scene.add(mainLight);
                     
-                    // 只保留一个补充光源，减少光源数量
                     const fillLight = new THREE.DirectionalLight(0xffffff, 0.2);
                     fillLight.position.set(-10, 8, -10);
                     scene.add(fillLight);
                     
-                    console.log('✨ Set up optimized gallery lighting system');
-                    
                     return [ambientLight, mainLight, fillLight];
                 };
 
-                // 获取图片的原始尺寸 - 用于动态调整画框
-                const getImageDimensions = (imagePath) => {
-                    return new Promise((resolve) => {
-                        const img = new Image();
-                        img.onload = () => {
-                            resolve({ width: img.width, height: img.height });
-                        };
-                        img.onerror = () => {
-                            console.warn(`Failed to load image: ${imagePath}, using default dimensions`);
-                            resolve({ width: 800, height: 600 }); // 默认尺寸
-                        };
-                        img.src = imagePath;
-                    });
-                };
-
-                // 添加艺术装饰元素
                 const addArtisticElements = (scene) => {
                     // 创建完全填充入口的墙面发光区域（灯箱）- 更新为新尺寸
                     const createWallLightBox = () => {
@@ -900,7 +798,7 @@ const GallerySection = ({ language = 'en' }) => {
                         
                         // 创建填充整个入口的发光面
                         const lightBoxGeometry = new THREE.BoxGeometry(entranceWidth, entranceHeight, lightBoxDepth);
-                        const lightBoxMaterial = new THREE.MeshBasicMaterial({
+                        const lightBoxMaterial = new THREE.MeshStandardMaterial({
                             color: 0xffffff,        // 纯白色
                             emissive: 0xffffff,     // 自发光白色
                             emissiveIntensity: 1.2   // 增强发光强度
@@ -927,7 +825,6 @@ const GallerySection = ({ language = 'en' }) => {
                             scene.add(lightSource);
                         });
                         
-                        console.log('💡 Added entrance-filling lightbox (12m × 12m) - updated for full wall height');
                         return lightBox;
                     };
                     
@@ -936,23 +833,14 @@ const GallerySection = ({ language = 'en' }) => {
                     return { wallLightBox };
                 };
 
-                // 创建简化的"王"字形天花板灯光系统
                 const createWangCharacterLights = () => {
                     const characterLights = [];
                     
-                    console.log('🏮 开始创建标准"王"字灯光系统...');
-                    console.log('📏 王字结构: 第一横(6米) < 第二横(5米) < 第三横最长(7米), 竖线不出头, 整体修长1.5倍');
-                    
-                    // "王"字的正确结构：三条横线 + 一条竖线（竖线不出头，整体修长）
                     const wangLines = [
-                        // 第一横（6米）
-                        { start: { x: -3, z: -2.25 }, end: { x: 3, z: -2.25 }, name: '王-上横' },
-                        // 第二横（5米，比第一横短一点） 
+                        { start: { x: -3, z: 2.25 }, end: { x: 3, z: 2.25 }, name: '王-上横' },
                         { start: { x: -2.5, z: 0 }, end: { x: 2.5, z: 0 }, name: '王-中横' },
-                        // 第三横（7米，最长）
-                        { start: { x: -3.5, z: 2.25 }, end: { x: 3.5, z: 2.25 }, name: '王-下横' },
-                        // 竖线（只连接三条横线，不出头，修长1.5倍）
-                        { start: { x: 0, z: -2.25 }, end: { x: 0, z: 2.25 }, name: '王-竖线' }
+                        { start: { x: -3.5, z: -2.25 }, end: { x: 3.5, z: -2.25 }, name: '王-下横' },
+                        { start: { x: 0, z: 2.25 }, end: { x: 0, z: -2.25 }, name: '王-竖线' }
                     ];
 
                     wangLines.forEach((line) => {
@@ -961,12 +849,8 @@ const GallerySection = ({ language = 'en' }) => {
                             Math.pow(line.end.z - line.start.z, 2)
                         );
                         
-                        console.log(`创建${line.name}: 长度=${length.toFixed(2)}`);
-                        
-                        // 根据线条类型创建不同的几何体
                         let tubeGeometry;
                         if (line.name.includes('竖')) {
-                            // 竖线
                             tubeGeometry = new THREE.BoxGeometry(0.4, 0.2, length);
                         } else {
                             // 横线
@@ -974,7 +858,7 @@ const GallerySection = ({ language = 'en' }) => {
                         }
                         
                         // 白色冷光源发光材质 - 增强发光效果
-                        const tubeMaterial = new THREE.MeshBasicMaterial({ 
+                        const tubeMaterial = new THREE.MeshStandardMaterial({ 
                             color: 0xffffff,        // 纯白色
                             emissive: 0xffffff,     // 白色强烈发光
                             emissiveIntensity: 1.5, // 增强发光强度
@@ -985,77 +869,28 @@ const GallerySection = ({ language = 'en' }) => {
                         
                         const centerX = (line.start.x + line.end.x) / 2;
                         const centerZ = (line.start.z + line.end.z) / 2;
-                        // 降低高度，让用户更容易看到
                         tube.position.set(centerX, 6, centerZ);
-                        
-                        console.log(`${line.name} 位置: (${centerX}, 6, ${centerZ})`);
                         
                         scene.add(tube);
                         
-                        // 添加更强的白色冷光源，扩大照射范围
-                        const pointLight = new THREE.PointLight(0xffffff, 5.0, 40); // 增强亮度到5.0，照射范围扩大到40米
+                        const pointLight = new THREE.PointLight(0xffffff, 5.0, 40);
                         pointLight.position.set(centerX, 5.5, centerZ);
                         scene.add(pointLight);
                         
                         characterLights.push({ tube, name: line.name });
                     });
                     
-                    console.log(`✨ "王"字白色冷光灯光系统创建完成! 共 ${characterLights.length} 个灯管`);
                     return characterLights;
                 };
 
-                // 设置基础画廊灯光
                 setupBasicLighting(scene);
 
-                // 添加艺术装饰元素
-                const artisticElements = addArtisticElements(scene);
+                addArtisticElements(scene);
 
-                // 创建"王"字形天花板灯管系统
-                const nameCharacterLights = createWangCharacterLights();
-                console.log(`✨ Created "王" character lighting - illuminating the world! ${nameCharacterLights.length} light tubes`);
+                createWangCharacterLights();
 
-                // 创建射灯增强函数（为每个画作添加聚光灯）
-                const createSpotlightForPainting = (painting, paintingMesh) => {
-                    // 根据墙面位置计算射灯角度和位置
-                    const position = paintingMesh.position;
-                    const isBackWall = position.z < -8;
-                    const isFrontWall = position.z > 8;
-                    const isLeftWall = position.x < -8;
-                    const isRightWall = position.x > 8;
-
-                    // 计算射灯位置（距离画作2米，高度6米）
-                    let lightPosition = new THREE.Vector3();
-                    let targetPosition = new THREE.Vector3(position.x, position.y, position.z);
-
-                    if (isBackWall) {
-                        lightPosition.set(position.x, 6, position.z + 2);
-                    } else if (isFrontWall) {
-                        lightPosition.set(position.x, 6, position.z - 2);
-                    } else if (isLeftWall) {
-                        lightPosition.set(position.x + 2, 6, position.z);
-                    } else if (isRightWall) {
-                        lightPosition.set(position.x - 2, 6, position.z);
-                    }
-
-                    // 创建聚光灯
-                    const spotlight = new THREE.SpotLight(0xffffff, 3, 15, Math.PI / 6, 0.5, 2);
-                    spotlight.position.copy(lightPosition);
-                    spotlight.target = paintingMesh;
-                    spotlight.castShadow = true;
-                    spotlight.shadow.mapSize.width = 1024;
-                    spotlight.shadow.mapSize.height = 1024;
-                    
-                    scene.add(spotlight);
-                    scene.add(spotlight.target);
-
-                    console.log(`💡 Added spotlight for "${painting.title}" at (${lightPosition.x.toFixed(1)}, ${lightPosition.y.toFixed(1)}, ${lightPosition.z.toFixed(1)})`);
-                    return spotlight;
-                };
-
-                // 创建简单的房间
                 createSimpleRoom(scene);
 
-                // 添加测试画作 
                 addTestPaintings(scene, loadingManager);
 
                 // 渲染循环
@@ -1074,8 +909,6 @@ const GallerySection = ({ language = 'en' }) => {
 
                 animate();
                 setIsLoading(false);
-
-                console.log('Three.js scene initialized successfully');
                 
             } catch (error) {
                 console.error('Failed to initialize Three.js scene:', error);
@@ -1085,9 +918,7 @@ const GallerySection = ({ language = 'en' }) => {
 
         initScene();
 
-        // 清理函数
         return () => {
-            console.log('🧹 Cleaning up Gallery Three.js resources...');
             
             // 取消动画循环
             if (animationFrameRef.current) {
@@ -1137,13 +968,8 @@ const GallerySection = ({ language = 'en' }) => {
                 rendererRef.current = null;
             }
             
-            // 清理摄像机引用
             cameraRef.current = null;
-            
-            // 清理墙体引用
             wallsRef.current = null;
-            
-            console.log('✅ Gallery Three.js resources cleaned up successfully');
         };
     }, [galleryData, isIntroAnimationComplete]);
 
