@@ -180,6 +180,14 @@ export const useTheme = () => {
     // 设置CSS变量
     Object.entries(themeConfig.colors).forEach(([key, value]) => {
       root.style.setProperty(`--theme-${key}`, value);
+      
+      // 如果是颜色值，也设置对应的RGB变量
+      if (key === 'primary' || key === 'secondary') {
+        const rgbValue = hexToRgb(value);
+        if (rgbValue) {
+          root.style.setProperty(`--theme-${key}-rgb`, `${rgbValue.r}, ${rgbValue.g}, ${rgbValue.b}`);
+        }
+      }
     });
 
     // 设置主题类名

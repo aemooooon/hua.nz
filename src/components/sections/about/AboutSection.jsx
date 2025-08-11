@@ -32,7 +32,18 @@ const AboutSection = ({ language = 'en' }) => {
                     {/* 内容容器 - 内部也应用黄金比例的留白 */}
                     <div className="about-card-container">
                         {/* 增强毛玻璃背景卡片 + 光影效果 */}
-                        <div className="content-section shine-card shine-blue p-6 lg:p-8 xl:p-10 w-full relative">
+                        <div className="content-section shine-card p-6 lg:p-8 xl:p-10 w-full relative"
+                             style={{
+                                 background: 'rgba(255, 255, 255, 0.06)', // 稍微提高背景透明度
+                                 border: `1px solid rgba(var(--theme-primary-rgb), 0.3)`, // 使用主题色边框
+                                 borderRadius: '0.75rem',
+                                 backdropFilter: 'blur(10px)',
+                                 boxShadow: `
+                                     0 8px 32px rgba(0, 0, 0, 0.3),
+                                     0 0 20px rgba(var(--theme-primary-rgb), 0.1),
+                                     inset 0 1px 0 rgba(255, 255, 255, 0.1)
+                                 `
+                             }}>
                             {/* 内容层 */}
                             <div className="relative z-10 about-card-content shine-content">
                                 {/* 个人陈述内容 */}
@@ -54,7 +65,8 @@ const AboutSection = ({ language = 'en' }) => {
                                                     backgroundClip: 'text',
                                                     display: 'inline-block',
                                                     fontWeight: '400',
-                                                    verticalAlign: 'baseline'
+                                                    verticalAlign: 'baseline',
+                                                    filter: 'drop-shadow(0 0 8px var(--theme-primary))'
                                                 }}
                                             >
                                                 Kia ora
@@ -63,7 +75,7 @@ const AboutSection = ({ language = 'en' }) => {
                                                 style={{ 
                                                     fontFamily: 'Figtree, sans-serif',
                                                     fontSize: '1.8rem',
-                                                    color: 'var(--theme-text-secondary)',
+                                                    color: 'var(--theme-text-secondary)', // 次要文字色
                                                     fontWeight: '300',
                                                     display: 'inline-block',
                                                     marginLeft: '0.75rem',
@@ -83,7 +95,8 @@ const AboutSection = ({ language = 'en' }) => {
                                                     display: 'inline-block',
                                                     fontWeight: '400',
                                                     marginLeft: '0.75rem',
-                                                    verticalAlign: 'baseline'
+                                                    verticalAlign: 'baseline',
+                                                    filter: 'drop-shadow(0 0 8px var(--theme-primary))'
                                                 }}
                                             >
                                                 Hua Wang
@@ -100,10 +113,7 @@ const AboutSection = ({ language = 'en' }) => {
                                                 fontWeight: '400',
                                                 fontSize: '0.95rem',
                                                 lineHeight: '1.6',
-                                                background: 'linear-gradient(135deg, var(--theme-gradient-from), var(--theme-gradient-via), var(--theme-gradient-to))',
-                                                WebkitBackgroundClip: 'text',
-                                                WebkitTextFillColor: 'transparent',
-                                                backgroundClip: 'text',
+                                                color: 'var(--theme-text-muted)', // 使用描述文字色而非渐变
                                                 display: 'block'
                                             }}
                                         >
@@ -119,9 +129,16 @@ const AboutSection = ({ language = 'en' }) => {
                                         target="_blank" 
                                         rel="noopener noreferrer"
                                         download="Hua_Wang_Full_Stack_Engineer.pdf"
-                                        variant="ghost"
-                                        className="font-medium border-b border-theme-primary/50 hover:border-theme-primary pb-1 transition-all duration-300"
-                                        style={{ fontFamily: 'Figtree, sans-serif', fontWeight: '500' }}
+                                        variant="outline"
+                                        className="font-medium transition-all duration-300 hover:shadow-lg"
+                                        style={{ 
+                                            fontFamily: 'Figtree, sans-serif', 
+                                            fontWeight: '500',
+                                            backgroundColor: 'var(--theme-button)',
+                                            borderColor: 'var(--theme-button-border)',
+                                            color: 'var(--theme-text-primary)',
+                                            boxShadow: '0 0 10px rgba(var(--theme-primary-rgb), 0.3)'
+                                        }}
                                     >
                                         {language === 'en' ? 'Resume' : '简历'}
                                     </ThemeButton>
@@ -141,15 +158,15 @@ const AboutSection = ({ language = 'en' }) => {
                             <div className="about-avatar-container relative rounded-full overflow-hidden bg-theme-surface/50 backdrop-blur-sm border-4 border-theme-primary transition-all duration-500"
                              style={{
                                  filter: `
-                                     drop-shadow(0 0 5px var(--theme-avatar-glow))
-                                     drop-shadow(0 0 10px rgba(0, 255, 255, 0.6))
-                                     drop-shadow(0 0 15px rgba(0, 255, 255, 0.4))
+                                     drop-shadow(0 0 5px var(--theme-primary))
+                                     drop-shadow(0 0 10px rgba(var(--theme-primary-rgb), 0.6))
+                                     drop-shadow(0 0 15px rgba(var(--theme-primary-rgb), 0.4))
                                  `,
                                  boxShadow: `
-                                     0 0 8px var(--theme-avatar-glow),
-                                     0 0 15px rgba(0, 255, 255, 0.8),
-                                     0 0 22px rgba(0, 255, 255, 0.6),
-                                     inset 0 0 5px rgba(0, 255, 255, 0.3)
+                                     0 0 8px var(--theme-primary),
+                                     0 0 15px rgba(var(--theme-primary-rgb), 0.8),
+                                     0 0 22px rgba(var(--theme-primary-rgb), 0.6),
+                                     inset 0 0 5px rgba(var(--theme-primary-rgb), 0.3)
                                  `,
                                  animation: 'avatar-glow 3s ease-in-out infinite'
                              }}>
@@ -160,9 +177,9 @@ const AboutSection = ({ language = 'en' }) => {
                                          conic-gradient(
                                              from 0deg,
                                              transparent 0deg,
-                                             rgba(0, 255, 255, 0.2) 45deg,
-                                             rgba(0, 255, 255, 0.3) 90deg,
-                                             rgba(0, 255, 255, 0.2) 135deg,
+                                             rgba(var(--theme-primary-rgb), 0.2) 45deg,
+                                             rgba(var(--theme-primary-rgb), 0.3) 90deg,
+                                             rgba(var(--theme-primary-rgb), 0.2) 135deg,
                                              transparent 180deg,
                                              transparent 360deg
                                          )
@@ -174,10 +191,10 @@ const AboutSection = ({ language = 'en' }) => {
                             {/* 静态内层光晕 */}
                             <div className="absolute -inset-1 rounded-full pointer-events-none" 
                                  style={{
-                                     background: 'radial-gradient(circle, transparent 70%, rgba(0, 255, 255, 0.15) 85%, transparent 100%)',
+                                     background: `radial-gradient(circle, transparent 70%, rgba(var(--theme-primary-rgb), 0.15) 85%, transparent 100%)`,
                                      boxShadow: `
-                                         0 0 4px rgba(0, 255, 255, 0.6),
-                                         inset 0 0 4px rgba(0, 255, 255, 0.3)
+                                         0 0 4px rgba(var(--theme-primary-rgb), 0.6),
+                                         inset 0 0 4px rgba(var(--theme-primary-rgb), 0.3)
                                      `
                                  }}>
                             </div>

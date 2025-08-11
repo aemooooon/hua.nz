@@ -84,10 +84,10 @@ export const ThemeButton = ({ children, className, variant = "primary", size = "
   const baseClasses = "theme-button font-medium rounded-lg transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-theme-primary/50 backdrop-blur-sm";
   
   const variantClasses = {
-    primary: "bg-theme-button text-white hover:bg-theme-primary/80 border border-theme-primary/30",
+    primary: "bg-theme-button-primary text-white hover:bg-theme-button-hover border border-theme-primary/30",
     secondary: "bg-theme-surface border border-theme-border text-theme-text-primary hover:bg-theme-surface-elevated",
-    outline: "border-2 border-theme-primary text-theme-primary hover:bg-theme-primary/20",
-    ghost: "text-theme-primary hover:bg-theme-primary/10"
+    outline: "border-2 border-theme-button-border text-theme-text-primary hover:bg-theme-button-hover bg-theme-button",
+    ghost: "text-theme-primary hover:bg-theme-button-hover bg-transparent"
   };
   
   const sizeClasses = {
