@@ -190,7 +190,7 @@ const EffectAvatar = ({ imageSrc, hoverImageSrc }) => {
                     position: "absolute",
                     top: "50%",
                     left: "50%",
-                    transform: "translate(-50%, -50%) scale(1.5)", // 修复：统一使用-50%居中
+                    transform: "translate(-50%, -50%) scale(1.5)", // 恢复原来的设置
                     opacity: isLoading ? 0 : 1, // 加载时隐藏canvas
                     transition: "opacity 0.3s ease"
                 }}
@@ -205,14 +205,15 @@ const EffectAvatar = ({ imageSrc, hoverImageSrc }) => {
                     position: "absolute",
                     top: "50%",
                     left: "50%",
-                    transform: "translate(-50%, -50%)", // 修复：统一使用-50%居中
+                    transform: "translate(-50%, -50%)", // 恢复原来的居中
                     opacity: 0, // 初始状态
                     visibility: isHovered ? "visible" : "hidden", // 控制可见性
                     transition: "opacity 0.8s ease, transform 0.8s ease", // 添加过渡效果
                     pointerEvents: "none", // 防止图片遮挡 Canvas 的交互
-                    width: "100%",
-                    height: "100%",
-                    objectFit: "cover", // 确保图片正确填充
+                    width: "100%", // 宽度填满容器
+                    height: "auto", // 高度自适应，保持宽高比
+                    maxHeight: "100%", // 限制最大高度不超过容器
+                    objectFit: "cover", // 改为contain，完整显示图片不裁剪
                     borderRadius: "inherit" // 继承父容器的圆角
                 }}
             />
