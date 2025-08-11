@@ -27,37 +27,37 @@
 
 /* 主题根变量设置 */
 :root {
-  /* 默认为 New Zealand Blue 主题 - 使用最亮颜色和纯黑背景 */
-  --theme-primary: #00ffff;
-  --theme-primary-rgb: 0, 255, 255;
-  --theme-secondary: #0080ff;
-  --theme-secondary-rgb: 0, 128, 255;
-  --theme-accent: #4dd0e1;
-  --theme-background: #000000;
-  --theme-surface: rgba(255, 255, 255, 0.05);
-  --theme-surface-elevated: rgba(255, 255, 255, 0.1);
-  --theme-text-primary: #ffffff;
-  --theme-text-secondary: #e1e7ef;
-  --theme-text-muted: #888888;
-  --theme-border: #00ffff;
-  --theme-divider: #00ffff;
-  --theme-hover: rgba(0, 255, 255, 0.1);
-  --theme-button: rgba(0, 255, 255, 0.8);
-  --theme-button-primary: rgba(0, 255, 255, 0.8);
-  --theme-button-hover: rgba(0, 255, 255, 0.9);
-  --theme-loading: #00ffff;
-  --theme-glow: #00ffff;
-  --theme-shadow: rgba(0, 255, 255, 0.5);
-  --theme-cursor: #00ffff;
-  --theme-avatar-glow: #00ffff;
-  --theme-success: #00ff00;
-  --theme-warning: #ffff00;
-  --theme-error: #ff0000;
+  /* South Island Green 方案A：科技绿色系 - 统一绿色调主题 */
+  --theme-primary: #00FF88;            /* 高亮绿 - 主要文字 */
+  --theme-primary-rgb: 0, 255, 136;    /* RGB值用于透明度效果 */
+  --theme-secondary: #10B981;          /* 翠绿 - 次要文字 */
+  --theme-secondary-rgb: 16, 185, 129;
+  --theme-accent: #34D399;             /* 浅绿 - 强调色 */
+  --theme-background: #0A0F0D;         /* 深绿黑背景 */
+  --theme-surface: rgba(224, 224, 224, 0.05);      /* 浅灰白表面 */
+  --theme-surface-elevated: rgba(224, 224, 224, 0.1);
+  --theme-text-primary: #E0F2E0;       /* 浅绿白主文字 */
+  --theme-text-secondary: #B0D0B0;     /* 淡绿次要文字 */
+  --theme-text-muted: #6B8F6B;         /* 静音绿文字 */
+  --theme-border: #10B981;             /* 翠绿边框 */
+  --theme-divider: #10B981;            /* 分割线 */
+  --theme-hover: rgba(16, 185, 129, 0.1);          /* 悬停效果 */
+  --theme-button: rgba(0, 255, 136, 0.8);          /* 按钮色 */
+  --theme-button-primary: rgba(0, 255, 136, 0.8);
+  --theme-button-hover: rgba(0, 255, 136, 0.9);
+  --theme-loading: #00FF88;            /* 使用高亮绿作为加载色 */
+  --theme-glow: #00FF88;               /* 发光色也使用高亮绿 */
+  --theme-shadow: rgba(16, 185, 129, 0.5);         /* 阴影色 */
+  --theme-cursor: #00FF88;             /* 光标色 */
+  --theme-avatar-glow: #10B981;        /* 头像发光 */
+  --theme-success: #00FF88;            /* 成功色使用高亮绿 */
+  --theme-warning: #F59E0B;            /* 警告色保持橙色 */
+  --theme-error: #EF4444;              /* 错误色保持红色 */
   
-  /* 渐变色配置 */
-  --theme-gradient-from: #00ffff;
-  --theme-gradient-via: #0080ff;
-  --theme-gradient-to: #4dd0e1;
+  /* 渐变色配置 - 统一绿色渐变 */
+  --theme-gradient-from: #10B981;      /* 翠绿 */
+  --theme-gradient-via: #00FF88;       /* 高亮绿 */
+  --theme-gradient-to: #34D399;        /* 浅绿 */
   
   /* 地图专用高对比度颜色 - Map UI High Contrast Colors */
   --theme-map-button-bg: rgba(0, 0, 0, 0.92);

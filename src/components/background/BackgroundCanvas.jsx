@@ -7,11 +7,15 @@ import { EffectLorenzAttractor } from './EffectLorenzAttractor';
 import { EffectChaos } from './EffectChaos';
 import { debounce } from 'lodash';
 import webglResourceManager from '../../utils/WebGLResourceManager';
+import { useAppStore } from '../../store/useAppStore';
 
 const BackgroundCanvas = ({ effectType = 'effectfuse' }) => {
     const canvasRef = useRef(null);
     const effectInstanceRef = useRef(null);
     const cleanupTimeoutRef = useRef(null);
+    
+    // 获取当前主题
+    const theme = useAppStore(state => state.theme);
 
     useEffect(() => {
         // 清除之前的清理定时器
@@ -277,6 +281,14 @@ const BackgroundCanvas = ({ effectType = 'effectfuse' }) => {
             }
         };
     }, [effectType]);
+
+    // 监听主题变化，更新粒子颜色
+    useEffect(() => {
+        // 只有当效果是EffectChaos时才需要更新颜色
+        if (effectInstanceRef.current && effectInstanceRef.current.updateThemeColors && effectType === 'effectchaos') {
+            effectInstanceRef.current.updateThemeColors();
+        }
+    }, [theme, effectType]);
 
     return null; // 这个组件不渲染任何DOM
 };

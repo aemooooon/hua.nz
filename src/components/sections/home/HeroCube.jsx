@@ -191,22 +191,22 @@ const HeroCube = ({
         mainLight.castShadow = true;
         scene.add(mainLight);
 
-        // 添加补光 - 从不同角度照亮立方体
-        const fillLight1 = new THREE.DirectionalLight(0x88ccff, 0.6); // 蓝色调补光
+        // 添加South Island Green主题色补光 - 绿色系
+        const fillLight1 = new THREE.DirectionalLight(0x10B981, 0.6); // 翠绿补光
         fillLight1.position.set(-5, 2, -3);
         scene.add(fillLight1);
         
-        const fillLight2 = new THREE.DirectionalLight(0xffaa88, 0.5); // 暖色调补光
+        const fillLight2 = new THREE.DirectionalLight(0x34D399, 0.5); // 浅绿补光
         fillLight2.position.set(3, -4, 5);
         scene.add(fillLight2);
         
         // 添加点光源增强中央区域亮度
-        const pointLight = new THREE.PointLight(0xffffff, 1.5, 15); // 强度1.5，范围15
+        const pointLight = new THREE.PointLight(0xE0F2E0, 1.5, 15); // 浅绿白光源
         pointLight.position.set(0, 0, 8);
         scene.add(pointLight);
         
         // 添加背景点光源增强粒子可见度
-        const backLight = new THREE.PointLight(0xaaccff, 0.8, 20);
+        const backLight = new THREE.PointLight(0x00FF88, 0.8, 20); // 高亮绿背景光
         backLight.position.set(0, 0, -10);
         scene.add(backLight);
 
@@ -816,7 +816,9 @@ const HeroCube = ({
                 className="fixed inset-0 w-full h-full overflow-hidden"
                 style={{
                     pointerEvents: 'none', // 完全去掉交互
-                    zIndex: 5 // 设置比背景高但比内容低的层级
+                    zIndex: 5, // 设置比背景高但比内容低的层级
+                    // South Island Green：添加绿色科技外发光
+                    filter: 'drop-shadow(0 0 20px rgba(16, 185, 129, 0.3)) drop-shadow(0 0 40px rgba(0, 255, 136, 0.2))'
                 }}
             />
         </div>

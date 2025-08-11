@@ -13,13 +13,18 @@ export class EffectChaos {
         this.time = 0;
         this.resourceId = null;
 
-        // 参考早期EffectGalaxy的参数 - 更强的视觉效果
+        // 动态主题色配置 - 从CSS变量读取
         this.particleCount = params.particleCount || 8000; // 增加粒子数量
         this.branches = 3;
         this.radius = 9; // 参考EffectGalaxy的半径
         this.size = params.size || 0.12; // 参考EffectGalaxy的尺寸
-        this.colorInside = new THREE.Color('#ffa575'); // EffectGalaxy的橙色
-        this.colorOutside = new THREE.Color('#311599'); // EffectGalaxy的紫色
+        
+        // 初始化颜色（将在updateThemeColors中动态更新）
+        this.colorInside = new THREE.Color('#10B981');
+        this.colorOutside = new THREE.Color('#34D399');
+        
+        // 更新主题颜色
+        this.updateThemeColors();
 
         try {
             this.init();
@@ -29,6 +34,65 @@ export class EffectChaos {
         }
     }
 
+    /**
+     * 从CSS变量动态更新主题颜色
+     */
+    updateThemeColors() {
+        const computedStyle = getComputedStyle(document.documentElement);
+        
+        // 获取主题色
+        const primaryColor = computedStyle.getPropertyValue('--theme-primary').trim();
+        const accentColor = computedStyle.getPropertyValue('--theme-accent').trim();
+        
+        // 更新粒子颜色
+        if (primaryColor) {
+            this.colorInside.setStyle(primaryColor);
+        }
+        if (accentColor) {
+            this.colorOutside.setStyle(accentColor);
+        }
+        
+        // 更新背景颜色
+        const bgColor = computedStyle.getPropertyValue('--theme-background').trim();
+        if (bgColor && this.scene) {
+            this.scene.background = new THREE.Color(bgColor);
+        }
+        
+        // 如果粒子系统已经初始化，更新颜色
+        if (this.mesh) {
+            this.updateParticleColors();
+        }
+        
+        // 更新光源颜色
+        if (this.centralLight && primaryColor) {
+            this.centralLight.color.setStyle(primaryColor);
+        }
+    }
+
+    /**
+     * 更新粒子颜色
+     */
+    updateParticleColors() {
+        if (!this.mesh || !this.particleData) return;
+        
+        const colors = this.mesh.geometry.attributes.color.array;
+        
+        for (let i = 0; i < this.particleCount; i++) {
+            const particle = this.particleData[i];
+            const i3 = i * 3;
+            
+            // 重新计算颜色混合
+            const mixColor = this.colorInside.clone();
+            mixColor.lerp(this.colorOutside, particle.radiusRatio);
+            
+            colors[i3] = mixColor.r;
+            colors[i3 + 1] = mixColor.g;
+            colors[i3 + 2] = mixColor.b;
+        }
+        
+        this.mesh.geometry.attributes.color.needsUpdate = true;
+    }
+
     init() {
         // 设置相机为下半部分的半圆效果
         this.camera = new THREE.PerspectiveCamera(60, this.canvas.width / this.canvas.height, 0.1, 100);
@@ -36,7 +100,7 @@ export class EffectChaos {
         this.camera.lookAt(0, -2, 0); // 朝向下方
 
         this.scene = new THREE.Scene();
-        this.scene.background = new THREE.Color(0x201919);
+        this.scene.background = new THREE.Color(0x0A0F0D); // South Island Green：深绿黑背景
 
         this.renderer = new THREE.WebGLRenderer({ 
             canvas: this.canvas, 
@@ -151,31 +215,31 @@ export class EffectChaos {
         // 初始化位置
         this.updatePositions();
         
-        // 创建增强的光源系统 - 更亮更丰富的照明
-        this.centralLight = new THREE.PointLight(new THREE.Color('#ffffff'), 2.5, 40); // 强度从1.5提升到2.5，范围增加到40
+        // 创建统一的绿色光源系统 - South Island Green 主题
+        this.centralLight = new THREE.PointLight(new THREE.Color('#E0F2E0'), 2.5, 40); // 浅绿白光源
         this.centralLight.position.set(0, -1, 0);
         this.scene.add(this.centralLight);
         
-        // 增强的橙色光源
-        const orangeLight = new THREE.PointLight(this.colorInside, 1.8, 35); // 强度从1.0提升到1.8
-        orangeLight.position.set(0, -1, 0);
-        this.scene.add(orangeLight);
+        // 绿色主题光源
+        const greenLight = new THREE.PointLight(this.colorInside, 1.8, 35); // 使用翠绿色
+        greenLight.position.set(0, -1, 0);
+        this.scene.add(greenLight);
         
-        // 增强环境光照亮所有粒子
-        this.ambientLight = new THREE.AmbientLight(0x606060, 0.4); // 从0x404040,0.2提升到0x606060,0.4
+        // 统一绿色调环境光
+        this.ambientLight = new THREE.AmbientLight(0x4A6A5A, 0.4); // 绿色调环境光
         this.scene.add(this.ambientLight);
         
-        // 添加额外的补光源增强粒子可见度
-        const fillLight1 = new THREE.PointLight(0x88ccff, 1.2, 25);
+        // 绿色系补光源
+        const fillLight1 = new THREE.PointLight(0x10B981, 1.2, 25); // 翠绿
         fillLight1.position.set(-5, 0, 5);
         this.scene.add(fillLight1);
         
-        const fillLight2 = new THREE.PointLight(0xffaa88, 1.2, 25);
+        const fillLight2 = new THREE.PointLight(0x34D399, 1.2, 25); // 浅绿
         fillLight2.position.set(5, 0, 5);
         this.scene.add(fillLight2);
         
-        // 背景补光增强整体亮度
-        const backLight = new THREE.PointLight(0xffffff, 0.8, 50);
+        // 背景绿色补光
+        const backLight = new THREE.PointLight(0x00FF88, 0.8, 50); // 高亮绿背景光
         backLight.position.set(0, 2, -10);
         this.scene.add(backLight);
     }
