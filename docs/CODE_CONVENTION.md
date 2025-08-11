@@ -34,7 +34,7 @@
 ```text
 src/
 ├── components/          # React组件
-│   ├── ui/             # 通用UI组件 (ErrorBoundary, GlobalLoadingIndicator, ThemeLanguageToggle)
+│   ├── ui/             # 通用UI组件 (ErrorBoundary, CircularLoadingIndicator, ThemeLanguageToggle)
 │   ├── features/       # 特殊功能组件 (SmartDirectionalCursor, SmartScrollManager)
 │   ├── sections/       # 页面区块组件 (home/, about/, gallery/, project/, education/, contact/)
 │   ├── background/     # 背景效果组件 (BackgroundCanvas, EffectAvatar)
@@ -85,7 +85,7 @@ public/                 # 静态资源
 
 **包含文件**:
 - `ErrorBoundary.jsx` - 错误边界组件
-- `GlobalLoadingIndicator.jsx` - 全局加载指示器
+- `CircularLoadingIndicator.jsx` - 圆环加载指示器
 - `ThemeLanguageToggle.jsx` - 主题语言切换器
 
 **命名规范**: PascalCase, 描述性名称
@@ -224,15 +224,16 @@ sections/
 ### 组件注释
 ```jsx
 /**
- * GlobalLoadingIndicator - 全局资源加载指示器组件
- * 统一的加载样式，支持多种变体和位置
+ * CircularLoadingIndicator - 圆环加载指示器组件
+ * 统一的加载样式，支持进度显示和毛玻璃遮罩
  * 
- * @param {boolean} isVisible - 是否显示
- * @param {number} loadedCount - 已加载数量
- * @param {number} totalCount - 总数量
- * @param {string} variant - 显示变体 ('default'|'minimal'|'corner')
+ * @param {number} progress - 加载进度 (0-100)
+ * @param {number} size - 圆环大小
+ * @param {number} strokeWidth - 圆环宽度
+ * @param {boolean} showProgress - 是否显示进度数字
+ * @param {boolean} showMask - 是否显示毛玻璃遮罩
  */
-const GlobalLoadingIndicator = ({ isVisible, loadedCount, totalCount, variant }) => {
+const CircularLoadingIndicator = ({ progress, size, strokeWidth, showProgress, showMask }) => {
     // 组件实现
 };
 ```

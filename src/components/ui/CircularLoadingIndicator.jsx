@@ -10,6 +10,7 @@ const CircularLoadingIndicator = ({
     strokeWidth = 8, // 圆环宽度
     showProgress = true, // 是否显示进度数字
     showMask = true, // 是否显示毛玻璃遮罩
+    maskColor = 'black-glass', // 遮罩颜色：'black-glass' | 'black-solid' | 'default'
     loadingText = 'Loading...', // 默认英文文字
     loadingTextChinese = '加载中...', // 默认中文文字
     language = 'en',
@@ -26,6 +27,19 @@ const CircularLoadingIndicator = ({
     
     // 显示文本
     const displayText = language === 'en' ? loadingText : loadingTextChinese;
+    
+    // 根据maskColor选择遮罩样式
+    const getMaskStyles = () => {
+        switch (maskColor) {
+            case 'black-solid':
+                return 'absolute inset-0 bg-black';
+            case 'black-glass':
+                return 'absolute inset-0 bg-black/80 backdrop-blur-sm';
+            case 'default':
+            default:
+                return 'absolute inset-0 bg-black/40 backdrop-blur-lg backdrop-saturate-150';
+        }
+    };
     
     // SVG圆环组件
     const CircularProgress = ({ className: circleClassName = '' }) => (
@@ -94,7 +108,7 @@ const CircularLoadingIndicator = ({
             onClick={onMaskClick}
         >
             {/* 毛玻璃遮罩层 */}
-            <div className="absolute inset-0 bg-black/40 backdrop-blur-lg backdrop-saturate-150" />
+            <div className={getMaskStyles()} />
             
             {/* 加载指示器 */}
             <div className="relative z-10">
@@ -110,6 +124,7 @@ CircularLoadingIndicator.propTypes = {
     strokeWidth: PropTypes.number,
     showProgress: PropTypes.bool,
     showMask: PropTypes.bool,
+    maskColor: PropTypes.oneOf(['black-glass', 'black-solid', 'default']),
     loadingText: PropTypes.string,
     loadingTextChinese: PropTypes.string,
     language: PropTypes.string,

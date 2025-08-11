@@ -3,16 +3,19 @@ import PropTypes from 'prop-types';
 import * as THREE from 'three';
 import { PointerLockControls } from 'three-stdlib';
 import { useAppStore } from '../../../store/useAppStore';
+import CircularLoadingIndicator from '../../ui/CircularLoadingIndicator';
 
 const GallerySection = ({ language = 'en' }) => {
     const [isLoading, setIsLoading] = useState(true);
     const [isPointerLocked, setIsPointerLocked] = useState(false);
+    const [loadingProgress, setLoadingProgress] = useState({ loaded: 0, total: 0 });
+    const [isResourcesLoaded, setIsResourcesLoaded] = useState(false);
+    const [isIntroAnimationComplete, setIsIntroAnimationComplete] = useState(false);
+    const [showUICards, setShowUICards] = useState(false); // 控制UI卡片显示时机
     
-    // 获取 gallery 数据和3D画廊文案
+    // 获取 gallery 数据和文本
     const galleryData = useAppStore(state => state.getAllGalleryItems());
-    const gallery3DTexts = useAppStore(state => 
-        language === 'en' ? state.texts.en.gallery.gallery3D : state.texts.zh.gallery.gallery3D
-    );
+    const texts = useAppStore(state => state.texts);
     
     // Three.js 引用
     const containerRef = useRef(null);
@@ -23,6 +26,10 @@ const GallerySection = ({ language = 'en' }) => {
     const animationFrameRef = useRef(null);
     const clockRef = useRef(new THREE.Clock());
     const wallsRef = useRef(null); // 用于碰撞检测
+    
+    // 动画控制引用
+    const introAnimationRef = useRef(null);
+    const loadingManagerRef = useRef(null);
 
     // 按键状态
     const keysPressed = useRef({
@@ -146,7 +153,7 @@ const GallerySection = ({ language = 'en' }) => {
         };
 
         // 添加测试画作
-        const addTestPaintings = (scene) => {
+        const addTestPaintings = (scene, loadingManager = null) => {
             if (!galleryData || galleryData.length === 0) {
                 console.log('No gallery data available, creating placeholder paintings');
                 
@@ -198,7 +205,7 @@ const GallerySection = ({ language = 'en' }) => {
                                 isLandscape: aspectRatio > 1.3, // 横版图片
                                 isSquare: aspectRatio >= 0.8 && aspectRatio <= 1.3 // 方形图片
                             });
-                        } catch {
+                        } catch (error) {
                             imageAnalysis.push({
                                 index: i,
                                 item: item,
@@ -299,8 +306,8 @@ const GallerySection = ({ language = 'en' }) => {
                     左墙: wallAssignments.leftWall.length
                 });
 
-                // 创建共享的纹理加载器
-                const textureLoader = new THREE.TextureLoader();
+                // 创建共享的纹理加载器，使用全局加载管理器
+                const textureLoader = new THREE.TextureLoader(loadingManager || undefined);
                 const loadedTextures = new Map(); // 缓存已加载的纹理
 
                 // 创建画作的函数
@@ -596,9 +603,179 @@ const GallerySection = ({ language = 'en' }) => {
             return false;
         };
         
+        // 摄像机开场动画 - 电影级的引导式动画
+        const startIntroAnimation = () => {
+            const camera = cameraRef.current;
+            if (!camera) return;
+            
+            console.log('🎬 开始摄像机开场动画...');
+            
+            // 动画阶段定义
+            const phases = {
+                // 第一阶段：从墙边开始，向上看天花板的王字灯光
+                phase1: {
+                    duration: 2500,
+                    startPos: { x: 0, y: 1.6, z: 15 },  // 从后墙边开始
+                    endPos: { x: 0, y: 1.6, z: 12 },    // 稍微向前移动
+                    startLookAt: { x: 0, y: 8, z: 0 },  // 向上看天花板（12点钟方向）
+                    endLookAt: { x: 0, y: 8, z: 0 }     // 保持向上看
+                },
+                // 第二阶段：继续向前走，视角开始下降
+                phase2: {
+                    duration: 3000,
+                    startPos: { x: 0, y: 1.6, z: 12 },  // 从第一阶段结束位置开始
+                    endPos: { x: 0, y: 1.6, z: 5 },     // 向画廊中心移动
+                    startLookAt: { x: 0, y: 8, z: 0 },  // 从向上看开始
+                    endLookAt: { x: 0, y: 4, z: 0 }     // 视角开始下降
+                },
+                // 第三阶段：到达中心位置，视角降到水平
+                phase3: {
+                    duration: 2000,
+                    startPos: { x: 0, y: 1.6, z: 5 },   // 从第二阶段结束位置
+                    endPos: { x: 0, y: 1.6, z: 0 },     // 画廊中心位置
+                    startLookAt: { x: 0, y: 4, z: 0 },  // 从45度角开始
+                    endLookAt: { x: 0, y: 1.6, z: -1 }  // 最终水平向前看
+                }
+            };
+            
+            // 设置初始位置和朝向
+            camera.position.set(phases.phase1.startPos.x, phases.phase1.startPos.y, phases.phase1.startPos.z);
+            camera.lookAt(phases.phase1.startLookAt.x, phases.phase1.startLookAt.y, phases.phase1.startLookAt.z);
+            
+            let currentPhase = 1;
+            let phaseStartTime = Date.now();
+            
+            const executePhase = (phaseConfig, phaseNumber) => {
+                const elapsed = Date.now() - phaseStartTime;
+                const progress = Math.min(elapsed / phaseConfig.duration, 1);
+                
+                // 使用平滑的缓动函数
+                const easeInOutCubic = progress < 0.5 
+                    ? 4 * progress * progress * progress 
+                    : 1 - Math.pow(-2 * progress + 2, 3) / 2;
+                
+                // 插值位置
+                camera.position.x = phaseConfig.startPos.x + (phaseConfig.endPos.x - phaseConfig.startPos.x) * easeInOutCubic;
+                camera.position.y = phaseConfig.startPos.y + (phaseConfig.endPos.y - phaseConfig.startPos.y) * easeInOutCubic;
+                camera.position.z = phaseConfig.startPos.z + (phaseConfig.endPos.z - phaseConfig.startPos.z) * easeInOutCubic;
+                
+                // 插值朝向（关键：实现从向上看到水平看的平滑过渡）
+                const currentLookAt = {
+                    x: phaseConfig.startLookAt.x + (phaseConfig.endLookAt.x - phaseConfig.startLookAt.x) * easeInOutCubic,
+                    y: phaseConfig.startLookAt.y + (phaseConfig.endLookAt.y - phaseConfig.startLookAt.y) * easeInOutCubic,
+                    z: phaseConfig.startLookAt.z + (phaseConfig.endLookAt.z - phaseConfig.startLookAt.z) * easeInOutCubic
+                };
+                
+                camera.lookAt(currentLookAt.x, currentLookAt.y, currentLookAt.z);
+                
+                // 调试信息
+                if (Math.floor(elapsed / 100) !== Math.floor((elapsed - 16) / 100)) {
+                    console.log(`🎥 Phase ${phaseNumber}: ${Math.round(progress * 100)}% - Pos(${camera.position.x.toFixed(1)}, ${camera.position.y.toFixed(1)}, ${camera.position.z.toFixed(1)}) LookY: ${currentLookAt.y.toFixed(1)}`);
+                }
+                
+                return progress >= 1;
+            };
+            
+            const animateCamera = () => {
+                let phaseComplete = false;
+                
+                switch(currentPhase) {
+                    case 1:
+                        phaseComplete = executePhase(phases.phase1, 1);
+                        if (phaseComplete) {
+                            console.log('✨ Phase 1 完成：观察天花板王字');
+                            currentPhase = 2;
+                            phaseStartTime = Date.now();
+                        }
+                        break;
+                    case 2:
+                        phaseComplete = executePhase(phases.phase2, 2);
+                        if (phaseComplete) {
+                            console.log('🚶‍♂️ Phase 2 完成：向前移动，视角下降');
+                            currentPhase = 3;
+                            phaseStartTime = Date.now();
+                        }
+                        break;
+                    case 3:
+                        phaseComplete = executePhase(phases.phase3, 3);
+                        if (phaseComplete) {
+                            console.log('🎉 开场动画完成，启用用户控制');
+                            console.log('⏳ UI卡片将在2秒后显示...');
+                            setIsIntroAnimationComplete(true);
+                            setIsLoading(false);
+                            
+                            // 延迟显示UI卡片，让用户先欣赏一下场景
+                            setTimeout(() => {
+                                console.log('✨ 显示UI卡片 - 用户现在可以看到操作提示');
+                                setShowUICards(true);
+                            }, 3000); // 3秒后显示UI卡片，给用户更多时间欣赏场景
+                            
+                            // 重新设置控制器并恢复正常功能
+                            if (controlsRef.current) {
+                                controlsRef.current.getObject().position.copy(camera.position);
+                                // 恢复控制器的连接功能
+                                controlsRef.current.connect = controlsRef.current.connect.__original || controlsRef.current.connect;
+                            }
+                            return; // 结束动画
+                        }
+                        break;
+                }
+                
+                introAnimationRef.current = requestAnimationFrame(animateCamera);
+            };
+            
+            // 开始动画
+            animateCamera();
+        };
+        
         // 初始化Three.js场景
         const initScene = () => {
             try {
+                // 创建资源加载管理器
+                const loadingManager = new THREE.LoadingManager();
+                loadingManagerRef.current = loadingManager;
+                
+                // 设置加载管理器回调
+                loadingManager.onStart = (url, itemsLoaded, itemsTotal) => {
+                    console.log(`🚀 开始加载资源: ${url} (${itemsLoaded}/${itemsTotal})`);
+                    setLoadingProgress({ loaded: itemsLoaded, total: itemsTotal });
+                };
+                
+                loadingManager.onProgress = (url, itemsLoaded, itemsTotal) => {
+                    console.log(`📦 加载进度: ${url} (${itemsLoaded}/${itemsTotal})`);
+                    setLoadingProgress({ loaded: itemsLoaded, total: itemsTotal });
+                };
+                
+                loadingManager.onLoad = () => {
+                    console.log('✅ 所有资源加载完成！开始GPU准备...');
+                    setIsResourcesLoaded(true);
+                    
+                    // 等待下一帧，确保所有资源都已经准备好
+                    requestAnimationFrame(() => {
+                        // 强制渲染一帧，让GPU编译所有着色器和上传纹理
+                        if (rendererRef.current && sceneRef.current && cameraRef.current) {
+                            console.log('🎮 执行GPU预热渲染...');
+                            rendererRef.current.render(sceneRef.current, cameraRef.current);
+                            
+                            // 再等待一帧确保GPU处理完成
+                            requestAnimationFrame(() => {
+                                console.log('🚀 GPU准备完成，开始摄像机动画');
+                                setTimeout(() => {
+                                    startIntroAnimation();
+                                }, 300); // 稍微延迟让用户看到100%完成状态
+                            });
+                        } else {
+                            setTimeout(() => {
+                                startIntroAnimation();
+                            }, 500);
+                        }
+                    });
+                };
+                
+                loadingManager.onError = (url) => {
+                    console.error('❌ 资源加载失败:', url);
+                };
+                
                 // 创建场景
                 const scene = new THREE.Scene();
                 scene.background = new THREE.Color(0x1a1a1a); // 深色背景，让天花板灯光更显眼
@@ -657,6 +834,15 @@ const GallerySection = ({ language = 'en' }) => {
                 controls.addEventListener('unlock', () => {
                     setIsPointerLocked(false);
                 });
+                
+                // 禁用控制器的默认点击事件，等待动画完成后再启用
+                const originalConnect = controls.connect;
+                controls.connect.__original = originalConnect; // 保存原始方法
+                controls.connect = () => {
+                    if (isIntroAnimationComplete) {
+                        originalConnect.call(controls);
+                    }
+                };
 
                 // 设置平衡性能的美术馆光照系统
                 const setupBasicLighting = (scene) => {
@@ -689,7 +875,19 @@ const GallerySection = ({ language = 'en' }) => {
                 };
 
                 // 获取图片的原始尺寸 - 用于动态调整画框
-                // 已移动到analyzeImageDimensions函数内部
+                const getImageDimensions = (imagePath) => {
+                    return new Promise((resolve) => {
+                        const img = new Image();
+                        img.onload = () => {
+                            resolve({ width: img.width, height: img.height });
+                        };
+                        img.onerror = () => {
+                            console.warn(`Failed to load image: ${imagePath}, using default dimensions`);
+                            resolve({ width: 800, height: 600 }); // 默认尺寸
+                        };
+                        img.src = imagePath;
+                    });
+                };
 
                 // 添加艺术装饰元素
                 const addArtisticElements = (scene) => {
@@ -810,19 +1008,55 @@ const GallerySection = ({ language = 'en' }) => {
                 setupBasicLighting(scene);
 
                 // 添加艺术装饰元素
-                addArtisticElements(scene);
+                const artisticElements = addArtisticElements(scene);
 
                 // 创建"王"字形天花板灯管系统
                 const nameCharacterLights = createWangCharacterLights();
                 console.log(`✨ Created "王" character lighting - illuminating the world! ${nameCharacterLights.length} light tubes`);
 
-                // 射灯增强函数已移动到createPaintingSpotlight中
+                // 创建射灯增强函数（为每个画作添加聚光灯）
+                const createSpotlightForPainting = (painting, paintingMesh) => {
+                    // 根据墙面位置计算射灯角度和位置
+                    const position = paintingMesh.position;
+                    const isBackWall = position.z < -8;
+                    const isFrontWall = position.z > 8;
+                    const isLeftWall = position.x < -8;
+                    const isRightWall = position.x > 8;
+
+                    // 计算射灯位置（距离画作2米，高度6米）
+                    let lightPosition = new THREE.Vector3();
+                    let targetPosition = new THREE.Vector3(position.x, position.y, position.z);
+
+                    if (isBackWall) {
+                        lightPosition.set(position.x, 6, position.z + 2);
+                    } else if (isFrontWall) {
+                        lightPosition.set(position.x, 6, position.z - 2);
+                    } else if (isLeftWall) {
+                        lightPosition.set(position.x + 2, 6, position.z);
+                    } else if (isRightWall) {
+                        lightPosition.set(position.x - 2, 6, position.z);
+                    }
+
+                    // 创建聚光灯
+                    const spotlight = new THREE.SpotLight(0xffffff, 3, 15, Math.PI / 6, 0.5, 2);
+                    spotlight.position.copy(lightPosition);
+                    spotlight.target = paintingMesh;
+                    spotlight.castShadow = true;
+                    spotlight.shadow.mapSize.width = 1024;
+                    spotlight.shadow.mapSize.height = 1024;
+                    
+                    scene.add(spotlight);
+                    scene.add(spotlight.target);
+
+                    console.log(`💡 Added spotlight for "${painting.title}" at (${lightPosition.x.toFixed(1)}, ${lightPosition.y.toFixed(1)}, ${lightPosition.z.toFixed(1)})`);
+                    return spotlight;
+                };
 
                 // 创建简单的房间
                 createSimpleRoom(scene);
 
                 // 添加测试画作 
-                addTestPaintings(scene);
+                addTestPaintings(scene, loadingManager);
 
                 // 渲染循环
                 const animate = () => {
@@ -911,7 +1145,7 @@ const GallerySection = ({ language = 'en' }) => {
             
             console.log('✅ Gallery Three.js resources cleaned up successfully');
         };
-    }, [galleryData]);
+    }, [galleryData, isIntroAnimationComplete]);
 
     // 按键监听 
     useEffect(() => {
@@ -958,83 +1192,83 @@ const GallerySection = ({ language = 'en' }) => {
             id="gallery" 
             className="min-h-screen flex flex-col justify-center items-center bg-gray-100 relative overflow-hidden"
         >
-            {/* 3D画廊容器 */}
+            {/* 全屏加载指示器 - 使用与HomeSection相同的CircularLoadingIndicator */}
+            {(isLoading || !isIntroAnimationComplete) && (
+                <CircularLoadingIndicator
+                    progress={loadingProgress.total > 0 ? Math.round((loadingProgress.loaded / loadingProgress.total) * 100) : 0}
+                    size={160}
+                    strokeWidth={12}
+                    showProgress={!isResourcesLoaded}
+                    showMask={true}
+                    maskColor="black-solid"
+                    language={language}
+                    loadingText={isResourcesLoaded ? (isIntroAnimationComplete ? "Ready!" : "Preparing Experience...") : "Loading Gallery..."}
+                    loadingTextChinese={isResourcesLoaded ? (isIntroAnimationComplete ? "准备完成！" : "正在准备体验...") : "加载画廊中..."}
+                />
+            )}
+
+            {/* 3D画廊容器 - 只在非加载状态时显示 */}
             <div 
                 ref={containerRef}
-                className="w-full h-screen relative bg-gray-200"
+                className={`w-full h-screen relative bg-gray-200 ${(isLoading || !isIntroAnimationComplete) ? 'invisible' : 'visible'}`}
                 style={{ minHeight: '100vh' }}
             >
-                {/* 临时内容 - 只在没有3D场景时显示 */}
-                {isLoading && (
-                    <div className="absolute inset-0 flex items-center justify-center">
-                        <div className="text-center">
-                            <h2 className="text-4xl font-bold text-gray-800 mb-4">
-                                {gallery3DTexts.title}
-                            </h2>
-                            <p className="text-gray-600 mb-2">
-                                {gallery3DTexts.subtitle}
-                            </p>
-                            <p className="text-gray-600">
-                                {language === 'en' ? 'Gallery data loaded:' : '画廊数据已加载:'} {galleryData?.length || 0} {language === 'en' ? 'items' : '项'}
-                            </p>
-                            <div className="mt-4">
-                                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-800 mx-auto"></div>
-                            </div>
-                        </div>
-                    </div>
-                )}
-
-                {/* 第一人称控制提示 */}
-                {!isLoading && !isPointerLocked && (
-                    <div className="absolute bottom-6 left-6 bg-black/50 backdrop-blur-md rounded-xl p-4 text-white z-20 max-w-sm">
-                        <p className="text-lg font-medium mb-2">
-                            {gallery3DTexts.title}
-                        </p>
-                        <div className="space-y-1 text-sm">
-                            <p className="font-medium mb-2">{gallery3DTexts.instructions.navigation.movement}</p>
-                            <p>• {gallery3DTexts.instructions.clickToStart}</p>
-                            <p>• {gallery3DTexts.instructions.navigation.wasd}</p>
-                            <p>• {gallery3DTexts.instructions.navigation.mouse}</p>
-                            <p>• {gallery3DTexts.instructions.navigation.esc}</p>
-                        </div>
-                    </div>
-                )}
-
-                {/* 点击开始探索 */}
-                {!isLoading && !isPointerLocked && (
-                    <div 
-                        className="absolute inset-0 flex items-center justify-center cursor-pointer z-10"
-                        onClick={() => controlsRef.current?.lock()}
-                    >
-                        <div className="bg-white/10 backdrop-blur-md rounded-2xl p-8 text-center hover:bg-white/20 transition-all duration-300 border border-white/20">
-                            <h2 className="text-2xl font-bold text-white mb-2">
-                                {gallery3DTexts.title}
-                            </h2>
-                            <p className="text-white/90 mb-4 text-lg">
-                                {gallery3DTexts.subtitle}
-                            </p>
-                            <p className="text-white/80 mb-6">
-                                {gallery3DTexts.instructions.clickToStart}
-                            </p>
-                            <div className="animate-bounce">
-                                <svg className="w-8 h-8 text-white mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                                </svg>
-                            </div>
-                        </div>
-                    </div>
-                )}
-
-                {/* 第一人称模式时的准星 */}
-                {isPointerLocked && (
-                    <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-20">
-                        <div className="w-1 h-1 bg-white rounded-full shadow-lg"></div>
-                        <div className="absolute w-4 h-0.5 bg-white/50 rounded"></div>
-                        <div className="absolute w-0.5 h-4 bg-white/50 rounded"></div>
-                    </div>
-                )}
             </div>
+
+            {/* 第一人称控制提示 - 只在动画完成且卡片显示时机到达后显示 */}
+            {isIntroAnimationComplete && showUICards && !isPointerLocked && (
+                <div className="absolute bottom-6 left-6 bg-black/50 backdrop-blur-md rounded-xl p-4 text-white z-20 max-w-sm">
+                    <p className="text-lg font-medium mb-2">
+                        {texts[language].gallery.gallery3D.title}
+                    </p>
+                    <div className="space-y-1 text-sm">
+                        <p>
+                            • {texts[language].gallery.gallery3D.instructions.clickToStart}
+                        </p>
+                        <p>
+                            • {texts[language].gallery.gallery3D.instructions.navigation.wasd}
+                        </p>
+                        <p>
+                            • {texts[language].gallery.gallery3D.instructions.navigation.mouse}
+                        </p>
+                        <p>
+                            • {texts[language].gallery.gallery3D.instructions.navigation.esc}
+                        </p>
+                    </div>
+                </div>
+            )}
+
+            {/* 点击开始探索 - 只在动画完成且卡片显示时机到达后显示 */}
+            {isIntroAnimationComplete && showUICards && !isPointerLocked && (
+                <div 
+                    className="absolute inset-0 flex items-center justify-center cursor-pointer z-10"
+                    onClick={() => controlsRef.current?.lock()}
+                >
+                    <div className="bg-white/10 backdrop-blur-md rounded-2xl p-8 text-center hover:bg-white/20 transition-all duration-300 border border-white/20">
+                        <h2 className="text-2xl font-bold text-white mb-4">
+                            {texts[language].gallery.gallery3D.title}
+                        </h2>
+                        <p className="text-white/80 mb-6">
+                            {texts[language].gallery.gallery3D.instructions.clickToStart}
+                        </p>
+                        <div className="animate-bounce">
+                            <svg className="w-8 h-8 text-white mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* 第一人称模式时的准星 */}
+            {isPointerLocked && (
+                <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-20">
+                    <div className="w-1 h-1 bg-white rounded-full shadow-lg"></div>
+                    <div className="absolute w-4 h-0.5 bg-white/50 rounded"></div>
+                    <div className="absolute w-0.5 h-4 bg-white/50 rounded"></div>
+                </div>
+            )}
         </section>
     );
 };

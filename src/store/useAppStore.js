@@ -491,7 +491,7 @@ const contentConfig = {
         subtitle: "沉浸式3D艺术体验",
         description: "步入专业策展的虚拟画廊空间，在交互式3D环境中欣赏视觉作品。",
         instructions: {
-          clickToStart: "点击进入画廊",
+          clickToStart: "点击进入",
           navigation: {
             movement: "移动导航",
             wasd: "WASD / 方向键 - 在画廊中移动",
