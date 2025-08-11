@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import imageSrc from '../../../data/hua_icon_base64';
 import hoverImageSrc from '../../../assets/images/hua_500w1.jpg';
 import { useAppStore } from '../../../store/useAppStore';
-import { ThemeDescription, ThemeButton } from '../../ui/ThemeComponents';
+import { ThemeButton } from '../../ui/ThemeComponents';
 import '../../ui/ShineCard.css'; // 导入光影效果
 
 const EffectAvatar = lazy(() => import('../../background/EffectAvatar'));
@@ -34,14 +34,14 @@ const AboutSection = ({ language = 'en' }) => {
                         {/* 增强毛玻璃背景卡片 + 光影效果 */}
                         <div className="content-section shine-card p-6 lg:p-8 xl:p-10 w-full relative"
                              style={{
-                                 background: 'rgba(255, 255, 255, 0.06)', // 稍微提高背景透明度
-                                 border: `1px solid rgba(var(--theme-primary-rgb), 0.3)`, // 使用主题色边框
+                                 background: 'rgba(255, 255, 255, 0.25)', // 进一步增加不透明度，从0.18提升到0.25
+                                 border: `1px solid var(--theme-border-neutral)`, // 使用中性边框而非主题色
                                  borderRadius: '0.75rem',
-                                 backdropFilter: 'blur(10px)',
+                                 backdropFilter: 'blur(24px)', // 进一步增强模糊效果，从20px提升到24px
                                  boxShadow: `
-                                     0 8px 32px rgba(0, 0, 0, 0.3),
-                                     0 0 20px rgba(var(--theme-primary-rgb), 0.1),
-                                     inset 0 1px 0 rgba(255, 255, 255, 0.1)
+                                     0 8px 32px rgba(0, 0, 0, 0.6),
+                                     0 0 20px rgba(255, 255, 255, 0.15), // 增强白色光晕
+                                     inset 0 1px 0 rgba(255, 255, 255, 0.3) // 增强内发光
                                  `
                              }}>
                             {/* 内容层 */}
@@ -75,7 +75,7 @@ const AboutSection = ({ language = 'en' }) => {
                                                 style={{ 
                                                     fontFamily: 'Figtree, sans-serif',
                                                     fontSize: '1.8rem',
-                                                    color: 'var(--theme-text-secondary)', // 次要文字色
+                                                    color: '#FFFFFF', // 改为纯白色，保持高对比度
                                                     fontWeight: '300',
                                                     display: 'inline-block',
                                                     marginLeft: '0.75rem',
@@ -88,15 +88,12 @@ const AboutSection = ({ language = 'en' }) => {
                                                 style={{ 
                                                     fontFamily: 'Beau Rivage, cursive',
                                                     fontSize: '3rem',
-                                                    background: 'linear-gradient(135deg, var(--theme-gradient-from), var(--theme-gradient-via), var(--theme-gradient-to))',
-                                                    WebkitBackgroundClip: 'text',
-                                                    WebkitTextFillColor: 'transparent',
-                                                    backgroundClip: 'text',
+                                                    color: '#FFFFFF', // 改为纯白色
                                                     display: 'inline-block',
                                                     fontWeight: '400',
                                                     marginLeft: '0.75rem',
                                                     verticalAlign: 'baseline',
-                                                    filter: 'drop-shadow(0 0 8px var(--theme-primary))'
+                                                    textShadow: '0 0 8px rgba(255, 255, 255, 0.5)' // 使用白色文本阴影替代主题色滤镜
                                                 }}
                                             >
                                                 Hua Wang
@@ -105,20 +102,12 @@ const AboutSection = ({ language = 'en' }) => {
                                     </div>
                                     
                                     {paragraphs.map((paragraph, index) => (
-                                        <ThemeDescription 
+                                        <p 
                                             key={index} 
-                                            className="text-base lg:text-lg leading-relaxed programmer-text" 
-                                            style={{ 
-                                                fontFamily: 'JetBrains Mono, Consolas, Monaco, monospace', 
-                                                fontWeight: '400',
-                                                fontSize: '0.95rem',
-                                                lineHeight: '1.6',
-                                                color: 'var(--theme-text-muted)', // 使用描述文字色而非渐变
-                                                display: 'block'
-                                            }}
+                                            className="text-base lg:text-lg leading-relaxed programmer-text-white" 
                                         >
                                             {paragraph}
-                                        </ThemeDescription>
+                                        </p>
                                     ))}
                                 
                                 {/* Resume 链接 */}
@@ -129,15 +118,11 @@ const AboutSection = ({ language = 'en' }) => {
                                         target="_blank" 
                                         rel="noopener noreferrer"
                                         download="Hua_Wang_Full_Stack_Engineer.pdf"
-                                        variant="outline"
+                                        variant="secondary" // 使用secondary变体减少主题色使用
                                         className="font-medium transition-all duration-300 hover:shadow-lg"
                                         style={{ 
                                             fontFamily: 'Figtree, sans-serif', 
-                                            fontWeight: '500',
-                                            backgroundColor: 'var(--theme-button)',
-                                            borderColor: 'var(--theme-button-border)',
-                                            color: 'var(--theme-text-primary)',
-                                            boxShadow: '0 0 10px rgba(var(--theme-primary-rgb), 0.3)'
+                                            fontWeight: '500'
                                         }}
                                     >
                                         {language === 'en' ? 'Resume' : '简历'}

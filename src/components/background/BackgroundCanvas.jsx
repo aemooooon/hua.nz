@@ -284,8 +284,12 @@ const BackgroundCanvas = ({ effectType = 'effectfuse' }) => {
 
     // 监听主题变化，更新粒子颜色
     useEffect(() => {
-        // 只有当效果是EffectChaos时才需要更新颜色
-        if (effectInstanceRef.current && effectInstanceRef.current.updateThemeColors && effectType === 'effectchaos') {
+        // 支持主题色更新的效果类型
+        const supportedEffects = ['effectchaos', 'effectlorenz'];
+        
+        if (effectInstanceRef.current && 
+            effectInstanceRef.current.updateThemeColors && 
+            supportedEffects.includes(effectType)) {
             effectInstanceRef.current.updateThemeColors();
         }
     }, [theme, effectType]);

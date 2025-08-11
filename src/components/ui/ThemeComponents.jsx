@@ -85,7 +85,7 @@ export const ThemeButton = ({ children, className, variant = "primary", size = "
   
   const variantClasses = {
     primary: "bg-theme-button-primary text-white hover:bg-theme-button-hover border border-theme-primary/30",
-    secondary: "bg-theme-surface border border-theme-border text-theme-text-primary hover:bg-theme-surface-elevated",
+    secondary: "bg-theme-surface border border-theme-border-neutral text-theme-text-primary hover:bg-theme-surface-elevated", // 使用中性边框
     outline: "border-2 border-theme-button-border text-theme-text-primary hover:bg-theme-button-hover bg-theme-button",
     ghost: "text-theme-primary hover:bg-theme-button-hover bg-transparent"
   };

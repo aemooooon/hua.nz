@@ -27,13 +27,19 @@ export class EffectLorenzAttractor {
         this.dt = 0.02; // 恢复到0.02
         this.maxParticles = 1200; // 大幅增加粒子数量到2000，创造更密集的轨迹
 
-        // 更明亮的颜色配置 - 改为深海/夜空蓝色主题
-        this.fireballColor = params.fireballColor || new THREE.Color(0x0088ff); // 明亮蓝色主球
-        this.particleColors = params.particleColors || [
-            new THREE.Color(0x0066cc), // 深蓝
-            new THREE.Color(0x0088ff), // 亮蓝 
-            new THREE.Color(0x00aaff), // 天蓝
+        // 动态主题色配置 - 从CSS变量读取（类似EffectChaos）
+        this.fireballColor = new THREE.Color('#00FF88'); // 初始颜色，将动态更新
+        // 初始化默认颜色
+        this.particleColors = [
+            new THREE.Color('#10B981'), // 主题次要色
+            new THREE.Color('#00FF88'), // 主题主色
+            new THREE.Color('#34D399'), // 主题装饰色
         ];
+        
+        // 延迟更新主题颜色，确保DOM已加载
+        setTimeout(() => {
+            this.updateThemeColors();
+        }, 100);
 
         // 粒子系统优化 - 使用数组存储位置而不是单独的网格
         this.trailPositions = [];
@@ -391,6 +397,97 @@ export class EffectLorenzAttractor {
         if (this.composer) {
             this.composer.setSize(canvasWidth, canvasHeight);
         }
+    }
+
+    /**
+     * 从CSS变量动态更新主题颜色 - 类似EffectChaos的实现
+     */
+    updateThemeColors() {
+        // 安全检查 - 确保DOM已准备好
+        if (!document.documentElement) {
+            console.warn('DOM not ready for theme color update');
+            return;
+        }
+        
+        try {
+            const computedStyle = getComputedStyle(document.documentElement);
+            
+            // 获取主题色 - 添加安全检查
+            const primaryColor = computedStyle.getPropertyValue('--theme-primary')?.trim();
+            const secondaryColor = computedStyle.getPropertyValue('--theme-secondary')?.trim();
+            const accentColor = computedStyle.getPropertyValue('--theme-accent')?.trim();
+            
+            // 更新粒子颜色
+            if (primaryColor) {
+                this.fireballColor.setStyle(primaryColor);
+                this.particleColors[1].setStyle(primaryColor); // 主色
+                this.colorOutside.setStyle(primaryColor); // 外围粒子色
+            }
+            if (secondaryColor) {
+                this.particleColors[0].setStyle(secondaryColor); // 次要色
+                this.colorInside.setStyle(secondaryColor); // 内核粒子色
+            }
+            if (accentColor) {
+                this.particleColors[2].setStyle(accentColor); // 装饰色
+            }
+            
+            // 更新背景颜色
+            const bgColor = computedStyle.getPropertyValue('--theme-background')?.trim();
+            if (bgColor && this.scene) {
+                this.scene.background = new THREE.Color(bgColor);
+                if (this.renderer) {
+                    this.renderer.setClearColor(new THREE.Color(bgColor), 1.0);
+                }
+            }
+            
+            // 更新主球和光环的材质颜色
+            if (this.fireball && primaryColor) {
+                this.fireball.material.color.setStyle(primaryColor);
+            }
+            if (this.halo && secondaryColor) {
+                this.halo.material.color.setStyle(secondaryColor);
+            }
+            
+            // 更新点光源颜色
+            if (this.pointLight && primaryColor) {
+                this.pointLight.color.setStyle(primaryColor);
+            }
+            
+            // 如果粒子系统已经初始化，更新粒子颜色
+            if (this.instancedMesh) {
+                this.updateParticleColors();
+            }
+            
+        } catch (error) {
+            console.warn('Error updating theme colors:', error);
+        }
+    }
+
+    /**
+     * 更新粒子颜色 - 重新设置实例化网格的颜色
+     */
+    updateParticleColors() {
+        if (!this.instancedMesh || !this.instancedMesh.instanceColor) return;
+        
+        // 重新设置所有粒子的颜色
+        const colors = this.instancedMesh.instanceColor.array;
+        
+        for (let i = 0; i < this.trailPositions.length; i++) {
+            if (i >= this.maxParticles) break;
+            
+            const i3 = i * 3;
+            const particle = this.trailPositions[i];
+            
+            // 基于粒子生命周期在颜色间插值
+            const mixColor = this.colorInside.clone();
+            mixColor.lerp(this.colorOutside, 1.0 - particle.life);
+            
+            colors[i3] = mixColor.r;
+            colors[i3 + 1] = mixColor.g;
+            colors[i3 + 2] = mixColor.b;
+        }
+        
+        this.instancedMesh.instanceColor.needsUpdate = true;
     }
 
     stop() {

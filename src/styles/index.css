@@ -43,6 +43,11 @@
   --theme-text-muted: #B0D0FF;         /* 默认描述文字 */
   --theme-text-subtle: #6B8FCC;        /* 默认静音文字 */
   
+  /* 中性边框颜色系统 - 避免与主题色冲突 */
+  --theme-border-neutral: rgba(255, 255, 255, 0.2);     /* 中性边框 - 增强可见度 */
+  --theme-border-subtle: rgba(255, 255, 255, 0.08);     /* 微妙边框 */
+  --theme-border-emphasis: rgba(255, 255, 255, 0.35);   /* 强调边框 */
+  
   --theme-border: #0080ff;
   --theme-divider: #0080ff;
   --theme-hover: rgba(0, 128, 255, 0.1);
@@ -189,6 +194,11 @@ body {
   --theme-text-muted: #B0D0FF;         /* 淡蓝描述文字 - 中等对比 */
   --theme-text-subtle: #6B8FCC;        /* 静音蓝文字 - 低对比 */
   
+  /* 中性边框颜色系统 - 避免与主题色冲突 */
+  --theme-border-neutral: rgba(255, 255, 255, 0.2);     /* 中性边框 - 增强可见度 */
+  --theme-border-subtle: rgba(255, 255, 255, 0.08);     /* 微妙边框 */
+  --theme-border-emphasis: rgba(255, 255, 255, 0.35);   /* 强调边框 */
+  
   --theme-border: #0080ff;             /* 蓝色边框 */
   --theme-divider: #0080ff;            /* 分割线 */
   --theme-hover: rgba(0, 128, 255, 0.1);          /* 悬停效果 */
@@ -229,6 +239,11 @@ body {
   --theme-text-secondary: #E0F2E0;     /* 浅绿白次要文字 - 高对比 */
   --theme-text-muted: #B0D0B0;         /* 淡绿描述文字 - 中等对比 */
   --theme-text-subtle: #6B8F6B;        /* 静音绿文字 - 低对比 */
+  
+  /* 中性边框颜色系统 - 避免与主题色冲突 */
+  --theme-border-neutral: rgba(255, 255, 255, 0.2);     /* 中性边框 - 增强可见度 */
+  --theme-border-subtle: rgba(255, 255, 255, 0.08);     /* 微妙边框 */
+  --theme-border-emphasis: rgba(255, 255, 255, 0.35);   /* 强调边框 */
   
   --theme-border: #10B981;             /* 翠绿边框 */
   --theme-divider: #10B981;            /* 分割线 */
@@ -1626,6 +1641,17 @@ body {
     -webkit-background-clip: text !important;
     -webkit-text-fill-color: transparent !important;
     background-clip: text !important;
+    display: block !important;
+}
+
+/* 白色程序员字体样式 - About页面专用 */
+.programmer-text-white {
+    font-family: 'JetBrains Mono', Consolas, 'Courier New', monospace !important;
+    font-size: 0.95rem !important;
+    line-height: 1.6 !important;
+    letter-spacing: 0.025em;
+    font-weight: 400 !important;
+    color: #FFFFFF !important;
     display: block !important;
 }
 
