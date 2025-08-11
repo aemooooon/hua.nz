@@ -224,8 +224,8 @@ const GallerySection = ({ language = 'en' }) => {
             const assignPaintingsToWalls = (imageAnalysis) => {
                 const wallAssignments = {
                     backWall: [], // 后墙 (32米宽，放3幅竖版)
-                    rightWall: [], // 右墙 (64米深，放5幅横版)
-                    leftWall: [], // 左墙 (64米深，放5幅横版)
+                    rightWall: [], // 右墙 (64米深，放6幅横版)
+                    leftWall: [], // 左墙 (64米深，放6幅横版)
                     frontWall: [] // 前墙 (32米宽，放2幅竖版)
                 };
 
@@ -253,15 +253,15 @@ const GallerySection = ({ language = 'en' }) => {
                     squareImages.slice(usedSquares, usedSquares + frontWallRemaining).forEach(img => wallAssignments.frontWall.push(img));
                 }
 
-                // 64米长墙分配横版图片（每边5幅）
-                // 右墙分配5幅横版
-                landscapeImages.slice(0, 5).forEach(img => wallAssignments.rightWall.push(img));
-                // 左墙分配5幅横版
-                landscapeImages.slice(5, 10).forEach(img => wallAssignments.leftWall.push(img));
+                // 64米长墙分配横版图片（每边6幅）
+                // 右墙分配6幅横版
+                landscapeImages.slice(0, 6).forEach(img => wallAssignments.rightWall.push(img));
+                // 左墙分配6幅横版
+                landscapeImages.slice(6, 12).forEach(img => wallAssignments.leftWall.push(img));
 
                 // 如果横版图片不够，用剩余的方形或竖版图片补充长墙
-                const rightWallRemaining = 5 - wallAssignments.rightWall.length;
-                const leftWallRemaining = 5 - wallAssignments.leftWall.length;
+                const rightWallRemaining = 6 - wallAssignments.rightWall.length;
+                const leftWallRemaining = 6 - wallAssignments.leftWall.length;
                 
                 // 收集剩余图片
                 const usedImages = [
@@ -356,13 +356,13 @@ const GallerySection = ({ language = 'en' }) => {
                             paintingWithFrame.rotation.y = 0;
                             break;
                         case 'rightWall':
-                            // 右墙：在64米深的墙面上分布5幅横版画
-                            paintingWithFrame.position.set(rightWallOffset, paintingCenterHeight, -24 + positionIndex * 12);
+                            // 右墙：在64米深的墙面上分布6幅横版画 (从-27.5到27.5，间距11米)
+                            paintingWithFrame.position.set(rightWallOffset, paintingCenterHeight, -27.5 + positionIndex * 11);
                             paintingWithFrame.rotation.y = -Math.PI / 2;
                             break;
                         case 'leftWall':
-                            // 左墙：在64米深的墙面上分布5幅横版画
-                            paintingWithFrame.position.set(-leftWallOffset, paintingCenterHeight, 24 - positionIndex * 12);
+                            // 左墙：在64米深的墙面上分布6幅横版画 (从27.5到-27.5，间距11米)
+                            paintingWithFrame.position.set(-leftWallOffset, paintingCenterHeight, 27.5 - positionIndex * 11);
                             paintingWithFrame.rotation.y = Math.PI / 2;
                             break;
                         case 'frontWall':
@@ -700,15 +700,15 @@ const GallerySection = ({ language = 'en' }) => {
                         phaseComplete = executePhase(phases.phase3, 3);
                         if (phaseComplete) {
                             console.log('🎉 开场动画完成，启用用户控制');
-                            console.log('⏳ UI卡片将在2秒后显示...');
+                            console.log('⏳ UI卡片将在9秒后渐现显示，确保王字灯光欣赏不被干扰...');
                             setIsIntroAnimationComplete(true);
                             setIsLoading(false);
                             
-                            // 延迟显示UI卡片，让用户先欣赏一下场景
+                            // 延迟显示UI卡片，让用户充分欣赏"王"字灯光和场景
                             setTimeout(() => {
-                                console.log('✨ 显示UI卡片 - 用户现在可以看到操作提示');
+                                console.log('✨ 开始渐现显示UI卡片 - 用户现在可以看到操作提示');
                                 setShowUICards(true);
-                            }, 3000); // 3秒后显示UI卡片，给用户更多时间欣赏场景
+                            }, 9000); // 9秒后渐现显示UI卡片，确保用户有充分时间欣赏王字灯光效果
                             
                             // 重新设置控制器并恢复正常功能
                             if (controlsRef.current) {
@@ -1215,51 +1215,59 @@ const GallerySection = ({ language = 'en' }) => {
             >
             </div>
 
-            {/* 第一人称控制提示 - 只在动画完成且卡片显示时机到达后显示 */}
-            {isIntroAnimationComplete && showUICards && !isPointerLocked && (
-                <div className="absolute bottom-6 left-6 bg-black/50 backdrop-blur-md rounded-xl p-4 text-white z-20 max-w-sm">
-                    <p className="text-lg font-medium mb-2">
-                        {texts[language].gallery.gallery3D.title}
+            {/* 第一人称控制提示 - 严格控制：只在动画完成且延迟时间到达且未锁定指针时显示 */}
+            <div className={`absolute bottom-6 left-6 bg-black/50 backdrop-blur-md rounded-xl p-4 text-white z-20 max-w-sm transition-all duration-1000 ${
+                (!isLoading && isIntroAnimationComplete && showUICards && !isPointerLocked) 
+                    ? 'opacity-100 translate-y-0' 
+                    : 'opacity-0 translate-y-4 pointer-events-none'
+            }`}>
+                <p className="text-lg font-medium mb-2">
+                    {texts[language]?.gallery?.gallery3D?.title || '浮生长廊'}
+                </p>
+                <div className="space-y-1 text-sm">
+                    <p>
+                        • {texts[language]?.gallery?.gallery3D?.instructions?.clickToStart || '点击进入'}
                     </p>
-                    <div className="space-y-1 text-sm">
-                        <p>
-                            • {texts[language].gallery.gallery3D.instructions.clickToStart}
-                        </p>
-                        <p>
-                            • {texts[language].gallery.gallery3D.instructions.navigation.wasd}
-                        </p>
-                        <p>
-                            • {texts[language].gallery.gallery3D.instructions.navigation.mouse}
-                        </p>
-                        <p>
-                            • {texts[language].gallery.gallery3D.instructions.navigation.esc}
-                        </p>
-                    </div>
+                    <p>
+                        • {texts[language]?.gallery?.gallery3D?.instructions?.navigation?.wasd || 'WASD / 方向键移动'}
+                    </p>
+                    <p>
+                        • {texts[language]?.gallery?.gallery3D?.instructions?.navigation?.mouse || '鼠标环视'}
+                    </p>
+                    <p>
+                        • {texts[language]?.gallery?.gallery3D?.instructions?.navigation?.esc || 'ESC 退出'}
+                    </p>
                 </div>
-            )}
+            </div>
 
-            {/* 点击开始探索 - 只在动画完成且卡片显示时机到达后显示 */}
-            {isIntroAnimationComplete && showUICards && !isPointerLocked && (
-                <div 
-                    className="absolute inset-0 flex items-center justify-center cursor-pointer z-10"
-                    onClick={() => controlsRef.current?.lock()}
-                >
-                    <div className="bg-white/10 backdrop-blur-md rounded-2xl p-8 text-center hover:bg-white/20 transition-all duration-300 border border-white/20">
-                        <h2 className="text-2xl font-bold text-white mb-4">
-                            {texts[language].gallery.gallery3D.title}
-                        </h2>
-                        <p className="text-white/80 mb-6">
-                            {texts[language].gallery.gallery3D.instructions.clickToStart}
-                        </p>
-                        <div className="animate-bounce">
-                            <svg className="w-8 h-8 text-white mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                            </svg>
-                        </div>
+            {/* 点击开始探索 - 严格控制：只在动画完成且延迟时间到达且未锁定指针时显示 */}
+            <div 
+                className={`absolute inset-0 flex items-center justify-center cursor-pointer z-10 transition-all duration-1000 ${
+                    (!isLoading && isIntroAnimationComplete && showUICards && !isPointerLocked) 
+                        ? 'opacity-100 scale-100' 
+                        : 'opacity-0 scale-95 pointer-events-none'
+                }`}
+                onClick={() => {
+                    if (!isLoading && isIntroAnimationComplete && showUICards && !isPointerLocked) {
+                        controlsRef.current?.lock();
+                    }
+                }}
+            >
+                <div className="bg-white/10 backdrop-blur-md rounded-2xl p-8 text-center hover:bg-white/20 transition-all duration-300 border border-white/20">
+                    <h2 className="text-2xl font-bold text-white mb-4">
+                        {texts[language]?.gallery?.gallery3D?.title || '浮生长廊'}
+                    </h2>
+                    <p className="text-white/80 mb-6">
+                        {texts[language]?.gallery?.gallery3D?.instructions?.clickToStart || '点击进入'}
+                    </p>
+                    <div className="animate-bounce">
+                        <svg className="w-8 h-8 text-white mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                        </svg>
                     </div>
                 </div>
-            )}
+            </div>
 
             {/* 第一人称模式时的准星 */}
             {isPointerLocked && (

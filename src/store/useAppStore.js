@@ -40,7 +40,7 @@ const sectionsConfig = [
     index: 3,
     name: { en: "Corridor of Light and Shadow", zh: "浮生长廊" },
     description: { en: "Immersive 3D art experience", zh: "沉浸式3D艺术体验" },
-    backgroundEffect: "effectmonjori", // 使用与 Projects 相同的 Monjori 背景
+    backgroundEffect: "", // 清空背景效果，因为Gallery section有自己的3D场景
     cubeImage: "/cube-textures/gallery.jpg", // 修正立方体图片路径
     icon: "🖼️"
   },
@@ -1384,58 +1384,10 @@ export const useAppStore = create(
         }
       ],
 
-      // Gallery数据配置 - 使用真实照片数据
+      // Gallery数据配置 - 使用真实照片数据 (17张图片，每面墙6张，共12张在主墙，其余5张在其他位置)
       gallery: [
         {
           id: 'gallery_1',
-          type: 'image',
-          src: '/gallery/7dcb188081747fc5b81384021b971f.jpg',
-          thumbnail: '/gallery/7dcb188081747fc5b81384021b971f.jpg',
-          title: {
-            en: 'Abstract Digital Art',
-            zh: '抽象数字艺术'
-          },
-          description: {
-            en: 'Creative abstract visual expression with geometric patterns',
-            zh: '具有几何图案的创意抽象视觉表达'
-          },
-          date: '2024-08-05',
-          tags: ['abstract', 'digital', 'geometric']
-        },
-        {
-          id: 'gallery_2',
-          type: 'image',
-          src: '/gallery/96648350e2b38f1e2fd63d0428c1bb.jpg',
-          thumbnail: '/gallery/96648350e2b38f1e2fd63d0428c1bb.jpg',
-          title: {
-            en: 'Vibrant Digital Design',
-            zh: '鲜艳数字设计'
-          },
-          description: {
-            en: 'Modern colorful digital design composition',
-            zh: '现代彩色数字设计构图'
-          },
-          date: '2024-08-05',
-          tags: ['digital', 'colorful', 'modern']
-        },
-        {
-          id: 'gallery_3',
-          type: 'image',
-          src: '/gallery/Day.jpg',
-          thumbnail: '/gallery/Day.jpg',
-          title: {
-            en: 'Beautiful Daylight',
-            zh: '美丽白昼'
-          },
-          description: {
-            en: 'Magnificent natural daylight scene captured',
-            zh: '捕捉的壮丽自然白昼风景'
-          },
-          date: '2024-08-05',
-          tags: ['nature', 'daylight', 'landscape']
-        },
-        {
-          id: 'gallery_4',
           type: 'image',
           src: '/gallery/dataengineering.jpeg',
           thumbnail: '/gallery/dataengineering.jpeg',
@@ -1447,11 +1399,11 @@ export const useAppStore = create(
             en: 'Professional data engineering visualization',
             zh: '专业数据工程可视化'
           },
-          date: '2024-08-11',
+          date: '2025-08-11',
           tags: ['data', 'engineering', 'technology']
         },
         {
-          id: 'gallery_5',
+          id: 'gallery_2',
           type: 'image',
           src: '/gallery/f4.jpg',
           thumbnail: '/gallery/f4.jpg',
@@ -1463,11 +1415,11 @@ export const useAppStore = create(
             en: 'Advanced project development showcase',
             zh: '高级项目开发展示'
           },
-          date: '2024-08-11',
+          date: '2025-08-11',
           tags: ['project', 'development', 'showcase']
         },
         {
-          id: 'gallery_6',
+          id: 'gallery_3',
           type: 'image',
           src: '/gallery/realibox-01.jpeg',
           thumbnail: '/gallery/realibox-01.jpeg',
@@ -1479,27 +1431,11 @@ export const useAppStore = create(
             en: 'Innovative technology solution presentation',
             zh: '创新技术解决方案展示'
           },
-          date: '2024-08-11',
+          date: '2025-08-11',
           tags: ['innovation', 'technology', 'solution']
         },
         {
-          id: 'gallery_7',
-          type: 'image',
-          src: '/gallery/WechatIMG1115.jpg',
-          thumbnail: '/gallery/WechatIMG1115.jpg',
-          title: {
-            en: 'Urban Architecture',
-            zh: '城市建筑'
-          },
-          description: {
-            en: 'Modern urban architectural photography',
-            zh: '现代城市建筑摄影'
-          },
-          date: '2024-08-11',
-          tags: ['architecture', 'urban', 'photography']
-        },
-        {
-          id: 'gallery_8',
+          id: 'gallery_4',
           type: 'image',
           src: '/gallery/WechatIMG485.jpg',
           thumbnail: '/gallery/WechatIMG485.jpg',
@@ -1511,11 +1447,11 @@ export const useAppStore = create(
             en: 'Breathtaking natural landscape view',
             zh: '令人叹为观止的自然风景'
           },
-          date: '2024-08-11',
+          date: '2025-08-11',
           tags: ['landscape', 'nature', 'vista']
         },
         {
-          id: 'gallery_9',
+          id: 'gallery_5',
           type: 'image',
           src: '/gallery/Image_2025-08-11_001936_130.jpg',
           thumbnail: '/gallery/Image_2025-08-11_001936_130.jpg',
@@ -1527,27 +1463,11 @@ export const useAppStore = create(
             en: 'Artistic creative visual composition',
             zh: '艺术创意视觉构图'
           },
-          date: '2024-08-11',
+          date: '2025-08-11',
           tags: ['creative', 'composition', 'artistic']
         },
         {
-          id: 'gallery_10',
-          type: 'image',
-          src: '/gallery/Image_2025-08-11_002003_795.jpg',
-          thumbnail: '/gallery/Image_2025-08-11_002003_795.jpg',
-          title: {
-            en: 'Visual Art Study',
-            zh: '视觉艺术研究'
-          },
-          description: {
-            en: 'Contemporary visual art exploration',
-            zh: '当代视觉艺术探索'
-          },
-          date: '2024-08-11',
-          tags: ['visual', 'art', 'contemporary']
-        },
-        {
-          id: 'gallery_11',
+          id: 'gallery_6',
           type: 'image',
           src: '/gallery/Image_2025-08-11_002010_271.jpg',
           thumbnail: '/gallery/Image_2025-08-11_002010_271.jpg',
@@ -1559,11 +1479,11 @@ export const useAppStore = create(
             en: 'Fundamental design elements showcase',
             zh: '基本设计元素展示'
           },
-          date: '2024-08-11',
+          date: '2025-08-11',
           tags: ['design', 'elements', 'fundamental']
         },
         {
-          id: 'gallery_12',
+          id: 'gallery_7',
           type: 'image',
           src: '/gallery/Image_2025-08-11_002019_688.jpg',
           thumbnail: '/gallery/Image_2025-08-11_002019_688.jpg',
@@ -1575,56 +1495,168 @@ export const useAppStore = create(
             en: 'Practical color theory demonstration',
             zh: '实用色彩理论演示'
           },
-          date: '2024-08-11',
+          date: '2025-08-11',
           tags: ['color', 'theory', 'demonstration']
+        },
+        {
+          id: 'gallery_8',
+          type: 'image',
+          src: '/gallery/Image_2025-08-11_154055_640.jpg',
+          thumbnail: '/gallery/Image_2025-08-11_154055_640.jpg',
+          title: {
+            en: 'Artistic Vision',
+            zh: '艺术视野'
+          },
+          description: {
+            en: 'Contemporary artistic vision exploration',
+            zh: '当代艺术视野探索'
+          },
+          date: '2025-08-11',
+          tags: ['artistic', 'vision', 'contemporary']
+        },
+        {
+          id: 'gallery_9',
+          type: 'image',
+          src: '/gallery/Image_2025-08-11_154130_992.jpg',
+          thumbnail: '/gallery/Image_2025-08-11_154130_992.jpg',
+          title: {
+            en: 'Visual Harmony',
+            zh: '视觉和谐'
+          },
+          description: {
+            en: 'Perfect visual harmony in composition',
+            zh: '构图中的完美视觉和谐'
+          },
+          date: '2025-08-11',
+          tags: ['visual', 'harmony', 'composition']
+        },
+        {
+          id: 'gallery_10',
+          type: 'image',
+          src: '/gallery/Image_2025-08-11_154142_853.jpg',
+          thumbnail: '/gallery/Image_2025-08-11_154142_853.jpg',
+          title: {
+            en: 'Creative Expression',
+            zh: '创意表达'
+          },
+          description: {
+            en: 'Innovative creative expression in digital art',
+            zh: '数字艺术中的创新创意表达'
+          },
+          date: '2025-08-11',
+          tags: ['creative', 'expression', 'digital']
+        },
+        {
+          id: 'gallery_11',
+          type: 'image',
+          src: '/gallery/Image_2025-08-11_154149_254.jpg',
+          thumbnail: '/gallery/Image_2025-08-11_154149_254.jpg',
+          title: {
+            en: 'Modern Aesthetics',
+            zh: '现代美学'
+          },
+          description: {
+            en: 'Modern aesthetic principles demonstration',
+            zh: '现代美学原理演示'
+          },
+          date: '2025-08-11',
+          tags: ['modern', 'aesthetics', 'principles']
+        },
+        {
+          id: 'gallery_12',
+          type: 'image',
+          src: '/gallery/Image_2025-08-11_154154_737.jpg',
+          thumbnail: '/gallery/Image_2025-08-11_154154_737.jpg',
+          title: {
+            en: 'Pattern Innovation',
+            zh: '图案创新'
+          },
+          description: {
+            en: 'Innovative pattern design exploration',
+            zh: '创新图案设计探索'
+          },
+          date: '2025-08-11',
+          tags: ['pattern', 'innovation', 'design']
         },
         {
           id: 'gallery_13',
           type: 'image',
-          src: '/gallery/Image_2025-08-11_002025_975.jpg',
-          thumbnail: '/gallery/Image_2025-08-11_002025_975.jpg',
+          src: '/gallery/Image_2025-08-11_154159_687.jpg',
+          thumbnail: '/gallery/Image_2025-08-11_154159_687.jpg',
           title: {
-            en: 'Pattern Design',
-            zh: '图案设计'
+            en: 'Digital Artistry',
+            zh: '数字艺术性'
           },
           description: {
-            en: 'Intricate pattern design exploration',
-            zh: '复杂图案设计探索'
+            en: 'Advanced digital artistry techniques',
+            zh: '先进的数字艺术技巧'
           },
-          date: '2024-08-11',
-          tags: ['pattern', 'design', 'intricate']
+          date: '2025-08-11',
+          tags: ['digital', 'artistry', 'techniques']
         },
         {
           id: 'gallery_14',
           type: 'image',
-          src: '/gallery/Image_2025-08-11_002032_575.jpg',
-          thumbnail: '/gallery/Image_2025-08-11_002032_575.jpg',
+          src: '/gallery/Image_2025-08-11_154210_322.jpg',
+          thumbnail: '/gallery/Image_2025-08-11_154210_322.jpg',
           title: {
-            en: 'Artistic Expression',
-            zh: '艺术表达'
+            en: 'Visual Synthesis',
+            zh: '视觉合成'
           },
           description: {
-            en: 'Pure artistic expression in visual form',
-            zh: '纯粹的视觉艺术表达'
+            en: 'Complex visual synthesis and composition',
+            zh: '复杂的视觉合成与构图'
           },
-          date: '2024-08-11',
-          tags: ['artistic', 'expression', 'visual']
+          date: '2025-08-11',
+          tags: ['visual', 'synthesis', 'composition']
         },
         {
           id: 'gallery_15',
           type: 'image',
-          src: '/gallery/Image_2025-08-11_002041_104.png',
-          thumbnail: '/gallery/Image_2025-08-11_002041_104.png',
+          src: '/gallery/Image_2025-08-11_154217_372.jpg',
+          thumbnail: '/gallery/Image_2025-08-11_154217_372.jpg',
           title: {
-            en: 'Digital Innovation',
-            zh: '数字创新'
+            en: 'Abstract Beauty',
+            zh: '抽象之美'
           },
           description: {
-            en: 'Cutting-edge digital innovation showcase',
-            zh: '前沿数字创新展示'
+            en: 'Pure abstract beauty in visual form',
+            zh: '纯粹的视觉抽象之美'
           },
-          date: '2024-08-11',
-          tags: ['digital', 'innovation', 'cutting-edge']
+          date: '2025-08-11',
+          tags: ['abstract', 'beauty', 'visual']
+        },
+        {
+          id: 'gallery_16',
+          type: 'image',
+          src: '/gallery/Image_2025-08-11_154236_734.jpg',
+          thumbnail: '/gallery/Image_2025-08-11_154236_734.jpg',
+          title: {
+            en: 'Geometric Perfection',
+            zh: '几何完美'
+          },
+          description: {
+            en: 'Perfect geometric patterns and structures',
+            zh: '完美的几何图案与结构'
+          },
+          date: '2025-08-11',
+          tags: ['geometric', 'perfection', 'patterns']
+        },
+        {
+          id: 'gallery_17',
+          type: 'image',
+          src: '/gallery/Image_2025-08-11_154240_669.jpg',
+          thumbnail: '/gallery/Image_2025-08-11_154240_669.jpg',
+          title: {
+            en: 'Artistic Mastery',
+            zh: '艺术精通'
+          },
+          description: {
+            en: 'Demonstration of complete artistic mastery',
+            zh: '完整艺术精通的演示'
+          },
+          date: '2025-08-11',
+          tags: ['artistic', 'mastery', 'demonstration']
         }
       ],
 
