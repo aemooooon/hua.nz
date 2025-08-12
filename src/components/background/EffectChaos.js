@@ -63,9 +63,44 @@ export class EffectChaos {
             this.updateParticleColors();
         }
         
-        // 更新光源颜色
-        if (this.centralLight && primaryColor) {
-            this.centralLight.color.setStyle(primaryColor);
+        // 更新所有光源颜色
+        this.updateLightColors();
+    }
+
+    /**
+     * 更新所有光源颜色以匹配主题
+     */
+    updateLightColors() {
+        if (!this.lights) return;
+        
+        // 更新中央光源 - 使用主题内部色的亮版本
+        if (this.lights.central) {
+            this.lights.central.color.copy(this.colorInside.clone().multiplyScalar(1.5));
+        }
+        
+        // 更新绿色主题光源 - 使用主题内部色
+        if (this.lights.green) {
+            this.lights.green.color.copy(this.colorInside);
+        }
+        
+        // 更新环境光 - 使用主题内部色的暗版本
+        if (this.lights.ambient) {
+            this.lights.ambient.color.copy(this.colorInside.clone().multiplyScalar(0.3));
+        }
+        
+        // 更新补光源1 - 使用主题内部色
+        if (this.lights.fill1) {
+            this.lights.fill1.color.copy(this.colorInside);
+        }
+        
+        // 更新补光源2 - 使用主题外部色
+        if (this.lights.fill2) {
+            this.lights.fill2.color.copy(this.colorOutside);
+        }
+        
+        // 更新背景光 - 使用主题外部色的亮版本
+        if (this.lights.back) {
+            this.lights.back.color.copy(this.colorOutside.clone().multiplyScalar(1.2));
         }
     }
 
@@ -100,7 +135,8 @@ export class EffectChaos {
         this.camera.lookAt(0, -2, 0); // 朝向下方
 
         this.scene = new THREE.Scene();
-        this.scene.background = new THREE.Color(0x0A0F0D); // South Island Green：深绿黑背景
+        // 使用动态背景色，将在updateThemeColors中设置
+        this.scene.background = new THREE.Color(0x000000); // 默认黑色，将被主题色覆盖
 
         this.renderer = new THREE.WebGLRenderer({ 
             canvas: this.canvas, 
@@ -215,33 +251,43 @@ export class EffectChaos {
         // 初始化位置
         this.updatePositions();
         
-        // 创建统一的绿色光源系统 - South Island Green 主题
-        this.centralLight = new THREE.PointLight(new THREE.Color('#E0F2E0'), 2.5, 40); // 浅绿白光源
+        // 创建统一的主题色光源系统 - 使用动态主题色
+        this.centralLight = new THREE.PointLight(this.colorInside.clone().multiplyScalar(1.5), 2.5, 40); // 使用主题色的亮版本
         this.centralLight.position.set(0, -1, 0);
         this.scene.add(this.centralLight);
         
-        // 绿色主题光源
-        const greenLight = new THREE.PointLight(this.colorInside, 1.8, 35); // 使用翠绿色
+        // 主题色光源
+        const greenLight = new THREE.PointLight(this.colorInside, 1.8, 35); // 使用主题内部色
         greenLight.position.set(0, -1, 0);
         this.scene.add(greenLight);
         
-        // 统一绿色调环境光
-        this.ambientLight = new THREE.AmbientLight(0x4A6A5A, 0.4); // 绿色调环境光
+        // 主题色调环境光
+        this.ambientLight = new THREE.AmbientLight(this.colorInside.clone().multiplyScalar(0.3), 0.4); // 使用主题色的暗版本
         this.scene.add(this.ambientLight);
         
-        // 绿色系补光源
-        const fillLight1 = new THREE.PointLight(0x10B981, 1.2, 25); // 翠绿
+        // 主题色系补光源
+        const fillLight1 = new THREE.PointLight(this.colorInside, 1.2, 25); // 使用主题内部色
         fillLight1.position.set(-5, 0, 5);
         this.scene.add(fillLight1);
         
-        const fillLight2 = new THREE.PointLight(0x34D399, 1.2, 25); // 浅绿
+        const fillLight2 = new THREE.PointLight(this.colorOutside, 1.2, 25); // 使用主题外部色
         fillLight2.position.set(5, 0, 5);
         this.scene.add(fillLight2);
         
-        // 背景绿色补光
-        const backLight = new THREE.PointLight(0x00FF88, 0.8, 50); // 高亮绿背景光
+        // 背景主题色补光
+        const backLight = new THREE.PointLight(this.colorOutside.clone().multiplyScalar(1.2), 0.8, 50); // 使用主题外部色的亮版本
         backLight.position.set(0, 2, -10);
         this.scene.add(backLight);
+        
+        // 存储光源引用以便后续更新
+        this.lights = {
+            central: this.centralLight,
+            green: greenLight,
+            ambient: this.ambientLight,
+            fill1: fillLight1,
+            fill2: fillLight2,
+            back: backLight
+        };
     }
 
     updatePositions() {

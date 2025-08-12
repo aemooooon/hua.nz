@@ -243,8 +243,21 @@ const HeroCube = ({
             return texture;
         };
 
-        // 为每个面创建材质
-        const materials = faces.map((face) => {
+        // 为每个面创建材质 - 按照Three.js立方体面的标准顺序
+        const materials = [
+            // 索引0: 右面 (X+) - About面
+            faces.find(f => f.name === 'about'),
+            // 索引1: 左面 (X-) - Gallery面  
+            faces.find(f => f.name === 'gallery'),
+            // 索引2: 顶面 (Y+) - Contact面
+            faces.find(f => f.name === 'contact'),
+            // 索引3: 底面 (Y-) - Education面
+            faces.find(f => f.name === 'education'),
+            // 索引4: 正面 (Z+) - Home面
+            faces.find(f => f.name === 'home'),
+            // 索引5: 背面 (Z-) - Projects面
+            faces.find(f => f.name === 'projects')
+        ].map((face) => {
             // 如果是视频贴图，使用预加载的纹理
             if (face.video) {
                 const preloadedTexture = texturePreloader.getTexture(face.video);
@@ -455,117 +468,132 @@ const HeroCube = ({
                 }, 0.5)
                 
                 // 阶段2: 摄像机穿越展示每个面 (2.5-14.5s)
-                // 面1: Home面 (正面) - 从正前方进入 (2.5-4.5s)
+                // 面1: Home面 (正面, Z+) - 正对展示 (2.5-4.5s)
                 .to(cube.rotation, {
-                    x: 0,
-                    y: 0,
-                    z: 0,
+                    x: 0, // 保持水平
+                    y: 0, // 正面朝向摄像机
+                    z: 0, // 图片正向，不旋转
                     duration: 1.5,
                     ease: "power2.inOut"
                 }, 2.5)
                 .to(camera.position, {
-                    x: 0, y: 0, z: 4,
+                    x: 0, y: 0, z: 4, // 正对面中央
                     duration: 0.8,
                     ease: "power2.out",
                     onUpdate: () => camera.lookAt(cube.position)
                 }, 3.2)
                 
-                // 面2: About面 (右面) - 从右侧进入 (4.5-6.5s)
+                // 面2: About面 (右面, X+) - 正对展示 (4.5-6.5s)
                 .to(cube.rotation, {
-                    x: 0,
-                    y: -Math.PI * 0.5,
-                    z: 0,
+                    x: 0, // 保持水平
+                    y: -Math.PI * 0.5, // 右面朝向摄像机
+                    z: 0, // 图片正向
                     duration: 1.5,
                     ease: "power2.inOut"
                 }, 4.5)
                 .to(camera.position, {
-                    x: 4, y: 0, z: 2,
+                    x: 4, y: 0, z: 0, // 正对右面中央
                     duration: 0.8,
                     ease: "power2.out",
                     onUpdate: () => camera.lookAt(cube.position)
                 }, 5.3)
                 
-                // 面3: Projects面 (背面) - 从后方高处进入 (6.5-8.5s)
+                // 面3: Projects面 (背面, Z-) - 正对展示 (6.5-8.5s)
                 .to(cube.rotation, {
-                    x: 0,
-                    y: -Math.PI,
-                    z: 0,
+                    x: 0, // 保持水平
+                    y: -Math.PI, // 背面朝向摄像机
+                    z: 0, // 图片正向
                     duration: 1.5,
                     ease: "power2.inOut"
                 }, 6.5)
                 .to(camera.position, {
-                    x: 0, y: 3, z: -4,
+                    x: 0, y: 0, z: -4, // 正对背面中央
                     duration: 0.8,
                     ease: "power2.out",
                     onUpdate: () => camera.lookAt(cube.position)
                 }, 7.3)
                 
-                // 面4: Gallery面 (左面) - 从左下方进入 (8.5-10.5s)
+                // 面4: Gallery面 (左面, X-) - 正对展示 (8.5-10.5s)
                 .to(cube.rotation, {
-                    x: 0,
-                    y: -Math.PI * 1.5,
-                    z: 0,
+                    x: 0, // 保持水平
+                    y: Math.PI * 0.5, // 左面朝向摄像机 (注意：改为正值)
+                    z: 0, // 图片正向
                     duration: 1.5,
                     ease: "power2.inOut"
                 }, 8.5)
                 .to(camera.position, {
-                    x: -4, y: -2, z: 2,
+                    x: -4, y: 0, z: 0, // 正对左面中央
                     duration: 0.8,
                     ease: "power2.out",
                     onUpdate: () => camera.lookAt(cube.position)
                 }, 9.3)
                 
-                // 面5: Education面 (底面) - 从下方进入 (10.5-12.5s)
+                // 面5: Education面 (底面, Y-) - 从下方正对展示 (10.5-12.5s)
                 .to(cube.rotation, {
-                    x: Math.PI * 0.5,
-                    y: -Math.PI * 1.5,
-                    z: 0,
+                    x: Math.PI * 0.5, // 底面朝向摄像机
+                    y: Math.PI * 0.5, // 保持图片正向 (调整Y轴旋转)
+                    z: 0, // 不额外旋转
                     duration: 1.5,
                     ease: "power2.inOut"
                 }, 10.5)
                 .to(camera.position, {
-                    x: 0, y: -4, z: 2,
+                    x: 0, y: -4, z: 0, // 从底部正对中央
                     duration: 0.8,
                     ease: "power2.out",
                     onUpdate: () => camera.lookAt(cube.position)
                 }, 11.3)
                 
-                // 面6: Contact面 (顶面) - 从上方进入 (12.5-14.5s)
+                // 面6: Contact面 (顶面, Y+) - 从上方正对展示 (12.5-14.5s)
                 .to(cube.rotation, {
-                    x: -Math.PI * 0.5,
-                    y: -Math.PI * 1.5,
-                    z: 0,
+                    x: -Math.PI * 0.5, // 顶面朝向摄像机
+                    y: Math.PI * 0.5, // 保持图片正向 (调整Y轴旋转)
+                    z: 0, // 不额外旋转
                     duration: 1.5,
                     ease: "power2.inOut"
                 }, 12.5)
                 .to(camera.position, {
-                    x: 0, y: 4, z: 2,
+                    x: 0, y: 4, z: 0, // 从顶部正对中央
                     duration: 0.8,
                     ease: "power2.out",
                     onUpdate: () => camera.lookAt(cube.position)
                 }, 13.3)
                 
-                // 摄像机回到标准位置 (14.5s)
+                // 平滑过渡：从顶部视角缓慢回到标准位置 (13.3-14.8s)
                 .to(camera.position, {
-                    x: 0, y: 0, z: 10,
-                    duration: 0.5,
-                    ease: "power2.in",
+                    x: 0, y: 2, z: 6, // 先到中间过渡位置
+                    duration: 0.7,
+                    ease: "power2.inOut",
                     onUpdate: () => camera.lookAt(cube.position)
-                }, 14.5)
+                }, 13.3)
+                .to(camera.position, {
+                    x: 0, y: 0, z: 10, // 再到最终标准位置
+                    duration: 0.8,
+                    ease: "power2.out",
+                    onUpdate: () => camera.lookAt(cube.position)
+                }, 14.0)
+                
+                // 阶段3: 戏剧性放大和旋转 - 摄像机进入cube内部 (14.8-16.5s)
                 .to(cube.scale, {
-                    x: 12,
-                    y: 12,
-                    z: 12,
-                    duration: 2.0,
+                    x: 3, // 减小放大倍数，从12减到8
+                    y: 3,
+                    z: 3,
+                    duration: 1.7,
                     ease: "power3.in"
-                }, 14.5)
+                }, 14.8)
+                // 摄像机同时向前移动，进入cube内部
+                .to(camera.position, {
+                    z: 2, // 摄像机前进到cube内部，确保始终能看到cube表面
+                    duration: 1.7,
+                    ease: "power3.in",
+                    onUpdate: () => camera.lookAt(cube.position)
+                }, 14.8)
                 .to(cube.rotation, {
                     x: cube.rotation.x + Math.PI * 4,
                     y: cube.rotation.y + Math.PI * 6,
                     z: cube.rotation.z + Math.PI * 3,
-                    duration: 2.0,
+                    duration: 1.7,
                     ease: "power2.out"
-                }, 14.5)
+                }, 14.8)
                 
                 // 阶段4: 平滑回缩，对角线旋转开始 (16.5-19s)
                 .to(cube.scale, {
@@ -575,10 +603,12 @@ const HeroCube = ({
                     duration: 2.5,
                     ease: "power3.out"
                 }, 16.5)
+                // 摄像机回退到正常观察距离
                 .to(camera.position, {
                     z: 10,
                     duration: 2.5,
-                    ease: "power2.out"
+                    ease: "power2.out",
+                    onUpdate: () => camera.lookAt(cube.position)
                 }, 16.5)
                 .to(cube.rotation, {
                     x: cube.rotation.x + Math.PI * 1.5,
