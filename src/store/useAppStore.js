@@ -15,7 +15,6 @@ const sectionsConfig = [
     backgroundEffect: "effectchaos", // Chaos 效果
     cubeImage: "/hua.jpeg",
     cubeVideo: "/cube-textures/home.mp4", // 立方体视频
-    icon: "🏠"
   },
   {
     id: "about",
@@ -24,7 +23,6 @@ const sectionsConfig = [
     description: { en: "About myself", zh: "个人介绍" },
     backgroundEffect: "effectlorenz", // Lorenz 背景
     cubeImage: "/cube-textures/about.jpg", // 修正立方体图片路径
-    icon: "👤"
   },
   {
     id: "projects",
@@ -33,7 +31,6 @@ const sectionsConfig = [
     description: { en: "My development projects", zh: "我的开发项目" },
     backgroundEffect: "effectmonjori", // Monjori 背景
     cubeImage: "/cube-textures/projects.jpg", // 修正立方体图片路径
-    icon: "💼"
   },
   {
     id: "gallery",
@@ -42,7 +39,6 @@ const sectionsConfig = [
     description: { en: "Immersive 3D art experience", zh: "沉浸式3D艺术体验" },
     backgroundEffect: "", // 清空背景效果，因为Gallery section有自己的3D场景
     cubeImage: "/cube-textures/gallery.jpg", // 修正立方体图片路径
-    icon: "🖼️"
   },
   {
     id: "education",
@@ -51,7 +47,6 @@ const sectionsConfig = [
     description: { en: "Academic background", zh: "学术背景" },
     backgroundEffect: "effectfuse", // Fuse 背景
     cubeImage: "/cube-textures/education.jpg", // 修正立方体图片路径
-    icon: "🎓"
   },
   {
     id: "contact",
@@ -60,33 +55,75 @@ const sectionsConfig = [
     description: { en: "Get in touch", zh: "联系方式" },
     backgroundEffect: "effectpixeldistortion", // PixelDistortion 背景
     cubeImage: "/cube-textures/contact.jpg", // 修正立方体图片路径
-    icon: "📧"
   }
 ];
-
-
 
 // 国际化内容配置 - 完整的多语言文本内容
 const contentConfig = {
   en: {
-    navigation: {
-      home: "Home",
-      about: "About",
-      projects: "Projects",
-      gallery: "Gallery",
-      education: "Education",
-      contact: "Contact"
-    },
     home: {
       name: "Hua Wang",
       title: "Full Stack Developer",
-      shortBio: "Passionate developer creating innovative web applications with cutting-edge technology and exceptional user experiences.",
-      description: "I'm a full-stack developer with a strong focus on frontend, especially building interactive web applications and visualisation dashboards. I have experience with modern frontend frameworks such as React, Next.js, and TypeScript, as well as working with libraries such as Three.js and ECharts.",
-      location: "New Zealand",
       slogan: {
         chinese: "观混沌之纷，立秩序之象；守中庸之衡，启创新之变！",
         english: "Order from Chaos. Innovation through Tradeoffs."
       }
+    },
+    about: {
+      title: "About Me",
+      subtitle: "My journey as a developer",
+      description: "Learn more about my background, skills, and passion for technology.",
+      background: "Background",
+      education: "Education",
+      interests: "Interests",
+      pages: [
+        {
+          id: 'statement',
+          title: 'Personal Statement',
+          content: {
+            greeting: "Kia ora, I'm Hua Wang",
+            paragraphs: [
+              "I am a versatile full-stack developer with expertise in computer science, computer graphics, and data science, building and integrating interactive web applications, data pipelines and visualisation dashboards.",
+              "I have experience with modern frontend frameworks such as React, Next.js, and TypeScript, as well as working with libraries such as Three.js and ECharts. On the backend side, I am skilled in developing RESTful APIs and data-driven apps using Java, Python, Node.js, and C# ASP.NET.",
+              "I have also been working with containerised environments (Docker, Kubernetes), GitHub Actions, GitLab CI/CD pipelines, and cloud platforms such as AWS and Azure."
+            ]
+          }
+        },
+        {
+          id: 'experience',
+          title: 'Professional Experience',
+          experiences: [
+            {
+              company: "Zespri International",
+              position: "Full Stack Developer (Internship)",
+              period: "Nov 2024 - Feb 2025",
+              color: "blue",
+              icon: "ZI"
+            },
+            {
+              company: "Realibox, GuangZhou",
+              position: "Frontend Developer",
+              period: "Aug 2021 - Feb 2023",
+              color: "purple",
+              icon: "RB"
+            },
+            {
+              company: "Nuclear Stone Technology",
+              position: "Frontend Developer",
+              period: "Aug 2020 - Jul 2021",
+              color: "green",
+              icon: "NS"
+            },
+            {
+              company: "Enshi Environmental Agency",
+              position: "Full Stack Developer (Contract)",
+              period: "Feb 2020 - Jul 2021",
+              color: "orange",
+              icon: "ES"
+            }
+          ]
+        }
+      ]
     },
     projects: {
       title: "My Projects",
@@ -104,7 +141,7 @@ const contentConfig = {
       // 项目详情相关文本
       detail: {
         technologyStack: "Technology Stack",
-        projectStatistics: "Project Statistics", 
+        projectStatistics: "Project Statistics",
         subProjects: "Sub Projects",
         visitSite: "Visit Site",
         closeModal: "Close modal"
@@ -147,105 +184,6 @@ const contentConfig = {
         }
       }
     },
-    contact: {
-      title: "Get In Touch",
-      subtitle: "Let's discuss your next project",
-      description: "Get in touch for opportunities, collaborations, or just to say hello.",
-      location: "Christchurch, New Zealand",
-      emailAddress: "aemooooon@gmail.com",
-      phone: "+64 21 037 0520",
-      connectWithMe: "Connect with me",
-      lookingForward: "Looking forward to hearing from you!",
-      contactMethods: {
-        email: {
-          title: "Email",
-          description: "Send me an email"
-        },
-        phone: {
-          title: "Phone",
-          description: "Give me a call"
-        },
-        wechat: {
-          title: "WeChat",
-          description: "Connect via WeChat",
-          id: "Aemooooon"
-        },
-        location: {
-          title: "Location",
-          description: "Based in Christchurch"
-        }
-      },
-      social: {
-        github: {
-          url: "https://github.com/aemooooon",
-          label: "GitHub"
-        },
-        linkedin: {
-          url: "https://www.linkedin.com/in/aemonwang",
-          label: "LinkedIn"
-        },
-        email: {
-          url: "mailto:aemooooon@gmail.com",
-          label: "Email"
-        }
-      }
-    },
-    about: {
-      title: "About Me",
-      subtitle: "My journey as a developer",
-      description: "Learn more about my background, skills, and passion for technology.",
-      background: "Background",
-      education: "Education",
-      interests: "Interests",
-      pages: [
-        {
-          id: 'statement',
-          title: 'Personal Statement',
-          content: {
-            greeting: "Kia ora, I'm Hua Wang",
-            paragraphs: [
-              "I am a versatile full-stack developer with expertise in computer/data science, building and integrating interactive web applications, data pipelines and visualisation dashboards.",
-              "I have experience with modern frontend frameworks such as React, Next.js, and TypeScript, as well as working with libraries such as Three.js and ECharts. On the backend side, I am skilled in developing RESTful APIs and data-driven apps using Java, Python, Node.js, and C# ASP.NET.",
-              "I have also been working with containerised environments (Docker, Kubernetes), GitHub Actions, GitLab CI/CD pipelines, and cloud platforms such as AWS and Azure."
-            ]
-          }
-        },
-        {
-          id: 'experience',
-          title: 'Professional Experience',
-          experiences: [
-            {
-              company: "Zespri International",
-              position: "Full Stack Developer (Internship)",
-              period: "Nov 2024 - Feb 2025",
-              color: "blue",
-              icon: "ZI"
-            },
-            {
-              company: "Realibox, GuangZhou",
-              position: "Frontend Developer",
-              period: "Aug 2021 - Feb 2023",
-              color: "purple",
-              icon: "RB"
-            },
-            {
-              company: "Nuclear Stone Technology",
-              position: "Frontend Developer",
-              period: "Aug 2020 - Jul 2021",
-              color: "green",
-              icon: "NS"
-            },
-            {
-              company: "Enshi Environmental Agency",
-              position: "Full Stack Developer (Contract)",
-              period: "Feb 2020 - Jul 2021",
-              color: "orange",
-              icon: "ES"
-            }
-          ]
-        }
-      ]
-    },
     education: {
       title: "Education",
       subtitle: "academic background",
@@ -276,7 +214,7 @@ const contentConfig = {
               year: "2024",
               semester: "Semester 1",
               courses: [
-                
+
                 { code: "DATA401", name: "Introduction to Data Science", credits: 15, grade: "A", level: 4 },
                 { code: "DIGI405", name: "Texts, Discourses and Data: the Humanities and Data Science", credits: 15, grade: "A-", level: 4 },
                 { code: "DATA472", name: "Based cloud computing and infrastructure data engineering", credits: 15, grade: "A+", level: 4 },
@@ -285,7 +223,7 @@ const contentConfig = {
             },
             {
               year: "2024",
-              semester: "Semester 2", 
+              semester: "Semester 2",
               courses: [
                 { code: "COSC473", name: "Decentralised Applications on the Web", credits: 15, grade: "A-", level: 4 },
                 { code: "COSC440", name: "Deep Learning", credits: 15, grade: "A+", level: 4 },
@@ -308,21 +246,21 @@ const contentConfig = {
               description: "A P2P file-sharing and messaging app built using Rust (backend) and React with Tauri (frontend). Integrated libp2p for decentralised networking.",
               technologies: ["Rust", "React", "Tauri", "libp2p"],
               githubUrl: "https://github.com/aemooooon/swapbytes",
-              image: "/jsjxmm.jpg"
+              image: "/swapbytes.jpg"
             },
             {
               name: "Digital Pet",
               description: "A blockchain-based virtual pet dApp on Secret Network. Built a CosmWasm smart contract using Rust and a React frontend.",
               technologies: ["Rust", "CosmWasm", "React", "Secret Network"],
               githubUrl: "https://github.com/aemooooon/digital-pet",
-              image: "/jlw.jpg"
+              image: "/digitalpet.jpg"
             },
             {
               name: "ECAN Data Pipeline",
               description: "A collaborative cloud-based automation system for collecting and processing environmental data from 17 different sources.",
               technologies: ["Apache Airflow", "Python", "GraphQL", "AWS"],
-              githubUrl: "https://github.com/aemooooon/data-pipeline",
-              image: "/aqi/Overview.png"
+              githubUrl: "https://github.com/aemooooon/DATA472-Individual-Project-Submission",
+              image: "/ecan.jpg"
             }
           ]
         },
@@ -330,7 +268,7 @@ const contentConfig = {
           id: "bachelors",
           degree: "Bachelor of Information Technology",
           degreeHonor: true,
-          institution: "Otago Polytechnic", 
+          institution: "Otago Polytechnic",
           location: "Dunedin, New Zealand",
           period: "July 2017 - June 2021",
           gpa: "A average",
@@ -347,7 +285,7 @@ const contentConfig = {
               ]
             },
             {
-              year: "2018", 
+              year: "2018",
               semester: "Year 2",
               courses: [
                 { code: "IN505001", name: "Introduction to Systems Analysis", credits: 15, grade: "A+", level: 5 },
@@ -362,7 +300,7 @@ const contentConfig = {
             },
             {
               year: "2019",
-              semester: "Year 3", 
+              semester: "Year 3",
               courses: [
                 { code: "IN602001", name: "Software Engineering", credits: 15, grade: "A-", level: 6 },
                 { code: "IN628002", name: "Programming 4", credits: 15, grade: "A+", level: 6 },
@@ -416,6 +354,49 @@ const contentConfig = {
         }
       ]
     },
+    contact: {
+      title: "Get In Touch",
+      subtitle: "Let's discuss your next project",
+      description: "Get in touch for opportunities, collaborations, or just to say hello.",
+      location: "Christchurch, New Zealand",
+      emailAddress: "aemooooon@gmail.com",
+      phone: "+64 21 037 0520",
+      connectWithMe: "Connect with me",
+      lookingForward: "Looking forward to hearing from you!",
+      contactMethods: {
+        email: {
+          title: "Email",
+          description: "Send me an email"
+        },
+        phone: {
+          title: "Phone",
+          description: "Give me a call"
+        },
+        wechat: {
+          title: "WeChat",
+          description: "Connect via WeChat",
+          id: "Aemooooon"
+        },
+        location: {
+          title: "Location",
+          description: "Based in Christchurch"
+        }
+      },
+      social: {
+        github: {
+          url: "https://github.com/aemooooon",
+          label: "GitHub"
+        },
+        linkedin: {
+          url: "https://www.linkedin.com/in/aemonwang",
+          label: "LinkedIn"
+        },
+        email: {
+          url: "mailto:aemooooon@gmail.com",
+          label: "Email"
+        }
+      }
+    },
     ui: {
       language: "Language",
       theme: "Theme",
@@ -434,29 +415,74 @@ const contentConfig = {
     }
   },
   zh: {
-    navigation: {
-      home: "首页",
-      about: "关于",
-      projects: "项目",
-      gallery: "画廊",
-      education: "教育",
-      contact: "联系"
-    },
     home: {
       name: "王华",
       title: "全栈工程师",
-      shortBio: "热衷于使用前沿技术创建创新Web应用程序，提供卓越用户体验的开发者。",
-      description: "我是一名全栈开发者，专注于前端开发，特别是构建交互式Web应用程序和可视化仪表板。我有使用现代前端框架如React、Next.js和TypeScript的经验，以及使用Three.js和ECharts等库的经验。",
-      location: "新西兰",
       slogan: {
         chinese: "观混沌之纷，立秩序之象；守中庸之衡，启创新之变！",
         english: "Order from Chaos. Innovation through Tradeoffs..."
       }
     },
+    about: {
+      title: "关于我",
+      subtitle: "我的开发者之路",
+      description: "了解更多关于我的背景、技能和对技术的热情。",
+      background: "背景",
+      education: "教育经历",
+      interests: "兴趣爱好",
+      pages: [
+        {
+          id: 'statement',
+          title: '个人陈述',
+          content: {
+            greeting: "你好，我是王华",
+            paragraphs: [
+              "吾乃通贯全栈之开发者，精研电脑之术、图形之学、数据之道，善构交互之网页、数据之渠、观象之台。",
+              "前端诸艺，如React、Next.js、TypeScript，皆所娴习；Three.js、ECharts之属，亦能运使自如。后端之道，RESTful API、数据之应用，Java、Python、Node.js、C# ASP.NET，皆可驾驭。容器之技，若Docker、Kubernetes；自动化之道，如GitHub Actions、GitLab CI/CD；云端之台，AWS、Azure，亦所涉猎。",
+              "博采众长，融会贯通，以成数字之巧，应万物之需。"
+            ]
+          }
+        },
+        {
+          id: 'experience',
+          title: '职业历程',
+          experiences: [
+            {
+              company: "佳沛国际",
+              position: "全栈开发工程师（实习）",
+              period: "2024年11月 - 2025年2月",
+              color: "blue",
+              icon: "ZI"
+            },
+            {
+              company: "引力波，广州",
+              position: "前端开发工程师",
+              period: "2021年8月 - 2023年2月",
+              color: "purple",
+              icon: "RB"
+            },
+            {
+              company: "核石数字，重庆",
+              position: "前端开发工程师",
+              period: "2020年8月 - 2021年7月",
+              color: "green",
+              icon: "NS"
+            },
+            {
+              company: "恩施环境保护局",
+              position: "全栈开发工程师（合同）",
+              period: "2020年2月 - 2021年7月",
+              color: "orange",
+              icon: "ES"
+            }
+          ]
+        }
+      ]
+    },
     projects: {
-      title: "我的项目",
+      title: "项目集锦",
       subtitle: "每个项目都代表着独特的挑战和学习之旅",
-      description: "从全栈Web开发到3D沉浸式体验，从计算机科学到数据科学，到计算机图形学——探索多样的技术与解决方案。语言无关，平台独立，框架灵活。",
+      description: "从全栈Web开发到3D沉浸式体验，从计算机科学，计算机图形学，到数据科学 — 探索多样的技术与解决方案。语言无关，平台独立，框架灵活。",
       viewProject: "查看项目",
       learnMore: "了解更多 →",
       technologies: "技术栈",
@@ -469,7 +495,7 @@ const contentConfig = {
       // 项目详情相关文本
       detail: {
         technologyStack: "技术栈",
-        projectStatistics: "项目统计", 
+        projectStatistics: "项目统计",
         subProjects: "子项目",
         visitSite: "访问网站",
         closeModal: "关闭弹窗"
@@ -512,104 +538,6 @@ const contentConfig = {
         }
       }
     },
-    contact: {
-      title: "青鸟殷勤",
-      subtitle: "共商鸿猷",
-      description: "倘蒙垂询，或谋事，或叙契，一函可达。",
-      location: "新西兰",
-      emailAddress: "aemooooon@gmail.com",
-      phone: "+64 21 037 0520",
-      connectWithMe: "社交媒体",
-      lookingForward: "翘盼汝之玉音！",
-      contactMethods: {
-        email: {
-          title: "邮箱",
-          description: "发送邮件"
-        },
-        phone: {
-          title: "电话",
-          description: "电话联系"
-        },
-        wechat: {
-          title: "微信",
-          description: "微信联系",
-          id: "Aemooooon"
-        },
-        location: {
-          title: "位置",
-          description: "基督之城"
-        }
-      },
-      social: {
-        github: {
-          url: "https://github.com/aemooooon",
-          label: "GitHub"
-        },
-        linkedin: {
-          url: "https://www.linkedin.com/in/aemonwang",
-          label: "LinkedIn"
-        },
-        email: {
-          url: "mailto:aemooooon@gmail.com",
-          label: "邮箱"
-        }
-      }
-    },
-    about: {
-      title: "关于我",
-      subtitle: "我的开发者之路",
-      description: "了解更多关于我的背景、技能和对技术的热情。",
-      background: "背景",
-      education: "教育经历",
-      interests: "兴趣爱好",
-      pages: [
-        {
-          id: 'statement',
-          title: '个人陈述',
-          content: {
-            greeting: "你好，我是王华",
-            paragraphs: [
-              "一名充满创意的全栈开发者，专注于通过技术与设计的完美融合创造创新的数字体验。",
-              "专精于使用 React、Next.js 和 AI 驱动的数据解决方案构建现代化 Web 应用。最近完成应用数据科学硕士学位，为每个项目带来前沿洞察。"
-            ]
-          }
-        },
-        {
-          id: 'experience',
-          title: '职业历程',
-          experiences: [
-            {
-              company: "Zespri International",
-              position: "全栈开发工程师（实习）",
-              period: "2024年11月 - 2025年2月",
-              color: "blue",
-              icon: "ZI"
-            },
-            {
-              company: "Realibox，广州",
-              position: "前端开发工程师",
-              period: "2021年8月 - 2023年2月",
-              color: "purple",
-              icon: "RB"
-            },
-            {
-              company: "Nuclear Stone Technology，重庆",
-              position: "前端开发工程师",
-              period: "2020年8月 - 2021年7月",
-              color: "green",
-              icon: "NS"
-            },
-            {
-              company: "恩施环境保护局",
-              position: "全栈开发工程师（合同）",
-              period: "2020年2月 - 2021年7月",
-              color: "orange",
-              icon: "ES"
-            }
-          ]
-        }
-      ]
-    },
     education: {
       title: "修业之路",
       subtitle: "杏坛踪迹",
@@ -631,7 +559,7 @@ const contentConfig = {
           degree: "应用数据科学硕士学位",
           degreeHonor: true,
           institution: "坎特伯雷大学",
-          location: "新西兰基督城",
+          location: "基督城",
           period: "2024年2月 - 2025年2月",
           gpa: "A",
           totalCredits: 180,
@@ -640,7 +568,7 @@ const contentConfig = {
               year: "2024",
               semester: "第一学期",
               courses: [
-                
+
                 { code: "DATA401", name: "数据科学导论", credits: 15, grade: "A", level: 4 },
                 { code: "DATA416", name: "数据科学当代问题", credits: 15, grade: "A+", level: 4 },
                 { code: "DIGI405", name: "人文学科与数据科学", credits: 15, grade: "A-", level: 4 },
@@ -649,7 +577,7 @@ const contentConfig = {
             },
             {
               year: "2024",
-              semester: "第二学期", 
+              semester: "第二学期",
               courses: [
                 { code: "COSC473", name: "Web3，区块链及去中心化应用", credits: 15, grade: "A-", level: 4 },
                 { code: "DATA420", name: "可扩展数据科学", credits: 15, grade: "A-", level: 4 },
@@ -672,21 +600,21 @@ const contentConfig = {
               description: "使用Rust（后端）和React与Tauri（前端）构建的P2P文件共享和消息应用。集成libp2p进行去中心化网络。",
               technologies: ["Rust", "React", "Tauri", "libp2p"],
               githubUrl: "https://github.com/aemooooon/swapbytes",
-              image: "/jsjxmm.jpg"
+              image: "/swapbytes.jpg"
             },
             {
               name: "数字宠物",
               description: "基于Secret Network的区块链虚拟宠物dApp。使用Rust构建CosmWasm智能合约，React前端。",
               technologies: ["Rust", "CosmWasm", "React", "Secret Network"],
               githubUrl: "https://github.com/aemooooon/digital-pet",
-              image: "/jlw.jpg"
+              image: "/digitalpet.jpg"
             },
             {
-              name: "数据管道项目",
+              name: "坎特伯雷环境部数据管线",
               description: "协作式云端自动化系统，用于从17个不同来源收集和处理环境数据。",
               technologies: ["Apache Airflow", "Python", "GraphQL", "AWS"],
-              githubUrl: "https://github.com/aemooooon/data-pipeline",
-              image: "/aqi/Overview.png"
+              githubUrl: "https://github.com/aemooooon/DATA472-Individual-Project-Submission",
+              image: "/ecan.jpg"
             }
           ]
         },
@@ -695,9 +623,9 @@ const contentConfig = {
           degree: "信息技术学士学位",
           degreeHonor: true,
           institution: "奥塔哥理工学院",
-          location: "新西兰达尼丁", 
+          location: "达尼丁",
           period: "2017年7月 - 2021年6月",
-          gpa: "A-平均成绩",
+          gpa: "A",
           totalCredits: 360,
           courses: [
             {
@@ -711,7 +639,7 @@ const contentConfig = {
               ]
             },
             {
-              year: "2018", 
+              year: "2018",
               semester: "第二年",
               courses: [
                 { code: "IN505001", name: "系统分析导论", credits: 15, grade: "A+", level: 5 },
@@ -726,7 +654,7 @@ const contentConfig = {
             },
             {
               year: "2019",
-              semester: "第三年", 
+              semester: "第三年",
               courses: [
                 { code: "IN602001", name: "软件工程", credits: 15, grade: "A-", level: 6 },
                 { code: "IN628002", name: "程序设计 4", credits: 15, grade: "A+", level: 6 },
@@ -779,6 +707,49 @@ const contentConfig = {
           ]
         }
       ]
+    },
+    contact: {
+      title: "青鸟殷勤",
+      subtitle: "共商鸿猷",
+      description: "倘蒙垂询，或谋事，或叙契，一函可达。",
+      location: "新西兰",
+      emailAddress: "aemooooon@gmail.com",
+      phone: "+64 21 *** 0520",
+      connectWithMe: "社交媒体",
+      lookingForward: "翘盼汝之玉音！",
+      contactMethods: {
+        email: {
+          title: "邮箱",
+          description: "发送邮件"
+        },
+        phone: {
+          title: "电话",
+          description: "电话联系"
+        },
+        wechat: {
+          title: "微信",
+          description: "微信联系",
+          id: "Aemooooon"
+        },
+        location: {
+          title: "位置",
+          description: "基督之城"
+        }
+      },
+      social: {
+        github: {
+          url: "https://github.com/aemooooon",
+          label: "GitHub"
+        },
+        linkedin: {
+          url: "https://www.linkedin.com/in/aemonwang",
+          label: "LinkedIn"
+        },
+        email: {
+          url: "mailto:aemooooon@gmail.com",
+          label: "邮箱"
+        }
+      }
     },
     ui: {
       language: "语言",
@@ -857,12 +828,26 @@ export const useAppStore = create(
       // 项目数据 for card view
       projects: [
         {
+          "type": "Front End",
+          "title": "Front End Developer",
+          "name": "Hua's Portfolio",
+          "description": {
+            "en": "A sophisticated personal portfolio website built with cutting-edge web technologies to showcase professional experience and technical expertise. Developed using React 18 with modern hooks, Vite for optimized build performance, and Zustand for efficient state management. Features an immersive 3D animated cube opening sequence using GSAP timeline animations, dynamic theme switching system with CSS custom properties, and multilingual support (English/Chinese) with persistent user preferences. The site includes interactive background effects, smooth section navigation with scroll animations, responsive design optimized for all devices, and comprehensive project showcases with detailed modal views. Implements modern development practices including component-based architecture, custom hooks for business logic, and optimized performance with code splitting and lazy loading.",
+            "zh": "一个使用前沿网络技术构建的精致个人作品集网站，用于展示专业经验和技术专长。使用React 18和现代hooks开发，Vite优化构建性能，Zustand进行高效状态管理。特色功能包括使用GSAP时间轴动画的沉浸式3D立方体开场序列、使用CSS自定义属性的动态主题切换系统，以及支持持久化用户偏好的多语言支持（英文/中文）。网站包含交互式背景效果、带滚动动画的平滑区块导航、针对所有设备优化的响应式设计，以及带有详细模态视图的综合项目展示。实现了现代开发实践，包括基于组件的架构、用于业务逻辑的自定义hooks，以及通过代码分割和懒加载优化的性能。"
+          },
+          "coordinates": [-43.5224316,172.5943064],
+          "location": "Christchurch, New Zealand",
+          "year": "2025",
+          "link": "https://www.hua.nz/",
+          "img": ["/hua.nz.1.png", "/hua.nz.2.jpg", "hua.nz.3.jpg", "/hua.nz.4.jpg"]
+        },
+        {
           "type": "Full Stack",
-          "title": "Software Engineer",
+          "title": "Full Stack Developer",
           "name": "Zespri International",
           "description": {
-            "en": "Built ETL pipelines and developed an interactive GIS-based web application for orchard sampling optimization.",
-            "zh": "构建了ETL数据管道并开发了基于GIS的交互式Web应用程序，用于果园采样优化。"
+            "en": "Developed a comprehensive orchard sampling optimization system for New Zealand's leading kiwifruit company. Built robust ETL pipelines using Python to process and integrate diverse agricultural datasets including orchard locations, fruit quality metrics, and sampling schedules. Created an interactive GIS-based web application with real-time data visualization, enabling efficient sampling route optimization and quality assessment workflows. The system significantly improved sampling efficiency by 30% through intelligent spatial analysis and automated scheduling algorithms, supporting Zespri's commitment to delivering premium kiwifruit to global markets. Implemented using modern web technologies including React frontend, Node.js backend, PostgreSQL database, and integrated mapping services for seamless user experience.",
+            "zh": "为新西兰领先的奇异果公司开发了综合性果园采样优化系统。使用Python构建强大的ETL数据管道，处理和集成包括果园位置、果实质量指标和采样计划在内的多样化农业数据集。创建了具有实时数据可视化功能的交互式GIS网络应用程序，实现高效的采样路线优化和质量评估工作流程。该系统通过智能空间分析和自动化调度算法将采样效率显著提高了30%，支持Zespri向全球市场提供优质奇异果的承诺。使用现代网络技术实现，包括React前端、Node.js后端、PostgreSQL数据库，以及集成的地图服务以提供无缝的用户体验。"
           },
           "coordinates": [-37.7866, 176.4416],
           "location": "Bay of Plenty, New Zealand",
@@ -871,8 +856,8 @@ export const useAppStore = create(
           "img": "/zespri_poster.png"
         },
         {
-          "type": "Full Stack",
-          "title": "Software Engineer",
+          "type": "Front End",
+          "title": "Front End Developer",
           "name": "Realibox",
           "description": "Developed and maintained the central hub for Realibox’s 3D assets, using React with a WebGL-based library for the frontend and Node.js/Python for the backend. Implemented CI/CD pipelines using GitLab for code integration and deployment. Worked in an Agile environment, collaborating closely with PMs, QAs, and Designers to ensure feature delivery aligned with requirements.",
           "coordinates": [22.9951158, 113.3335372],
@@ -883,7 +868,7 @@ export const useAppStore = create(
         },
         {
           "type": "Full Stack",
-          "title": "Full Stack Developer",  
+          "title": "Full Stack Developer",
           "name": "Real-time Air Quality Index Publish Platform",
           "description": {
             "en": "Developed a real-time Air Quality Index dashboard for a population of 5 million, involving an ETL workflow to extract XML data from a third-party Web service on schedule, transform it into structured objects, and load it into a MySQL database. The backend, built with Java Spring Boot, provided RESTful APIs for data access, while the front end, developed using React and EChart, visualized AQI trends and geographic distributions through interactive and dynamic charts.",
@@ -896,7 +881,7 @@ export const useAppStore = create(
           "img": ["/aqi.jpg", "AQI1.webp", "AQI2.webp", "AQI3.jpg", "AQI4.jpg", "AQI5.jpg"]
         },
         {
-          "type": "VR/360°",
+          "type": "WebGL/3D",
           "title": "Interactive 360° Virtual Tour Platform",
           "name": "Real Estate VR Solutions",
           "description": {
@@ -918,7 +903,7 @@ export const useAppStore = create(
         {
           "type": "Website",
           "title": "Corporate Website Development Platform",
-          "name": "企业网站开发平台",
+          "name": "Enterprises & organizations official website",
           "description": {
             "en": "Comprehensive corporate website development solution serving government agencies, healthcare institutions, tourism bureaus, and private enterprises. Built using CMS platforms with custom database architecture, responsive UI implementation from design mockups, and full deployment management across multiple production servers.",
             "zh": "为政府机构、医疗机构、旅游局和私营企业提供的综合性企业网站开发解决方案。使用CMS平台构建，具有定制数据库架构，从设计稿实现响应式UI，并在多个生产服务器上进行全面的部署管理。"
@@ -972,12 +957,12 @@ export const useAppStore = create(
           ]
         },
         {
-          "type": "Mobile App",
+          "type": "Mobile Apps",
           "title": "FitsGo",
           "name": "Mobile App",
           "description": {
-            "en": "This is a mobile application that aims to help get people to start exercising. This App is a cross-platform application which runs both of Android and IOS. It is built using React-Native and Google Firebase real-time database.",
-            "zh": "这是一个旨在帮助人们开始锻炼的移动应用程序。这个应用是一个跨平台应用，可以在Android和iOS上运行。使用React-Native和Google Firebase实时数据库构建。"
+            "en": "A comprehensive fitness tracking mobile application designed to encourage people to start exercising by providing interactive map-based workout experiences. Built as a cross-platform app using React Native and Firebase, FitsGo allows users to select exercise routes from nearby points of interest, track their workouts (running, walking, cycling) with real-time GPS monitoring, and earn badges for visiting locations. Features include user authentication, profile management with weight/age tracking, real-time calorie calculation based on MET values, workout history with detailed statistics, and social elements for future friend connectivity and weekly challenges.",
+            "zh": "一个综合性健身追踪移动应用程序，旨在通过提供基于地图的交互式锻炼体验来鼓励人们开始锻炼。使用React Native和Firebase构建的跨平台应用，FitsGo允许用户从附近的兴趣点选择锻炼路线，通过实时GPS监控跟踪锻炼（跑步、步行、骑行），并通过访问位置获得徽章。功能包括用户认证、带有体重/年龄跟踪的个人资料管理、基于MET值的实时卡路里计算、带有详细统计的锻炼历史，以及未来朋友连接和每周挑战的社交元素。"
           },
           "coordinates": [-45.8750186, 170.4973482],
           "location": "Dunedin, New Zealand",
@@ -985,13 +970,27 @@ export const useAppStore = create(
           "link": "https://github.com/aemooooon/FitsGo",
           "img": ["/fitsgo.gif", "fitsgo-team.jpg"]
         },
+                {
+          "type": "Mobile Apps",
+          "title": "Travel Assistant",
+          "name": "Mobile App",
+          "description": {
+            "en": "An Android-based travel companion application built with Kotlin and Room Database, designed to help travelers explore unfamiliar countries with confidence. The app features interactive Google Maps integration with clustered location markers, country selection dropdown, real-time location services, and multilingual phrase translation using Yandex API. Built using modern Android architecture components including ViewModel, LiveData, Coroutines, and View/Data Binding, with comprehensive documentation generated using Dokka and UI testing implemented with Espresso. The application provides curated lists of top-rated attractions and landmarks for each country, complete with coordinates and detailed information.",
+            "zh": "一个基于Android的旅行伴侣应用程序，使用Kotlin和Room数据库构建，旨在帮助旅行者自信地探索陌生的国家。该应用程序具有与聚类位置标记的交互式Google Maps集成、国家选择下拉菜单、实时位置服务，以及使用Yandex API的多语言短语翻译功能。使用现代Android架构组件构建，包括ViewModel、LiveData、协程和视图/数据绑定，使用Dokka生成全面的文档，并使用Espresso实现UI测试。该应用程序为每个国家提供精选的顶级景点和地标列表，包含坐标和详细信息。"
+          },
+          "coordinates": [-45.8750186, 170.4973482],
+          "location": "Dunedin, New Zealand",
+          "year": "2019",
+          "link": "https://github.com/aemooooon/Travel-Assistant",
+          "img": ["/TravelAssistant.jpg"]
+        },
         {
           "type": "Full Stack",
           "title": "ECAN Data Pipeline",
           "name": "University of Canterbury",
           "description": {
-            "en": "Developed a system to aggregate data from over 20 sources, then centralized it into a central database. Web API is provided to the front end, enabling analyses and visualizations: Collect more than 20 people's data from the AWS EC2. Built data pipelines using Apache Airfow to automate ETL processes. Stored data in a PostgreSQL database on AWS RDS. Developed a Node.js API with Swagger documentation to serve endpoints. Implemented Python Streamlit and R Shiny dashboard to visualise data.",
-            "zh": "开发了一个系统，用于聚合来自20多个数据源的数据，然后将其集中到中央数据库中。为前端提供Web API，支持分析和可视化：从AWS EC2收集20多人的数据。使用Apache Airflow构建数据管道以自动化ETL流程。在AWS RDS上的PostgreSQL数据库中存储数据。开发了带有Swagger文档的Node.js API来提供端点服务。实现了Python Streamlit和R Shiny仪表板以可视化数据。"
+            "en": "A comprehensive data engineering project that demonstrates advanced ETL pipeline architecture and microservices design. As a key contributor to the DATA472 Central Collection Team, developed multiple interconnected systems including: a central data collection service using Apache Airflow with automated CRON job scheduling to aggregate data from over 20 student sources; a Node.js/Express Web API service with Swagger documentation providing endpoints for data visualization; PostgreSQL database deployment on AWS RDS for centralized data storage; and interactive dashboards using Python Streamlit and R Shiny for data analysis. The project showcases modern data engineering practices including DAGs (Directed Acyclic Graphs), microservice architecture, cloud deployment on AWS EC2, and collaborative team-based data collection workflows.",
+            "zh": "一个综合性数据工程项目，展示了先进的ETL管道架构和微服务设计。作为DATA472中央收集团队的关键贡献者，开发了多个相互连接的系统，包括：使用Apache Airflow的中央数据收集服务，具有自动化CRON作业调度，聚合来自20多个学生数据源的数据；带有Swagger文档的Node.js/Express Web API服务，提供数据可视化端点；在AWS RDS上部署PostgreSQL数据库进行集中数据存储；以及使用Python Streamlit和R Shiny的交互式仪表板进行数据分析。该项目展示了现代数据工程实践，包括DAGs（有向无环图）、微服务架构、AWS EC2云部署和基于团队的协作数据收集工作流程。"
           },
           "coordinates": [-43.5357406, 172.6358119],
           "location": "Christchurch, New Zealand",
@@ -1000,10 +999,13 @@ export const useAppStore = create(
           "img": ["/data472/472.png", "/data472/af01.jpg", "/data472/datapipeline.png", "/data472/FuelPriceData.jpg", "/data472/GasStationData.jpg", "/data472/ProjectManagement.jpg", "/data472/services.png", "/data472/v1.gif", "/data472/v2.gif", "/data472/", "/data472/WebApiResponse.jpg",]
         },
         {
-          "type": "activity",
+          "type": "Activity",
           "title": "Assisted IT Meetups",
           "name": "CITANZ CHCH Volunteer",
-          "description": "Assisted in planning and managing IT community meetups once a month.",
+          "description": {
+            "en": "Active volunteer contributor to CITANZ (Computing and Information Technology Association of New Zealand) Christchurch chapter, facilitating monthly IT community meetups that bring together professionals, students, and technology enthusiasts. Serve as both speaker and engaged listener, sharing technical expertise on software development, data engineering, and emerging technologies while learning from diverse industry perspectives. Actively mentor newcomers to the tech industry, providing guidance on career development, technical skills, and industry best practices. Foster collaborative learning environments through organizing workshops, panel discussions, and networking sessions that strengthen the local tech community. Contribute to knowledge exchange initiatives by facilitating discussions on current technology trends, helping members solve technical challenges, and connecting professionals across different specializations. This volunteer work exemplifies the spirit of giving back to the community while continuously growing through peer learning and mentorship opportunities.",
+            "zh": "作为新西兰计算机和信息技术协会(CITANZ)基督城分会的积极志愿者贡献者，协助举办月度IT社区聚会，汇聚专业人士、学生和技术爱好者。既担任演讲者又是积极的倾听者，分享软件开发、数据工程和新兴技术方面的专业知识，同时从多元化的行业视角中学习。积极指导技术行业新人，在职业发展、技术技能和行业最佳实践方面提供指导。通过组织研讨会、小组讨论和网络交流会，营造协作学习环境，加强本地技术社区建设。通过促进当前技术趋势讨论、帮助成员解决技术挑战、连接不同专业领域的专业人士，为知识交流倡议做出贡献。这项志愿工作体现了回馈社区的精神，同时通过同伴学习和导师机会持续成长。"
+          },
           "coordinates": [-43.5828903, 172.5695089],
           "location": "Halswell Library, Christchurch",
           "year": "2024-2025",
@@ -1011,7 +1013,7 @@ export const useAppStore = create(
           "img": ["cita-02.jpg", "cita-01.jpg", "cita-04.jpg", "cita-03.jpg", "cita-05.jpg"]
         },
         {
-          "type": "activity",
+          "type": "Activity",
           "title": "Save Kiwi",
           "name": "AI Hackathon 2024",
           "description": {
@@ -1682,7 +1684,7 @@ export const useAppStore = create(
       },
 
       getAllLocations: () => {
-        const {locations} = get();
+        const { locations } = get();
         return locations;
       },
 

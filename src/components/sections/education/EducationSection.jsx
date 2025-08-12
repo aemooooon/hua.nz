@@ -280,6 +280,11 @@ const EducationSection = ({ language }) => {
                                                             backgroundSize: "cover",
                                                             backgroundPosition: "center",
                                                         }}
+                                                        onClick={() => {
+                                                            if (project.githubUrl) {
+                                                                window.open(project.githubUrl, '_blank', 'noopener,noreferrer');
+                                                            }
+                                                        }}
                                                     >
                                                         {/* 图片覆盖层 */}
                                                         <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent"></div>

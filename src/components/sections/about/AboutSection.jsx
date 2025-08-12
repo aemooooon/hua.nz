@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import imageSrc from '../../../data/hua_icon_base64';
 import hoverImageSrc from '../../../assets/images/hua_500w1.jpg';
 import { useAppStore } from '../../../store/useAppStore';
-import { ThemeButton } from '../../ui/ThemeComponents';
 import '../../ui/ShineCard.css'; // 导入光影效果
 
 const EffectAvatar = lazy(() => import('../../background/EffectAvatar'));
@@ -14,6 +13,27 @@ const AboutSection = ({ language = 'en' }) => {
     // 获取个人陈述内容
     const statementPage = content.about.pages.find(page => page.id === 'statement');
     const { paragraphs } = statementPage?.content || { paragraphs: [] };
+
+    // 解析 greeting 为三个部分：问候语、连接词、姓名
+    const parseGreeting = () => {
+        if (language === 'zh') {
+            // 中文：你好，我是王华
+            return {
+                greeting: "你好",
+                connector: "，我是",
+                name: "王华"
+            };
+        } else {
+            // 英文：Kia ora, I'm Hua Wang
+            return {
+                greeting: "Kia ora",
+                connector: "I'm",
+                name: "Hua Wang"
+            };
+        }
+    };
+
+    const { greeting: greetingPart, connector, name } = parseGreeting();
 
     // 优化：延迟渲染 Avatar 组件以提升 LCP
     const [showAvatar, setShowAvatar] = useState(false);
@@ -69,7 +89,7 @@ const AboutSection = ({ language = 'en' }) => {
                                                     filter: 'drop-shadow(0 0 8px var(--theme-primary))'
                                                 }}
                                             >
-                                                Kia ora
+                                                {greetingPart}
                                             </span>
                                             <span 
                                                 style={{ 
@@ -82,7 +102,7 @@ const AboutSection = ({ language = 'en' }) => {
                                                     verticalAlign: 'baseline'
                                                 }}
                                             >
-                                                I&apos;m
+                                                {connector}
                                             </span>
                                             <span 
                                                 style={{ 
@@ -96,7 +116,7 @@ const AboutSection = ({ language = 'en' }) => {
                                                     textShadow: '0 0 8px rgba(255, 255, 255, 0.5)' // 使用白色文本阴影替代主题色滤镜
                                                 }}
                                             >
-                                                Hua Wang
+                                                {name}
                                             </span>
                                         </div>
                                     </div>
@@ -112,21 +132,18 @@ const AboutSection = ({ language = 'en' }) => {
                                 
                                 {/* Resume 链接 */}
                                 <div className="resume-section flex items-center justify-end space-x-4">
-                                    <ThemeButton
-                                        as="a"
-                                        href="/Hua_Wang_Full_Stack_Engineer.pdf" 
+                                    <a
+                                        href="/Hua_Wang_Full_Stack_Developer.pdf" 
                                         target="_blank" 
                                         rel="noopener noreferrer"
-                                        download="Hua_Wang_Full_Stack_Engineer.pdf"
-                                        variant="secondary" // 使用secondary变体减少主题色使用
-                                        className="font-medium transition-all duration-300 hover:shadow-lg"
+                                        className="theme-button font-medium rounded-lg transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-theme-primary/50 backdrop-blur-sm bg-theme-surface border border-theme-border-neutral text-theme-text-primary hover:bg-theme-surface-elevated px-4 py-2 text-base hover:shadow-lg inline-flex items-center justify-center"
                                         style={{ 
                                             fontFamily: 'Figtree, sans-serif', 
                                             fontWeight: '500'
                                         }}
                                     >
                                         {language === 'en' ? 'Resume' : '简历'}
-                                    </ThemeButton>
+                                    </a>
                                 </div>
                             </div>
                             </div>
