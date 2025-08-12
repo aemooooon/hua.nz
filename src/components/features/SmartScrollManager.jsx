@@ -13,7 +13,7 @@
  * - 懒加载section组件
  */
 
-import { useEffect, useCallback, useRef, useState } from 'react';
+import { useEffect, useCallback, useRef, useState, useMemo } from 'react';
 import { useAppStore } from '../../store/useAppStore';
 import BackgroundCanvas from '../background/BackgroundCanvas';
 import '../../styles/SmartScroll.css';
@@ -73,30 +73,30 @@ const SmartScrollManager = () => {
         window.dispatchEvent(bounceEvent);
     }, [isBouncing, bounceDirection]);
 
-    const sectionComponents = {
+    const sectionComponents = useMemo(() => ({
         home: HomeSection,
         about: AboutSection,
         projects: ProjectSection,
         gallery: GallerySection,
         education: EducationSection,
         contact: ContactSection
-    };
+    }), []);
 
     // 检测内容溢出并设置滚动模式
     const checkContentOverflow = useCallback(() => {
         if (!contentRef.current) return;
         
         const container = contentRef.current;
-        container.offsetHeight; // 触发重排
         
-        const isOverflowing = container.scrollHeight > container.clientHeight + 10;
+        // 使用更可靠的方式检测溢出，确保首次检测准确性
+        const containerRect = container.getBoundingClientRect();
+        const isOverflowing = container.scrollHeight > containerRect.height + 10;
+        
+        // 确保状态始终得到正确更新，特别是首次进入section时
         setIsContentOverflowing(isOverflowing);
         
-        if (isHomePage) {
-            setScrollMode('slide');
-        } else {
-            setScrollMode(isOverflowing ? 'content' : 'slide');
-        }
+        const newMode = isHomePage ? 'slide' : (isOverflowing ? 'content' : 'slide');
+        setScrollMode(newMode);
     }, [isHomePage]);
 
     // iOS风格回弹动画
@@ -133,13 +133,14 @@ const SmartScrollManager = () => {
         }
         
         bounceTimerRef.current = setTimeout(() => {
+            // 使用 ref 避免闭包问题，减少依赖
             if (isPreviewingScroll && scrollAccumulatorRef.current < SCROLL_THRESHOLD) {
                 setIsPreviewingScroll(false);
                 setPreviewOffset(0);
                 scrollAccumulatorRef.current = 0;
             }
         }, 150);
-    }, [isPreviewingScroll]);
+    }, [isPreviewingScroll, SCROLL_THRESHOLD]);
 
     // 滚动预览处理
     const handleScrollPreview = useCallback((event) => {
@@ -235,12 +236,10 @@ const SmartScrollManager = () => {
                     if (contentRef.current) {
                         const maxScrollTop = contentRef.current.scrollHeight - contentRef.current.clientHeight;
                         contentRef.current.scrollTop = maxScrollTop;
-                        contentRef.current.offsetHeight;
                     }
                 });
             } else {
                 contentRef.current.scrollTop = 0;
-                contentRef.current.offsetHeight;
             }
         }
     }, [currentSectionConfig, isContentOverflowing, sectionScrollPositions]);
@@ -333,19 +332,24 @@ const SmartScrollManager = () => {
         
         const deltaY = Math.abs(event.deltaY);
         scrollAccumulatorRef.current += deltaY;
-        // 记录滚动位置
+        // 记录滚动位置 - 优化对象创建
         const container = contentRef.current;
         if (container && scrollMode === 'content' && isContentOverflowing) {
             const sectionId = currentSectionConfig?.id;
-            const scrollTop = container.scrollTop;
-            const maxScrollTop = container.scrollHeight - container.clientHeight;
-            const scrollPosition = scrollTop >= maxScrollTop - 10 ? 'bottom' : 
-                                 scrollTop <= 10 ? 'top' : 'middle';
-            
-            setSectionScrollPositions(prev => ({
-                ...prev,
-                [sectionId]: scrollPosition
-            }));
+            if (sectionId) {
+                const scrollTop = container.scrollTop;
+                const maxScrollTop = container.scrollHeight - container.clientHeight;
+                const scrollPosition = scrollTop >= maxScrollTop - 10 ? 'bottom' : 
+                                     scrollTop <= 10 ? 'top' : 'middle';
+                
+                // 只在位置真正改变时更新状态
+                if (sectionScrollPositions[sectionId] !== scrollPosition) {
+                    setSectionScrollPositions(prev => ({
+                        ...prev,
+                        [sectionId]: scrollPosition
+                    }));
+                }
+            }
         }
         
         if (scrollMode !== 'content') {
@@ -374,7 +378,7 @@ const SmartScrollManager = () => {
             navigatePrev();
         }
     }, [isScrolling, isProjectModalOpen, scrollMode, isContentOverflowing, isHomePage, currentSection, sections.length, 
-        navigateNext, navigatePrev, currentSectionConfig, isPreviewingScroll,
+        navigateNext, navigatePrev, currentSectionConfig, isPreviewingScroll, sectionScrollPositions,
         setSectionScrollPositions, setIsPreviewingScroll, setPreviewOffset, triggerBounceAnimation, handleScrollPreview, triggerPreviewBounceBack]);
 
     // 键盘事件处理
@@ -478,35 +482,54 @@ const SmartScrollManager = () => {
             clearTimeout(bounceTimerRef.current);
         }
         
+        // 确保在状态重置后立即检测内容溢出
         const resetTimer = setTimeout(() => {
             resetScrollState();
+            // 在重置后立即检测，确保滚动模式正确设置
+            checkContentOverflow();
         }, 50);
         
         return () => {
             clearTimeout(resetTimer);
         };
-    }, [currentSection, resetScrollState]);
+    }, [currentSection, resetScrollState, checkContentOverflow]);
 
-    // 监听内容变化，检测溢出
+    // 监听内容变化，检测溢出 - 确保首次进入section时正确检测
     useEffect(() => {
+        // 立即检测一次
         checkContentOverflow();
         
+        // 使用多次检测确保新内容完全渲染后的准确检测
         const checkTimer1 = setTimeout(() => {
             checkContentOverflow();
-        }, 150);
+        }, 50);
         
         const checkTimer2 = setTimeout(() => {
             checkContentOverflow();
-        }, 500);
+        }, 150);
         
         const checkTimer3 = setTimeout(() => {
             checkContentOverflow();
-        }, 1000);
-
+        }, 300);
+        
+        // ResizeObserver 用于后续的动态检测
+        let resizeObserver;
+        if (contentRef.current && window.ResizeObserver) {
+            resizeObserver = new ResizeObserver(() => {
+                setTimeout(() => {
+                    checkContentOverflow();
+                }, 50);
+            });
+            resizeObserver.observe(contentRef.current);
+        }
+        
         return () => {
             clearTimeout(checkTimer1);
             clearTimeout(checkTimer2);
             clearTimeout(checkTimer3);
+            if (resizeObserver) {
+                resizeObserver.disconnect();
+            }
         };
     }, [currentSection, checkContentOverflow]);
 
@@ -514,8 +537,13 @@ const SmartScrollManager = () => {
     useEffect(() => {
         const container = containerRef.current;
         
+        // 节流优化的 resize 处理器
+        let resizeTimer;
         const handleResize = () => {
-            setTimeout(() => {
+            if (resizeTimer) {
+                clearTimeout(resizeTimer);
+            }
+            resizeTimer = setTimeout(() => {
                 checkContentOverflow();
             }, 100);
         };
@@ -532,6 +560,9 @@ const SmartScrollManager = () => {
                 
                 if (bounceTimerRef.current) {
                     clearTimeout(bounceTimerRef.current);
+                }
+                if (resizeTimer) {
+                    clearTimeout(resizeTimer);
                 }
             };
         }
