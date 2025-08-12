@@ -182,17 +182,57 @@ const ProjectDetail = ({ project = null, isOpen, onClose }) => {
                 <h4 className="text-theme-text-primary font-semibold">
                   {language === 'en' ? subProject.name : (subProject.nameZh || subProject.name)}
                 </h4>
-                {subProject.link && (
-                  <a
-                    href={subProject.link}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-theme-secondary hover:text-theme-primary transition-colors"
-                    style={{ cursor: 'pointer' }}
-                  >
-                    <ExternalLink className="w-4 h-4" />
-                  </a>
-                )}
+                <div className="flex gap-2">
+                  {/* 支持新的links结构 */}
+                  {subProject.links?.live && (
+                    <a
+                      href={subProject.links.live}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-theme-primary hover:text-theme-secondary transition-colors"
+                      style={{ cursor: 'pointer' }}
+                      title={projectText.liveDemo}
+                    >
+                      <ExternalLink className="w-4 h-4" />
+                    </a>
+                  )}
+                  {subProject.links?.official && (
+                    <a
+                      href={subProject.links.official}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-theme-secondary hover:text-theme-primary transition-colors"
+                      style={{ cursor: 'pointer' }}
+                      title={projectText.officialSite}
+                    >
+                      <ExternalLink className="w-4 h-4" />
+                    </a>
+                  )}
+                  {subProject.links?.github && (
+                    <a
+                      href={subProject.links.github}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-theme-success hover:text-theme-primary transition-colors"
+                      style={{ cursor: 'pointer' }}
+                      title={projectText.githubRepo}
+                    >
+                      <ExternalLink className="w-4 h-4" />
+                    </a>
+                  )}
+                  {/* 向后兼容旧的link结构 */}
+                  {subProject.link && !subProject.links && (
+                    <a
+                      href={subProject.link}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-theme-secondary hover:text-theme-primary transition-colors"
+                      style={{ cursor: 'pointer' }}
+                    >
+                      <ExternalLink className="w-4 h-4" />
+                    </a>
+                  )}
+                </div>
               </div>
               <p className="text-theme-text-secondary text-sm mb-3">{subProject.description}</p>
               {subProject.features && (
@@ -308,19 +348,81 @@ const ProjectDetail = ({ project = null, isOpen, onClose }) => {
                   <Calendar className="w-5 h-5 text-theme-success" />
                   <span className="text-sm font-medium">{project.year}</span>
                 </div>
-                {project.link && (
-                  <a
-                    href={project.link}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-3 text-theme-primary hover:text-theme-secondary transition-colors bg-theme-primary/10 hover:bg-theme-primary/20 p-4 rounded-lg border border-theme-primary/30"
-                    style={{ cursor: 'pointer' }}
-                  >
-                    <ExternalLink className="w-5 h-5" />
-                    <span className="text-sm font-medium">
-                      {projectText.detail.visitSite}
-                    </span>
-                  </a>
+                {/* 动态显示链接按钮 */}
+                {(project.links || project.link) && (
+                  <div className="flex flex-col gap-2">
+                    {project.links?.live && (
+                      <a
+                        href={project.links.live}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-3 text-theme-primary hover:text-theme-secondary transition-colors bg-theme-primary/10 hover:bg-theme-primary/20 p-3 rounded-lg border border-theme-primary/30"
+                        style={{ cursor: 'pointer' }}
+                      >
+                        <ExternalLink className="w-4 h-4" />
+                        <span className="text-xs font-medium">
+                          {projectText.liveDemo}
+                        </span>
+                      </a>
+                    )}
+                    {project.links?.company && (
+                      <a
+                        href={project.links.company}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-3 text-theme-secondary hover:text-theme-primary transition-colors bg-theme-secondary/10 hover:bg-theme-secondary/20 p-3 rounded-lg border border-theme-secondary/30"
+                        style={{ cursor: 'pointer' }}
+                      >
+                        <ExternalLink className="w-4 h-4" />
+                        <span className="text-xs font-medium">
+                          {projectText.officialSite}
+                        </span>
+                      </a>
+                    )}
+                    {project.links?.official && (
+                      <a
+                        href={project.links.official}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-3 text-theme-secondary hover:text-theme-primary transition-colors bg-theme-secondary/10 hover:bg-theme-secondary/20 p-3 rounded-lg border border-theme-secondary/30"
+                        style={{ cursor: 'pointer' }}
+                      >
+                        <ExternalLink className="w-4 h-4" />
+                        <span className="text-xs font-medium">
+                          {projectText.officialSite}
+                        </span>
+                      </a>
+                    )}
+                    {project.links?.github && (
+                      <a
+                        href={project.links.github}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-3 text-theme-success hover:text-theme-primary transition-colors bg-theme-success/10 hover:bg-theme-success/20 p-3 rounded-lg border border-theme-success/30"
+                        style={{ cursor: 'pointer' }}
+                      >
+                        <ExternalLink className="w-4 h-4" />
+                        <span className="text-xs font-medium">
+                          {projectText.githubRepo}
+                        </span>
+                      </a>
+                    )}
+                    {/* 向后兼容旧的link结构 */}
+                    {project.link && !project.links && (
+                      <a
+                        href={project.link}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-3 text-theme-primary hover:text-theme-secondary transition-colors bg-theme-primary/10 hover:bg-theme-primary/20 p-3 rounded-lg border border-theme-primary/30"
+                        style={{ cursor: 'pointer' }}
+                      >
+                        <ExternalLink className="w-4 h-4" />
+                        <span className="text-xs font-medium">
+                          {projectText.detail.visitSite}
+                        </span>
+                      </a>
+                    )}
+                  </div>
                 )}
               </div>
 

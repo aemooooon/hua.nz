@@ -130,7 +130,7 @@ const contentConfig = {
       subtitle: "Each project represents a unique challenge and learning journey",
       description: "From Full Stack Web Development to 3D immersive experiences, from computer science to data science, to computer graphics — explore the diverse technology and solutions. Language-agnostic, platform-independent, framework-flexible.",
       viewProject: "View Project",
-      learnMore: "Learn more →",
+      viewAction: "View",
       technologies: "Technologies",
       totalProjects: "Total Projects",
       exploreMap: "Map View",
@@ -138,6 +138,8 @@ const contentConfig = {
       showing: "Showing",
       viewDetails: "View Details",
       liveDemo: "Live Demo",
+      officialSite: "Official",
+      githubRepo: "GitHub",
       // 项目详情相关文本
       detail: {
         technologyStack: "Technology Stack",
@@ -484,7 +486,7 @@ const contentConfig = {
       subtitle: "每个项目都代表着独特的挑战和学习之旅",
       description: "从全栈Web开发到3D沉浸式体验，从计算机科学，计算机图形学，到数据科学 — 探索多样的技术与解决方案。语言无关，平台独立，框架灵活。",
       viewProject: "查看项目",
-      learnMore: "了解更多 →",
+      viewAction: "查看",
       technologies: "技术栈",
       totalProjects: "总项目数",
       exploreMap: "地图",
@@ -492,6 +494,8 @@ const contentConfig = {
       showing: "显示",
       viewDetails: "查看详情",
       liveDemo: "在线演示",
+      officialSite: "官方",
+      githubRepo: "源码",
       // 项目详情相关文本
       detail: {
         technologyStack: "技术栈",
@@ -835,10 +839,13 @@ export const useAppStore = create(
             "en": "A sophisticated personal portfolio website built with cutting-edge web technologies to showcase professional experience and technical expertise. Developed using React 18 with modern hooks, Vite for optimized build performance, and Zustand for efficient state management. Features an immersive 3D animated cube opening sequence using GSAP timeline animations, dynamic theme switching system with CSS custom properties, and multilingual support (English/Chinese) with persistent user preferences. The site includes interactive background effects, smooth section navigation with scroll animations, responsive design optimized for all devices, and comprehensive project showcases with detailed modal views. Implements modern development practices including component-based architecture, custom hooks for business logic, and optimized performance with code splitting and lazy loading.",
             "zh": "一个使用前沿网络技术构建的精致个人作品集网站，用于展示专业经验和技术专长。使用React 18和现代hooks开发，Vite优化构建性能，Zustand进行高效状态管理。特色功能包括使用GSAP时间轴动画的沉浸式3D立方体开场序列、使用CSS自定义属性的动态主题切换系统，以及支持持久化用户偏好的多语言支持（英文/中文）。网站包含交互式背景效果、带滚动动画的平滑区块导航、针对所有设备优化的响应式设计，以及带有详细模态视图的综合项目展示。实现了现代开发实践，包括基于组件的架构、用于业务逻辑的自定义hooks，以及通过代码分割和懒加载优化的性能。"
           },
-          "coordinates": [-43.5224316,172.5943064],
+          "coordinates": [-43.5224316, 172.5943064],
           "location": "Christchurch, New Zealand",
           "year": "2025",
-          "link": "https://www.hua.nz/",
+          "links": {
+            "live": "https://www.hua.nz/",
+            "github": "https://github.com/aemooooon/hua.nz"
+          },
           "img": ["/hua.nz.1.png", "/hua.nz.2.jpg", "hua.nz.3.jpg", "/hua.nz.4.jpg"]
         },
         {
@@ -852,7 +859,9 @@ export const useAppStore = create(
           "coordinates": [-37.7866, 176.4416],
           "location": "Bay of Plenty, New Zealand",
           "year": "2024-2025",
-          "link": "https://www.zespri.com",
+          "links": {
+            "official": "https://www.zespri.com"
+          },
           "img": "/zespri_poster.png"
         },
         {
@@ -863,7 +872,9 @@ export const useAppStore = create(
           "coordinates": [22.9951158, 113.3335372],
           "location": "Guangzhou, China",
           "year": "2021-2023",
-          "link": "https://hub.realibox.com/",
+          "links": {
+            "live": "https://hub.realibox.com/",
+          },
           "img": ["/realibox-00.jpg", "realibox-01.jpeg"]
         },
         {
@@ -877,11 +888,13 @@ export const useAppStore = create(
           "coordinates": [30.311395, 109.4795951],
           "location": "Enshi, Hubei, China",
           "year": "2020",
-          "link": "https://aqi.eseemc.cn/",
+          "links": {
+            "live": "https://aqi.eseemc.cn/",
+          },
           "img": ["/aqi.jpg", "AQI1.webp", "AQI2.webp", "AQI3.jpg", "AQI4.jpg", "AQI5.jpg"]
         },
         {
-          "type": "WebGL/3D",
+          "type": "WebGL",
           "title": "Interactive 360° Virtual Tour Platform",
           "name": "Real Estate VR Solutions",
           "description": {
@@ -891,14 +904,60 @@ export const useAppStore = create(
           "coordinates": [30.2888597, 109.4846285],
           "location": "Multiple locations across China",
           "year": "2020-2021",
-          "link": "",
           "img": ["/fhjy.jpg", "/changpingli.jpg", "/dalincheng.jpg", "/gyyh.jpg", "/htfxj.jpg", "/jhhy.jpg", "/jlw.jpg", "/jnyp.jpg", "/jxmm.jpg", "/jsjxmm.jpg", "/pzf.jpg", "/tf.jpg", "/tsyhy.jpg", "/wjsf.jpg", "/xcsd.jpg", "/ybhf.jpg", "/ysxc.jpg", "/zyyc.jpg"],
           "tech": ["JavaScript", "WebGL", "3D Libraries", "HTML5", "CSS3", "Responsive Design"],
           "stats": {
             "projects": 18,
             "locations": "8 provinces",
             "clients": "12 real estate developers"
-          }
+          },
+          "projects": [
+            {
+              "name": "Changpingli VR Tour",
+              "nameZh": "常平里虚拟看房",
+              "description": "Interactive 360° virtual tour for luxury residential development featuring multiple building views and interior spaces.",
+              "links": {
+                "live": ""
+              },
+              "img": "/changpingli.jpg"
+            },
+            {
+              "name": "Dalincheng Virtual Experience",
+              "nameZh": "大林城虚拟体验",
+              "description": "Comprehensive virtual tour system with interactive hotspots and seamless scene transitions for residential complex.",
+              "links": {
+                "live": ""
+              },
+              "img": "/dalincheng.jpg"
+            },
+            {
+              "name": "Guanyin Lakeside VR",
+              "nameZh": "观音湖畔虚拟现实",
+              "description": "Premium lakeside property virtual tour with outdoor landscape and interior showcase capabilities.",
+              "links": {
+                "live": ""
+              },
+              "img": "/gyyh.jpg"
+            },
+            {
+              "name": "Huatian International",
+              "nameZh": "华天国际",
+              "description": "High-end commercial and residential complex virtual tour with advanced navigation features.",
+              "links": {
+                "live": ""
+              },
+              "img": "/htfxj.jpg"
+            },
+            {
+              "name": "Jinhai Bay Villa",
+              "nameZh": "金海湾别墅",
+              "description": "Luxury villa development virtual tour featuring detailed room-by-room exploration and exterior views.",
+              "links": {
+                "live": ""
+              },
+              "img": "/jhhy.jpg"
+            }
+          ]
         },
         {
           "type": "Website",
@@ -926,7 +985,9 @@ export const useAppStore = create(
               "name": "Enshi Central Hospital",
               "nameZh": "恩施州中心医院",
               "description": "Comprehensive healthcare website with patient information management, appointment booking system, and medical department showcase. Implemented complex database structure for patient records and integrated with hospital management systems. Features include online registration, doctor profiles, medical news, and health education resources.",
-              "link": "https://www.es9e.cn/",
+              "links": {
+                "official": "https://www.es9e.cn/"
+              },
               "img": "/es9e.jpg",
               "features": ["Patient Management", "Online Appointments", "Medical Departments", "News System", "Health Education", "Doctor Profiles"]
             },
@@ -934,7 +995,9 @@ export const useAppStore = create(
               "name": "Tenglong Cave Official Website",
               "nameZh": "腾龙洞官方网站",
               "description": "Tourism attraction website featuring virtual tours, visitor information, booking system, and multilingual support. Integrated with payment gateways and visitor management systems. Includes interactive maps, weather information, and cultural heritage content.",
-              "link": "http://tenglongdong.net.cn/",
+              "links": {
+                "official": "http://tenglongdong.net.cn/"
+              },
               "img": "/tld.jpg",
               "features": ["Virtual Tours", "Online Booking", "Multilingual Support", "Payment Integration", "Interactive Maps", "Weather Info"]
             },
@@ -942,7 +1005,7 @@ export const useAppStore = create(
               "name": "Badong Tourism Bureau",
               "nameZh": "巴东县旅游局",
               "description": "Government tourism portal showcasing local attractions, travel guides, cultural information, and tourism statistics. Built with content management system for easy updates by bureau staff. Features comprehensive destination guides and event management system.",
-              "link": "",
+              "links": {},
               "img": "",
               "features": ["Tourism Information", "Cultural Heritage", "Travel Guides", "Event Management", "Statistics Dashboard", "Photo Gallery"]
             },
@@ -950,7 +1013,7 @@ export const useAppStore = create(
               "name": "Jinguo Tea Corporate Site",
               "nameZh": "金果茶叶企业网站",
               "description": "Corporate website for tea manufacturer featuring product catalog, company history, quality certifications, and e-commerce integration. Included inventory management and order processing systems with real-time stock updates and customer portal.",
-              "link": "",
+              "links": {},
               "img": "",
               "features": ["Product Catalog", "E-commerce", "Quality Certificates", "Order Management", "Inventory System", "Customer Portal"]
             }
@@ -967,10 +1030,12 @@ export const useAppStore = create(
           "coordinates": [-45.8750186, 170.4973482],
           "location": "Dunedin, New Zealand",
           "year": "2019",
-          "link": "https://github.com/aemooooon/FitsGo",
+                    "links": {
+            "github": "https://github.com/aemooooon/FitsGo"
+          },
           "img": ["/fitsgo.gif", "fitsgo-team.jpg"]
         },
-                {
+        {
           "type": "Mobile Apps",
           "title": "Travel Assistant",
           "name": "Mobile App",
@@ -981,7 +1046,9 @@ export const useAppStore = create(
           "coordinates": [-45.8750186, 170.4973482],
           "location": "Dunedin, New Zealand",
           "year": "2019",
-          "link": "https://github.com/aemooooon/Travel-Assistant",
+          "links": {
+            "github": "https://github.com/aemooooon/Travel-Assistant"
+          },
           "img": ["/TravelAssistant.jpg"]
         },
         {
@@ -995,7 +1062,9 @@ export const useAppStore = create(
           "coordinates": [-43.5357406, 172.6358119],
           "location": "Christchurch, New Zealand",
           "year": "2024",
-          "link": "https://github.com/aemooooon/DATA472-Individual-Project-Submission",
+          "links": {
+            "github": "https://github.com/aemooooon/DATA472-Individual-Project-Submission"
+          },
           "img": ["/data472/472.png", "/data472/af01.jpg", "/data472/datapipeline.png", "/data472/FuelPriceData.jpg", "/data472/GasStationData.jpg", "/data472/ProjectManagement.jpg", "/data472/services.png", "/data472/v1.gif", "/data472/v2.gif", "/data472/", "/data472/WebApiResponse.jpg",]
         },
         {
@@ -1009,7 +1078,9 @@ export const useAppStore = create(
           "coordinates": [-43.5828903, 172.5695089],
           "location": "Halswell Library, Christchurch",
           "year": "2024-2025",
-          "link": "https://www.cita.org.nz/",
+          "links": {
+            "official": "https://www.cita.org.nz/"
+          },
           "img": ["cita-02.jpg", "cita-01.jpg", "cita-04.jpg", "cita-03.jpg", "cita-05.jpg"]
         },
         {
@@ -1023,7 +1094,9 @@ export const useAppStore = create(
           "coordinates": [-43.5218726, 172.5674936],
           "location": "University of Canterbury, Christchurch",
           "year": "2024",
-          "link": "https://www.cita.org.nz/",
+          "links": {
+            "official": "https://aihackathon.nz/ai-hackathon-2024/"
+          },
           "img": ["/UC_F4.001.jpeg", "/UC_F4.002.jpeg", "f4.jpg"]
         }
       ],
@@ -1077,7 +1150,9 @@ export const useAppStore = create(
           "coordinates": [30.311395, 109.4795951],
           "location": "Enshi, Hubei, China",
           "year": "2020",
-          "link": "https://aqi.eseemc.cn/",
+          "links": {
+            "live": "https://aqi.eseemc.cn/"
+          },
           "img": ["/aqi.jpg", "AQI1.webp", "AQI2.webp", "AQI3.jpg", "AQI4.jpg", "AQI5.jpg"]
         },
         {

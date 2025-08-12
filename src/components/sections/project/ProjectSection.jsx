@@ -225,23 +225,9 @@ const ProjectSection = ({ language }) => {
                                         </div>
                                     </div>
                                 )}
-                                {/* 其他字段展示（如地点、年份、链接） */}
+                                {/* 其他字段展示（如地点，但不显示年份因为已在右上角） */}
                                 <div className="project-meta text-theme-text-muted">
                                     {project.location && <span>📍 {project.location}</span>}
-                                    {project.year && <span>📅 {project.year}</span>}
-                                    {project.link && (
-                                        <ThemeButton
-                                            as="a"
-                                            href={project.link}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            variant="ghost"
-                                            size="sm"
-                                            className="project-link"
-                                        >
-                                            {projectText.learnMore}
-                                        </ThemeButton>
-                                    )}
                                 </div>
                                 {/* 操作按钮 */}
                                 <div className="project-actions flex gap-2 mt-4">
@@ -253,20 +239,79 @@ const ProjectSection = ({ language }) => {
                                             setSelectedProject(project);
                                         }}
                                     >
-                                        {projectText.viewDetails}
+                                        {projectText.viewAction}
                                     </ThemeButton>
-                                    {project.link && (
-                                        <ThemeButton 
-                                            as="a" 
-                                            href={project.link}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            variant="ghost"
-                                            size="sm"
-                                            onClick={(e) => e.stopPropagation()}
-                                        >
-                                            {projectText.liveDemo}
-                                        </ThemeButton>
+                                    {/* 动态显示不同类型的链接按钮 */}
+                                    {(project.links || project.link) && (
+                                        <div className="flex gap-2">
+                                            {/* 新的links结构 */}
+                                            {project.links?.live && (
+                                                <ThemeButton 
+                                                    as="a" 
+                                                    href={project.links.live}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    variant="ghost"
+                                                    size="sm"
+                                                    onClick={(e) => e.stopPropagation()}
+                                                >
+                                                    {projectText.liveDemo}
+                                                </ThemeButton>
+                                            )}
+                                            {project.links?.company && (
+                                                <ThemeButton 
+                                                    as="a" 
+                                                    href={project.links.company}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    variant="ghost"
+                                                    size="sm"
+                                                    onClick={(e) => e.stopPropagation()}
+                                                >
+                                                    {projectText.officialSite}
+                                                </ThemeButton>
+                                            )}
+                                            {project.links?.official && (
+                                                <ThemeButton 
+                                                    as="a" 
+                                                    href={project.links.official}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    variant="ghost"
+                                                    size="sm"
+                                                    onClick={(e) => e.stopPropagation()}
+                                                >
+                                                    {projectText.officialSite}
+                                                </ThemeButton>
+                                            )}
+                                            {project.links?.github && (
+                                                <ThemeButton 
+                                                    as="a" 
+                                                    href={project.links.github}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    variant="ghost"
+                                                    size="sm"
+                                                    onClick={(e) => e.stopPropagation()}
+                                                >
+                                                    {projectText.githubRepo}
+                                                </ThemeButton>
+                                            )}
+                                            {/* 向后兼容旧的link结构 */}
+                                            {project.link && !project.links && (
+                                                <ThemeButton 
+                                                    as="a" 
+                                                    href={project.link}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    variant="ghost"
+                                                    size="sm"
+                                                    onClick={(e) => e.stopPropagation()}
+                                                >
+                                                    {projectText.liveDemo}
+                                                </ThemeButton>
+                                            )}
+                                        </div>
                                     )}
                                 </div>
                             </div>
