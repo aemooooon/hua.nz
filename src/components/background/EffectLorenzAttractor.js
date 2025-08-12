@@ -95,12 +95,12 @@ export class EffectLorenzAttractor {
         const renderPass = new RenderPass(this.scene, this.camera);
         this.composer.addPass(renderPass);
         
-        // 发光效果通道 - 优化为蓝色星星效果
+        // 发光效果通道 - 减少强度避免过度发光
         const bloomPass = new UnrealBloomPass(
             new THREE.Vector2(this.canvas.width, this.canvas.height),
-            1.6, // 增强发光强度，突出星星效果
-            0.9, // 增大发光半径，创造更柔和的光晕
-            0.5  // 稍微降低阈值，更多粒子发光
+            0.8, // 大幅降低发光强度，从1.6降到0.8
+            0.2, // 进一步减小发光半径
+            0.7  // 提高阈值，减少发光的粒子数量
         );
         this.composer.addPass(bloomPass);
         
@@ -223,9 +223,9 @@ export class EffectLorenzAttractor {
         window.addEventListener("resize", this.onResize.bind(this));
     }
 
-    // 创建粒子纹理 - 类似 Galaxy 示例的圆形发光纹理
+    // 创建粒子纹理 - 减小尺寸和透明度，避免过度发光
     createParticleTexture() {
-        const size = 32;
+        const size = 16; // 减小纹理尺寸，从32降到16
         const canvas = document.createElement('canvas');
         canvas.width = size;
         canvas.height = size;
@@ -233,15 +233,18 @@ export class EffectLorenzAttractor {
         const context = canvas.getContext('2d');
         const center = size / 2;
         
-        // 创建径向渐变
+        // 创建径向渐变 - 更快的衰减和更低的透明度
         const gradient = context.createRadialGradient(center, center, 0, center, center, center);
-        gradient.addColorStop(0, 'rgba(255, 255, 255, 1)');
-        gradient.addColorStop(0.2, 'rgba(255, 255, 255, 0.8)');
-        gradient.addColorStop(0.4, 'rgba(255, 255, 255, 0.4)');
+        gradient.addColorStop(0, 'rgba(255, 255, 255, 0.6)'); // 降低核心透明度从1到0.6
+        gradient.addColorStop(0.1, 'rgba(255, 255, 255, 0.3)'); // 更快衰减
+        gradient.addColorStop(0.3, 'rgba(255, 255, 255, 0.1)'); // 更快衰减
         gradient.addColorStop(1, 'rgba(255, 255, 255, 0)');
         
         context.fillStyle = gradient;
-        context.fillRect(0, 0, size, size);
+        // 使用更小的圆形路径
+        context.beginPath();
+        context.arc(center, center, center * 0.8, 0, Math.PI * 2); // 减小到80%大小
+        context.fill();
         
         this.particleTexture = new THREE.CanvasTexture(canvas);
     }
