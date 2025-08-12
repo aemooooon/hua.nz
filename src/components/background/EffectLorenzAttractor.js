@@ -98,9 +98,9 @@ export class EffectLorenzAttractor {
         // 发光效果通道 - 优化为蓝色星星效果
         const bloomPass = new UnrealBloomPass(
             new THREE.Vector2(this.canvas.width, this.canvas.height),
-            1.8, // 增强发光强度，突出星星效果
-            0.6, // 增大发光半径，创造更柔和的光晕
-            0.8  // 稍微降低阈值，更多粒子发光
+            1.6, // 增强发光强度，突出星星效果
+            0.9, // 增大发光半径，创造更柔和的光晕
+            0.5  // 稍微降低阈值，更多粒子发光
         );
         this.composer.addPass(bloomPass);
         

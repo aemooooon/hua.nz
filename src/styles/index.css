@@ -1224,8 +1224,8 @@ body {
 }
 
 .avatar-cube-alignment {
-    /* 向左偏移以与cube对齐 */
-    transform: translateX(-10%);
+    /* 头像现在在左侧，不需要额外偏移 */
+    transform: translateX(0);
 }
 
 .about-avatar-wrapper {
