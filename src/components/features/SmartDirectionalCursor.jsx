@@ -8,6 +8,7 @@ const SmartDirectionalCursor = () => {
     const [isHovering, setIsHovering] = useState(false);
     const [scrollIntensity, setScrollIntensity] = useState(0); // 滚动力度 0-1
     const [lastScrollTime, setLastScrollTime] = useState(0);
+    const [scrollDirection, setScrollDirection] = useState(null); // 'up' | 'down' | null
     
     const { currentSection, sections } = useAppStore();
     const animationFrameRef = useRef();
@@ -64,9 +65,10 @@ const SmartDirectionalCursor = () => {
         setDirection(getAvailableDirections());
     }, [getAvailableDirections]);
 
-    // 滚动力度检测 - 优化性能和响应速度
+    // 滚动力度检测 - 优化性能和响应速度，添加方向检测
     const handleWheelForce = useCallback((event) => {
         const force = Math.min(Math.abs(event.deltaY) / 80, 1); // 降低除数，提高灵敏度
+        const direction = event.deltaY > 0 ? 'down' : 'up'; // 检测滚动方向
         
         // 减少节流时间，提高响应速度
         const now = performance.now();
@@ -74,6 +76,7 @@ const SmartDirectionalCursor = () => {
         handleWheelForce.lastTime = now;
         
         setScrollIntensity(force);
+        setScrollDirection(direction);
         setLastScrollTime(now);
         
         // 清除之前的衰减定时器
@@ -84,6 +87,7 @@ const SmartDirectionalCursor = () => {
         // 减少衰减时间，更快响应
         scrollDecayTimerRef.current = setTimeout(() => {
             setScrollIntensity(0);
+            setScrollDirection(null);
         }, 200); // 从300ms减少到200ms，更快衰减
     }, []);
 
@@ -192,12 +196,12 @@ const SmartDirectionalCursor = () => {
         // 边界状态检测 - 使用简化的边界检测
         const boundaryState = isAtAbsoluteBoundary();
         
-        // 检测是否在绝对无法滚动的边界
+        // 检测是否在绝对无法滚动的边界 - 修复方向逻辑
         const shouldShowBoundaryWarning = (
-            // 向上滚动但已到达绝对顶部边界
-            (boundaryState.isTopBoundary && scrollIntensity > 0) ||
-            // 向下滚动但已到达绝对底部边界  
-            (boundaryState.isBottomBoundary && scrollIntensity > 0) ||
+            // 在首页向上滚动时显示红色（无效操作）
+            (boundaryState.isTopBoundary && scrollDirection === 'up' && scrollIntensity > 0) ||
+            // 在末尾页向下滚动时显示红色（无效操作）
+            (boundaryState.isBottomBoundary && scrollDirection === 'down' && scrollIntensity > 0) ||
             // 没有任何地方可以滚动
             (boundaryState.hasNowhereToGo && scrollIntensity > 0)
         );
