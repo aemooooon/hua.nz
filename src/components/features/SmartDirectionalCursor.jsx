@@ -1,21 +1,94 @@
+/**
+ * =====================================================================================
+ * SmartDirectionalCursor - 智能方向指示光标组件
+ * =====================================================================================
+ * 
+ * 【核心设计理念】
+ * 这是一个替代系统默认光标的智能导航助手，通过视觉化的方式实时指导用户
+ * 如何在单页应用（SPA）的不同section之间进行导航。
+ * 
+ * 【主要功能特性】
+ * 1. 🎯 方向指示：显示向上/向下/双向箭头，告知用户可用的导航方向
+ * 2. 🎨 颜色语义：绿色=可操作，红色=边界警告，白色=默认状态
+ * 3. 📊 实时反馈：根据鼠标滚轮力度显示0-100%的进度环和百分比
+ * 4. 🚨 智能边界检测：区分section级别和页面内容级别的滚动边界
+ * 5. 🎭 悬停交互：鼠标悬停时光标有微妙的视觉变化
+ * 
+ * 【视觉组成】
+ * - 外层圆环：显示滚动进度（0-100%）
+ * - 内层箭头：指示可用的导航方向
+ * - 中心数字：显示当前滚动强度百分比
+ * - 动态颜色：根据操作有效性改变颜色
+ * 
+ * 【性能优化报告】
+ * ⚡ 渲染性能：60fps动画 + 硬件加速（transform: translate3d）
+ * ⚡ 交互响应：120fps事件节流 + passive事件监听器
+ * ⚡ 内存优化：DOM缓存 + 完整清理机制 + 引用管理
+ * ⚡ 更新频率：智能状态更新，减少不必要的重渲染
+ * ⚡ 浏览器友好：避免layout/reflow，使用transform和opacity
+ * 
+ * 【使用场景】
+ * 适用于具有多个section的全屏滚动网站，如作品集、产品展示页等
+ */
+
 import { useEffect, useState, useCallback, useRef } from 'react';
 import { useAppStore } from '../../store/useAppStore';
 
 const SmartDirectionalCursor = () => {
-    const [cursorPosition, setCursorPosition] = useState({ x: 0, y: 0 });
-    const [isVisible, setIsVisible] = useState(false);
-    const [direction, setDirection] = useState('none'); // 'up', 'down', 'both', 'none'
-    const [isHovering, setIsHovering] = useState(false);
-    const [scrollIntensity, setScrollIntensity] = useState(0); // 滚动力度 0-1
-    const [lastScrollTime, setLastScrollTime] = useState(0);
-    const [scrollDirection, setScrollDirection] = useState(null); // 'up' | 'down' | null
+    // ==================== 状态管理 ====================
     
+    /** 光标在屏幕上的实时坐标位置 */
+    const [cursorPosition, setCursorPosition] = useState({ x: 0, y: 0 });
+    
+    /** 光标是否可见（鼠标进入页面时显示） */
+    const [isVisible, setIsVisible] = useState(false);
+    
+    /** 当前可用的导航方向：'up'|'down'|'both'|'none' */
+    const [direction, setDirection] = useState('none');
+    
+    /** 鼠标是否悬停在页面上（影响光标的视觉效果） */
+    const [isHovering, setIsHovering] = useState(false);
+    
+    /** 滚轮滚动的力度强度，范围0-1，用于显示进度环 */
+    const [scrollIntensity, setScrollIntensity] = useState(0);
+    
+    /** 最后一次滚动的时间戳，用于实现滚动强度的自然衰减 */
+    const [lastScrollTime, setLastScrollTime] = useState(0);
+    
+    /** 当前滚动方向：'up'|'down'|null，用于精确的边界检测 */
+    const [scrollDirection, setScrollDirection] = useState(null);
+    
+    // ==================== 外部状态和引用 ====================
+    
+    /** 从全局状态获取当前section索引和所有sections数组 */
     const { currentSection, sections } = useAppStore();
+    
+    /** 动画帧的引用，用于性能优化的循环动画 */
     const animationFrameRef = useRef();
+    
+    /** 光晕强度的引用，用于平滑的悬停动画 */
     const glowIntensityRef = useRef(0);
+    
+    /** 滚动衰减定时器的引用，用于清理定时器 */
     const scrollDecayTimerRef = useRef();
+    
+    /** 缓存DOM容器引用，避免重复查询 */
+    const containerRef = useRef(null);
 
-    // 根据当前位置判断可用的方向和边界状态
+    // ==================== 核心逻辑函数 ====================
+
+    /**
+     * 🧭 方向判断逻辑
+     * 根据当前section的位置，判断用户可以导航到哪些方向
+     * 
+     * @returns {'up'|'down'|'both'|'none'} 可用的导航方向
+     * 
+     * 逻辑说明：
+     * - 如果不在第一页：可以向上导航
+     * - 如果不在最后一页：可以向下导航
+     * - 两个条件都满足：显示双向箭头
+     * - 两个条件都不满足：无导航方向
+     */
     const getAvailableDirections = useCallback(() => {
         const canGoUp = currentSection > 0;
         const canGoDown = currentSection < sections.length - 1;
@@ -26,13 +99,35 @@ const SmartDirectionalCursor = () => {
         return 'none';
     }, [currentSection, sections.length]);
 
-    // 简化的边界检测 - 只检测真正无法滚动的绝对边界
+    /**
+     * 🚨 边界检测系统 - 性能优化版本
+     * 使用缓存的DOM引用，避免重复查询
+     * 
+     * 两层滚动检测：
+     * 1. Section级别：是否还有上一页/下一页section
+     * 2. 内容级别：当前页面内容是否还可以滚动
+     * 
+     * @returns {Object} 边界状态对象
+     * @returns {boolean} isTopBoundary - 是否在顶部绝对边界
+     * @returns {boolean} isBottomBoundary - 是否在底部绝对边界  
+     * @returns {boolean} hasNowhereToGo - 是否完全无处可去
+     * @returns {boolean} hasContentToScroll - 当前页面是否有内容可滚动
+     * 
+     * 边界判断标准：
+     * - 顶部边界：在第一个section且内容已到顶部
+     * - 底部边界：在最后一个section且内容已到底部
+     * - 完全边界：只有一个section且内容无法滚动
+     */
     const isAtAbsoluteBoundary = useCallback(() => {
         const canGoUp = currentSection > 0;
         const canGoDown = currentSection < sections.length - 1;
         
-        // 检测当前页面的内容滚动状态
-        const currentContainer = document.querySelector('.scroll-mode-auto');
+        // 性能优化：缓存DOM容器引用
+        if (!containerRef.current) {
+            containerRef.current = document.querySelector('.scroll-mode-auto');
+        }
+        
+        const currentContainer = containerRef.current;
         let hasContentToScroll = false;
         let atContentTop = true;
         let atContentBottom = true;
@@ -43,11 +138,7 @@ const SmartDirectionalCursor = () => {
             atContentBottom = currentContainer.scrollTop >= (currentContainer.scrollHeight - currentContainer.clientHeight - 5);
         }
         
-        // 只有在以下情况才被认为是绝对边界：
-        // 1. 在第一页且内容到达顶部或没有内容可滚动，无法继续向上
-        // 2. 在最后一页且内容到达底部或没有内容可滚动，无法继续向下
-        // 3. 只有一页且没有内容可滚动
-        
+        // 边界状态计算
         const isTopBoundary = !canGoUp && (!hasContentToScroll || atContentTop);
         const isBottomBoundary = !canGoDown && (!hasContentToScroll || atContentBottom);
         const hasNowhereToGo = !canGoUp && !canGoDown && !hasContentToScroll;
@@ -60,42 +151,62 @@ const SmartDirectionalCursor = () => {
         };
     }, [currentSection, sections.length]);
 
-    // 更新方向状态
+    // ==================== 副作用和事件处理 ====================
+
+    /**
+     * 📊 方向状态同步
+     * 当currentSection发生变化时，自动更新可用的导航方向
+     */
     useEffect(() => {
         setDirection(getAvailableDirections());
     }, [getAvailableDirections]);
 
-    // 滚动力度检测 - 优化性能和响应速度，添加方向检测
+    /**
+     * 🎡 滚轮事件处理器
+     * 检测用户的滚轮操作，计算滚动强度和方向
+     * 
+     * 性能优化：
+     * - 8ms节流限制，达到120fps响应速度
+     * - 200ms自动衰减，避免长时间显示进度
+     * 
+     * @param {WheelEvent} event 滚轮事件对象
+     */
     const handleWheelForce = useCallback((event) => {
-        const force = Math.min(Math.abs(event.deltaY) / 80, 1); // 降低除数，提高灵敏度
-        const direction = event.deltaY > 0 ? 'down' : 'up'; // 检测滚动方向
+        // 计算滚动力度：deltaY越大，force越接近1
+        const force = Math.min(Math.abs(event.deltaY) / 80, 1);
+        // 确定滚动方向：deltaY > 0为向下，< 0为向上
+        const direction = event.deltaY > 0 ? 'down' : 'up';
         
-        // 减少节流时间，提高响应速度
+        // 性能节流：限制更新频率到120fps
         const now = performance.now();
-        if (now - (handleWheelForce.lastTime || 0) < 8) return; // 从16ms减少到8ms，提高到120fps
+        if (now - (handleWheelForce.lastTime || 0) < 8) return;
         handleWheelForce.lastTime = now;
         
+        // 更新状态
         setScrollIntensity(force);
         setScrollDirection(direction);
         setLastScrollTime(now);
         
-        // 清除之前的衰减定时器
+        // 清理并重设衰减定时器
         if (scrollDecayTimerRef.current) {
             clearTimeout(scrollDecayTimerRef.current);
         }
         
-        // 减少衰减时间，更快响应
         scrollDecayTimerRef.current = setTimeout(() => {
             setScrollIntensity(0);
             setScrollDirection(null);
-        }, 200); // 从300ms减少到200ms，更快衰减
+        }, 200);
     }, []);
 
-    // 鼠标位置跟踪 - 优化性能
+    /**
+     * 🖱️ 鼠标移动跟踪器
+     * 实时跟踪鼠标位置，让光标能跟随鼠标移动
+     * 
+     * 性能优化：8ms节流，120fps更新频率
+     */
     const handleMouseMove = useCallback((e) => {
-        // 节流处理，避免过于频繁的位置更新
         const now = performance.now();
-        if (now - (handleMouseMove.lastTime || 0) < 8) return; // 限制到120fps，更流畅
+        if (now - (handleMouseMove.lastTime || 0) < 8) return;
         handleMouseMove.lastTime = now;
         
         setCursorPosition({ x: e.clientX, y: e.clientY });
@@ -105,39 +216,64 @@ const SmartDirectionalCursor = () => {
         }
     }, [isVisible]);
 
-    // 鼠标进入/离开事件
+    /**
+     * 👋 鼠标进入页面处理器
+     * 显示光标并启动悬停状态
+     */
     const handleMouseEnter = useCallback(() => {
         setIsVisible(true);
         setIsHovering(true);
     }, []);
 
+    /**
+     * 👋 鼠标离开页面处理器
+     * 隐藏光标并结束悬停状态
+     */
     const handleMouseLeave = useCallback(() => {
         setIsVisible(false);
         setIsHovering(false);
     }, []);
 
-    // 优化动画循环 - 提高帧率和响应速度
+    /**
+     * 🎬 动画循环系统 - 性能优化版本
+     * 使用requestAnimationFrame实现高性能动画
+     * 
+     * 处理两种动画：
+     * 1. 悬停光晕效果的渐入渐出
+     * 2. 滚动强度的自然衰减
+     * 
+     * 性能优化：
+     * - 60fps动画帧率，硬件加速优化
+     * - 减少不必要的状态更新
+     * - 使用引用避免重渲染
+     */
     useEffect(() => {
+        let lastIntensityUpdate = 0;
+        
         const animate = () => {
-            // 提高动画帧率，减少延迟
             const now = performance.now();
-            if (now - (animate.lastTime || 0) < 16) { // 提高到60fps，更流畅
+            if (now - (animate.lastTime || 0) < 16) {
                 animationFrameRef.current = requestAnimationFrame(animate);
                 return;
             }
             animate.lastTime = now;
             
-            // 光晕强度动画 - 更快响应
+            // 悬停光晕动画：缓慢渐入渐出
             if (isHovering) {
-                glowIntensityRef.current = Math.min(glowIntensityRef.current + 0.12, 1); // 增加步长
+                glowIntensityRef.current = Math.min(glowIntensityRef.current + 0.12, 1);
             } else {
-                glowIntensityRef.current = Math.max(glowIntensityRef.current - 0.08, 0.3); // 增加步长
+                glowIntensityRef.current = Math.max(glowIntensityRef.current - 0.08, 0.3);
             }
             
-            // 滚动力度自然衰减 - 更快衰减
+            // 滚动强度自然衰减：防止长时间显示进度
             const timeSinceScroll = now - lastScrollTime;
-            if (timeSinceScroll > 30) { // 从50ms减少到30ms，更快开始衰减
-                setScrollIntensity(prev => Math.max(prev - 0.05, 0)); // 增加衰减步长
+            if (timeSinceScroll > 30) {
+                // 性能优化：减少状态更新频率，只在必要时更新
+                const newIntensity = Math.max(scrollIntensity - 0.05, 0);
+                if (now - lastIntensityUpdate > 32 && newIntensity !== scrollIntensity) { // 限制到30fps更新
+                    setScrollIntensity(newIntensity);
+                    lastIntensityUpdate = now;
+                }
             }
             
             animationFrameRef.current = requestAnimationFrame(animate);
@@ -150,17 +286,33 @@ const SmartDirectionalCursor = () => {
                 cancelAnimationFrame(animationFrameRef.current);
             }
         };
-    }, [isHovering, lastScrollTime]);
+    }, [isHovering, lastScrollTime, scrollIntensity]);
 
-    // 隐藏默认光标
+    /**
+     * 🖱️ 系统光标隐藏
+     * 隐藏系统默认光标，让自定义光标完全接管
+     * 
+     * 性能优化：确保样式正确恢复，避免影响其他组件
+     */
     useEffect(() => {
+        const originalCursor = document.body.style.cursor;
         document.body.style.cursor = 'none';
+        
         return () => {
-            document.body.style.cursor = 'auto';
+            document.body.style.cursor = originalCursor;
+            
+            // 最终清理：确保所有引用都被重置
+            if (containerRef.current) {
+                containerRef.current = null;
+            }
+            glowIntensityRef.current = 0.3;
         };
     }, []);
 
-    // 事件监听器
+    /**
+     * 🎧 事件监听器注册
+     * 注册所有必要的鼠标和滚轮事件监听器
+     */
     useEffect(() => {
         document.addEventListener('mousemove', handleMouseMove);
         document.addEventListener('mouseenter', handleMouseEnter);
@@ -179,56 +331,78 @@ const SmartDirectionalCursor = () => {
         };
     }, [handleMouseMove, handleMouseEnter, handleMouseLeave, handleWheelForce]);
 
-    // 隐藏默认光标
-    useEffect(() => {
-        document.body.style.cursor = 'none';
-        return () => {
-            document.body.style.cursor = 'auto';
-        };
-    }, []);
+    // ==================== 渲染逻辑 ====================
 
-    // 渲染进度指示器光标 - 缩小尺寸，进度圆圈效果，支持边界红色提示
+    /**
+     * 🎨 智能光标渲染器
+     * 
+     * 这个函数是整个组件的视觉核心，负责渲染智能光标的所有视觉元素：
+     * 
+     * 【视觉层次结构】
+     * 1. 底层：细线圆环（显示边界）
+     * 2. 中层：粗线进度环（显示滚动强度）
+     * 3. 上层：方向箭头（显示导航方向）
+     * 4. 顶层：百分比数字（显示精确强度）
+     * 
+     * 【颜色系统】
+     * - 🟢 绿色 (#00ff88)：正常可操作状态
+     * - 🔴 红色 (#ff4444)：边界警告状态
+     * - ⚪ 白色 (#ffffff)：默认/静态状态
+     * 
+     * 【尺寸系统】
+     * - 基础尺寸：133px（整个光标大小）
+     * - 箭头容器：300px（箭头可绘制区域）
+     * - 圆环线宽：0.2px（细线）/ 5px（粗线）
+     */
     const renderPowerDirectionalIndicator = () => {
-        const baseSize = 133; // 缩小为原来的三分之二 (200 * 2/3 ≈ 133)
-        const hoverScale = isHovering ? 1.02 : 1; // 微小的悬停缩放
-        const size = baseSize * hoverScale; // 移除力度缩放
+        // 基础尺寸计算
+        const baseSize = 133;
+        const hoverScale = isHovering ? 1.02 : 1;
+        const size = baseSize * hoverScale;
         
-        // 边界状态检测 - 使用简化的边界检测
+        // 边界状态检测
         const boundaryState = isAtAbsoluteBoundary();
         
-        // 检测是否在绝对无法滚动的边界 - 修复方向逻辑
+        /**
+         * 🚨 边界警告逻辑
+         * 只有在"无效方向"滚动时才显示红色警告：
+         * - 首页向上滚动 = 红色（无效）
+         * - 首页向下滚动 = 绿色（有效）
+         * - 末尾页向下滚动 = 红色（无效）
+         * - 末尾页向上滚动 = 绿色（有效）
+         */
         const shouldShowBoundaryWarning = (
-            // 在首页向上滚动时显示红色（无效操作）
             (boundaryState.isTopBoundary && scrollDirection === 'up' && scrollIntensity > 0) ||
-            // 在末尾页向下滚动时显示红色（无效操作）
             (boundaryState.isBottomBoundary && scrollDirection === 'down' && scrollIntensity > 0) ||
-            // 没有任何地方可以滚动
             (boundaryState.hasNowhereToGo && scrollIntensity > 0)
         );
         
-        // 进度圆圈颜色配置 - 根据边界状态和滚动强度调整
+        /**
+         * 🎨 颜色生成器
+         * 根据当前状态动态生成颜色
+         */
         const getBaseColor = () => {
             if (shouldShowBoundaryWarning && scrollIntensity > 0) {
-                // 边界状态且有滚动力度时显示红色
-                return '#ff4444';
+                return '#ff4444'; // 边界警告红色
             }
-            return '#ffffff'; // 正常状态为白色
+            return '#ffffff'; // 默认白色
         };
         
         const getProgressColor = () => {
             if (shouldShowBoundaryWarning && scrollIntensity > 0) {
-                // 边界状态时进度条也显示红色
-                return '#ff4444';
+                return '#ff4444'; // 边界警告红色
             }
-            return '#00ff88'; // 正常状态为绿色
+            return '#00ff88'; // 正常操作绿色
         };
         
+        // 颜色和样式配置
         const baseColor = getBaseColor();
         const progressColor = getProgressColor();
-        const percentage = Math.round(scrollIntensity * 100); // 滚动强度百分比
-        const strokeWidth = 1; // 箭头线条宽度
-        const progressStrokeWidth = 5; // 进度圆弧使用更粗的线条，更加突出
+        const percentage = Math.round(scrollIntensity * 100);
+        const strokeWidth = 0.2; // 细线宽度
+        const progressStrokeWidth = 5; // 粗线宽度
         
+        // 容器样式：硬件加速优化
         const containerStyle = {
             width: `${size}px`,
             height: `${size}px`,
@@ -236,29 +410,51 @@ const SmartDirectionalCursor = () => {
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            transform: 'translate3d(0, 0, 0)', // 触发硬件加速
-            willChange: 'transform', // 优化提示
+            transform: 'translate3d(0, 0, 0)',
+            willChange: 'transform',
         };
 
+        /**
+         * 🏹 箭头生成器
+         * 
+         * 为每个方向创建SVG箭头，包含颜色渐变和动态效果
+         * 
+         * @param {'up'|'down'} direction 箭头方向
+         * @param {number} intensity 箭头强度（影响透明度）
+         * @returns {JSX.Element} 箭头React元素
+         * 
+         * 【箭头设计】
+         * - 使用SVG path绘制，确保清晰度
+         * - 24x24 viewBox，标准化坐标系统
+         * - 从圆心向外延伸，增加视觉张力
+         * - 支持动态颜色变化和渐变效果
+         */
         const createArrow = (direction, intensity = 1) => {
-            const arrowSize = 80 * hoverScale; // 缩小箭头尺寸 (120 * 2/3 = 80)
+            const arrowSize = 300 * hoverScale; // 大容器确保箭头能伸出圆圈
             
-            // 简化的长箭头路径 - 类似手画的勾形
+            // SVG路径定义：长竖线 + 箭头尖端
             const arrowPath = direction === 'up' 
-                ? "M12 22L12 2M8 6L12 2L16 6" // 向上箭头：长竖线 + 简单的勾形顶部
-                : "M12 2L12 22M8 18L12 22L16 18"; // 向下箭头：长竖线 + 简单的勾形底部
+                ? "M12 22L12 2M8 6L12 2L16 6" // 向上：从底部到顶部 + 上箭头尖
+                : "M12 2L12 22M8 18L12 22L16 18"; // 向下：从顶部到底部 + 下箭头尖
             
-            // 箭头颜色：根据滚动力度和边界状态实时变化
+            /**
+             * 🌈 动态颜色系统
+             * 根据滚动状态和边界检测结果，实时计算箭头颜色
+             * 
+             * 颜色状态：
+             * 1. 静态状态：纯白色
+             * 2. 正常滚动：白色到绿色的渐变
+             * 3. 边界警告：白色到红色的渐变
+             */
             const getArrowColor = () => {
                 if (scrollIntensity === 0) {
-                    return '#ffffff'; // 无滚动时为白色
+                    return '#ffffff'; // 静态时为纯白色
                 }
                 
-                // 只有在绝对边界时显示红色，其他情况都显示绿色
                 if (shouldShowBoundaryWarning) {
-                    // 绝对边界状态时显示红色渐变
-                    const lightRed = [255, 68, 68];   // #ff4444 的 RGB 值
-                    const darkRed = [180, 20, 20];    // 深红色的 RGB 值
+                    // 边界警告：计算白色到红色的渐变
+                    const lightRed = [255, 68, 68];   // #ff4444 RGB
+                    const darkRed = [180, 20, 20];    // 深红色 RGB
                     
                     const r = Math.round(lightRed[0] + (darkRed[0] - lightRed[0]) * scrollIntensity);
                     const g = Math.round(lightRed[1] + (darkRed[1] - lightRed[1]) * scrollIntensity);
@@ -266,9 +462,9 @@ const SmartDirectionalCursor = () => {
                     
                     return `rgb(${r}, ${g}, ${b})`;
                 } else {
-                    // 正常状态（包括有内容可滚动时）显示绿色渐变
-                    const lightGreen = [0, 255, 136]; // #00ff88 的 RGB 值
-                    const darkGreen = [0, 180, 60];   // 深绿色的 RGB 值
+                    // 正常状态：计算白色到绿色的渐变
+                    const lightGreen = [0, 255, 136]; // #00ff88 RGB
+                    const darkGreen = [0, 180, 60];   // 深绿色 RGB
                     
                     const r = Math.round(lightGreen[0] + (darkGreen[0] - lightGreen[0]) * scrollIntensity);
                     const g = Math.round(lightGreen[1] + (darkGreen[1] - lightGreen[1]) * scrollIntensity);
@@ -280,6 +476,7 @@ const SmartDirectionalCursor = () => {
             
             const arrowColor = getArrowColor();
             
+            // 箭头容器：绝对定位，硬件加速优化
             return (
                 <div
                     style={{
@@ -289,7 +486,7 @@ const SmartDirectionalCursor = () => {
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        opacity: intensity * 0.8, // 箭头透明度设为 0.8
+                        opacity: intensity * 0.8,
                         zIndex: 10,
                         transform: 'translate3d(0, 0, 0)',
                         willChange: 'opacity',
@@ -311,9 +508,9 @@ const SmartDirectionalCursor = () => {
                             strokeLinecap="round"
                             strokeLinejoin="round"
                             fill="none"
-                            opacity={0.8} // 设置箭头透明度为 0.8
+                            opacity={0.8}
                             style={{
-                                transition: 'stroke 0.1s ease-out', // 颜色变化动画
+                                transition: 'stroke 0.1s ease-out', // 颜色平滑过渡
                                 willChange: 'stroke',
                             }}
                         />
@@ -322,18 +519,26 @@ const SmartDirectionalCursor = () => {
             );
         };
 
+        // ==================== 光标视觉结构渲染 ====================
+        
         return (
             <div style={containerStyle}>
-                {/* 进度圆圈指示器 - SVG实现 */}
+                {/* 
+                 * 📊 进度圆环系统
+                 * 
+                 * 双层圆环设计：
+                 * 1. 底层细圆环：显示光标边界，始终可见
+                 * 2. 上层粗圆环：显示滚动进度，根据scrollIntensity动态显示
+                 */}
                 <svg
                     width={size}
                     height={size}
                     style={{
                         position: 'absolute',
-                        transform: 'rotate(-90deg)', // 从12点钟方向开始
+                        transform: 'rotate(-90deg)', // 旋转-90°让进度从12点钟开始
                     }}
                 >
-                    {/* 底层白色圆圈 */}
+                    {/* 底层边界圆环：细线，半透明 */}
                     <circle
                         cx={size / 2}
                         cy={size / 2}
@@ -344,7 +549,7 @@ const SmartDirectionalCursor = () => {
                         opacity="0.4"
                     />
                     
-                    {/* 进度圆弧 - 根据滚动强度显示 */}
+                    {/* 进度圆环：只在滚动时显示 */}
                     {scrollIntensity > 0 && (
                         <circle
                             cx={size / 2}
@@ -358,14 +563,14 @@ const SmartDirectionalCursor = () => {
                             strokeDasharray={`${2 * Math.PI * ((size - 4) / 2)}`}
                             strokeDashoffset={`${2 * Math.PI * ((size - 4) / 2) * (1 - scrollIntensity)}`}
                             style={{
-                                transition: 'stroke-dashoffset 0.05s cubic-bezier(0.25, 0.46, 0.45, 0.94)', // 更快更流畅的贝塞尔曲线
-                                willChange: 'stroke-dashoffset', // 提示浏览器优化
+                                transition: 'stroke-dashoffset 0.05s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
+                                willChange: 'stroke-dashoffset',
                             }}
                         />
                     )}
                 </svg>
 
-                {/* 滚动强度百分比显示 - 显示在圆圈中心 */}
+                {/* 📈 滚动百分比显示：精确数值反馈 */}
                 {scrollIntensity > 0 && (
                     <div
                         style={{
@@ -373,8 +578,8 @@ const SmartDirectionalCursor = () => {
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
-                            fontSize: '14px',
-                            fontWeight: '600',
+                            fontSize: '24px',
+                            fontWeight: '400',
                             fontFamily: 'Monaco, "Courier New", monospace',
                             color: progressColor,
                             opacity: 0.95,
@@ -388,7 +593,15 @@ const SmartDirectionalCursor = () => {
                     </div>
                 )}
 
-                {/* 方向箭头 - 固定尺寸 */}
+                {/* 
+                 * 🧭 方向箭头系统
+                 * 
+                 * 根据direction状态渲染不同的箭头配置：
+                 * - 'up': 单个向上箭头
+                 * - 'down': 单个向下箭头  
+                 * - 'both': 双箭头（向上+向下），透明度降低避免视觉混乱
+                 * - 'none': 简单中心点，表示无方向可用
+                 */}
                 {direction === 'up' && createArrow('up')}
                 {direction === 'down' && createArrow('down')}
                 {direction === 'both' && (
@@ -398,7 +611,7 @@ const SmartDirectionalCursor = () => {
                     </>
                 )}
                 
-                {/* 无方向时的简单中心点 */}
+                {/* 无方向状态：显示简单的中心点 */}
                 {direction === 'none' && scrollIntensity === 0 && (
                     <div
                         style={{
@@ -416,11 +629,19 @@ const SmartDirectionalCursor = () => {
         );
     };
 
+    // ==================== 组件主渲染 ====================
+    
+    /** 如果光标不可见，直接返回null，避免不必要的渲染 */
     if (!isVisible) return null;
 
     return (
         <>
-            {/* CSS 动画定义 */}
+            {/* 
+             * 🎬 CSS动画定义
+             * 
+             * 定义组件所需的所有CSS动画和样式
+             * 包括基础动画关键帧和响应式媒体查询
+             */}
             <style>{`
                 @keyframes spin {
                     from { transform: rotate(0deg); }
@@ -439,16 +660,16 @@ const SmartDirectionalCursor = () => {
                 
                 .power-cursor {
                     position: fixed;
-                    pointer-events: none;
-                    z-index: 9999;
-                    mix-blend-mode: screen;
+                    pointer-events: none; /* 确保不会阻挡鼠标事件 */
+                    z-index: 9999; /* 最高层级，覆盖所有内容 */
+                    mix-blend-mode: screen; /* 混合模式增强视觉效果 */
                 }
                 
                 .power-cursor.hovering {
-                    filter: brightness(1.2) contrast(1.1);
+                    filter: brightness(1.2) contrast(1.1); /* 悬停时增强亮度和对比度 */
                 }
                 
-                /* 移动设备隐藏 */
+                /* 📱 移动设备适配：在触摸设备上隐藏光标 */
                 @media (hover: none) and (pointer: coarse) {
                     .power-cursor {
                         display: none !important;
@@ -456,14 +677,19 @@ const SmartDirectionalCursor = () => {
                 }
             `}</style>
             
-            {/* 主光标 - 居中定位，性能优化 */}
+            {/* 
+             * 🎯 主光标容器
+             * 
+             * 跟随鼠标位置的主容器，包含所有光标视觉元素
+             * 使用transform: translate3d触发硬件加速，优化性能
+             */}
             <div
                 className={`power-cursor ${isHovering ? 'hovering' : ''}`}
                 style={{
                     left: cursorPosition.x,
                     top: cursorPosition.y,
-                    transform: `translate3d(-50%, -50%, 0)`, // 使用 translate3d 触发硬件加速
-                    willChange: 'transform', // 优化提示
+                    transform: `translate3d(-50%, -50%, 0)`, // 居中定位 + 硬件加速
+                    willChange: 'transform', // 提示浏览器优化此属性
                 }}
             >
                 {renderPowerDirectionalIndicator()}
@@ -471,5 +697,27 @@ const SmartDirectionalCursor = () => {
         </>
     );
 };
+
+/**
+ * =====================================================================================
+ * 
+ * 📚 组件导出
+ * 
+ * SmartDirectionalCursor组件已准备就绪，可以在任何需要智能导航提示的页面中使用
+ * 
+ * 【集成说明】
+ * 1. 确保页面有多个section结构
+ * 2. useAppStore中包含currentSection和sections状态
+ * 3. 页面内容容器使用'.scroll-mode-auto'类名
+ * 4. 在App组件中引入并渲染此组件
+ * 
+ * 【性能特性】
+ * - 🚀 硬件加速优化
+ * - ⚡ 120fps响应速度  
+ * - 🎯 智能边界检测
+ * - 📱 移动端自适应隐藏
+ * 
+ * =====================================================================================
+ */
 
 export default SmartDirectionalCursor;
