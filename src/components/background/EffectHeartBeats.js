@@ -135,7 +135,10 @@ export default class EffectHeartBeats {
         this.context = this.canvas.getContext("2d");
         this.width = params.width || 180;
         this.height = params.height || 130;
-        this.color = params.color || "#311599"; // 改为首页EffectChaos的紫色
+        
+        // 使用动态主题色替代硬编码颜色
+        this.color = params.color || this.getThemeColor();
+        
         this.settings = {
             particles: {
                 length: params.particles?.length || 500, // maximum amount of particles
@@ -155,6 +158,24 @@ export default class EffectHeartBeats {
         window.addEventListener("resize", this.boundOnResize);
 
         this.initializeCanvas();
+        this.image = this.createHeartImage();
+    }
+
+    /**
+     * 从CSS变量获取主题色
+     */
+    getThemeColor() {
+        const computedStyle = getComputedStyle(document.documentElement);
+        const primaryColor = computedStyle.getPropertyValue('--theme-primary').trim();
+        return primaryColor || "#10B981"; // 默认使用绿色主题
+    }
+
+    /**
+     * 更新主题色
+     */
+    updateThemeColors() {
+        this.color = this.getThemeColor();
+        // 重新创建心形图像以应用新颜色
         this.image = this.createHeartImage();
     }
 

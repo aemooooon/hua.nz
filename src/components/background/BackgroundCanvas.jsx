@@ -285,7 +285,7 @@ const BackgroundCanvas = ({ effectType = 'effectfuse' }) => {
     // 监听主题变化，更新粒子颜色
     useEffect(() => {
         // 支持主题色更新的效果类型
-        const supportedEffects = ['effectchaos', 'effectlorenz'];
+        const supportedEffects = ['effectchaos', 'effectlorenz', 'effectheartbeats', 'effectmonjori'];
         
         if (effectInstanceRef.current && 
             effectInstanceRef.current.updateThemeColors && 

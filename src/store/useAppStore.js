@@ -165,6 +165,11 @@ const contentConfig = {
           title: "Phone",
           description: "Give me a call"
         },
+        wechat: {
+          title: "WeChat",
+          description: "Connect via WeChat",
+          id: "Aemooooon"
+        },
         location: {
           title: "Location",
           description: "Based in Christchurch"
@@ -524,6 +529,11 @@ const contentConfig = {
         phone: {
           title: "电话",
           description: "电话联系"
+        },
+        wechat: {
+          title: "微信",
+          description: "微信联系",
+          id: "Aemooooon"
         },
         location: {
           title: "位置",

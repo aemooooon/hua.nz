@@ -7,6 +7,32 @@ export function EffectMonjori(canvas, params = {}) {
     const fps = 30;
     const frameInterval = 1000 / fps;
 
+    // 主题色配置
+    const updateThemeColors = () => {
+        const computedStyle = getComputedStyle(document.documentElement);
+        
+        // 获取主题色
+        const primaryColor = computedStyle.getPropertyValue('--theme-primary').trim();
+        const backgroundColor = computedStyle.getPropertyValue('--theme-background').trim();
+        
+        // 创建三个颜色：背景深蓝色、主题色、暗主题色
+        const colors = [
+            // 第一个颜色：首页背景深蓝色
+            backgroundColor ? new THREE.Color(backgroundColor) : new THREE.Color('#0A0F0D'),
+            // 第二个颜色：主题色
+            primaryColor ? new THREE.Color(primaryColor) : new THREE.Color('#10B981'),
+            // 第三个颜色：暗主题色（主题色的暗版本）
+            primaryColor ? new THREE.Color(primaryColor).multiplyScalar(0.6) : new THREE.Color('#0D9488')
+        ];
+        
+        // 如果uniforms已经初始化，更新颜色
+        if (uniforms && uniforms.colors) {
+            uniforms.colors.value = colors;
+        }
+        
+        return colors;
+    };
+
     const init = () => {
         // Create camera and scene
         camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
@@ -20,11 +46,8 @@ export function EffectMonjori(canvas, params = {}) {
             time: { value: 1.0 },
             animationSpeed: { value: params.animationSpeed || 0.618 },
             colors: {
-                value: params.colors || [
-                    new THREE.Color('#311599'), // 深紫色 - 与首页EffectChaos的紫色一致
-                    new THREE.Color('#6366f1'), // 中紫色 - 过渡色
-                    new THREE.Color('#8b5cf6'), // 浅紫色 - 完成紫色系渐变
-                ],
+                // 使用动态主题色替代硬编码颜色
+                value: params.colors || updateThemeColors(),
             },
         };
 
@@ -150,5 +173,8 @@ export function EffectMonjori(canvas, params = {}) {
 
     init();
 
-    return { stop };
+    return { 
+        stop,
+        updateThemeColors // 暴露主题色更新方法
+    };
 }
