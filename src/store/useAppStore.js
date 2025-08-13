@@ -854,7 +854,7 @@ export const useAppStore = create(
         {
           "type": "Full Stack",
           "title": "Full Stack Developer",
-          "name": "Orchard Sampling Scheduling System",
+          "name": "Orchard Sampling Scheduler",
           "company": "Zespri International",
           "description": {
             "en": "Developed a comprehensive orchard sampling optimization system for New Zealand's leading kiwifruit company. Built robust ETL pipelines using Python to process and integrate diverse agricultural datasets including orchard locations, fruit quality metrics, and sampling schedules. Created an interactive GIS-based web application with real-time data visualization, enabling efficient sampling route optimization and quality assessment workflows. The system significantly improved sampling efficiency by 30% through intelligent spatial analysis and automated scheduling algorithms, supporting Zespri's commitment to delivering premium kiwifruit to global markets. Implemented using modern web technologies including React frontend, Node.js backend, PostgreSQL database, and integrated mapping services for seamless user experience.",
@@ -885,7 +885,7 @@ export const useAppStore = create(
         {
           "type": "Full Stack",
           "title": "Full Stack Developer",
-          "name": "Real-time Air Quality Index Publish Platform",
+          "name": "Real-time AQI Platform",
           "company": "Enshi Environmental Agency",
           "description": {
             "en": "Developed a real-time Air Quality Index dashboard for a population of 5 million, involving an ETL workflow to extract XML data from a third-party Web service on schedule, transform it into structured objects, and load it into a MySQL database. The backend, built with Java Spring Boot, provided RESTful APIs for data access, while the front end, developed using React and EChart, visualized AQI trends and geographic distributions through interactive and dynamic charts.",
