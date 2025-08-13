@@ -72,8 +72,8 @@ const SmartDirectionalCursor = () => {
     
     // ==================== 外部状态和引用 ====================
     
-    /** 从全局状态获取当前section索引和所有sections数组 */
-    const { currentSection, sections } = useAppStore();
+    /** 从全局状态获取当前section索引、所有sections数组和3D模式状态 */
+    const { currentSection, sections, isPointerLocked } = useAppStore();
     
     /** 动画帧的引用，用于性能优化的循环动画 */
     const animationFrameRef = useRef();
@@ -928,6 +928,7 @@ const SmartDirectionalCursor = () => {
                     pointer-events: none; /* 确保不会阻挡鼠标事件 */
                     z-index: 9999; /* 最高层级，覆盖所有内容 */
                     mix-blend-mode: screen; /* 混合模式增强视觉效果 */
+                    ${isPointerLocked ? 'display: none !important;' : ''} /* 🎯 3D模式时隐藏 */
                 }
                 
                 .power-cursor.hovering {
@@ -950,6 +951,7 @@ const SmartDirectionalCursor = () => {
                     opacity: 0.9; /* 与中央提示点相同的透明度 */
                     box-shadow: 0 0 6px var(--theme-primary); /* 使用主题色光晕 */
                     transform: translate3d(-50%, -50%, 0);
+                    ${isPointerLocked ? 'display: none !important;' : ''} /* 🎯 3D模式时隐藏 */
                 }
                 
                 /* 📱 移动设备适配：在触摸设备上隐藏光标 */

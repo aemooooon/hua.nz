@@ -809,6 +809,10 @@ export const useAppStore = create(
       currentEffect: 'effectchaos',
       setCurrentEffect: (effect) => set({ currentEffect: effect }),
 
+      // 3D Gallery 模式状态
+      isPointerLocked: false,
+      setIsPointerLocked: (locked) => set({ isPointerLocked: locked }),
+
       // 滚动状态
       isScrolling: false,
       setIsScrolling: (scrolling) => set({ isScrolling: scrolling }),
@@ -915,7 +919,7 @@ export const useAppStore = create(
           "coordinates": [30.2888597, 109.4846285],
           "location": "Chongqing, China",
           "year": "2020-2021",
-          "img": ["/fhjy.jpg", "/changpingli.jpg", "/dalincheng.jpg", "/gyyh.jpg", "/htfxj.jpg", "/jhhy.jpg", "/jlw.jpg", "/jnyp.jpg", "/jxmm.jpg", "/jsjxmm.jpg", "/pzf.jpg", "/tf.jpg", "/tsyhy.jpg", "/wjsf.jpg", "/xcsd.jpg", "/ybhf.jpg", "/ysxc.jpg", "/zyyc.jpg"],
+          "img": ["/fhjy.jpg", "/changpingli.jpg", "/dalincheng.jpg", "/gyyh.jpg", "/htfxj.jpg", "/jhhy.jpg", "/jlw.jpg", "/jxmm.jpg", "/jsjxmm.jpg", "/pzf.jpg", "/tf.jpg", "/tsyhy.jpg", "/wjsf.jpg", "/xcsd.jpg", "/ybhf.jpg", "/ysxc.jpg", "/zyyc.jpg"],
           "tech": ["JavaScript", "WebGL", "3D Libraries", "HTML5", "CSS3", "Responsive Design"],
           "stats": {
             "projects": 18,

@@ -7,12 +7,13 @@ import CircularLoadingIndicator from '../../ui/CircularLoadingIndicator';
 
 const GallerySection = ({ language = 'en' }) => {
     const [isLoading, setIsLoading] = useState(true);
-    const [isPointerLocked, setIsPointerLocked] = useState(false);
     const [isIntroAnimationComplete, setIsIntroAnimationComplete] = useState(false);
     const [showUICards, setShowUICards] = useState(false);
     
     const galleryData = useAppStore(state => state.getAllGalleryItems());
     const texts = useAppStore(state => state.texts);
+    const isPointerLocked = useAppStore(state => state.isPointerLocked);
+    const setIsPointerLocked = useAppStore(state => state.setIsPointerLocked);
     
     const containerRef = useRef(null);
     const sceneRef = useRef(null);
@@ -51,15 +52,110 @@ const GallerySection = ({ language = 'en' }) => {
             scene.add(wallGroup);
             wallsRef.current = wallGroup;
 
-            // 地板 - 现代美术馆高级反光地板（优化性能）
+            // 地板 - 人字拼木地板材质（温暖明亮）
             const floorWidth = 32;  // 左右宽度32米
             const floorDepth = 64;  // 前后深度64米
             const floorGeometry = new THREE.PlaneGeometry(floorWidth, floorDepth);
+            
+            // 创建现代美术馆抛光混凝土地板纹理
+            const createPolishedConcreteFloor = () => {
+                const canvas = document.createElement('canvas');
+                const canvasSize = 1024; // 提高分辨率获得更好的纹理
+                canvas.width = canvasSize;
+                canvas.height = canvasSize;
+                const ctx = canvas.getContext('2d');
+
+                // 基础混凝土颜色 - 浅灰色调
+                const baseColor = '#e8e8e8';
+                const accentColors = [
+                    '#f0f0f0', // 更浅的灰
+                    '#e0e0e0', // 中浅灰  
+                    '#dcdcdc', // 银灰色
+                    '#f5f5f5', // 烟白色
+                    '#efefef', // 淡灰色
+                ];
+
+                // 填充基础颜色
+                ctx.fillStyle = baseColor;
+                ctx.fillRect(0, 0, canvasSize, canvasSize);
+
+                // 添加混凝土的自然纹理和斑点
+                for (let i = 0; i < 2000; i++) {
+                    const x = Math.random() * canvasSize;
+                    const y = Math.random() * canvasSize;
+                    const size = Math.random() * 8 + 2;
+                    const opacity = Math.random() * 0.3 + 0.1;
+                    
+                    ctx.globalAlpha = opacity;
+                    ctx.fillStyle = accentColors[Math.floor(Math.random() * accentColors.length)];
+                    
+                    ctx.beginPath();
+                    ctx.arc(x, y, size, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+
+                // 添加混凝土裂纹和纹路
+                ctx.globalAlpha = 0.15;
+                ctx.strokeStyle = '#d0d0d0';
+                ctx.lineWidth = 1;
+                
+                for (let i = 0; i < 50; i++) {
+                    const startX = Math.random() * canvasSize;
+                    const startY = Math.random() * canvasSize;
+                    const length = Math.random() * 100 + 50;
+                    const angle = Math.random() * Math.PI * 2;
+                    
+                    ctx.beginPath();
+                    ctx.moveTo(startX, startY);
+                    ctx.lineTo(
+                        startX + Math.cos(angle) * length,
+                        startY + Math.sin(angle) * length
+                    );
+                    ctx.stroke();
+                }
+
+                // 添加微妙的光泽效果
+                const gradient = ctx.createRadialGradient(
+                    canvasSize/2, canvasSize/2, 0,
+                    canvasSize/2, canvasSize/2, canvasSize/2
+                );
+                gradient.addColorStop(0, 'rgba(255, 255, 255, 0.1)');
+                gradient.addColorStop(0.5, 'rgba(255, 255, 255, 0.05)');
+                gradient.addColorStop(1, 'rgba(255, 255, 255, 0)');
+                
+                ctx.globalAlpha = 1;
+                ctx.fillStyle = gradient;
+                ctx.fillRect(0, 0, canvasSize, canvasSize);
+
+                // 添加一些主题色的微妙点缀（非常少量）
+                ctx.globalAlpha = 0.08;
+                for (let i = 0; i < 20; i++) {
+                    const x = Math.random() * canvasSize;
+                    const y = Math.random() * canvasSize;
+                    const size = Math.random() * 3 + 1;
+                    
+                    ctx.fillStyle = '#00ffaa';
+                    ctx.beginPath();
+                    ctx.arc(x, y, size, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+
+                ctx.globalAlpha = 1;
+
+                const texture = new THREE.CanvasTexture(canvas);
+                texture.wrapS = THREE.RepeatWrapping;
+                texture.wrapT = THREE.RepeatWrapping;
+                texture.repeat.set(6, 6); // 适中的重复，让纹理看起来自然
+                return texture;
+            };
+
+            const floorTexture = createPolishedConcreteFloor();
             const floorMaterial = new THREE.MeshStandardMaterial({ 
-                color: 0x1a1a1a, // 深色现代地板
-                metalness: 0.3,        // 适度金属质感
-                roughness: 0.02,       // 极低粗糙度，强反光
-                envMapIntensity: 1.5   // 增强环境映射，更好反射天花板灯光
+                map: floorTexture,
+                color: 0xffffff,       // 白色基调，让纹理颜色更准确
+                metalness: 0.1,        // 轻微金属质感
+                roughness: 0.6,        // 木质应有的粗糙度
+                envMapIntensity: 0.8   // 适度环境映射
             });
             const floor = new THREE.Mesh(floorGeometry, floorMaterial);
             floor.rotation.x = -Math.PI / 2;
@@ -67,11 +163,97 @@ const GallerySection = ({ language = 'en' }) => {
             floor.receiveShadow = true;
             scene.add(floor);
 
-            // 天花板 - 现代美术馆天花板（黑色无反光）
+            // 创建现代美术馆天花板纹理（格栅天花板系统）
+            const createModernGalleryCeiling = () => {
+                const canvas = document.createElement('canvas');
+                const canvasSize = 1024;
+                canvas.width = canvasSize;
+                canvas.height = canvasSize;
+                const ctx = canvas.getContext('2d');
+
+                // 基础颜色 - 现代美术馆常用的哑光白色
+                ctx.fillStyle = '#f8f8f8';
+                ctx.fillRect(0, 0, canvasSize, canvasSize);
+
+                // 格栅系统 - 现代美术馆标准的吊顶格栅
+                const gridSize = 64; // 格栅单元大小
+                const lineWidth = 2;  // 格栅线宽度
+
+                // 绘制格栅线条
+                ctx.strokeStyle = '#e0e0e0'; // 浅灰色格栅线
+                ctx.lineWidth = lineWidth;
+
+                // 垂直线
+                for (let x = 0; x <= canvasSize; x += gridSize) {
+                    ctx.beginPath();
+                    ctx.moveTo(x, 0);
+                    ctx.lineTo(x, canvasSize);
+                    ctx.stroke();
+                }
+
+                // 水平线
+                for (let y = 0; y <= canvasSize; y += gridSize) {
+                    ctx.beginPath();
+                    ctx.moveTo(0, y);
+                    ctx.lineTo(canvasSize, y);
+                    ctx.stroke();
+                }
+
+                // 添加灯光面板效果 - 每个格栅单元中的LED面板
+                for (let x = gridSize/2; x < canvasSize; x += gridSize) {
+                    for (let y = gridSize/2; y < canvasSize; y += gridSize) {
+                        // 20%概率有LED面板
+                        if (Math.random() < 0.2) {
+                            const panelSize = gridSize * 0.6;
+                            
+                            // 创建面板渐变
+                            const gradient = ctx.createRadialGradient(
+                                x, y, 0,
+                                x, y, panelSize/2
+                            );
+                            gradient.addColorStop(0, 'rgba(255, 255, 255, 0.8)');
+                            gradient.addColorStop(0.7, 'rgba(250, 250, 250, 0.4)');
+                            gradient.addColorStop(1, 'rgba(240, 240, 240, 0.1)');
+
+                            ctx.fillStyle = gradient;
+                            ctx.fillRect(
+                                x - panelSize/2, 
+                                y - panelSize/2, 
+                                panelSize, 
+                                panelSize
+                            );
+                        }
+                    }
+                }
+
+                // 添加微妙的主题色点缀 - 极少量的青色LED指示灯
+                for (let i = 0; i < 15; i++) {
+                    const x = Math.random() * canvasSize;
+                    const y = Math.random() * canvasSize;
+                    const size = Math.random() * 3 + 1;
+                    
+                    ctx.fillStyle = 'rgba(0, 255, 170, 0.3)';
+                    ctx.beginPath();
+                    ctx.arc(x, y, size, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+
+                const texture = new THREE.CanvasTexture(canvas);
+                texture.wrapS = THREE.RepeatWrapping;
+                texture.wrapT = THREE.RepeatWrapping;
+                texture.repeat.set(4, 4); // 重复4x4次
+                return texture;
+            };
+
+            const ceilingTexture = createModernGalleryCeiling();
+            
+            // 天花板 - 现代美术馆格栅天花板系统
             const ceiling = new THREE.Mesh(
                 new THREE.PlaneGeometry(floorWidth, floorDepth),
                 new THREE.MeshLambertMaterial({ 
-                    color: 0x0a0a0a, // 深黑色天花板
+                    map: ceilingTexture,
+                    color: 0xffffff,      // 白色基调
+                    transparent: false,
                     side: THREE.DoubleSide
                 })
             );
@@ -1081,9 +1263,14 @@ const GallerySection = ({ language = 'en' }) => {
             {/* 第一人称模式时的准星 */}
             {isPointerLocked && (
                 <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-20">
-                    <div className="w-1 h-1 bg-white rounded-full shadow-lg"></div>
-                    <div className="absolute w-4 h-0.5 bg-white/50 rounded"></div>
-                    <div className="absolute w-0.5 h-4 bg-white/50 rounded"></div>
+                    {/* 中心圆点 - 调大一些 */}
+                    <div className="w-2 h-2 bg-white rounded-full shadow-lg border border-white/30"></div>
+                    {/* 水平线 - 调长一些 */}
+                    <div className="absolute w-6 h-0.5 bg-white/60 rounded shadow-sm"></div>
+                    {/* 垂直线 - 调长一些 */}
+                    <div className="absolute w-0.5 h-6 bg-white/60 rounded shadow-sm"></div>
+                    {/* 外圈指示 - 增加更清晰的轮廓 */}
+                    <div className="absolute w-8 h-8 border border-white/20 rounded-full"></div>
                 </div>
             )}
         </section>
