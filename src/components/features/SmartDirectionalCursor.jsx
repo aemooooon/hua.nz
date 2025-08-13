@@ -432,10 +432,10 @@ const SmartDirectionalCursor = () => {
         const createArrow = (direction, intensity = 1) => {
             const arrowSize = 300 * hoverScale; // 大容器确保箭头能伸出圆圈
             
-            // SVG路径定义：长竖线 + 箭头尖端
+            // SVG路径定义：长竖线 + 箭头尖端（调整尖端长度，让两边更短更尖锐）
             const arrowPath = direction === 'up' 
-                ? "M12 22L12 2M8 6L12 2L16 6" // 向上：从底部到顶部 + 上箭头尖
-                : "M12 2L12 22M8 18L12 22L16 18"; // 向下：从顶部到底部 + 下箭头尖
+                ? "M12 22L12 2M10 4L12 2L14 4" // 向上：从底部到顶部 + 上箭头尖（10-14，更短更尖）
+                : "M12 2L12 22M10 20L12 22L14 20"; // 向下：从顶部到底部 + 下箭头尖（10-14，更短更尖）
             
             /**
              * 🌈 动态颜色系统
