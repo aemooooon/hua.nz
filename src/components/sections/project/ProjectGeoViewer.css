@@ -1,12 +1,5 @@
 /* Custom styles for ProjectGeoViewer */
 
-/* 地图窗口打开时禁用body滚动 */
-body.project-geo-viewer-open {
-  overflow: hidden !important;
-  position: fixed !important;
-  width: 100% !important;
-}
-
 /* ProjectGeoViewer 容器样式 */
 .project-geo-viewer-container {
   width: 100% !important;

@@ -1,0 +1,32 @@
+/* ProjectDetail specific styles */
+
+/* Ensure consistent scrollbar styling within ProjectDetail */
+.project-detail-container::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+.project-detail-container::-webkit-scrollbar-track {
+    background: var(--theme-surface);
+    border-radius: 3px;
+}
+
+.project-detail-container::-webkit-scrollbar-thumb {
+    background: linear-gradient(45deg, var(--theme-primary), var(--theme-secondary));
+    border-radius: 3px;
+    border: 1px solid var(--theme-surface);
+}
+
+.project-detail-container::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(45deg, var(--theme-secondary), var(--theme-accent));
+}
+
+.project-detail-container::-webkit-scrollbar-corner {
+    background: var(--theme-surface);
+}
+
+/* For Firefox */
+.project-detail-container {
+    scrollbar-width: thin;
+    scrollbar-color: var(--theme-primary) var(--theme-surface);
+}

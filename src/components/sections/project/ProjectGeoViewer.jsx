@@ -703,9 +703,10 @@ const ProjectGeoViewer = ({ isOpen, onClose, language = 'en' }) => {
       // 保存当前滚动位置
       const scrollY = window.scrollY;
       document.addEventListener('keydown', handleKeyDown);
-      // 使用CSS类来控制overflow
-      document.body.classList.add('project-geo-viewer-open');
+      document.body.style.overflow = 'hidden';
+      document.body.style.position = 'fixed';
       document.body.style.top = `-${scrollY}px`;
+      document.body.style.width = '100%';
     }
 
     return () => {
@@ -713,8 +714,10 @@ const ProjectGeoViewer = ({ isOpen, onClose, language = 'en' }) => {
         document.removeEventListener('keydown', handleKeyDown);
         // 恢复滚动状态
         const scrollY = document.body.style.top;
-        document.body.classList.remove('project-geo-viewer-open');
+        document.body.style.overflow = '';
+        document.body.style.position = '';
         document.body.style.top = '';
+        document.body.style.width = '';
         if (scrollY) {
           window.scrollTo(0, parseInt(scrollY || '0') * -1);
         }
@@ -725,9 +728,11 @@ const ProjectGeoViewer = ({ isOpen, onClose, language = 'en' }) => {
   // 组件卸载时确保恢复滚动状态
   useEffect(() => {
     return () => {
-      // 清理所有body样式和类名
-      document.body.classList.remove('project-geo-viewer-open');
+      // 清理所有body样式
+      document.body.style.overflow = '';
+      document.body.style.position = '';
       document.body.style.top = '';
+      document.body.style.width = '';
     };
   }, []);
 

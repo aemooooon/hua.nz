@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import PropTypes from 'prop-types';
 import { useAppStore } from '../../../store/useAppStore';
+import GlowDivider from '../../ui/GlowDivider';
+import './ProjectDetail.css';
 
 // 简单的图标组件
 const X = ({ className = "w-4 h-4" }) => (
@@ -283,16 +285,20 @@ const ProjectDetail = ({ project = null, isOpen, onClose }) => {
       </button>
 
       {/* Content */}
-      <div className="h-full overflow-y-auto pt-6 pb-6 px-6 md:px-12 lg:px-16 xl:px-24" style={{ cursor: 'default' }}>
-        {/* Header - Only Project Name */}
-        <div className="mb-6 pt-16 md:pt-8 text-center">
-          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-theme-text-primary leading-tight">
-            {language === 'en' ? project.name : (project.nameZh || project.name)}
-          </h2>
-        </div>
-
-        {/* Main Content Layout */}
+      <div className="h-full overflow-y-auto pt-6 pb-6 px-6 md:px-12 lg:px-16 xl:px-24 project-detail-container" style={{ cursor: 'default' }}>
+        {/* All content container with consistent width */}
         <div className="max-w-7xl mx-auto">
+          {/* Header - Project Name Left Aligned */}
+          <div className="mb-8 pt-16 md:pt-8">
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-theme-text-primary leading-tight text-left mb-6">
+              {language === 'en' ? project.name : (project.nameZh || project.name)}
+            </h2>
+            
+            {/* Divider matching ProjectSection style */}
+            <GlowDivider className="w-full" width="w-full" />
+          </div>
+
+          {/* Main Content Layout */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8 xl:gap-12 mb-8">
             
             {/* Left Column - Images (2/3 width on large screens, full width on mobile) */}
@@ -378,43 +384,43 @@ const ProjectDetail = ({ project = null, isOpen, onClose }) => {
               <div className="space-y-4 md:space-y-6">
                 
                 {/* Company & Title */}
-                <div className="bg-theme-surface/30 p-4 rounded-lg">
+                <div className="bg-theme-surface/30 p-5 rounded-lg">
                   {project.company && (
-                    <div className="text-theme-primary font-semibold text-lg mb-1">
+                    <div className="text-theme-primary font-semibold text-xl mb-2">
                       {project.company}
                     </div>
                   )}
-                  <div className="text-theme-text-primary font-medium text-base">
+                  <div className="text-theme-text-primary font-medium text-lg">
                     {project.title}
                   </div>
                 </div>
 
-                {/* Time & Location - More compact on mobile */}
-                <div className="space-y-3">
+                {/* Time & Location - Enhanced typography */}
+                <div className="space-y-4">
                   {/* Year */}
-                  <div className="flex items-center gap-3 text-theme-text-secondary">
-                    <Calendar className="w-4 h-4 md:w-5 md:h-5 text-theme-success flex-shrink-0" />
+                  <div className="flex items-center gap-4 text-theme-text-secondary">
+                    <Calendar className="w-5 h-5 md:w-6 md:h-6 text-theme-success flex-shrink-0" />
                     <div>
-                      <div className="text-xs text-theme-text-secondary/70 uppercase tracking-wide">Year</div>
-                      <div className="text-sm font-medium">{project.year}</div>
+                      <div className="text-sm text-theme-text-secondary/80 uppercase tracking-wider font-medium">Year</div>
+                      <div className="text-lg font-semibold text-theme-text-primary">{project.year}</div>
                     </div>
                   </div>
 
                   {/* Location */}
-                  <div className="flex items-center gap-3 text-theme-text-secondary">
-                    <MapPin className="w-4 h-4 md:w-5 md:h-5 text-theme-primary flex-shrink-0" />
+                  <div className="flex items-center gap-4 text-theme-text-secondary">
+                    <MapPin className="w-5 h-5 md:w-6 md:h-6 text-theme-primary flex-shrink-0" />
                     <div>
-                      <div className="text-xs text-theme-text-secondary/70 uppercase tracking-wide">Location</div>
-                      <div className="text-sm font-medium">{project.location}</div>
+                      <div className="text-sm text-theme-text-secondary/80 uppercase tracking-wider font-medium">Location</div>
+                      <div className="text-lg font-semibold text-theme-text-primary">{project.location}</div>
                     </div>
                   </div>
 
                   {/* Project Type */}
-                  <div className="flex items-center gap-3 text-theme-text-secondary">
-                    <Code className="w-4 h-4 md:w-5 md:h-5 text-theme-secondary flex-shrink-0" />
+                  <div className="flex items-center gap-4 text-theme-text-secondary">
+                    <Code className="w-5 h-5 md:w-6 md:h-6 text-theme-secondary flex-shrink-0" />
                     <div>
-                      <div className="text-xs text-theme-text-secondary/70 uppercase tracking-wide">Type</div>
-                      <div className="text-sm font-medium text-theme-secondary">{project.type}</div>
+                      <div className="text-sm text-theme-text-secondary/80 uppercase tracking-wider font-medium">Type</div>
+                      <div className="text-lg font-semibold text-theme-secondary">{project.type}</div>
                     </div>
                   </div>
                 </div>
@@ -422,8 +428,8 @@ const ProjectDetail = ({ project = null, isOpen, onClose }) => {
                 {/* Links */}
                 {(project.links || project.link) && (
                   <div>
-                    <h3 className="text-lg font-semibold text-theme-text-primary mb-3">Links</h3>
-                    <div className="space-y-2">
+                    <h3 className="text-xl font-semibold text-theme-text-primary mb-4">Links</h3>
+                    <div className="space-y-3">
                       {/* Live Demo */}
                       {project.links?.live && (
                         <a
@@ -433,8 +439,8 @@ const ProjectDetail = ({ project = null, isOpen, onClose }) => {
                           className={`flex items-center gap-3 ${categoryColors.text} transition-colors ${categoryColors.bg} ${categoryColors.hover} p-3 rounded-lg border ${categoryColors.border} group w-full`}
                           style={{ cursor: 'pointer' }}
                         >
-                          <ExternalLink className="w-4 h-4 group-hover:scale-110 transition-transform flex-shrink-0" />
-                          <span className="text-sm font-medium">{projectText.liveDemo}</span>
+                          <ExternalLink className="w-5 h-5 group-hover:scale-110 transition-transform flex-shrink-0" />
+                          <span className="text-base font-semibold">{projectText.liveDemo}</span>
                         </a>
                       )}
 
@@ -447,8 +453,8 @@ const ProjectDetail = ({ project = null, isOpen, onClose }) => {
                           className={`flex items-center gap-3 ${categoryColors.text} transition-colors ${categoryColors.bg} ${categoryColors.hover} p-3 rounded-lg border ${categoryColors.border} group w-full`}
                           style={{ cursor: 'pointer' }}
                         >
-                          <ExternalLink className="w-4 h-4 group-hover:scale-110 transition-transform flex-shrink-0" />
-                          <span className="text-sm font-medium">{projectText.officialSite}</span>
+                          <ExternalLink className="w-5 h-5 group-hover:scale-110 transition-transform flex-shrink-0" />
+                          <span className="text-base font-semibold">{projectText.officialSite}</span>
                         </a>
                       )}
 
@@ -461,8 +467,8 @@ const ProjectDetail = ({ project = null, isOpen, onClose }) => {
                           className={`flex items-center gap-3 ${categoryColors.text} transition-colors ${categoryColors.bg} ${categoryColors.hover} p-3 rounded-lg border ${categoryColors.border} group w-full`}
                           style={{ cursor: 'pointer' }}
                         >
-                          <ExternalLink className="w-4 h-4 group-hover:scale-110 transition-transform flex-shrink-0" />
-                          <span className="text-sm font-medium">{projectText.githubRepo}</span>
+                          <ExternalLink className="w-5 h-5 group-hover:scale-110 transition-transform flex-shrink-0" />
+                          <span className="text-base font-semibold">{projectText.githubRepo}</span>
                         </a>
                       )}
 
@@ -475,8 +481,8 @@ const ProjectDetail = ({ project = null, isOpen, onClose }) => {
                           className={`flex items-center gap-3 ${categoryColors.text} transition-colors ${categoryColors.bg} ${categoryColors.hover} p-3 rounded-lg border ${categoryColors.border} group w-full`}
                           style={{ cursor: 'pointer' }}
                         >
-                          <ExternalLink className="w-4 h-4 group-hover:scale-110 transition-transform flex-shrink-0" />
-                          <span className="text-sm font-medium">{projectText.detail.visitSite}</span>
+                          <ExternalLink className="w-5 h-5 group-hover:scale-110 transition-transform flex-shrink-0" />
+                          <span className="text-base font-semibold">{projectText.detail.visitSite}</span>
                         </a>
                       )}
                     </div>
@@ -495,8 +501,14 @@ const ProjectDetail = ({ project = null, isOpen, onClose }) => {
           <div className="space-y-6 md:space-y-8">
             {/* Description */}
             <div className="bg-theme-surface/20 p-4 md:p-6 rounded-xl">
-              <h3 className="text-xl font-semibold text-theme-text-primary mb-4">Project Description</h3>
-              <p className="text-theme-text-secondary text-base md:text-lg leading-relaxed">
+              <p 
+                className="text-theme-text-secondary leading-relaxed"
+                style={{ 
+                  fontFamily: "'Lora', serif",
+                  lineHeight: '1.7',
+                  fontSize: '1.25rem'
+                }}
+              >
                 {getProjectDescription(project, language)}
               </p>
             </div>
