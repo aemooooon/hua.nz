@@ -879,8 +879,8 @@ const SmartDirectionalCursor = () => {
                 <div
                     style={{
                         position: 'absolute',
-                        width: '1rem', // 16px = 1rem
-                        height: '1rem', // 16px = 1rem
+                        width: '8px', 
+                        height: '8px', 
                         borderRadius: '50%',
                         backgroundColor: 'var(--theme-primary)',
                         opacity: 0.9,

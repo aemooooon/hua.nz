@@ -23,6 +23,7 @@ const GallerySection = ({ language = 'en' }) => {
     const animationFrameRef = useRef(null);
     const clockRef = useRef(new THREE.Clock());
     const wallsRef = useRef(null);
+    const spotlightsRef = useRef([]); // 存储所有画作聚光灯
     
     const introAnimationRef = useRef(null);
     const loadingManagerRef = useRef(null);
@@ -445,13 +446,14 @@ const GallerySection = ({ language = 'en' }) => {
                     }
                     
                     const paintingGeometry = new THREE.PlaneGeometry(paintingWidth, paintingHeight);
-                    // 使用高质量材质，确保画作清晰明亮
+                    // 优化画作材质 - 保持色彩丰富度，增强照明响应
                     const paintingMaterial = new THREE.MeshPhysicalMaterial({
-                        color: 0xffffff,     // 纯白色基础
+                        color: 0xffffff,     // 纯白色基础，不影响贴图色彩
                         metalness: 0.0,      // 无金属质感
-                        roughness: 0.1,      // 低粗糙度，类似画布质感
-                        clearcoat: 0.2,      // 轻微清漆效果，模拟画作保护层
-                        clearcoatRoughness: 0.05,
+                        roughness: 0.15,     // 稍微提高粗糙度，减少过度反光
+                        clearcoat: 0.1,      // 降低清漆效果，避免泛白
+                        clearcoatRoughness: 0.1,
+                        reflectivity: 0.3,   // 适度反射率
                         side: THREE.DoubleSide
                     });
                     const painting = new THREE.Mesh(paintingGeometry, paintingMaterial);
@@ -523,13 +525,15 @@ const GallerySection = ({ language = 'en' }) => {
                                 );
                             });
                             
+                            // 优化纹理设置 - 保证色彩保真度
                             texture.generateMipmaps = false;
                             texture.minFilter = THREE.LinearFilter;
                             texture.magFilter = THREE.LinearFilter;
+                            texture.colorSpace = THREE.SRGBColorSpace; // 确保正确的色彩空间
                             
                             loadedTextures.set(imageSrc, texture);
                             painting.material.map = texture;
-                            painting.material.color.setHex(0xffffff);
+                            painting.material.color.setHex(0xffffff); // 保持纯白，不干扰纹理色彩
                             painting.material.needsUpdate = true;
                         } catch {
                             painting.material.color.setHex(0x666666);
@@ -580,9 +584,10 @@ const GallerySection = ({ language = 'en' }) => {
                 });
             };
 
-            // 优化射灯系统，平衡质量与性能
+            // 智能画作聚光灯系统（优化色彩保真度和亮度感知）
             const createPaintingSpotlight = (paintingMesh) => {
-                const spotLight = new THREE.SpotLight(0xffffff, 3.5, 15, Math.PI / 7, 0.2, 1.0); // 略微降低亮度但保持清晰
+                // 使用暖白色光源，保护照片色彩不被冲淡
+                const spotLight = new THREE.SpotLight(0xfff8e1, 1.5, 15, Math.PI / 6, 0.15, 1.0); // 暖白色 + 降低基础亮度
                 const position = paintingMesh.position;
                 const rotation = paintingMesh.rotation;
                 
@@ -603,12 +608,22 @@ const GallerySection = ({ language = 'en' }) => {
                 
                 spotLight.position.copy(lightPos);
                 spotLight.target = paintingMesh;
-                spotLight.castShadow = false; // 关闭阴影以节省GPU资源
+                spotLight.castShadow = false;
+                
+                // 优化智能照明参数 - 显著增强变化感知度
+                spotLight.userData = {
+                    paintingPosition: position.clone(),
+                    baseIntensity: 1.0,    // 大幅降低基础亮度
+                    maxIntensity: 8.0,     // 提升最大亮度（8倍差异更明显）
+                    activationDistance: 6.0, // 6米开始增强（更早感知）
+                    optimalDistance: 2.0    // 2米达到最亮（更精确触发）
+                };
                 
                 scene.add(spotLight);
                 scene.add(spotLight.target);
                 
-                // 移除额外的填充光，减少光源数量提升性能
+                // 存储到聚光灯数组中用于距离检测
+                spotlightsRef.current.push(spotLight);
                 
                 return spotLight;
             };
@@ -692,6 +707,9 @@ const GallerySection = ({ language = 'en' }) => {
             
             // 确保摄像机高度始终保持在视线水平
             camera.position.y = 1.6;
+            
+            // 🎨 智能画作照明系统 - 根据距离调整亮度
+            updateSmartLighting(camera.position);
         };
 
         // 简单的边界碰撞检测（更新为新房间尺寸）
@@ -707,6 +725,38 @@ const GallerySection = ({ language = 'en' }) => {
             }
             
             return false;
+        };
+
+        // 🎨 优化智能画作照明系统 - 增强感知度
+        const updateSmartLighting = (cameraPosition) => {
+            spotlightsRef.current.forEach(spotlight => {
+                const data = spotlight.userData;
+                if (!data || !data.paintingPosition) return;
+                
+                // 计算摄像机到画作的距离
+                const distance = cameraPosition.distanceTo(data.paintingPosition);
+                
+                // 距离感应亮度调整 - 更激进的变化曲线
+                let intensity = data.baseIntensity;
+                
+                if (distance <= data.activationDistance) {
+                    // 在激活范围内，根据距离调整亮度
+                    const proximityFactor = Math.max(0, (data.activationDistance - distance) / data.activationDistance);
+                    const intensityRange = data.maxIntensity - data.baseIntensity;
+                    
+                    // 使用更激进的缓动函数，让变化更明显
+                    const easedProximity = Math.pow(proximityFactor, 1.5); // 更陡峭的曲线
+                    intensity = data.baseIntensity + (intensityRange * easedProximity);
+                    
+                    // 最接近时达到最大亮度
+                    if (distance <= data.optimalDistance) {
+                        intensity = data.maxIntensity;
+                    }
+                }
+                
+                // 加快亮度变化速度，让用户更容易感知
+                spotlight.intensity = THREE.MathUtils.lerp(spotlight.intensity, intensity, 0.12); // 从0.05提升到0.12
+            });
         };
         
         // 摄像机开场动画 - 电影级的引导式动画
@@ -897,8 +947,8 @@ const GallerySection = ({ language = 'en' }) => {
 
                 // 设置平衡性能的美术馆光照系统
                 const setupBasicLighting = (scene) => {
-                    // 适度的环境光
-                    const ambientLight = new THREE.AmbientLight(0x404040, 0.8);
+                    // 增强环境光 - 提升美术馆整体亮度
+                    const ambientLight = new THREE.AmbientLight(0x606060, 1.2); // 提升亮度和色温
                     scene.add(ambientLight);
                     
                     // 主光源 - 适度亮度
@@ -991,11 +1041,11 @@ const GallerySection = ({ language = 'en' }) => {
                             tubeGeometry = new THREE.BoxGeometry(length, 0.2, 0.4);
                         }
                         
-                        // 白色冷光源发光材质 - 增强发光效果
+                        // 白色冷光源发光材质 - 增强王字灯亮度
                         const tubeMaterial = new THREE.MeshStandardMaterial({ 
                             color: 0xffffff,        // 纯白色
                             emissive: 0xffffff,     // 白色强烈发光
-                            emissiveIntensity: 1.5, // 增强发光强度
+                            emissiveIntensity: 2.0, // 提升发光强度
                             transparent: false
                         });
                         
@@ -1007,7 +1057,8 @@ const GallerySection = ({ language = 'en' }) => {
                         
                         scene.add(tube);
                         
-                        const pointLight = new THREE.PointLight(0xffffff, 5.0, 40);
+                        // 提升王字灯的照明强度
+                        const pointLight = new THREE.PointLight(0xffffff, 7.0, 45); // 提升强度和范围
                         pointLight.position.set(centerX, 5.5, centerZ);
                         scene.add(pointLight);
                         
