@@ -210,6 +210,7 @@ const contentConfig = {
           institution: "University of Canterbury",
           location: "Christchurch, New Zealand",
           period: "Feb 2024 - Feb 2025",
+          logo: "/University-of-Canterbury.svg",
           gpa: "A average",
           totalCredits: 180,
           courses: [
@@ -274,6 +275,7 @@ const contentConfig = {
           institution: "Otago Polytechnic",
           location: "Dunedin, New Zealand",
           period: "July 2017 - June 2021",
+          logo: "/otago-polytechnic-vertical-blue.svg",
           gpa: "A average",
           totalCredits: 360,
           courses: [
@@ -567,6 +569,7 @@ const contentConfig = {
           institution: "坎特伯雷大学",
           location: "基督城",
           period: "2024年2月 - 2025年2月",
+          logo: "/University-of-Canterbury.svg",
           gpa: "A",
           totalCredits: 180,
           courses: [
@@ -631,6 +634,7 @@ const contentConfig = {
           institution: "奥塔哥理工学院",
           location: "达尼丁",
           period: "2017年7月 - 2021年6月",
+          logo: "/otago-polytechnic-vertical-blue.svg",
           gpa: "A",
           totalCredits: 360,
           courses: [

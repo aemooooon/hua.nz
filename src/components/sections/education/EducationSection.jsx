@@ -119,29 +119,77 @@ const EducationSection = ({ language }) => {
                         >
                             {/* 卡片内容区域 */}
                             <div className="pt-12 px-8 sm:px-10 pb-6 sm:pb-8">
-                                {/* 学校信息 - 左右布局 */}
-                                <div className="mb-8 flex items-center justify-between flex-wrap gap-4">
-                                    {/* 左边：大学名称 */}
-                                    <ThemeTitle level={4} className="text-lg sm:text-xl lg:text-2xl text-theme-text-white-90 font-medium">
-                                        {degree.institution}
-                                    </ThemeTitle>
+                                {/* 学校信息 - 响应式布局：大屏左右对称，窄屏上下分布 */}
+                                <div className="mb-8">
+                                    {/* 大屏幕：左右分布 - 文字居左，logo居右 */}
+                                    <div className="hidden lg:flex items-center justify-between gap-8">
+                                        {/* 左边：三行信息 - 居左对齐 */}
+                                        <div className="flex-1 space-y-2 text-left">
+                                            {/* 第一行：大学名称 */}
+                                            <div>
+                                                <ThemeTitle level={4} className="text-xl xl:text-2xl text-theme-text-white-90 font-semibold leading-tight">
+                                                    {degree.institution}
+                                                </ThemeTitle>
+                                            </div>
+                                            
+                                            {/* 第二行：地址 */}
+                                            <div className="flex items-center justify-start text-theme-text-white-70 text-base xl:text-lg">
+                                                <MapPin className="w-5 h-5 xl:w-6 xl:h-6 mr-3 text-theme-primary flex-shrink-0" />
+                                                <span>{degree.location}</span>
+                                            </div>
+                                            
+                                            {/* 第三行：时间 */}
+                                            <div className="flex items-center justify-start text-theme-text-white-70 text-base xl:text-lg">
+                                                <Calendar className="w-5 h-5 xl:w-6 xl:h-6 mr-3 text-theme-primary flex-shrink-0" />
+                                                <span>{degree.period}</span>
+                                            </div>
+                                        </div>
 
-                                    {/* 右边：地址和时间 */}
-                                    <div className="flex items-center gap-6 text-theme-text-white-70 text-sm sm:text-base flex-wrap">
-                                        <span className="flex items-center">
-                                            <MapPin className="w-4 h-4 mr-2 text-theme-primary" />
-                                            {degree.location}
-                                        </span>
-                                        <span className="flex items-center">
-                                            <Calendar className="w-4 h-4 mr-2 text-theme-primary" />
-                                            {degree.period}
-                                        </span>
+                                        {/* 右边：大学标志 - 固定宽高 */}
+                                        <div className="flex-shrink-0">
+                                            <img 
+                                                src={degree.logo}
+                                                alt={`${degree.institution} Logo`}
+                                                className="w-24 h-24 object-contain opacity-90 hover:opacity-100 transition-opacity duration-300"
+                                                style={degree.logo.includes('University-of-Canterbury') ? { transform: 'scale(2)' } : {}}
+                                            />
+                                        </div>
                                     </div>
-                                </div>
 
-                                {/* 学校信息和项目之间的分割线 */}
-                                <div className="flex justify-center my-8">
-                                    <GlowDivider className="w-full" />
+                                    {/* 窄屏幕：上下分布 */}
+                                    <div className="lg:hidden space-y-6">
+                                        {/* 上部：大学标志 */}
+                                        <div className="flex justify-center">
+                                            <img 
+                                                src={degree.logo}
+                                                alt={`${degree.institution} Logo`}
+                                                className="w-20 h-20 sm:w-24 sm:h-24 object-contain opacity-90 hover:opacity-100 transition-opacity duration-300"
+                                                style={degree.logo.includes('University-of-Canterbury') ? { transform: 'scale(2)' } : {}}
+                                            />
+                                        </div>
+
+                                        {/* 下部：三行信息 */}
+                                        <div className="space-y-3 text-center sm:text-left">
+                                            {/* 第一行：大学名称 */}
+                                            <div>
+                                                <ThemeTitle level={4} className="text-lg sm:text-xl text-theme-text-white-90 font-semibold leading-tight">
+                                                    {degree.institution}
+                                                </ThemeTitle>
+                                            </div>
+                                            
+                                            {/* 第二行：地址 */}
+                                            <div className="flex items-center justify-center sm:justify-start text-theme-text-white-70 text-sm sm:text-base">
+                                                <MapPin className="w-4 h-4 sm:w-5 sm:h-5 mr-2 text-theme-primary flex-shrink-0" />
+                                                <span>{degree.location}</span>
+                                            </div>
+                                            
+                                            {/* 第三行：时间 */}
+                                            <div className="flex items-center justify-center sm:justify-start text-theme-text-white-70 text-sm sm:text-base">
+                                                <Calendar className="w-4 h-4 sm:w-5 sm:h-5 mr-2 text-theme-primary flex-shrink-0" />
+                                                <span>{degree.period}</span>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
 
                                 {/* Course Records */}
