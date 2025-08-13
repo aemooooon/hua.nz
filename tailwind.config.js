@@ -88,6 +88,14 @@ export default {
           'bg-white-20': 'var(--theme-bg-white-20)',
           'bg-white-10': 'var(--theme-bg-white-10)',
           'bg-white-05': 'var(--theme-bg-white-05)',
+          // 主题色背景
+          'bg-primary-10': 'var(--theme-bg-primary-10)',
+          'bg-secondary-10': 'var(--theme-bg-secondary-10)',
+          'bg-accent-10': 'var(--theme-bg-accent-10)',
+          // 阴影颜色
+          'shadow-primary-30': 'var(--theme-shadow-primary-30)',
+          'shadow-secondary-30': 'var(--theme-shadow-secondary-30)',
+          'shadow-accent-30': 'var(--theme-shadow-accent-30)',
           divider: 'var(--theme-divider)',
           hover: 'var(--theme-hover)',
           button: 'var(--theme-button)', // 新增按钮颜色

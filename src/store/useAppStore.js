@@ -129,7 +129,7 @@ const contentConfig = {
       title: "My Projects",
       subtitle: "Showcases",
       bottomSubtitle: "Each project represents a unique challenge and learning journey",
-      description: "From Full Stack Web Development to 3D immersive experiences, from computer science to data science, to computer graphics — explore the diverse technology and solutions. Language-agnostic, platform-independent, framework-flexible.",
+      description: "From Full Stack Web Development to 3D immersive experiences, from computer science to data science, and computer graphics — explore the diverse technology and solutions. Language, platform, framework agnostic.",
       viewProject: "View Project",
       viewAction: "View",
       technologies: "Technologies",

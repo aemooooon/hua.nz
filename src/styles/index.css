@@ -72,6 +72,16 @@
   --theme-bg-white-10: rgba(255, 255, 255, 0.1);       /* 10% 透明度背景 */
   --theme-bg-white-05: rgba(255, 255, 255, 0.05);      /* 5% 透明度背景 */
   
+  /* 阴影颜色变量 */
+  --theme-shadow-primary-30: rgba(0, 255, 255, 0.3);      /* 主题阴影 30% 透明度 */
+  --theme-shadow-secondary-30: rgba(0, 255, 136, 0.3);    /* 次要主题阴影 30% 透明度 */
+  --theme-shadow-accent-30: rgba(255, 255, 255, 0.3);     /* 强调色阴影 30% 透明度 */
+
+  /* 背景颜色变量 - 主题色背景 */
+  --theme-bg-primary-10: rgba(0, 255, 255, 0.1);          /* 主题背景 10% 透明度 */
+  --theme-bg-secondary-10: rgba(0, 255, 136, 0.1);        /* 次要主题背景 10% 透明度 */
+  --theme-bg-accent-10: rgba(255, 255, 255, 0.1);         /* 强调色背景 10% 透明度 */
+  
   --theme-border: #0080ff;
   --theme-divider: #0080ff;
   --theme-hover: rgba(0, 128, 255, 0.1);
@@ -1092,9 +1102,9 @@ body {
     font-size: 0.875rem;
     font-weight: 600;
     text-align: center;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    background: rgba(255, 255, 255, 0.05);
-    color: rgba(255, 255, 255, 0.8);
+    border: 1px solid var(--theme-text-white-20);
+    background: var(--theme-bg-white-5);
+    color: var(--theme-text-white-80);
     -webkit-backdrop-filter: blur(12px);
     backdrop-filter: blur(12px);
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -1106,74 +1116,17 @@ body {
 }
 
 .category-filter-btn:hover {
-    border-color: rgba(255, 255, 255, 0.4);
-    background: rgba(255, 255, 255, 0.1);
-    color: rgba(255, 255, 255, 0.95);
+    border-color: var(--theme-text-white-40);
+    background: var(--theme-bg-white-10);
+    color: var(--theme-text-white-95);
     transform: translateY(-1px);
 }
 
 .category-filter-btn.active {
-    border-color: #00ffff;
-    background: rgba(0, 255, 255, 0.1);
-    color: #00ffff;
-    box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
-}
-
-/* 为不同分类按钮添加特定颜色 */
-.category-filter-btn.active.text-blue-400 {
-    color: #60a5fa;
-    border-color: #60a5fa;
-    background: rgba(96, 165, 250, 0.1);
-    box-shadow: 0 0 20px rgba(96, 165, 250, 0.3);
-}
-
-.category-filter-btn.active.text-green-400 {
-    color: #4ade80;
-    border-color: #4ade80;
-    background: rgba(74, 222, 128, 0.1);
-    box-shadow: 0 0 20px rgba(74, 222, 128, 0.3);
-}
-
-.category-filter-btn.active.text-purple-400 {
-    color: #c084fc;
-    border-color: #c084fc;
-    background: rgba(192, 132, 252, 0.1);
-    box-shadow: 0 0 20px rgba(192, 132, 252, 0.3);
-}
-
-.category-filter-btn.active.text-orange-400 {
-    color: #fb923c;
-    border-color: #fb923c;
-    background: rgba(251, 146, 60, 0.1);
-    box-shadow: 0 0 20px rgba(251, 146, 60, 0.3);
-}
-
-.category-filter-btn.active.text-red-400 {
-    color: #f87171;
-    border-color: #f87171;
-    background: rgba(248, 113, 113, 0.1);
-    box-shadow: 0 0 20px rgba(248, 113, 113, 0.3);
-}
-
-.category-filter-btn.active.text-cyan-400 {
-    color: #22d3ee;
-    border-color: #22d3ee;
-    background: rgba(34, 211, 238, 0.1);
-    box-shadow: 0 0 20px rgba(34, 211, 238, 0.3);
-}
-
-.category-filter-btn.active.text-pink-400 {
-    color: #f472b6;
-    border-color: #f472b6;
-    background: rgba(244, 114, 182, 0.1);
-    box-shadow: 0 0 20px rgba(244, 114, 182, 0.3);
-}
-
-.category-filter-btn.active.text-yellow-400 {
-    color: #facc15;
-    border-color: #facc15;
-    background: rgba(250, 204, 21, 0.1);
-    box-shadow: 0 0 20px rgba(250, 204, 21, 0.3);
+    border-color: var(--theme-primary);
+    background: var(--theme-bg-primary-10);
+    color: var(--theme-primary);
+    box-shadow: 0 0 20px var(--theme-shadow-primary-30);
 }
 
 /* 响应式设计 */

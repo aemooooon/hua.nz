@@ -58,54 +58,54 @@ const ProjectSection = ({ language }) => {
     const getCategoryStyle = (category) => {
         const styles = {
             'Full Stack': {
-                bg: 'bg-gradient-to-br from-blue-600/20 to-blue-800/20',
-                text: 'text-blue-400',
-                border: 'border-blue-400/30 hover:border-blue-400/50'
+                bg: 'bg-theme-bg-white-10',
+                text: 'text-theme-primary',
+                border: 'border-theme-primary/30 hover:border-theme-primary/50'
             },
             'Modern Frontend': {
-                bg: 'bg-gradient-to-br from-green-600/20 to-green-800/20',
-                text: 'text-green-400',
-                border: 'border-green-400/30 hover:border-green-400/50'
+                bg: 'bg-theme-bg-white-10',
+                text: 'text-theme-secondary',
+                border: 'border-theme-secondary/30 hover:border-theme-secondary/50'
             },
             'Frontend': {
-                bg: 'bg-gradient-to-br from-green-600/20 to-green-800/20',
-                text: 'text-green-400',
-                border: 'border-green-400/30 hover:border-green-400/50'
+                bg: 'bg-theme-bg-white-10',
+                text: 'text-theme-secondary',
+                border: 'border-theme-secondary/30 hover:border-theme-secondary/50'
             },
             'VR/360°': {
-                bg: 'bg-gradient-to-br from-purple-600/20 to-purple-800/20',
-                text: 'text-purple-400',
-                border: 'border-purple-400/30 hover:border-purple-400/50'
+                bg: 'bg-theme-bg-white-10',
+                text: 'text-theme-accent',
+                border: 'border-theme-accent/30 hover:border-theme-accent/50'
             },
             'Website Development': {
-                bg: 'bg-gradient-to-br from-orange-600/20 to-orange-800/20',
-                text: 'text-orange-400',
-                border: 'border-orange-400/30 hover:border-orange-400/50'
+                bg: 'bg-theme-bg-white-10',
+                text: 'text-theme-text-white-80',
+                border: 'border-theme-text-white-50 hover:border-theme-text-white-70'
             },
             'Web Development': {
-                bg: 'bg-gradient-to-br from-red-600/20 to-red-800/20',
-                text: 'text-red-400',
-                border: 'border-red-400/30 hover:border-red-400/50'
+                bg: 'bg-theme-bg-white-10',
+                text: 'text-theme-primary',
+                border: 'border-theme-primary/30 hover:border-theme-primary/50'
             },
             'Mobile App': {
-                bg: 'bg-gradient-to-br from-cyan-600/20 to-cyan-800/20',
-                text: 'text-cyan-400',
-                border: 'border-cyan-400/30 hover:border-cyan-400/50'
+                bg: 'bg-theme-bg-white-10',
+                text: 'text-theme-secondary',
+                border: 'border-theme-secondary/30 hover:border-theme-secondary/50'
             },
             'Data Science': {
-                bg: 'bg-gradient-to-br from-indigo-600/20 to-indigo-800/20',
-                text: 'text-indigo-400',
-                border: 'border-indigo-400/30 hover:border-indigo-400/50'
+                bg: 'bg-theme-bg-white-10',
+                text: 'text-theme-accent',
+                border: 'border-theme-accent/30 hover:border-theme-accent/50'
             },
             'activity': {
-                bg: 'bg-gradient-to-br from-pink-600/20 to-pink-800/20',
-                text: 'text-pink-400',
-                border: 'border-pink-400/30 hover:border-pink-400/50'
+                bg: 'bg-theme-bg-white-10',
+                text: 'text-theme-text-white-90',
+                border: 'border-theme-text-white-50 hover:border-theme-text-white-70'
             },
             'Other': {
-                bg: 'bg-gradient-to-br from-gray-600/20 to-gray-800/20',
-                text: 'text-gray-400',
-                border: 'border-gray-400/30 hover:border-gray-400/50'
+                bg: 'bg-theme-bg-white-10',
+                text: 'text-theme-text-white-70',
+                border: 'border-theme-text-white-40 hover:border-theme-text-white-60'
             }
         };
         return styles[category] || styles['Other'];
@@ -132,7 +132,7 @@ const ProjectSection = ({ language }) => {
                         onClick={() => setIsMapOpen(true)}
                         title={projectText.exploreMapTooltip}
                     >
-                        <div className="text-3xl xl:text-4xl text-theme-primary mb-1 flex items-center justify-center">🗺️</div>
+                        <div className="text-5xl xl:text-6xl text-theme-primary mb-1 flex items-center justify-center">🗺️</div>
                         <div className="text-xs xl:text-sm text-theme-primary font-medium text-center leading-tight px-2">
                             {projectText.exploreMap}
                         </div>
@@ -151,10 +151,10 @@ const ProjectSection = ({ language }) => {
                     <div className="flex flex-wrap gap-3 md:gap-4 justify-center items-center">
                         {/* All 按钮 */}
                         <button
-                            className={`category-filter-btn ${activeFilter === 'all' ? 'active' : ''}`}
+                            className={`category-filter-btn bg-theme-bg-white-10 text-theme-text-white-90 border-theme-text-white-50 hover:border-theme-text-white-70 ${activeFilter === 'all' ? 'active' : ''}`}
                             onClick={() => setActiveFilter('all')}
                         >
-                            {projectText.filter.allProjects}
+                            All
                         </button>
                         
                         {/* 各个分类按钮 */}
