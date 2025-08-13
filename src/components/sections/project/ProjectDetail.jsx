@@ -275,11 +275,11 @@ const ProjectDetail = ({ project = null, isOpen, onClose }) => {
       {/* Large Prominent Close Button */}
       <button
         onClick={onClose}
-        className="fixed top-6 right-6 z-[100000] group bg-theme-primary/20 hover:bg-theme-primary/30 border-2 border-theme-primary/50 hover:border-theme-primary rounded-full p-4 transition-all duration-300 hover:scale-110 backdrop-blur-sm shadow-lg hover:shadow-theme-primary/25"
+        className="fixed top-6 right-6 z-[100000] group bg-theme-primary/20 hover:bg-red-500/90 border-2 border-theme-primary/50 hover:border-white/40 rounded-full p-4 transition-all duration-300 hover:scale-110 backdrop-blur-sm shadow-lg hover:shadow-red-500/25"
         style={{ cursor: 'pointer' }}
         aria-label={projectText.detail.closeModal}
       >
-        <X className="w-8 h-8 text-theme-primary group-hover:text-theme-text-primary transition-colors" />
+        <X className="w-8 h-8 text-theme-primary group-hover:text-white transition-colors" />
       </button>
 
       {/* Content */}

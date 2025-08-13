@@ -359,21 +359,23 @@ const ProjectGeoViewer = ({ isOpen, onClose, language = 'en' }) => {
       <div style="
         color: #e5e7eb; 
         background: linear-gradient(135deg, #1f2937 0%, #111827 100%); 
-        padding: 16px; 
+        padding: 0; 
         border-radius: 12px; 
-        min-width: 560px; 
-        max-width: 760px; 
+        width: 100%; 
+        max-width: 100%; 
+        box-sizing: border-box;
         font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
         border: 1px solid #374151;
         box-shadow: 0 20px 40px rgba(0,0,0,0.8), 0 8px 16px rgba(0,0,0,0.4);
+        position: relative;
       ">
         ${projectImage ? `
-          <div style="margin: -16px -16px 12px -16px; border-radius: 12px 12px 0 0; overflow: hidden;">
+          <div style="border-radius: 12px 12px 0 0; overflow: hidden; position: relative;">
             <img src="${projectImage}" alt="${projectName}" style="width: 100%; height: 160px; object-fit: cover; display: block;" />
           </div>
         ` : ''}
         
-        <div style="position: relative; padding-right: 50px;">
+        <div style="padding: 16px; padding-right: 40px;">
           <div style="display: flex; justify-content: flex-start; align-items: center; margin-bottom: 12px; gap: 12px;">
             <span style="
               background: linear-gradient(45deg, ${themeColors.primary}, ${themeColors.accent || themeColors.primary}); 
@@ -388,11 +390,11 @@ const ProjectGeoViewer = ({ isOpen, onClose, language = 'en' }) => {
             ${project.year ? `<span style="color: #9ca3af; font-size: 12px; font-weight: 600; background: #374151; padding: 4px 8px; border-radius: 12px;">${project.year}</span>` : ''}
           </div>
           
-          <h3 style="margin: 0 0 10px 0; color: #f9fafb; font-size: 18px; font-weight: 700; line-height: 1.3; text-shadow: 0 1px 2px rgba(0,0,0,0.5);">${projectName}</h3>
+          <h3 style="margin: 0 0 10px 0; color: #f9fafb; font-size: 16px; font-weight: 700; line-height: 1.3; text-shadow: 0 1px 2px rgba(0,0,0,0.5);">${projectName}</h3>
           
           ${projectDescription ? `
-            <p style="margin: 0 0 12px 0; color: #d1d5db; font-size: 14px; line-height: 1.5;">
-              ${projectDescription.length > 140 ? projectDescription.substring(0, 140) + '...' : projectDescription}
+            <p style="margin: 0 0 12px 0; color: #d1d5db; font-size: 13px; line-height: 1.5;">
+              ${projectDescription.length > 120 ? projectDescription.substring(0, 120) + '...' : projectDescription}
             </p>
           ` : ''}
           
@@ -628,10 +630,11 @@ const ProjectGeoViewer = ({ isOpen, onClose, language = 'en' }) => {
         }
         
         .dark-popup .leaflet-popup-close-button:hover {
-          color: #f9fafb !important;
-          background: #374151 !important;
-          border-color: #6b7280 !important;
+          color: #ffffff !important;
+          background: rgba(220, 38, 38, 0.9) !important;
+          border-color: rgba(255, 255, 255, 0.4) !important;
           transform: scale(1.1) !important;
+          box-shadow: 0 4px 12px rgba(220, 38, 38, 0.4) !important;
         }
         
         /* 深色聚类样式 */
@@ -688,7 +691,7 @@ const ProjectGeoViewer = ({ isOpen, onClose, language = 'en' }) => {
     };
   }, [isOpen, projects, typeColors, createCustomClusterIcon, createCustomMarkerIcon, createPopupContent, calculateCentroid, flyToMarker, themeColors, getBilingualText, createCustomControls]);
 
-  // ESC键关闭
+  // ESC键关闭和滚动控制
   useEffect(() => {
     const handleKeyDown = (event) => {
       if (event.key === 'Escape') {
@@ -697,20 +700,41 @@ const ProjectGeoViewer = ({ isOpen, onClose, language = 'en' }) => {
     };
 
     if (isOpen) {
+      // 保存当前滚动位置
+      const scrollY = window.scrollY;
       document.addEventListener('keydown', handleKeyDown);
-      document.body.style.overflow = 'hidden';
+      // 使用CSS类来控制overflow
+      document.body.classList.add('project-geo-viewer-open');
+      document.body.style.top = `-${scrollY}px`;
     }
 
     return () => {
-      document.removeEventListener('keydown', handleKeyDown);
-      document.body.style.overflow = 'unset';
+      if (isOpen) {
+        document.removeEventListener('keydown', handleKeyDown);
+        // 恢复滚动状态
+        const scrollY = document.body.style.top;
+        document.body.classList.remove('project-geo-viewer-open');
+        document.body.style.top = '';
+        if (scrollY) {
+          window.scrollTo(0, parseInt(scrollY || '0') * -1);
+        }
+      }
     };
   }, [isOpen, onClose]);
+
+  // 组件卸载时确保恢复滚动状态
+  useEffect(() => {
+    return () => {
+      // 清理所有body样式和类名
+      document.body.classList.remove('project-geo-viewer-open');
+      document.body.style.top = '';
+    };
+  }, []);
 
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center">
+    <div className="fixed inset-0 z-50 flex items-center justify-center project-geo-viewer-modal">
       {/* 背景遮罩 */}
       <div 
         className="absolute inset-0 bg-black/70 backdrop-blur-sm"
@@ -718,7 +742,7 @@ const ProjectGeoViewer = ({ isOpen, onClose, language = 'en' }) => {
       />
       
       {/* 地图容器 */}
-      <div className="relative w-[95vw] h-[95vh] bg-theme-surface rounded-lg overflow-hidden shadow-2xl">
+      <div className="relative w-full h-full bg-theme-surface overflow-hidden shadow-2xl project-geo-viewer-container">
         {/* 右上角关闭按钮 - 地图专用高对比度设计 */}
         <button
           onClick={onClose}
