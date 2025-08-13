@@ -83,7 +83,8 @@ const AboutSection = ({ language = 'en' }) => {
                                          )
                                      `,
                                      animation: 'rotate-glow 4s linear infinite',
-                                     filter: 'blur(3px)'
+                                     filter: 'blur(3px)',
+                                     zIndex: 1 // 设置较低的z-index
                                  }}>
                             </div>
                             {/* 静态内层光晕 */}
@@ -93,7 +94,8 @@ const AboutSection = ({ language = 'en' }) => {
                                      boxShadow: `
                                          0 0 4px rgba(var(--theme-primary-rgb), 0.6),
                                          inset 0 0 4px rgba(var(--theme-primary-rgb), 0.3)
-                                     `
+                                     `,
+                                     zIndex: 2 // 设置中等的z-index
                                  }}>
                             </div>
                             {/* 延迟渲染 Avatar 以优化 LCP */}

@@ -25,7 +25,7 @@ export class EffectLorenzAttractor {
         this.y = 0;
         this.z = 0;
         this.dt = 0.02; // 恢复到0.02
-        this.maxParticles = 1200; // 大幅增加粒子数量到2000，创造更密集的轨迹
+        this.maxParticles = 999;
 
         // 动态主题色配置 - 从CSS变量读取（类似EffectChaos）
         this.fireballColor = new THREE.Color('#00FF88'); // 初始颜色，将动态更新

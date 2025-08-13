@@ -118,34 +118,24 @@ const EffectAvatar = ({ imageSrc, hoverImageSrc }) => {
         };
     }, [aspectRatio]);
 
-    // 鼠标悬停时显示图片并重新触发动画
+    // 鼠标悬停时只显示图片，不重新触发粒子动画
     const handleMouseEnter = () => {
         setIsHovered(true); // 显示图片
         gsap.fromTo(
             hoverImgRef.current,
             { 
                 opacity: 0, 
-                transform: "translate(-50%, -50%) scale(0.9)" // 保持居中，从小开始
+                transform: "translate(-50%, -30%) scale(0.9)" // 调整垂直偏移到-30%
             },
             { 
                 opacity: 1, 
-                transform: "translate(-50%, -50%) scale(1.0)", // 保持居中，放大到正常
+                transform: "translate(-50%, -30%) scale(1.0)", // 调整垂直偏移到-30%
                 duration: 0.8, 
                 ease: "elastic.out"
             }
         );
 
-        // 重新触发动画
-        const png = new Image();
-        png.onload = () => {
-            const offscreen = new OffscreenCanvas(png.width, png.height);
-            const offscreenCtx = offscreen.getContext("2d");
-            offscreenCtx.drawImage(png, 0, 0);
-
-            const imageBitmap = offscreen.transferToImageBitmap();
-            workerRef.current.postMessage({ imageBitmap, width: png.width, height: png.height }, [imageBitmap]);
-        };
-        png.src = imageSrc;
+        // 移除了重新触发粒子动画的逻辑，避免与hover图片显示冲突
     };
 
     // 鼠标离开时隐藏图片
@@ -153,7 +143,7 @@ const EffectAvatar = ({ imageSrc, hoverImageSrc }) => {
         if (hoverImgRef.current) {
             gsap.to(hoverImgRef.current, {
                 opacity: 0,
-                transform: "translate(-50%, -50%) scale(0.9)", // 保持居中，缩小消失
+                transform: "translate(-50%, -30%) scale(0.9)", // 调整垂直偏移到-30%
                 duration: 0.8,
                 ease: "elastic.out",
                 onComplete: () => setIsHovered(false), // 动画完成后隐藏图片
@@ -163,7 +153,12 @@ const EffectAvatar = ({ imageSrc, hoverImageSrc }) => {
 
     return (
         <div
-            style={{ position: "relative", width: "100%", height: "100%" }}
+            style={{ 
+                position: "relative", 
+                width: "100%", 
+                height: "100%", 
+                zIndex: 10 // 设置高z-index确保在所有光晕效果之上
+            }}
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
         >
@@ -190,9 +185,10 @@ const EffectAvatar = ({ imageSrc, hoverImageSrc }) => {
                     position: "absolute",
                     top: "50%",
                     left: "50%",
-                    transform: "translate(-50%, -50%) scale(1.5)", // 恢复原来的设置
-                    opacity: isLoading ? 0 : 1, // 加载时隐藏canvas
-                    transition: "opacity 0.3s ease"
+                    transform: "translate(-50%, -30%) scale(1.5)", // 调整垂直偏移到-30%
+                    opacity: isLoading ? 0 : (isHovered ? 0.2 : 1), // hover时降低透明度，避免遮挡真实照片
+                    transition: "opacity 0.3s ease",
+                    zIndex: -1 // 设置负z-index，确保在hover图片后面
                 }}
             />
 
@@ -205,7 +201,7 @@ const EffectAvatar = ({ imageSrc, hoverImageSrc }) => {
                     position: "absolute",
                     top: "50%",
                     left: "50%",
-                    transform: "translate(-50%, -50%)", // 恢复原来的居中
+                    transform: "translate(-50%, -30%)", // 调整垂直偏移到-30%
                     opacity: 0, // 初始状态
                     visibility: isHovered ? "visible" : "hidden", // 控制可见性
                     transition: "opacity 0.8s ease, transform 0.8s ease", // 添加过渡效果
@@ -214,7 +210,8 @@ const EffectAvatar = ({ imageSrc, hoverImageSrc }) => {
                     height: "auto", // 高度自适应，保持宽高比
                     maxHeight: "100%", // 限制最大高度不超过容器
                     objectFit: "cover", // 改为contain，完整显示图片不裁剪
-                    borderRadius: "inherit" // 继承父容器的圆角
+                    borderRadius: "inherit", // 继承父容器的圆角
+                    zIndex: 2 // hover图片在容器内的最高层级
                 }}
             />
         </div>
