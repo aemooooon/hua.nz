@@ -189,7 +189,7 @@ const contentConfig = {
     },
     education: {
       title: "Education",
-      subtitle: "academic background",
+      subtitle: "Academic Background",
       labels: {
         academicRecords: "Academic Records",
         totalCredits: "Total Credits",
