@@ -123,19 +123,8 @@ const AboutSection = ({ language = 'en' }) => {
                 <div className="w-full about-content-area flex flex-col justify-center order-2 lg:order-2">
                     {/* 内容容器 - 内部也应用黄金比例的留白 */}
                     <div className="about-card-container">
-                        {/* 增强毛玻璃背景卡片 + 光影效果 */}
-                        <div className="content-section shine-card p-6 lg:p-8 xl:p-10 w-full relative"
-                             style={{
-                                 background: 'rgba(255, 255, 255, 0.25)', // 进一步增加不透明度，从0.18提升到0.25
-                                 border: `1px solid var(--theme-border-neutral)`, // 使用中性边框而非主题色
-                                 borderRadius: '0.75rem',
-                                 backdropFilter: 'blur(24px)', // 进一步增强模糊效果，从20px提升到24px
-                                 boxShadow: `
-                                     0 8px 32px rgba(0, 0, 0, 0.6),
-                                     0 0 20px rgba(255, 255, 255, 0.15), // 增强白色光晕
-                                     inset 0 1px 0 rgba(255, 255, 255, 0.3) // 增强内发光
-                                 `
-                             }}>
+                        {/* 使用与 ProjectSection 相同的卡片样式 */}
+                        <div className="content-section shine-card project-card p-6 lg:p-8 xl:p-10 w-full relative">
                             {/* 内容层 */}
                             <div className="relative z-10 about-card-content shine-content">
                                 {/* 个人陈述内容 */}
