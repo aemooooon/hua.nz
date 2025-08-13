@@ -430,7 +430,7 @@ const SmartDirectionalCursor = () => {
          * - 支持动态颜色变化和渐变效果
          */
         const createArrow = (direction, intensity = 1) => {
-            const arrowSize = 300 * hoverScale; // 大容器确保箭头能伸出圆圈
+            const arrowSize = 256 * hoverScale; // 大容器确保箭头能伸出圆圈
             
             // SVG路径定义：长竖线 + 箭头尖端（调整尖端长度，让两边更短更尖锐）
             const arrowPath = direction === 'up' 

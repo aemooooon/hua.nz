@@ -1,4 +1,17 @@
-import { useState } from 'react';
+/**
+ * 项目展示区域主组件
+ * 负责展示所有项目的网格布局，包含项目分类过滤、项目卡片展示
+ * 以及地图模态框和项目详情弹窗的集成
+ * 
+ * 特性：
+ * - 响应式项目网格布局
+ * - 动态项目分类过滤
+ * - 主题化配色系统
+ * - 国际化支持
+ * - 地图和详情弹窗集成
+ */
+
+import { useState, useMemo } from 'react';
 import PropTypes from 'prop-types';
 import ProjectGeoViewer from './ProjectGeoViewer';
 import ProjectDetail from './ProjectDetail';
@@ -6,7 +19,7 @@ import GlowDivider from '../../ui/GlowDivider';
 import useAppStore from '../../../store/useAppStore';
 import { ThemeTitle } from '../../ui/ThemeComponents';
 
-// MapPin 图标组件
+// 地图位置图标组件
 const MapPin = ({ className = "w-4 h-4" }) => (
     <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
@@ -22,29 +35,33 @@ const ProjectSection = ({ language }) => {
     const [isMapOpen, setIsMapOpen] = useState(false);
     const [activeFilter, setActiveFilter] = useState('all');
     
-    // 从store获取数据和方法
+    // 从store获取数据和方法 - 使用解构减少重复调用
     const { getAllProjects, selectedProject, setSelectedProject, getProjectsText } = useAppStore();
 
-    // 获取当前语言的项目文本
+    // 获取当前语言的项目文本 - 缓存文本避免重复计算
     const projectText = getProjectsText();
 
     // 获取所有项目数据
     const projects = getAllProjects();
 
-    // 按项目的 type 字段分组
-    const projectsByCategory = projects.reduce((acc, project) => {
-        const category = project.type || 'Other';
-        if (!acc[category]) acc[category] = [];
-        acc[category].push(project);
-        return acc;
-    }, {});
+    // 按项目类型分组 - 用于分类过滤 - 使用useMemo优化性能
+    const projectsByCategory = useMemo(() => {
+        return projects.reduce((acc, project) => {
+            const category = project.type || 'Other';
+            if (!acc[category]) acc[category] = [];
+            acc[category].push(project);
+            return acc;
+        }, {});
+    }, [projects]);
 
-    // 获取过滤后的项目
-    const filteredProjects = activeFilter === 'all' 
-        ? projects 
-        : projectsByCategory[activeFilter] || [];
+    // 获取过滤后的项目列表 - 使用useMemo避免重复过滤
+    const filteredProjects = useMemo(() => {
+        return activeFilter === 'all' 
+            ? projects 
+            : projectsByCategory[activeFilter] || [];
+    }, [activeFilter, projects, projectsByCategory]);
 
-    // 状态颜色映射 - 使用主题色
+    // 项目状态颜色映射 - 根据年份和状态关键词动态分配主题色
     const getStatusColor = (status) => {
         if (!status) return `bg-theme-muted/20 text-theme-textSecondary border-theme-muted/50`;
         const s = String(status).toLowerCase();
@@ -54,7 +71,7 @@ const ProjectSection = ({ language }) => {
         return `bg-theme-muted/20 text-theme-textSecondary border-theme-muted/50`;
     };
 
-    // 获取类别颜色和样式
+    // 获取项目类别样式 - 为不同类别提供视觉差异化
     const getCategoryStyle = (category) => {
         const styles = {
             'Full Stack': {
@@ -113,11 +130,11 @@ const ProjectSection = ({ language }) => {
 
     return (
         <div className="min-h-screen w-full p-8 text-white relative project-section-bg">
-            {/* 顶部标题栏 - 左右分布 */}
+            {/* 顶部标题栏 - 响应式布局，标题居左，地图按钮居右 */}
             <div className="flex flex-col lg:flex-row lg:justify-between lg:items-center p-8 pt-12 mb-8">
-                {/* 左侧：Projects标题和副标题 */}
+                {/* 左侧：标题区域 */}
                 <div className="flex flex-col text-center lg:text-left">
-                    <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold bg-gradient-to-r from-theme-gradient-from via-theme-gradient-via to-theme-gradient-to bg-clip-text text-transparent mb-3">
+                    <h1 className="project-main-title text-5xl md:text-6xl lg:text-7xl font-bold mb-3">
                         {projectText.title}
                     </h1>
                     <h2 className="text-xl md:text-2xl text-white/70 font-light italic">
@@ -125,7 +142,7 @@ const ProjectSection = ({ language }) => {
                     </h2>
                 </div>
 
-                {/* 右侧：Explore Map 按钮 - 恢复原有圆形光晕样式 */}
+                {/* 右侧：地图探索按钮 - 圆形交互设计 */}
                 <div className="flex items-center justify-center lg:justify-end mt-8 lg:mt-0">
                     <div 
                         className="flex flex-col items-center justify-center cursor-pointer bg-gradient-to-br from-theme-primary/20 to-theme-secondary/20 border border-theme-primary/30 hover:border-theme-primary/50 transition-all duration-300 hover:scale-105 explore-map-button rounded-full backdrop-blur-sm"
@@ -140,7 +157,7 @@ const ProjectSection = ({ language }) => {
                 </div>
             </div>
 
-            {/* 标题与内容之间的分隔线 */}
+            {/* 装饰性分隔线 */}
             <GlowDivider className="my-8 px-4 sm:px-6 lg:px-8" width="w-full" />
             
             {/* 全屏内容区域 */}
@@ -227,36 +244,10 @@ const ProjectSection = ({ language }) => {
                                     </div>
                                 )}
                                 
-                                {/* 项目名称 */}
+                                {/* 项目名称 - 显示中文名称或英文名称 */}
                                 <ThemeTitle level={3} className="project-title leading-snug line-clamp-2">
-                                    {project.name || project.title}
+                                    {language === 'en' ? (project.name || project.title) : (project.nameZh || project.name || project.title)}
                                 </ThemeTitle>
-                                
-                                {/* 项目统计信息已移除 - 卡片上不显示统计和技术栈信息 */}
-                                {/* {project.stats && (
-                                    <div className="project-stats mb-3">
-                                        <div className="flex flex-wrap gap-4 text-xs text-theme-text-muted">
-                                            {project.stats.projects && (
-                                                <span>📊 {project.stats.projects} projects</span>
-                                            )}
-                                            {project.stats.locations && (
-                                                <span>📍 {project.stats.locations}</span>
-                                            )}
-                                            {project.stats.clients && (
-                                                <span>🏢 {project.stats.clients}</span>
-                                            )}
-                                            {project.stats.sectors && (
-                                                <span>🏛️ {project.stats.sectors}</span>
-                                            )}
-                                            {project.stats.pages && (
-                                                <span>� {project.stats.pages}</span>
-                                            )}
-                                            {project.stats.uptime && (
-                                                <span>⚡ {project.stats.uptime} uptime</span>
-                                            )}
-                                        </div>
-                                    </div>
-                                )} */}
                                 
                             </div>
                         </div>
