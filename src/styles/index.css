@@ -1840,3 +1840,18 @@ body {
     -webkit-box-orient: vertical;
     overflow: hidden;
 }
+
+/* Hide scrollbar for project detail thumbnail navigation */
+.scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+    display: none;
+}
+
+/* Smooth scrolling for thumbnail navigation */
+.smooth-scroll {
+    scroll-behavior: smooth;
+}

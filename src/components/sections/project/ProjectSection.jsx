@@ -4,7 +4,19 @@ import ProjectGeoViewer from './ProjectGeoViewer';
 import ProjectDetail from './ProjectDetail';
 import GlowDivider from '../../ui/GlowDivider';
 import useAppStore from '../../../store/useAppStore';
-import { ThemeTitle, ThemeButton } from '../../ui/ThemeComponents';
+import { ThemeTitle } from '../../ui/ThemeComponents';
+
+// MapPin 图标组件
+const MapPin = ({ className = "w-4 h-4" }) => (
+    <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+    </svg>
+);
+
+MapPin.propTypes = {
+    className: PropTypes.string
+};
 
 const ProjectSection = ({ language }) => {
     const [isMapOpen, setIsMapOpen] = useState(false);
@@ -205,10 +217,18 @@ const ProjectSection = ({ language }) => {
                                     {project.year || ''}
                                 </div>
                             </div>
-                            {/* 项目信息 */}
+                            {/* 项目信息 - 简化布局 */}
                             <div className="project-content">
-                                {/* 项目名称 - 预留2行高度，自适应高度 */}
-                                <ThemeTitle level={3} className="project-title min-h-12 leading-snug line-clamp-2 mb-2">
+                                {/* 地点信息（优先显示） */}
+                                {project.location && (
+                                    <div className="project-meta text-theme-text-muted mb-3 flex items-center gap-1.5">
+                                        <MapPin className="w-4 h-4 text-current flex-shrink-0" />
+                                        <span className="text-sm">{project.location}</span>
+                                    </div>
+                                )}
+                                
+                                {/* 项目名称 */}
+                                <ThemeTitle level={3} className="project-title leading-snug line-clamp-2">
                                     {project.name || project.title}
                                 </ThemeTitle>
                                 
@@ -238,135 +258,6 @@ const ProjectSection = ({ language }) => {
                                     </div>
                                 )} */}
                                 
-                                {/* 地点信息（如有） */}
-                                {project.location && (
-                                    <div className="project-meta text-theme-text-muted mb-4">
-                                        <span>📍 {project.location}</span>
-                                    </div>
-                                )}
-                                
-                                {/* 操作按钮 - 重新设计布局 */}
-                                {(() => {
-                                    const buttons = [];
-                                    
-                                    // View 按钮（永远存在）
-                                    const viewButton = (
-                                        <ThemeButton 
-                                            key="view"
-                                            variant="primary" 
-                                            size="sm"
-                                            onClick={(e) => {
-                                                e.stopPropagation();
-                                                setSelectedProject(project);
-                                            }}
-                                        >
-                                            {projectText.viewAction}
-                                        </ThemeButton>
-                                    );
-                                    
-                                    // 收集其他链接按钮
-                                    const linkButtons = [];
-                                    
-                                    // Live Demo 按钮
-                                    if (project.links?.live) {
-                                        linkButtons.push(
-                                            <ThemeButton 
-                                                key="live"
-                                                as="a" 
-                                                href={project.links.live}
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                                variant="ghost"
-                                                size="sm"
-                                                onClick={(e) => e.stopPropagation()}
-                                            >
-                                                {projectText.liveDemo}
-                                            </ThemeButton>
-                                        );
-                                    }
-                                    
-                                    // Official 按钮
-                                    if (project.links?.official) {
-                                        linkButtons.push(
-                                            <ThemeButton 
-                                                key="official"
-                                                as="a" 
-                                                href={project.links.official}
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                                variant="ghost"
-                                                size="sm"
-                                                onClick={(e) => e.stopPropagation()}
-                                            >
-                                                {projectText.officialSite}
-                                            </ThemeButton>
-                                        );
-                                    }
-                                    
-                                    // Company 按钮
-                                    if (project.links?.company) {
-                                        linkButtons.push(
-                                            <ThemeButton 
-                                                key="company"
-                                                as="a" 
-                                                href={project.links.company}
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                                variant="ghost"
-                                                size="sm"
-                                                onClick={(e) => e.stopPropagation()}
-                                            >
-                                                {projectText.officialSite}
-                                            </ThemeButton>
-                                        );
-                                    }
-                                    
-                                    // 兼容旧的 link 字段（但排除github，因为已在图片上显示）
-                                    if (project.link && !project.links && !project.link.includes('github')) {
-                                        linkButtons.push(
-                                            <ThemeButton 
-                                                key="link"
-                                                as="a" 
-                                                href={project.link}
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                                variant="ghost"
-                                                size="sm"
-                                                onClick={(e) => e.stopPropagation()}
-                                            >
-                                                {projectText.liveDemo}
-                                            </ThemeButton>
-                                        );
-                                    }
-                                    
-                                    // 根据按钮数量决定布局
-                                    const totalButtons = 1 + linkButtons.length; // 1个view + N个链接按钮
-                                    let justifyClass = '';
-                                    
-                                    if (totalButtons === 1) {
-                                        // 只有view按钮，居右显示
-                                        justifyClass = 'justify-end';
-                                        buttons.push(viewButton);
-                                    } else if (totalButtons === 2) {
-                                        // view + 1个链接，左右对称
-                                        justifyClass = 'justify-between';
-                                        buttons.push(linkButtons[0], viewButton);
-                                    } else if (totalButtons === 3) {
-                                        // view + 2个链接，左中右均匀分布
-                                        justifyClass = 'justify-between';
-                                        buttons.push(linkButtons[0], viewButton, linkButtons[1]);
-                                    } else {
-                                        // 超过3个按钮，均匀分布
-                                        justifyClass = 'justify-between';
-                                        buttons.push(...linkButtons.slice(0, -1), viewButton, linkButtons[linkButtons.length - 1]);
-                                    }
-                                    
-                                    return (
-                                        <div className={`project-actions flex gap-2 mt-4 ${justifyClass}`}>
-                                            {buttons}
-                                        </div>
-                                    );
-                                })()}
                             </div>
                         </div>
                     ))}
@@ -376,7 +267,7 @@ const ProjectSection = ({ language }) => {
                 <div className="text-center py-12 border-t border-white/10 bg-black/20 backdrop-blur-sm rounded-xl mt-8 mx-4 sm:mx-6 lg:mx-8">
                     <div className="max-w-4xl mx-auto px-4">
                         <p className="text-white/80 text-lg mb-3 font-medium">
-                            {projectText.subtitle}
+                            {projectText.bottomSubtitle}
                         </p>
                         <p className="text-white/60 text-base leading-relaxed">
                             {projectText.description}

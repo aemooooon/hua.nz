@@ -127,7 +127,8 @@ const contentConfig = {
     },
     projects: {
       title: "My Projects",
-      subtitle: "Each project represents a unique challenge and learning journey",
+      subtitle: "showcases",
+      bottomSubtitle: "Each project represents a unique challenge and learning journey",
       description: "From Full Stack Web Development to 3D immersive experiences, from computer science to data science, to computer graphics — explore the diverse technology and solutions. Language-agnostic, platform-independent, framework-flexible.",
       viewProject: "View Project",
       viewAction: "View",
@@ -483,7 +484,8 @@ const contentConfig = {
     },
     projects: {
       title: "项目集锦",
-      subtitle: "每个项目都代表着独特的挑战和学习之旅",
+      subtitle: "showcases",
+      bottomSubtitle: "每个项目都代表着独特的挑战和学习之旅",
       description: "从全栈Web开发到3D沉浸式体验，从计算机科学，计算机图形学，到数据科学 — 探索多样的技术与解决方案。语言无关，平台独立，框架灵活。",
       viewProject: "查看项目",
       viewAction: "查看",
@@ -835,6 +837,7 @@ export const useAppStore = create(
           "type": "Front End",
           "title": "Front End Developer",
           "name": "Corridor of Light and Shadow",
+          "company": "Hua Wang",
           "description": {
             "en": "A sophisticated personal portfolio website built with cutting-edge web technologies to showcase professional experience and technical expertise. Developed using React 18 with modern hooks, Vite for optimized build performance, and Zustand for efficient state management. Features an immersive 3D animated cube opening sequence using GSAP timeline animations, dynamic theme switching system with CSS custom properties, and multilingual support (English/Chinese) with persistent user preferences. The site includes interactive background effects, smooth section navigation with scroll animations, responsive design optimized for all devices, and comprehensive project showcases with detailed modal views. Implements modern development practices including component-based architecture, custom hooks for business logic, and optimized performance with code splitting and lazy loading.",
             "zh": "一个使用前沿网络技术构建的精致个人作品集网站，用于展示专业经验和技术专长。使用React 18和现代hooks开发，Vite优化构建性能，Zustand进行高效状态管理。特色功能包括使用GSAP时间轴动画的沉浸式3D立方体开场序列、使用CSS自定义属性的动态主题切换系统，以及支持持久化用户偏好的多语言支持（英文/中文）。网站包含交互式背景效果、带滚动动画的平滑区块导航、针对所有设备优化的响应式设计，以及带有详细模态视图的综合项目展示。实现了现代开发实践，包括基于组件的架构、用于业务逻辑的自定义hooks，以及通过代码分割和懒加载优化的性能。"
@@ -852,6 +855,7 @@ export const useAppStore = create(
           "type": "Full Stack",
           "title": "Full Stack Developer",
           "name": "Orchard Sampling Scheduling System",
+          "company": "Zespri International",
           "description": {
             "en": "Developed a comprehensive orchard sampling optimization system for New Zealand's leading kiwifruit company. Built robust ETL pipelines using Python to process and integrate diverse agricultural datasets including orchard locations, fruit quality metrics, and sampling schedules. Created an interactive GIS-based web application with real-time data visualization, enabling efficient sampling route optimization and quality assessment workflows. The system significantly improved sampling efficiency by 30% through intelligent spatial analysis and automated scheduling algorithms, supporting Zespri's commitment to delivering premium kiwifruit to global markets. Implemented using modern web technologies including React frontend, Node.js backend, PostgreSQL database, and integrated mapping services for seamless user experience.",
             "zh": "为新西兰领先的奇异果公司开发了综合性果园采样优化系统。使用Python构建强大的ETL数据管道，处理和集成包括果园位置、果实质量指标和采样计划在内的多样化农业数据集。创建了具有实时数据可视化功能的交互式GIS网络应用程序，实现高效的采样路线优化和质量评估工作流程。该系统通过智能空间分析和自动化调度算法将采样效率显著提高了30%，支持Zespri向全球市场提供优质奇异果的承诺。使用现代网络技术实现，包括React前端、Node.js后端、PostgreSQL数据库，以及集成的地图服务以提供无缝的用户体验。"
@@ -868,6 +872,7 @@ export const useAppStore = create(
           "type": "Front End",
           "title": "Front End Developer",
           "name": "Realibox 3D Editor",
+          "company": "Realibox",
           "description": "Developed and maintained the central hub for Realibox’s 3D assets, using React with a WebGL-based library for the frontend and Node.js/Python for the backend. Implemented CI/CD pipelines using GitLab for code integration and deployment. Worked in an Agile environment, collaborating closely with PMs, QAs, and Designers to ensure feature delivery aligned with requirements.",
           "coordinates": [22.9951158, 113.3335372],
           "location": "Guangzhou, China",
@@ -881,6 +886,7 @@ export const useAppStore = create(
           "type": "Full Stack",
           "title": "Full Stack Developer",
           "name": "Real-time Air Quality Index Publish Platform",
+          "company": "Enshi Environmental Agency",
           "description": {
             "en": "Developed a real-time Air Quality Index dashboard for a population of 5 million, involving an ETL workflow to extract XML data from a third-party Web service on schedule, transform it into structured objects, and load it into a MySQL database. The backend, built with Java Spring Boot, provided RESTful APIs for data access, while the front end, developed using React and EChart, visualized AQI trends and geographic distributions through interactive and dynamic charts.",
             "zh": "为500万人口开发实时空气质量指数仪表板，构建ETL工作流程，定期从第三方Web服务提取XML数据，将其转换为结构化对象并加载到MySQL数据库中。后端使用Java Spring Boot构建，提供RESTful API进行数据访问，前端使用React和EChart开发，通过交互式动态图表可视化AQI趋势和地理分布。"
@@ -897,6 +903,7 @@ export const useAppStore = create(
           "type": "WebGL",
           "title": "Interactive 360° Virtual Tour Platform",
           "name": "Real Estate VR Solutions",
+          "company": "Neuclear Stone Digital",
           "description": {
             "en": "Developed a comprehensive 360° virtual tour platform for real estate marketing, serving 18+ property developments across China. Built using JavaScript and WebGL-based 3D libraries, enabling immersive panoramic exploration of buildings, rooms, and outdoor spaces. Implemented advanced features including clickable hotspots, scene transitions, interactive floor plans, and cross-platform compatibility for web and mobile devices. The platform helped property developers showcase their projects remotely, significantly reducing on-site visits while maintaining high engagement rates.",
             "zh": "开发了全面的360°虚拟看房平台，为中国18+个房地产项目提供营销服务。使用JavaScript和基于WebGL的3D库构建，实现对建筑、房间和户外空间的沉浸式全景探索。实现了先进功能，包括可点击热点、场景切换、交互式户型图以及Web和移动设备的跨平台兼容性。该平台帮助房地产开发商远程展示项目，大大减少了实地看房，同时保持高参与度。"
@@ -963,6 +970,7 @@ export const useAppStore = create(
           "type": "Website",
           "title": "Corporate Website Development Platform",
           "name": "Enterprises official website",
+          "company": "Day Digital",
           "description": {
             "en": "Comprehensive corporate website development solution serving government agencies, healthcare institutions, tourism bureaus, and private enterprises. Built using CMS platforms with custom database architecture, responsive UI implementation from design mockups, and full deployment management across multiple production servers.",
             "zh": "为政府机构、医疗机构、旅游局和私营企业提供的综合性企业网站开发解决方案。使用CMS平台构建，具有定制数据库架构，从设计稿实现响应式UI，并在多个生产服务器上进行全面的部署管理。"
@@ -1023,6 +1031,7 @@ export const useAppStore = create(
           "type": "Mobile Apps",
           "title": "FitsGo",
           "name": "FitsGo",
+          "company": "Otago Polytechnic",
           "description": {
             "en": "A comprehensive fitness tracking mobile application designed to encourage people to start exercising by providing interactive map-based workout experiences. Built as a cross-platform app using React Native and Firebase, FitsGo allows users to select exercise routes from nearby points of interest, track their workouts (running, walking, cycling) with real-time GPS monitoring, and earn badges for visiting locations. Features include user authentication, profile management with weight/age tracking, real-time calorie calculation based on MET values, workout history with detailed statistics, and social elements for future friend connectivity and weekly challenges.",
             "zh": "一个综合性健身追踪移动应用程序，旨在通过提供基于地图的交互式锻炼体验来鼓励人们开始锻炼。使用React Native和Firebase构建的跨平台应用，FitsGo允许用户从附近的兴趣点选择锻炼路线，通过实时GPS监控跟踪锻炼（跑步、步行、骑行），并通过访问位置获得徽章。功能包括用户认证、带有体重/年龄跟踪的个人资料管理、基于MET值的实时卡路里计算、带有详细统计的锻炼历史，以及未来朋友连接和每周挑战的社交元素。"
@@ -1030,7 +1039,7 @@ export const useAppStore = create(
           "coordinates": [-45.8750186, 170.4973482],
           "location": "Dunedin, New Zealand",
           "year": "2019",
-                    "links": {
+          "links": {
             "github": "https://github.com/aemooooon/FitsGo"
           },
           "img": ["/fitsgo.gif", "fitsgo-team.jpg"]
@@ -1039,6 +1048,7 @@ export const useAppStore = create(
           "type": "Mobile Apps",
           "title": "Travel Assistant",
           "name": "Travel Assistant",
+          "company": "Otago Polytechnic",
           "description": {
             "en": "An Android-based travel companion application built with Kotlin and Room Database, designed to help travelers explore unfamiliar countries with confidence. The app features interactive Google Maps integration with clustered location markers, country selection dropdown, real-time location services, and multilingual phrase translation using Yandex API. Built using modern Android architecture components including ViewModel, LiveData, Coroutines, and View/Data Binding, with comprehensive documentation generated using Dokka and UI testing implemented with Espresso. The application provides curated lists of top-rated attractions and landmarks for each country, complete with coordinates and detailed information.",
             "zh": "一个基于Android的旅行伴侣应用程序，使用Kotlin和Room数据库构建，旨在帮助旅行者自信地探索陌生的国家。该应用程序具有与聚类位置标记的交互式Google Maps集成、国家选择下拉菜单、实时位置服务，以及使用Yandex API的多语言短语翻译功能。使用现代Android架构组件构建，包括ViewModel、LiveData、协程和视图/数据绑定，使用Dokka生成全面的文档，并使用Espresso实现UI测试。该应用程序为每个国家提供精选的顶级景点和地标列表，包含坐标和详细信息。"
@@ -1055,6 +1065,7 @@ export const useAppStore = create(
           "type": "Full Stack",
           "title": "ECAN Data Pipeline",
           "name": "ECAN Data Pipeline",
+          "company": "University of Canterbury",
           "description": {
             "en": "A comprehensive data engineering project that demonstrates advanced ETL pipeline architecture and microservices design. As a key contributor to the DATA472 Central Collection Team, developed multiple interconnected systems including: a central data collection service using Apache Airflow with automated CRON job scheduling to aggregate data from over 20 student sources; a Node.js/Express Web API service with Swagger documentation providing endpoints for data visualization; PostgreSQL database deployment on AWS RDS for centralized data storage; and interactive dashboards using Python Streamlit and R Shiny for data analysis. The project showcases modern data engineering practices including DAGs (Directed Acyclic Graphs), microservice architecture, cloud deployment on AWS EC2, and collaborative team-based data collection workflows.",
             "zh": "一个综合性数据工程项目，展示了先进的ETL管道架构和微服务设计。作为DATA472中央收集团队的关键贡献者，开发了多个相互连接的系统，包括：使用Apache Airflow的中央数据收集服务，具有自动化CRON作业调度，聚合来自20多个学生数据源的数据；带有Swagger文档的Node.js/Express Web API服务，提供数据可视化端点；在AWS RDS上部署PostgreSQL数据库进行集中数据存储；以及使用Python Streamlit和R Shiny的交互式仪表板进行数据分析。该项目展示了现代数据工程实践，包括DAGs（有向无环图）、微服务架构、AWS EC2云部署和基于团队的协作数据收集工作流程。"
@@ -1070,6 +1081,7 @@ export const useAppStore = create(
         {
           "type": "Activity",
           "title": "Assisted IT Meetups",
+          "company": "CITANZ",
           "name": "CITANZ CHCH Volunteer",
           "description": {
             "en": "Active volunteer contributor to CITANZ (Computing and Information Technology Association of New Zealand) Christchurch chapter, facilitating monthly IT community meetups that bring together professionals, students, and technology enthusiasts. Serve as both speaker and engaged listener, sharing technical expertise on software development, data engineering, and emerging technologies while learning from diverse industry perspectives. Actively mentor newcomers to the tech industry, providing guidance on career development, technical skills, and industry best practices. Foster collaborative learning environments through organizing workshops, panel discussions, and networking sessions that strengthen the local tech community. Contribute to knowledge exchange initiatives by facilitating discussions on current technology trends, helping members solve technical challenges, and connecting professionals across different specializations. This volunteer work exemplifies the spirit of giving back to the community while continuously growing through peer learning and mentorship opportunities.",
@@ -1087,12 +1099,13 @@ export const useAppStore = create(
           "type": "Activity",
           "title": "Save Kiwi",
           "name": "AI Hackathon 2024",
+          "company": "University of Canterbury",
           "description": {
             "en": "Design an AI solution to help existing organizations improve maintenance and analysis efficiency to better protect kiwi birds. It uses advanced tech to protect kiwi birds by combining smart cages, edge computing, and cloud analytics. Smart cages with RGB cameras monitor wildlife, while edge computing processes images in real-time using a vision-transformer model. This model distinguishes between kiwi birds, predators, and non-threatening animals. Predators are captured; others are released. Data is sent to a cloud platform for monitoring and alerts, enabling quick conservation responses.",
             "zh": "设计一个AI解决方案，帮助现有组织提高维护和分析效率，更好地保护奇异鸟。它通过结合智能笼子、边缘计算和云分析等先进技术来保护奇异鸟。带有RGB摄像头的智能笼子监控野生动物，边缘计算使用视觉变换器模型实时处理图像。该模型区分奇异鸟、捕食者和非威胁动物。捕食者被捕获，其他动物被释放。数据发送到云平台进行监控和警报，实现快速保护响应。"
           },
           "coordinates": [-43.5218726, 172.5674936],
-          "location": "University of Canterbury, Christchurch",
+          "location": "University of Canterbury",
           "year": "2024",
           "links": {
             "official": "https://aihackathon.nz/ai-hackathon-2024/"
@@ -1464,7 +1477,7 @@ export const useAppStore = create(
           "name": "AI Hackathon 2024",
           "description": "Design an AI solution to help existing organizations improve maintenance and analysis efficiency to better protect kiwi birds. It uses advanced tech to protect kiwi birds by combining smart cages, edge computing, and cloud analytics. Smart cages with RGB cameras monitor wildlife, while edge computing processes images in real-time using a vision-transformer model. This model distinguishes between kiwi birds, predators, and non-threatening animals. Predators are captured; others are released. Data is sent to a cloud platform for monitoring and alerts, enabling quick conservation responses.",
           "coordinates": [-43.5218726, 172.5674936],
-          "location": "University of Canterbury, Christchurch",
+          "location": "University of Canterbury",
           "year": "2024",
           "link": "https://www.cita.org.nz/",
           "img": ["/UC_F4.001.jpeg", "/UC_F4.002.jpeg", "f4.jpg"]

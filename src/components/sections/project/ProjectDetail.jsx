@@ -54,6 +54,22 @@ const ProjectDetail = ({ project = null, isOpen, onClose }) => {
   // 获取当前语言的项目文本
   const projectText = getProjectsText();
 
+  // 获取项目类别的颜色样式（与ProjectSection保持一致）
+  const getCategoryColors = (type) => {
+    const colorMap = {
+      'Full Stack': { text: 'text-blue-400', bg: 'bg-blue-500/10', border: 'border-blue-500/30', hover: 'hover:bg-blue-500/20' },
+      'Front End': { text: 'text-green-400', bg: 'bg-green-500/10', border: 'border-green-500/30', hover: 'hover:bg-green-500/20' },
+      'Frontend': { text: 'text-green-400', bg: 'bg-green-500/10', border: 'border-green-500/30', hover: 'hover:bg-green-500/20' },
+      'WebGL': { text: 'text-purple-400', bg: 'bg-purple-500/10', border: 'border-purple-500/30', hover: 'hover:bg-purple-500/20' },
+      'Website': { text: 'text-orange-400', bg: 'bg-orange-500/10', border: 'border-orange-500/30', hover: 'hover:bg-orange-500/20' },
+      'Mobile Apps': { text: 'text-cyan-400', bg: 'bg-cyan-500/10', border: 'border-cyan-500/30', hover: 'hover:bg-cyan-500/20' },
+      'Activity': { text: 'text-yellow-400', bg: 'bg-yellow-500/10', border: 'border-yellow-500/30', hover: 'hover:bg-yellow-500/20' }
+    };
+    return colorMap[type] || { text: 'text-blue-400', bg: 'bg-blue-500/10', border: 'border-blue-500/30', hover: 'hover:bg-blue-500/20' };
+  };
+
+  const categoryColors = getCategoryColors(project?.type);
+
   // 当模态框打开时禁用背景滚动并保存滚动位置
   useEffect(() => {
     if (isOpen) {
@@ -130,7 +146,7 @@ const ProjectDetail = ({ project = null, isOpen, onClose }) => {
           {project.tech.map((tech, index) => (
             <span
               key={index}
-              className="px-3 py-1 bg-theme-primary/20 text-theme-primary text-sm rounded-full border border-theme-primary/30"
+              className="px-2 py-1 bg-theme-primary/20 text-theme-primary text-xs rounded-full border border-theme-primary/30"
             >
               {tech}
             </span>
@@ -268,180 +284,233 @@ const ProjectDetail = ({ project = null, isOpen, onClose }) => {
 
       {/* Content */}
       <div className="h-full overflow-y-auto pt-6 pb-6 px-6 md:px-12 lg:px-16 xl:px-24" style={{ cursor: 'default' }}>
-        {/* Header */}
-        <div className="mb-8 pt-16 md:pt-8">
-          <h2 className="text-4xl md:text-5xl font-bold text-theme-text-primary mb-3 leading-tight">{project.title}</h2>
-          <p className="text-xl text-theme-text-secondary">{language === 'en' ? project.name : project.name}</p>
+        {/* Header - Only Project Name */}
+        <div className="mb-6 pt-16 md:pt-8 text-center">
+          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-theme-text-primary leading-tight">
+            {language === 'en' ? project.name : (project.nameZh || project.name)}
+          </h2>
         </div>
 
-        {/* Content Container */}
+        {/* Main Content Layout */}
         <div className="max-w-7xl mx-auto">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
-            {/* Left Column - Images */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8 xl:gap-12 mb-8">
+            
+            {/* Left Column - Images (2/3 width on large screens, full width on mobile) */}
             {images.length > 0 && (
-              <div className="order-1">
-                <div className="sticky top-6">
-                  <div className="relative">
+              <div className="lg:col-span-2 order-1 lg:order-1">
+                <div className="lg:sticky lg:top-6">{/* Main Image */}
+                  <div className="relative mb-4">
                     <img
                       src={images[activeImageIndex]}
-                      alt={project.title}
-                      className="w-full h-64 md:h-80 lg:h-96 xl:h-[500px] object-cover rounded-xl shadow-2xl"
+                      alt={language === 'en' ? project.name : (project.nameZh || project.name)}
+                      className="w-full aspect-video object-cover rounded-xl shadow-2xl"
                       onError={(e) => {
-                        e.target.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjI0MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iNDAwIiBoZWlnaHQ9IjI0MCIgZmlsbD0iIzMzNCI+PC9yZWN0Pjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBmaWxsPSJ3aGl0ZSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iIGZvbnQtZmFtaWx5PSJzeXN0ZW0tdWkiIGZvbnQtc2l6ZT0iMTZweCI+SW1hZ2UgTm90IEZvdW5kPC90ZXh0Pjwvc3ZnPg==';
+                        e.target.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjI0MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iNDAwIiBoZWlnaHQ9IjI0MCIgZmlsbD0iIzMzNCI+PC9yZWN0Pjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBmaWxsPSJ3aGl0ZSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iIGZvbnQtZmFtaWx5PSJzeXN0ZW0tdWkiIGZvbnQtc2l6ZT0iMTZweCIgZm9udC13ZWlnaHQ9IjMwMCI+SW1hZ2UgTm90IEZvdW5kPC90ZXh0Pjwvc3ZnPg==';
                       }}
                     />
+                    
+                    {/* Image Counter */}
+                    {hasMultipleImages && (
+                      <div className="absolute top-4 right-4 bg-black/60 backdrop-blur-sm rounded-full px-3 py-1 text-white text-sm">
+                        {activeImageIndex + 1} / {images.length}
+                      </div>
+                    )}
+                    
+                    {/* Navigation Dots */}
                     {hasMultipleImages && (
                       <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2">
-                    <div className="flex space-x-2 bg-black/60 backdrop-blur-sm rounded-full px-4 py-2">
-                      {images.map((_, index) => (
-                        <button
-                          key={index}
-                          onClick={() => setActiveImageIndex(index)}
-                          className={`w-3 h-3 rounded-full transition-colors ${
-                            index === activeImageIndex ? 'bg-theme-primary' : 'bg-theme-primary/50'
-                          }`}
-                          style={{ cursor: 'pointer' }}
-                        />
-                      ))}
+                        <div className="flex space-x-2 bg-black/60 backdrop-blur-sm rounded-full px-4 py-2">
+                          {images.map((_, index) => (
+                            <button
+                              key={index}
+                              onClick={() => setActiveImageIndex(index)}
+                              className={`w-3 h-3 rounded-full transition-colors ${
+                                index === activeImageIndex ? 'bg-theme-primary' : 'bg-theme-primary/50'
+                              }`}
+                              style={{ cursor: 'pointer' }}
+                            />
+                          ))}
                         </div>
                       </div>
                     )}
                   </div>
+                  
+                  {/* Thumbnail Slider - Horizontal scroll without scrollbar */}
                   {hasMultipleImages && (
-                      <div className="flex gap-3 mt-4 overflow-x-auto pb-2">
+                    <div className="relative">
+                      <div 
+                        className="flex gap-2 md:gap-3 overflow-x-auto pb-2 scrollbar-hide smooth-scroll"
+                        style={{
+                          scrollbarWidth: 'none',
+                          msOverflowStyle: 'none',
+                        }}
+                      >
                         {images.map((img, index) => (
                           <button
                             key={index}
                             onClick={() => setActiveImageIndex(index)}
-                            className={`flex-shrink-0 w-20 h-16 rounded-lg border-2 overflow-hidden transition-all ${
+                            className={`flex-shrink-0 w-16 h-10 md:w-20 md:h-12 rounded-lg border-2 overflow-hidden transition-all ${
                               index === activeImageIndex 
                                 ? 'border-theme-primary opacity-100 shadow-lg shadow-theme-primary/25' 
                                 : 'border-theme-border opacity-60 hover:opacity-80'
                             }`}
                             style={{ cursor: 'pointer' }}
                           >
-                          <img
-                            src={img}
-                            alt={`${project.title} ${index + 1}`}
-                            className="w-full h-full object-cover"
-                            onError={(e) => {
-                              e.target.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjQiIGhlaWdodD0iNDgiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9IjY0IiBoZWlnaHQ9IjQ4IiBmaWxsPSIjMzMzIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZpbGw9IndoaXRlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkeT0iLjNlbSIgZm9udC1mYW1pbHk9InN5c3RlbS11aSIgZm9udC1zaXplPSIxMHB4Ij5OL0E8L3RleHQ+PC9zdmc+';
-                            }}
-                          />
-                        </button>
-                      ))}
+                            <img
+                              src={img}
+                              alt={`${language === 'en' ? project.name : (project.nameZh || project.name)} ${index + 1}`}
+                              className="w-full h-full object-cover"
+                              onError={(e) => {
+                                e.target.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAiIGhlaWdodD0iNDgiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9IjgwIiBoZWlnaHQ9IjQ4IiBmaWxsPSIjMzMzIj48L3JlY3Q+PC9zdmc+';
+                              }}
+                            />
+                          </button>
+                        ))}
+                      </div>
                     </div>
                   )}
                 </div>
               </div>
             )}
 
-            {/* Right Column - Project Details */}
-            <div className={`order-2 ${images.length === 0 ? 'lg:col-span-2' : ''}`}>
-              {/* Project Info */}
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
-                <div className="flex items-center gap-3 text-theme-text-secondary bg-theme-surface/50 p-4 rounded-lg">
-                  <MapPin className="w-5 h-5 text-theme-primary" />
-                  <span className="text-sm font-medium">{project.location}</span>
+            {/* Right Column - Project Info (1/3 width on large screens, full width on mobile) */}
+            <div className={`order-2 lg:order-2 ${images.length === 0 ? 'lg:col-span-3' : 'lg:col-span-1'}`}>
+              <div className="space-y-4 md:space-y-6">
+                
+                {/* Company & Title */}
+                <div className="bg-theme-surface/30 p-4 rounded-lg">
+                  {project.company && (
+                    <div className="text-theme-primary font-semibold text-lg mb-1">
+                      {project.company}
+                    </div>
+                  )}
+                  <div className="text-theme-text-primary font-medium text-base">
+                    {project.title}
+                  </div>
                 </div>
-                <div className="flex items-center gap-3 text-theme-text-secondary bg-theme-surface/50 p-4 rounded-lg">
-                  <Calendar className="w-5 h-5 text-theme-success" />
-                  <span className="text-sm font-medium">{project.year}</span>
+
+                {/* Time & Location - More compact on mobile */}
+                <div className="space-y-3">
+                  {/* Year */}
+                  <div className="flex items-center gap-3 text-theme-text-secondary">
+                    <Calendar className="w-4 h-4 md:w-5 md:h-5 text-theme-success flex-shrink-0" />
+                    <div>
+                      <div className="text-xs text-theme-text-secondary/70 uppercase tracking-wide">Year</div>
+                      <div className="text-sm font-medium">{project.year}</div>
+                    </div>
+                  </div>
+
+                  {/* Location */}
+                  <div className="flex items-center gap-3 text-theme-text-secondary">
+                    <MapPin className="w-4 h-4 md:w-5 md:h-5 text-theme-primary flex-shrink-0" />
+                    <div>
+                      <div className="text-xs text-theme-text-secondary/70 uppercase tracking-wide">Location</div>
+                      <div className="text-sm font-medium">{project.location}</div>
+                    </div>
+                  </div>
+
+                  {/* Project Type */}
+                  <div className="flex items-center gap-3 text-theme-text-secondary">
+                    <Code className="w-4 h-4 md:w-5 md:h-5 text-theme-secondary flex-shrink-0" />
+                    <div>
+                      <div className="text-xs text-theme-text-secondary/70 uppercase tracking-wide">Type</div>
+                      <div className="text-sm font-medium text-theme-secondary">{project.type}</div>
+                    </div>
+                  </div>
                 </div>
-                {/* 动态显示链接按钮 */}
+
+                {/* Links */}
                 {(project.links || project.link) && (
-                  <div className="flex flex-col gap-2">
-                    {project.links?.live && (
-                      <a
-                        href={project.links.live}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center gap-3 text-theme-primary hover:text-theme-secondary transition-colors bg-theme-primary/10 hover:bg-theme-primary/20 p-3 rounded-lg border border-theme-primary/30"
-                        style={{ cursor: 'pointer' }}
-                      >
-                        <ExternalLink className="w-4 h-4" />
-                        <span className="text-xs font-medium">
-                          {projectText.liveDemo}
-                        </span>
-                      </a>
-                    )}
-                    {project.links?.company && (
-                      <a
-                        href={project.links.company}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center gap-3 text-theme-secondary hover:text-theme-primary transition-colors bg-theme-secondary/10 hover:bg-theme-secondary/20 p-3 rounded-lg border border-theme-secondary/30"
-                        style={{ cursor: 'pointer' }}
-                      >
-                        <ExternalLink className="w-4 h-4" />
-                        <span className="text-xs font-medium">
-                          {projectText.officialSite}
-                        </span>
-                      </a>
-                    )}
-                    {project.links?.official && (
-                      <a
-                        href={project.links.official}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center gap-3 text-theme-secondary hover:text-theme-primary transition-colors bg-theme-secondary/10 hover:bg-theme-secondary/20 p-3 rounded-lg border border-theme-secondary/30"
-                        style={{ cursor: 'pointer' }}
-                      >
-                        <ExternalLink className="w-4 h-4" />
-                        <span className="text-xs font-medium">
-                          {projectText.officialSite}
-                        </span>
-                      </a>
-                    )}
-                    {project.links?.github && (
-                      <a
-                        href={project.links.github}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center gap-3 text-theme-success hover:text-theme-primary transition-colors bg-theme-success/10 hover:bg-theme-success/20 p-3 rounded-lg border border-theme-success/30"
-                        style={{ cursor: 'pointer' }}
-                      >
-                        <ExternalLink className="w-4 h-4" />
-                        <span className="text-xs font-medium">
-                          {projectText.githubRepo}
-                        </span>
-                      </a>
-                    )}
-                    {/* 向后兼容旧的link结构 */}
-                    {project.link && !project.links && (
-                      <a
-                        href={project.link}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center gap-3 text-theme-primary hover:text-theme-secondary transition-colors bg-theme-primary/10 hover:bg-theme-primary/20 p-3 rounded-lg border border-theme-primary/30"
-                        style={{ cursor: 'pointer' }}
-                      >
-                        <ExternalLink className="w-4 h-4" />
-                        <span className="text-xs font-medium">
-                          {projectText.detail.visitSite}
-                        </span>
-                      </a>
-                    )}
+                  <div>
+                    <h3 className="text-lg font-semibold text-theme-text-primary mb-3">Links</h3>
+                    <div className="space-y-2">
+                      {/* Live Demo */}
+                      {project.links?.live && (
+                        <a
+                          href={project.links.live}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className={`flex items-center gap-3 ${categoryColors.text} transition-colors ${categoryColors.bg} ${categoryColors.hover} p-3 rounded-lg border ${categoryColors.border} group w-full`}
+                          style={{ cursor: 'pointer' }}
+                        >
+                          <ExternalLink className="w-4 h-4 group-hover:scale-110 transition-transform flex-shrink-0" />
+                          <span className="text-sm font-medium">{projectText.liveDemo}</span>
+                        </a>
+                      )}
+
+                      {/* Official Site */}
+                      {project.links?.official && (
+                        <a
+                          href={project.links.official}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className={`flex items-center gap-3 ${categoryColors.text} transition-colors ${categoryColors.bg} ${categoryColors.hover} p-3 rounded-lg border ${categoryColors.border} group w-full`}
+                          style={{ cursor: 'pointer' }}
+                        >
+                          <ExternalLink className="w-4 h-4 group-hover:scale-110 transition-transform flex-shrink-0" />
+                          <span className="text-sm font-medium">{projectText.officialSite}</span>
+                        </a>
+                      )}
+
+                      {/* GitHub */}
+                      {project.links?.github && (
+                        <a
+                          href={project.links.github}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className={`flex items-center gap-3 ${categoryColors.text} transition-colors ${categoryColors.bg} ${categoryColors.hover} p-3 rounded-lg border ${categoryColors.border} group w-full`}
+                          style={{ cursor: 'pointer' }}
+                        >
+                          <ExternalLink className="w-4 h-4 group-hover:scale-110 transition-transform flex-shrink-0" />
+                          <span className="text-sm font-medium">{projectText.githubRepo}</span>
+                        </a>
+                      )}
+
+                      {/* Legacy link support */}
+                      {project.link && !project.links && (
+                        <a
+                          href={project.link}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className={`flex items-center gap-3 ${categoryColors.text} transition-colors ${categoryColors.bg} ${categoryColors.hover} p-3 rounded-lg border ${categoryColors.border} group w-full`}
+                          style={{ cursor: 'pointer' }}
+                        >
+                          <ExternalLink className="w-4 h-4 group-hover:scale-110 transition-transform flex-shrink-0" />
+                          <span className="text-sm font-medium">{projectText.detail.visitSite}</span>
+                        </a>
+                      )}
+                    </div>
                   </div>
                 )}
+
+                {/* Technology Stack - Compact */}
+                <div className="block lg:hidden">
+                  {renderTechStack()}
+                </div>
               </div>
-
-              {/* Description */}
-              <div className="mb-8">
-                <p className="text-theme-text-secondary text-lg leading-relaxed">
-                  {getProjectDescription(project, language)}
-                </p>
-              </div>
-
-              {/* Technology Stack */}
-              {renderTechStack()}
-
-              {/* Project Statistics */}
-              {renderStats()}
-
-              {/* Sub Projects */}
-              {renderSubProjects()}
             </div>
+          </div>
+
+          {/* Bottom Section - Full Width Description and Details */}
+          <div className="space-y-6 md:space-y-8">
+            {/* Description */}
+            <div className="bg-theme-surface/20 p-4 md:p-6 rounded-xl">
+              <h3 className="text-xl font-semibold text-theme-text-primary mb-4">Project Description</h3>
+              <p className="text-theme-text-secondary text-base md:text-lg leading-relaxed">
+                {getProjectDescription(project, language)}
+              </p>
+            </div>
+
+            {/* Technology Stack - Show on large screens and in bottom section */}
+            <div className="hidden lg:block">
+              {renderTechStack()}
+            </div>
+
+            {/* Project Statistics */}
+            {renderStats()}
+
+            {/* Sub Projects */}
+            {renderSubProjects()}
           </div>
         </div>
       </div>
@@ -454,10 +523,18 @@ ProjectDetail.propTypes = {
   project: PropTypes.shape({
     title: PropTypes.string,
     name: PropTypes.string,
-    description: PropTypes.string,
+    nameZh: PropTypes.string,
+    company: PropTypes.string,
+    description: PropTypes.oneOfType([PropTypes.string, PropTypes.object]),
     location: PropTypes.string,
     year: PropTypes.string,
+    type: PropTypes.string,
     link: PropTypes.string,
+    links: PropTypes.shape({
+      live: PropTypes.string,
+      official: PropTypes.string,
+      github: PropTypes.string
+    }),
     img: PropTypes.oneOfType([PropTypes.string, PropTypes.array]),
     tech: PropTypes.array,
     stats: PropTypes.object,
