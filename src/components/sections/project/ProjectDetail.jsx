@@ -325,13 +325,13 @@ const ProjectDetail = ({ project = null, isOpen, onClose }) => {
                     {/* Navigation Dots */}
                     {hasMultipleImages && (
                       <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2">
-                        <div className="flex space-x-2 bg-black/60 backdrop-blur-sm rounded-full px-4 py-2">
+                        <div className="flex space-x-2">
                           {images.map((_, index) => (
                             <button
                               key={index}
                               onClick={() => setActiveImageIndex(index)}
                               className={`w-3 h-3 rounded-full transition-colors ${
-                                index === activeImageIndex ? 'bg-theme-primary' : 'bg-theme-primary/50'
+                                index === activeImageIndex ? 'bg-theme-primary' : 'bg-white/40 hover:bg-white/60'
                               }`}
                               style={{ cursor: 'pointer' }}
                             />
@@ -341,21 +341,15 @@ const ProjectDetail = ({ project = null, isOpen, onClose }) => {
                     )}
                   </div>
                   
-                  {/* Thumbnail Slider - Horizontal scroll without scrollbar */}
+                  {/* Thumbnail Grid - Responsive wrapping */}
                   {hasMultipleImages && (
                     <div className="relative">
-                      <div 
-                        className="flex gap-2 md:gap-3 overflow-x-auto pb-2 scrollbar-hide smooth-scroll"
-                        style={{
-                          scrollbarWidth: 'none',
-                          msOverflowStyle: 'none',
-                        }}
-                      >
+                      <div className="flex flex-wrap gap-2 md:gap-3 justify-start">
                         {images.map((img, index) => (
                           <button
                             key={index}
                             onClick={() => setActiveImageIndex(index)}
-                            className={`flex-shrink-0 w-16 h-10 md:w-20 md:h-12 rounded-lg border-2 overflow-hidden transition-all ${
+                            className={`flex-shrink-0 w-16 h-10 md:w-20 md:h-12 lg:w-24 lg:h-14 xl:w-28 xl:h-16 rounded-lg border-2 overflow-hidden transition-all ${
                               index === activeImageIndex 
                                 ? 'border-theme-primary opacity-100 shadow-lg shadow-theme-primary/25' 
                                 : 'border-theme-border opacity-60 hover:opacity-80'
