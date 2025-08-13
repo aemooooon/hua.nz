@@ -127,7 +127,7 @@ const contentConfig = {
     },
     projects: {
       title: "My Projects",
-      subtitle: "showcases",
+      subtitle: "Showcases",
       bottomSubtitle: "Each project represents a unique challenge and learning journey",
       description: "From Full Stack Web Development to 3D immersive experiences, from computer science to data science, to computer graphics — explore the diverse technology and solutions. Language-agnostic, platform-independent, framework-flexible.",
       viewProject: "View Project",
@@ -484,7 +484,7 @@ const contentConfig = {
     },
     projects: {
       title: "项目集锦",
-      subtitle: "showcases",
+      subtitle: "Showcases",
       bottomSubtitle: "每个项目都代表着独特的挑战和学习之旅",
       description: "从全栈Web开发到3D沉浸式体验，从计算机科学，计算机图形学，到数据科学 — 探索多样的技术与解决方案。语言无关，平台独立，框架灵活。",
       viewProject: "查看项目",

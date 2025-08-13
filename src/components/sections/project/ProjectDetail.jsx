@@ -1,16 +1,3 @@
-/**
- * 项目详情模态框组件
- * 提供项目的完整信息展示，包括图片轮播、技术栈、统计数据和子项目
- * 
- * 特性：
- * - 全屏模态框设计
- * - 响应式图片轮播
- * - 多语言支持
- * - 主题化设计
- * - 键盘导航支持（ESC关闭）
- * - 身体滚动锁定
- */
-
 import { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import PropTypes from 'prop-types';
@@ -18,7 +5,7 @@ import { useAppStore } from '../../../store/useAppStore';
 import GlowDivider from '../../ui/GlowDivider';
 import './ProjectDetail.css';
 
-// SVG图标组件 - 统一的图标样式和PropTypes定义
+// 简单的图标组件
 const X = ({ className = "w-4 h-4" }) => (
   <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -408,9 +395,7 @@ const ProjectDetail = ({ project = null, isOpen, onClose }) => {
                   <div className="flex items-center gap-4 text-theme-text-secondary">
                     <Calendar className="w-5 h-5 md:w-6 md:h-6 text-theme-success flex-shrink-0" />
                     <div>
-                      <div className="text-sm text-theme-text-secondary/80 uppercase tracking-wider font-medium">
-                        {language === 'en' ? 'Year' : '年份'}
-                      </div>
+                      <div className="text-sm text-theme-text-secondary/80 uppercase tracking-wider font-medium">Year</div>
                       <div className="text-lg font-semibold text-theme-text-primary">{project.year}</div>
                     </div>
                   </div>
@@ -419,9 +404,7 @@ const ProjectDetail = ({ project = null, isOpen, onClose }) => {
                   <div className="flex items-center gap-4 text-theme-text-secondary">
                     <MapPin className="w-5 h-5 md:w-6 md:h-6 text-theme-primary flex-shrink-0" />
                     <div>
-                      <div className="text-sm text-theme-text-secondary/80 uppercase tracking-wider font-medium">
-                        {language === 'en' ? 'Location' : '地点'}
-                      </div>
+                      <div className="text-sm text-theme-text-secondary/80 uppercase tracking-wider font-medium">Location</div>
                       <div className="text-lg font-semibold text-theme-text-primary">{project.location}</div>
                     </div>
                   </div>
@@ -430,20 +413,16 @@ const ProjectDetail = ({ project = null, isOpen, onClose }) => {
                   <div className="flex items-center gap-4 text-theme-text-secondary">
                     <Code className="w-5 h-5 md:w-6 md:h-6 text-theme-secondary flex-shrink-0" />
                     <div>
-                      <div className="text-sm text-theme-text-secondary/80 uppercase tracking-wider font-medium">
-                        {language === 'en' ? 'Type' : '类型'}
-                      </div>
+                      <div className="text-sm text-theme-text-secondary/80 uppercase tracking-wider font-medium">Type</div>
                       <div className="text-lg font-semibold text-theme-secondary">{project.type}</div>
                     </div>
                   </div>
                 </div>
 
-                {/* Links Section */}
+                {/* Links */}
                 {(project.links || project.link) && (
                   <div>
-                    <h3 className="text-xl font-semibold text-theme-text-primary mb-4">
-                      {language === 'en' ? 'Links' : '链接'}
-                    </h3>
+                    <h3 className="text-xl font-semibold text-theme-text-primary mb-4">Links</h3>
                     <div className="space-y-3">
                       {/* Live Demo */}
                       {project.links?.live && (

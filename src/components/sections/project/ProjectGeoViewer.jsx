@@ -1,16 +1,3 @@
-/**
- * 项目地理分布查看器组件
- * 基于Leaflet的交互式地图，显示项目的地理位置分布
- * 
- * 特性：
- * - 交互式地图界面
- * - 自定义标记和集群
- * - 主题化设计
- * - 多语言支持
- * - 响应式布局
- * - 自定义控件
- */
-
 import { useEffect, useRef, useMemo, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import L from 'leaflet';
@@ -22,7 +9,7 @@ import './ProjectGeoViewer.css';
 import useAppStore from '../../../store/useAppStore';
 import { useTheme } from '../../../hooks/useTheme';
 
-// 修复Leaflet默认图标问题 - 使用CDN资源
+// 修复 Leaflet 默认图标问题
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
   iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png',
@@ -55,12 +42,12 @@ const ProjectGeoViewer = ({ isOpen, onClose, language = 'en' }) => {
     );
   }, [getAllLocations]);
 
-  // 项目类型颜色映射 - 使用主题色系统
+  // 类型颜色映射
   const typeColors = useMemo(() => ({
     'project': themeColors.primary,
-    'work': themeColors.success || 'var(--theme-success)',
-    'education': themeColors.warning || 'var(--theme-warning)', 
-    'activity': themeColors.purple || 'var(--theme-secondary)'
+    'work': themeColors.success || '#10b981',
+    'education': themeColors.warning || '#f59e0b',
+    'activity': themeColors.purple || '#8b5cf6'
   }), [themeColors]);
 
   // 获取双语文本的辅助函数
@@ -315,10 +302,10 @@ const ProjectGeoViewer = ({ isOpen, onClose, language = 'en' }) => {
                     html: `<div style="
                       width: 20px; 
                       height: 20px; 
-                      background: var(--theme-primary); 
+                      background: #3b82f6; 
                       border: 3px solid white; 
                       border-radius: 50%; 
-                      box-shadow: 0 2px 8px var(--theme-primary-shadow, rgba(59,130,246,0.4));
+                      box-shadow: 0 2px 8px rgba(59,130,246,0.4);
                     "></div>`,
                     iconSize: [26, 26],
                     iconAnchor: [13, 13],
@@ -337,9 +324,9 @@ const ProjectGeoViewer = ({ isOpen, onClose, language = 'en' }) => {
                   </svg>
                 `;
               },
-              () => {
-                // 处理用户定位失败的情况
-                // 恢复按钮图标状态
+              (error) => {
+                console.warn('定位失败:', error);
+                // 恢复按钮图标
                 locateUserBtn.innerHTML = `
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <polygon points="3 11 22 2 13 21 11 13 3 11"></polygon>
@@ -370,15 +357,15 @@ const ProjectGeoViewer = ({ isOpen, onClose, language = 'en' }) => {
     
     return `
       <div style="
-        color: var(--theme-text-primary, #e5e7eb); 
-        background: var(--theme-surface-gradient, linear-gradient(135deg, #1f2937 0%, #111827 100%)); 
+        color: #e5e7eb; 
+        background: linear-gradient(135deg, #1f2937 0%, #111827 100%); 
         padding: 0; 
         border-radius: 12px; 
         width: 100%; 
         max-width: 100%; 
         box-sizing: border-box;
         font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-        border: 1px solid var(--theme-border, #374151);
+        border: 1px solid #374151;
         box-shadow: 0 20px 40px rgba(0,0,0,0.8), 0 8px 16px rgba(0,0,0,0.4);
         position: relative;
       ">
@@ -400,7 +387,7 @@ const ProjectGeoViewer = ({ isOpen, onClose, language = 'en' }) => {
               text-transform: capitalize;
               box-shadow: 0 4px 8px rgba(0,0,0,0.3);
             ">${project.type}</span>
-            ${project.year ? `<span style="color: var(--theme-text-muted, #9ca3af); font-size: 12px; font-weight: 600; background: var(--theme-surface-dark, #374151); padding: 4px 8px; border-radius: 12px;">${project.year}</span>` : ''}
+            ${project.year ? `<span style="color: #9ca3af; font-size: 12px; font-weight: 600; background: #374151; padding: 4px 8px; border-radius: 12px;">${project.year}</span>` : ''}
           </div>
           
           <h3 style="margin: 0 0 10px 0; color: #f9fafb; font-size: 16px; font-weight: 700; line-height: 1.3; text-shadow: 0 1px 2px rgba(0,0,0,0.5);">${projectName}</h3>

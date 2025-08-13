@@ -1,38 +1,32 @@
 /* ProjectDetail specific styles */
 
-/* 保持与全局滚动条样式一致 - 使用白色半透明 */
+/* Ensure consistent scrollbar styling within ProjectDetail */
 .project-detail-container::-webkit-scrollbar {
     width: 6px;
     height: 6px;
-    opacity: 0;
-    transition: opacity 0.2s ease-in-out;
-}
-
-.project-detail-container:hover::-webkit-scrollbar {
-    opacity: 1;
 }
 
 .project-detail-container::-webkit-scrollbar-track {
-    background: rgba(0, 0, 0, 0.1);
+    background: var(--theme-surface);
     border-radius: 3px;
 }
 
 .project-detail-container::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.3);
+    background: linear-gradient(45deg, var(--theme-primary), var(--theme-secondary));
     border-radius: 3px;
-    transition: background 0.2s ease-in-out;
+    border: 1px solid var(--theme-surface);
 }
 
 .project-detail-container::-webkit-scrollbar-thumb:hover {
-    background: rgba(255, 255, 255, 0.5);
+    background: linear-gradient(45deg, var(--theme-secondary), var(--theme-accent));
 }
 
 .project-detail-container::-webkit-scrollbar-corner {
-    background: rgba(0, 0, 0, 0.1);
+    background: var(--theme-surface);
 }
 
-/* For Firefox - 保持与全局一致的白色半透明样式 */
+/* For Firefox */
 .project-detail-container {
     scrollbar-width: thin;
-    scrollbar-color: rgba(255, 255, 255, 0.3) rgba(0, 0, 0, 0.1);
+    scrollbar-color: var(--theme-primary) var(--theme-surface);
 }

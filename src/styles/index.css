@@ -3,10 +3,8 @@
 @tailwind utilities;
 
 @layer base {
-  /* 导入字体 */
+  /* 导入格鲁吉亚字体 */
   @import url('https://fonts.googleapis.com/css2?family=Georgia&display=swap');
-  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
-  @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap');
 }
 
 * {
@@ -1856,83 +1854,4 @@ body {
 /* Smooth scrolling for thumbnail navigation */
 .smooth-scroll {
     scroll-behavior: smooth;
-}
-
-/* ========================================
-   Project Main Title Styles - 白色渐变设计
-   ======================================== */
-
-/* 项目主标题 - 白色到透明渐变，Space Grotesk 字体 */
-.project-main-title {
-    font-family: 'Space Grotesk', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', sans-serif !important;
-    background: linear-gradient(135deg, #ffffff 0%, rgba(255, 255, 255, 0.8) 100%) !important;
-    -webkit-background-clip: text !important;
-    -webkit-text-fill-color: transparent !important;
-    background-clip: text !important;
-    text-shadow: 
-        0 0 30px rgba(255, 255, 255, 0.4),
-        0 4px 12px rgba(0, 0, 0, 0.1) !important;
-    font-weight: 700 !important;
-    letter-spacing: -0.02em !important;
-    line-height: 1.1 !important;
-    position: relative;
-    overflow: visible;
-}
-
-/* 增强的光晕背景效果 */
-.project-main-title::before {
-    content: '';
-    position: absolute;
-    top: -6px;
-    left: -6px;
-    right: -6px;
-    bottom: -6px;
-    background: linear-gradient(135deg, 
-        rgba(255, 255, 255, 0.08) 0%, 
-        rgba(255, 255, 255, 0.04) 50%,
-        rgba(255, 255, 255, 0.02) 100%);
-    border-radius: 12px;
-    z-index: -1;
-    opacity: 0;
-    transition: opacity 0.8s ease;
-    -webkit-backdrop-filter: blur(25px);
-    backdrop-filter: blur(25px);
-}
-
-.project-main-title:hover::before {
-    opacity: 1;
-}
-
-/* 增强文字渐变在悬停时的效果 */
-.project-main-title:hover {
-    background: linear-gradient(135deg, #ffffff 0%, rgba(255, 255, 255, 0.9) 100%) !important;
-    -webkit-background-clip: text !important;
-    -webkit-text-fill-color: transparent !important;
-    background-clip: text !important;
-    text-shadow: 
-        0 0 35px rgba(255, 255, 255, 0.6),
-        0 6px 15px rgba(0, 0, 0, 0.08) !important;
-    transition: all 0.6s ease;
-}
-
-/* 响应式优化 - Space Grotesk 在不同尺寸下的最佳显示 */
-@media (min-width: 768px) {
-    .project-main-title {
-        letter-spacing: -0.025em !important;
-    }
-}
-
-@media (min-width: 1024px) {
-    .project-main-title {
-        letter-spacing: -0.03em !important;
-        text-shadow: 
-            0 0 40px rgba(255, 255, 255, 0.5),
-            0 8px 20px rgba(0, 0, 0, 0.06) !important;
-    }
-    
-    .project-main-title:hover {
-        text-shadow: 
-            0 0 45px rgba(255, 255, 255, 0.7),
-            0 10px 25px rgba(0, 0, 0, 0.05) !important;
-    }
 }
