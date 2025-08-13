@@ -289,9 +289,9 @@ const EducationSection = ({ language }) => {
                                                             </a>
                                                         </div>
 
-                                                        {/* Hover详情显示 - 只显示项目描述，无背景闪光 */}
-                                                        <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center p-4">
-                                                            <div className="text-center bg-theme-bg-white-20 rounded-lg px-4 py-2 backdrop-blur-sm">
+                                                        {/* Hover详情显示 - 毛玻璃遮罩覆盖整个卡片 */}
+                                                        <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-theme-bg-white-20 backdrop-blur-md flex items-center justify-center p-4">
+                                                            <div className="text-center">
                                                                 <p className="text-theme-text-white-90 text-sm leading-relaxed">
                                                                     {project.description}
                                                                 </p>
