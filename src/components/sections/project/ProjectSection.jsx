@@ -117,7 +117,7 @@ const ProjectSection = ({ language }) => {
             <div className="flex flex-col lg:flex-row lg:justify-between lg:items-center p-8 pt-12 mb-8">
                 {/* 左侧：Projects标题和副标题 */}
                 <div className="flex flex-col text-center lg:text-left">
-                    <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold bg-gradient-to-r from-theme-gradient-from via-theme-gradient-via to-theme-gradient-to bg-clip-text text-transparent mb-3">
+                    <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold font-montserrat text-theme-section-title mb-3">
                         {projectText.title}
                     </h1>
                     <h2 className="text-xl md:text-2xl text-white/70 font-light italic">

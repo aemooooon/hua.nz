@@ -414,7 +414,7 @@ const EducationSection = ({ language }) => {
                 <div className="flex flex-col items-center text-center">
                     <ThemeTitle
                         level={1}
-                        className="text-5xl md:text-6xl lg:text-7xl font-bold bg-gradient-to-r from-theme-gradient-from via-theme-gradient-via to-theme-gradient-to bg-clip-text text-transparent mb-3"
+                        className="text-5xl md:text-6xl lg:text-7xl font-bold font-montserrat text-theme-section-title mb-3"
                     >
                         {educationData.title}
                     </ThemeTitle>

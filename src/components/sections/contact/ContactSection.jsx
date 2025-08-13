@@ -82,7 +82,7 @@ const ContactSection = ({ language }) => {
             <div className="max-w-7xl mx-auto w-full">
                 {/* 标题部分 */}
                 <div className="flex flex-col items-center text-center mb-12">
-                    <ThemeTitle level={1} className="text-5xl md:text-6xl lg:text-7xl font-bold mb-3 bg-gradient-to-r from-theme-gradient-from via-theme-gradient-via to-theme-gradient-to bg-clip-text text-transparent">
+                    <ThemeTitle level={1} className="text-5xl md:text-6xl lg:text-7xl font-bold font-montserrat text-theme-section-title mb-3">
                         {contactTexts.title}
                     </ThemeTitle>
                     <ThemeSubtitle className="text-xl md:text-2xl font-light italic mb-8 text-theme-text-secondary/70">

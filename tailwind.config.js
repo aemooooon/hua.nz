@@ -21,6 +21,7 @@ export default {
         audiowide: ['"Audiowide"', 'cursive'],
         beauRivage: ['"Beau Rivage"', 'serif'],
         figtree: ['"Figtree"', 'sans-serif'],
+        montserrat: ['"Montserrat"', 'sans-serif'],
         poppins: ['"Poppins"', 'sans-serif'],
         // 格鲁吉亚字体用于数字
         georgia: ['Georgia', 'serif'],
@@ -65,6 +66,7 @@ export default {
           'text-primary': 'var(--theme-text-primary)',
           'text-secondary': 'var(--theme-text-secondary)',
           'text-muted': 'var(--theme-text-muted)',
+          'section-title': 'var(--theme-section-title)',
           border: 'var(--theme-border)',
           divider: 'var(--theme-divider)',
           hover: 'var(--theme-hover)',

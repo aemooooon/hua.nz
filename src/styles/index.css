@@ -39,6 +39,7 @@
   
   /* 默认文字颜色层次 */
   --theme-text-primary: #FFFFFF;       /* 纯白主标题文字 */
+  --theme-section-title: #FFFFFF;      /* 章节主标题颜色 - 默认白色 */
   --theme-text-secondary: #E0F2FF;     /* 默认次要文字 */
   --theme-text-muted: #B0D0FF;         /* 默认描述文字 */
   --theme-text-subtle: #6B8FCC;        /* 默认静音文字 */
@@ -190,6 +191,7 @@ body {
   
   /* 文字颜色层次 - 从高到低对比度 */
   --theme-text-primary: #FFFFFF;       /* 纯白主标题文字 - 最高对比 */
+  --theme-section-title: #00ffff;      /* 章节主标题使用主题亮青色 */
   --theme-text-secondary: #E0F2FF;     /* 浅蓝白次要文字 - 高对比 */
   --theme-text-muted: #B0D0FF;         /* 淡蓝描述文字 - 中等对比 */
   --theme-text-subtle: #6B8FCC;        /* 静音蓝文字 - 低对比 */
@@ -236,6 +238,7 @@ body {
   
   /* 文字颜色层次 - 从高到低对比度 */
   --theme-text-primary: #FFFFFF;       /* 纯白主标题文字 - 最高对比 */
+  --theme-section-title: #00FF88;      /* 章节主标题使用主题高亮绿 */
   --theme-text-secondary: #E0F2E0;     /* 浅绿白次要文字 - 高对比 */
   --theme-text-muted: #B0D0B0;         /* 淡绿描述文字 - 中等对比 */
   --theme-text-subtle: #6B8F6B;        /* 静音绿文字 - 低对比 */
