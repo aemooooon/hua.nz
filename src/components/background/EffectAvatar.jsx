@@ -266,7 +266,7 @@ const EffectAvatar = ({ imageSrc, hoverImageSrc }) => {
                 position: "relative", 
                 width: "100%", 
                 height: "100%", 
-                zIndex: 10
+                zIndex: 3 // 降低z-index，让雷达扫描效果可以从背后透出
             }}
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
@@ -295,9 +295,9 @@ const EffectAvatar = ({ imageSrc, hoverImageSrc }) => {
                     top: "50%",
                     left: "50%",
                     transform: "translate(-50%, -30%) scale(1.5)",
-                    opacity: isLoading ? 0 : (isHovered ? 0.1 : 1),
+                    opacity: isLoading ? 0 : (isHovered ? 0.1 : 0.85), // 调整不悬停时的透明度从1变为0.85，让雷达扫描能透出
                     transition: "opacity 0.5s ease",
-                    zIndex: -1,
+                    zIndex: 1, // 确保粒子在雷达扫描效果上方，但不会完全挡住
                     // 优化 Canvas 渲染性能
                     imageRendering: "auto",
                     willChange: isHovered ? "opacity" : "auto"

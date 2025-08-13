@@ -75,16 +75,37 @@ const AboutSection = ({ language = 'en' }) => {
                                          conic-gradient(
                                              from 0deg,
                                              transparent 0deg,
-                                             rgba(var(--theme-primary-rgb), 0.2) 45deg,
-                                             rgba(var(--theme-primary-rgb), 0.3) 90deg,
-                                             rgba(var(--theme-primary-rgb), 0.2) 135deg,
+                                             rgba(var(--theme-primary-rgb), 0.3) 45deg,
+                                             rgba(var(--theme-primary-rgb), 0.4) 90deg,
+                                             rgba(var(--theme-primary-rgb), 0.3) 135deg,
                                              transparent 180deg,
                                              transparent 360deg
                                          )
                                      `,
                                      animation: 'rotate-glow 4s linear infinite',
                                      filter: 'blur(3px)',
-                                     zIndex: 1 // 设置较低的z-index
+                                     mixBlendMode: 'screen', // 使用混合模式增强可见性
+                                     zIndex: 4 // 提高z-index，让雷达效果在粒子上方
+                                 }}>
+                            </div>
+                            {/* 外层雷达环 - 增强雷达扫描效果的可见性 */}
+                            <div className="absolute -inset-4 rounded-full pointer-events-none"
+                                 style={{
+                                     background: `
+                                         conic-gradient(
+                                             from 0deg,
+                                             transparent 0deg,
+                                             rgba(var(--theme-primary-rgb), 0.15) 30deg,
+                                             rgba(var(--theme-primary-rgb), 0.25) 60deg,
+                                             rgba(var(--theme-primary-rgb), 0.15) 90deg,
+                                             transparent 120deg,
+                                             transparent 360deg
+                                         )
+                                     `,
+                                     animation: 'rotate-glow 6s linear infinite reverse',
+                                     filter: 'blur(4px)',
+                                     mixBlendMode: 'screen', // 使用混合模式增强可见性
+                                     zIndex: 0 // 最底层
                                  }}>
                             </div>
                             {/* 静态内层光晕 */}
