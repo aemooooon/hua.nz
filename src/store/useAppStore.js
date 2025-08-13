@@ -834,7 +834,7 @@ export const useAppStore = create(
         {
           "type": "Front End",
           "title": "Front End Developer",
-          "name": "Hua's Portfolio",
+          "name": "Corridor of Light and Shadow",
           "description": {
             "en": "A sophisticated personal portfolio website built with cutting-edge web technologies to showcase professional experience and technical expertise. Developed using React 18 with modern hooks, Vite for optimized build performance, and Zustand for efficient state management. Features an immersive 3D animated cube opening sequence using GSAP timeline animations, dynamic theme switching system with CSS custom properties, and multilingual support (English/Chinese) with persistent user preferences. The site includes interactive background effects, smooth section navigation with scroll animations, responsive design optimized for all devices, and comprehensive project showcases with detailed modal views. Implements modern development practices including component-based architecture, custom hooks for business logic, and optimized performance with code splitting and lazy loading.",
             "zh": "一个使用前沿网络技术构建的精致个人作品集网站，用于展示专业经验和技术专长。使用React 18和现代hooks开发，Vite优化构建性能，Zustand进行高效状态管理。特色功能包括使用GSAP时间轴动画的沉浸式3D立方体开场序列、使用CSS自定义属性的动态主题切换系统，以及支持持久化用户偏好的多语言支持（英文/中文）。网站包含交互式背景效果、带滚动动画的平滑区块导航、针对所有设备优化的响应式设计，以及带有详细模态视图的综合项目展示。实现了现代开发实践，包括基于组件的架构、用于业务逻辑的自定义hooks，以及通过代码分割和懒加载优化的性能。"
@@ -851,7 +851,7 @@ export const useAppStore = create(
         {
           "type": "Full Stack",
           "title": "Full Stack Developer",
-          "name": "Zespri International",
+          "name": "Orchard Sampling Scheduling System",
           "description": {
             "en": "Developed a comprehensive orchard sampling optimization system for New Zealand's leading kiwifruit company. Built robust ETL pipelines using Python to process and integrate diverse agricultural datasets including orchard locations, fruit quality metrics, and sampling schedules. Created an interactive GIS-based web application with real-time data visualization, enabling efficient sampling route optimization and quality assessment workflows. The system significantly improved sampling efficiency by 30% through intelligent spatial analysis and automated scheduling algorithms, supporting Zespri's commitment to delivering premium kiwifruit to global markets. Implemented using modern web technologies including React frontend, Node.js backend, PostgreSQL database, and integrated mapping services for seamless user experience.",
             "zh": "为新西兰领先的奇异果公司开发了综合性果园采样优化系统。使用Python构建强大的ETL数据管道，处理和集成包括果园位置、果实质量指标和采样计划在内的多样化农业数据集。创建了具有实时数据可视化功能的交互式GIS网络应用程序，实现高效的采样路线优化和质量评估工作流程。该系统通过智能空间分析和自动化调度算法将采样效率显著提高了30%，支持Zespri向全球市场提供优质奇异果的承诺。使用现代网络技术实现，包括React前端、Node.js后端、PostgreSQL数据库，以及集成的地图服务以提供无缝的用户体验。"
@@ -867,7 +867,7 @@ export const useAppStore = create(
         {
           "type": "Front End",
           "title": "Front End Developer",
-          "name": "Realibox",
+          "name": "Realibox 3D Editor",
           "description": "Developed and maintained the central hub for Realibox’s 3D assets, using React with a WebGL-based library for the frontend and Node.js/Python for the backend. Implemented CI/CD pipelines using GitLab for code integration and deployment. Worked in an Agile environment, collaborating closely with PMs, QAs, and Designers to ensure feature delivery aligned with requirements.",
           "coordinates": [22.9951158, 113.3335372],
           "location": "Guangzhou, China",
@@ -902,7 +902,7 @@ export const useAppStore = create(
             "zh": "开发了全面的360°虚拟看房平台，为中国18+个房地产项目提供营销服务。使用JavaScript和基于WebGL的3D库构建，实现对建筑、房间和户外空间的沉浸式全景探索。实现了先进功能，包括可点击热点、场景切换、交互式户型图以及Web和移动设备的跨平台兼容性。该平台帮助房地产开发商远程展示项目，大大减少了实地看房，同时保持高参与度。"
           },
           "coordinates": [30.2888597, 109.4846285],
-          "location": "Multiple locations across China",
+          "location": "Chongqing, China",
           "year": "2020-2021",
           "img": ["/fhjy.jpg", "/changpingli.jpg", "/dalincheng.jpg", "/gyyh.jpg", "/htfxj.jpg", "/jhhy.jpg", "/jlw.jpg", "/jnyp.jpg", "/jxmm.jpg", "/jsjxmm.jpg", "/pzf.jpg", "/tf.jpg", "/tsyhy.jpg", "/wjsf.jpg", "/xcsd.jpg", "/ybhf.jpg", "/ysxc.jpg", "/zyyc.jpg"],
           "tech": ["JavaScript", "WebGL", "3D Libraries", "HTML5", "CSS3", "Responsive Design"],
@@ -962,13 +962,13 @@ export const useAppStore = create(
         {
           "type": "Website",
           "title": "Corporate Website Development Platform",
-          "name": "Enterprises & organizations official website",
+          "name": "Enterprises official website",
           "description": {
             "en": "Comprehensive corporate website development solution serving government agencies, healthcare institutions, tourism bureaus, and private enterprises. Built using CMS platforms with custom database architecture, responsive UI implementation from design mockups, and full deployment management across multiple production servers.",
             "zh": "为政府机构、医疗机构、旅游局和私营企业提供的综合性企业网站开发解决方案。使用CMS平台构建，具有定制数据库架构，从设计稿实现响应式UI，并在多个生产服务器上进行全面的部署管理。"
           },
           "coordinates": [30.297884, 109.4955927],
-          "location": "Multiple locations across Hubei Province, China",
+          "location": "Enshi, Hubei, China",
           "year": "2019",
           "link": "https://www.es9e.cn/",
           "img": ["/es9e.jpg", "/tld.jpg"],
@@ -1022,7 +1022,7 @@ export const useAppStore = create(
         {
           "type": "Mobile Apps",
           "title": "FitsGo",
-          "name": "Mobile App",
+          "name": "FitsGo",
           "description": {
             "en": "A comprehensive fitness tracking mobile application designed to encourage people to start exercising by providing interactive map-based workout experiences. Built as a cross-platform app using React Native and Firebase, FitsGo allows users to select exercise routes from nearby points of interest, track their workouts (running, walking, cycling) with real-time GPS monitoring, and earn badges for visiting locations. Features include user authentication, profile management with weight/age tracking, real-time calorie calculation based on MET values, workout history with detailed statistics, and social elements for future friend connectivity and weekly challenges.",
             "zh": "一个综合性健身追踪移动应用程序，旨在通过提供基于地图的交互式锻炼体验来鼓励人们开始锻炼。使用React Native和Firebase构建的跨平台应用，FitsGo允许用户从附近的兴趣点选择锻炼路线，通过实时GPS监控跟踪锻炼（跑步、步行、骑行），并通过访问位置获得徽章。功能包括用户认证、带有体重/年龄跟踪的个人资料管理、基于MET值的实时卡路里计算、带有详细统计的锻炼历史，以及未来朋友连接和每周挑战的社交元素。"
@@ -1038,7 +1038,7 @@ export const useAppStore = create(
         {
           "type": "Mobile Apps",
           "title": "Travel Assistant",
-          "name": "Mobile App",
+          "name": "Travel Assistant",
           "description": {
             "en": "An Android-based travel companion application built with Kotlin and Room Database, designed to help travelers explore unfamiliar countries with confidence. The app features interactive Google Maps integration with clustered location markers, country selection dropdown, real-time location services, and multilingual phrase translation using Yandex API. Built using modern Android architecture components including ViewModel, LiveData, Coroutines, and View/Data Binding, with comprehensive documentation generated using Dokka and UI testing implemented with Espresso. The application provides curated lists of top-rated attractions and landmarks for each country, complete with coordinates and detailed information.",
             "zh": "一个基于Android的旅行伴侣应用程序，使用Kotlin和Room数据库构建，旨在帮助旅行者自信地探索陌生的国家。该应用程序具有与聚类位置标记的交互式Google Maps集成、国家选择下拉菜单、实时位置服务，以及使用Yandex API的多语言短语翻译功能。使用现代Android架构组件构建，包括ViewModel、LiveData、协程和视图/数据绑定，使用Dokka生成全面的文档，并使用Espresso实现UI测试。该应用程序为每个国家提供精选的顶级景点和地标列表，包含坐标和详细信息。"
@@ -1054,7 +1054,7 @@ export const useAppStore = create(
         {
           "type": "Full Stack",
           "title": "ECAN Data Pipeline",
-          "name": "University of Canterbury",
+          "name": "ECAN Data Pipeline",
           "description": {
             "en": "A comprehensive data engineering project that demonstrates advanced ETL pipeline architecture and microservices design. As a key contributor to the DATA472 Central Collection Team, developed multiple interconnected systems including: a central data collection service using Apache Airflow with automated CRON job scheduling to aggregate data from over 20 student sources; a Node.js/Express Web API service with Swagger documentation providing endpoints for data visualization; PostgreSQL database deployment on AWS RDS for centralized data storage; and interactive dashboards using Python Streamlit and R Shiny for data analysis. The project showcases modern data engineering practices including DAGs (Directed Acyclic Graphs), microservice architecture, cloud deployment on AWS EC2, and collaborative team-based data collection workflows.",
             "zh": "一个综合性数据工程项目，展示了先进的ETL管道架构和微服务设计。作为DATA472中央收集团队的关键贡献者，开发了多个相互连接的系统，包括：使用Apache Airflow的中央数据收集服务，具有自动化CRON作业调度，聚合来自20多个学生数据源的数据；带有Swagger文档的Node.js/Express Web API服务，提供数据可视化端点；在AWS RDS上部署PostgreSQL数据库进行集中数据存储；以及使用Python Streamlit和R Shiny的交互式仪表板进行数据分析。该项目展示了现代数据工程实践，包括DAGs（有向无环图）、微服务架构、AWS EC2云部署和基于团队的协作数据收集工作流程。"

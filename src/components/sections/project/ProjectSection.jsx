@@ -4,14 +4,14 @@ import ProjectGeoViewer from './ProjectGeoViewer';
 import ProjectDetail from './ProjectDetail';
 import GlowDivider from '../../ui/GlowDivider';
 import useAppStore from '../../../store/useAppStore';
-import { ThemeTitle, ThemeSubtitle, ThemeButton } from '../../ui/ThemeComponents';
+import { ThemeTitle, ThemeButton } from '../../ui/ThemeComponents';
 
 const ProjectSection = ({ language }) => {
     const [isMapOpen, setIsMapOpen] = useState(false);
     const [activeFilter, setActiveFilter] = useState('all');
     
     // 从store获取数据和方法
-    const { getAllProjects, selectedProject, setSelectedProject, getProjectsText, getProjectDescription } = useAppStore();
+    const { getAllProjects, selectedProject, setSelectedProject, getProjectsText } = useAppStore();
 
     // 获取当前语言的项目文本
     const projectText = getProjectsText();
@@ -182,35 +182,38 @@ const ProjectSection = ({ language }) => {
                                         �
                                     </div>
                                 )}
-                                {/* 状态标签 */}
-                                <div className={`project-status-badge ${getStatusColor(project.year)}`}>
-                                    {project.year || ''}
-                                </div>
-                                {/* 分类标签 */}
+                                {/* GitHub 链接图标 - 右下角 */}
+                                {(project.links?.github || (project.link && project.link.includes('github'))) && (
+                                    <a
+                                        href={project.links?.github || project.link}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="absolute bottom-3 right-3 w-8 h-8 bg-black/80 hover:bg-black/90 rounded-full flex items-center justify-center transition-all duration-200 hover:scale-110 z-10"
+                                        onClick={(e) => e.stopPropagation()}
+                                    >
+                                        <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 24 24">
+                                            <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                                        </svg>
+                                    </a>
+                                )}
+                                {/* 状态标签 - 左上角 */}
                                 <div className="project-category-badge">
                                     {project.type || 'Other'}
+                                </div>
+                                {/* 年份标签 - 右上角 */}
+                                <div className={`project-status-badge ${getStatusColor(project.year)}`}>
+                                    {project.year || ''}
                                 </div>
                             </div>
                             {/* 项目信息 */}
                             <div className="project-content">
-                                <ThemeTitle level={3} className="project-title">
+                                {/* 项目名称 - 预留2行高度，自适应高度 */}
+                                <ThemeTitle level={3} className="project-title min-h-12 leading-snug line-clamp-2 mb-2">
                                     {project.name || project.title}
                                 </ThemeTitle>
-                                <ThemeSubtitle className="project-description">
-                                    {getProjectDescription(project, language)}
-                                </ThemeSubtitle>
-                                {/* 技术栈（如有） */}
-                                {project.tech && Array.isArray(project.tech) && (
-                                    <div className="project-tech-stack">
-                                        {project.tech.map((tech, index) => (
-                                            <span key={index} className="tech-badge bg-theme-surface text-theme-primary border border-theme-border">
-                                                {tech}
-                                            </span>
-                                        ))}
-                                    </div>
-                                )}
-                                {/* 项目统计信息（如有） */}
-                                {project.stats && (
+                                
+                                {/* 项目统计信息已移除 - 卡片上不显示统计和技术栈信息 */}
+                                {/* {project.stats && (
                                     <div className="project-stats mb-3">
                                         <div className="flex flex-wrap gap-4 text-xs text-theme-text-muted">
                                             {project.stats.projects && (
@@ -222,98 +225,148 @@ const ProjectSection = ({ language }) => {
                                             {project.stats.clients && (
                                                 <span>🏢 {project.stats.clients}</span>
                                             )}
+                                            {project.stats.sectors && (
+                                                <span>🏛️ {project.stats.sectors}</span>
+                                            )}
+                                            {project.stats.pages && (
+                                                <span>� {project.stats.pages}</span>
+                                            )}
+                                            {project.stats.uptime && (
+                                                <span>⚡ {project.stats.uptime} uptime</span>
+                                            )}
                                         </div>
                                     </div>
+                                )} */}
+                                
+                                {/* 地点信息（如有） */}
+                                {project.location && (
+                                    <div className="project-meta text-theme-text-muted mb-4">
+                                        <span>📍 {project.location}</span>
+                                    </div>
                                 )}
-                                {/* 其他字段展示（如地点，但不显示年份因为已在右上角） */}
-                                <div className="project-meta text-theme-text-muted">
-                                    {project.location && <span>📍 {project.location}</span>}
-                                </div>
-                                {/* 操作按钮 */}
-                                <div className="project-actions flex gap-2 mt-4">
-                                    <ThemeButton 
-                                        variant="primary" 
-                                        size="sm"
-                                        onClick={(e) => {
-                                            e.stopPropagation();
-                                            setSelectedProject(project);
-                                        }}
-                                    >
-                                        {projectText.viewAction}
-                                    </ThemeButton>
-                                    {/* 动态显示不同类型的链接按钮 */}
-                                    {(project.links || project.link) && (
-                                        <div className="flex gap-2">
-                                            {/* 新的links结构 */}
-                                            {project.links?.live && (
-                                                <ThemeButton 
-                                                    as="a" 
-                                                    href={project.links.live}
-                                                    target="_blank"
-                                                    rel="noopener noreferrer"
-                                                    variant="ghost"
-                                                    size="sm"
-                                                    onClick={(e) => e.stopPropagation()}
-                                                >
-                                                    {projectText.liveDemo}
-                                                </ThemeButton>
-                                            )}
-                                            {project.links?.company && (
-                                                <ThemeButton 
-                                                    as="a" 
-                                                    href={project.links.company}
-                                                    target="_blank"
-                                                    rel="noopener noreferrer"
-                                                    variant="ghost"
-                                                    size="sm"
-                                                    onClick={(e) => e.stopPropagation()}
-                                                >
-                                                    {projectText.officialSite}
-                                                </ThemeButton>
-                                            )}
-                                            {project.links?.official && (
-                                                <ThemeButton 
-                                                    as="a" 
-                                                    href={project.links.official}
-                                                    target="_blank"
-                                                    rel="noopener noreferrer"
-                                                    variant="ghost"
-                                                    size="sm"
-                                                    onClick={(e) => e.stopPropagation()}
-                                                >
-                                                    {projectText.officialSite}
-                                                </ThemeButton>
-                                            )}
-                                            {project.links?.github && (
-                                                <ThemeButton 
-                                                    as="a" 
-                                                    href={project.links.github}
-                                                    target="_blank"
-                                                    rel="noopener noreferrer"
-                                                    variant="ghost"
-                                                    size="sm"
-                                                    onClick={(e) => e.stopPropagation()}
-                                                >
-                                                    {projectText.githubRepo}
-                                                </ThemeButton>
-                                            )}
-                                            {/* 向后兼容旧的link结构 */}
-                                            {project.link && !project.links && (
-                                                <ThemeButton 
-                                                    as="a" 
-                                                    href={project.link}
-                                                    target="_blank"
-                                                    rel="noopener noreferrer"
-                                                    variant="ghost"
-                                                    size="sm"
-                                                    onClick={(e) => e.stopPropagation()}
-                                                >
-                                                    {projectText.liveDemo}
-                                                </ThemeButton>
-                                            )}
+                                
+                                {/* 操作按钮 - 重新设计布局 */}
+                                {(() => {
+                                    const buttons = [];
+                                    
+                                    // View 按钮（永远存在）
+                                    const viewButton = (
+                                        <ThemeButton 
+                                            key="view"
+                                            variant="primary" 
+                                            size="sm"
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                setSelectedProject(project);
+                                            }}
+                                        >
+                                            {projectText.viewAction}
+                                        </ThemeButton>
+                                    );
+                                    
+                                    // 收集其他链接按钮
+                                    const linkButtons = [];
+                                    
+                                    // Live Demo 按钮
+                                    if (project.links?.live) {
+                                        linkButtons.push(
+                                            <ThemeButton 
+                                                key="live"
+                                                as="a" 
+                                                href={project.links.live}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                variant="ghost"
+                                                size="sm"
+                                                onClick={(e) => e.stopPropagation()}
+                                            >
+                                                {projectText.liveDemo}
+                                            </ThemeButton>
+                                        );
+                                    }
+                                    
+                                    // Official 按钮
+                                    if (project.links?.official) {
+                                        linkButtons.push(
+                                            <ThemeButton 
+                                                key="official"
+                                                as="a" 
+                                                href={project.links.official}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                variant="ghost"
+                                                size="sm"
+                                                onClick={(e) => e.stopPropagation()}
+                                            >
+                                                {projectText.officialSite}
+                                            </ThemeButton>
+                                        );
+                                    }
+                                    
+                                    // Company 按钮
+                                    if (project.links?.company) {
+                                        linkButtons.push(
+                                            <ThemeButton 
+                                                key="company"
+                                                as="a" 
+                                                href={project.links.company}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                variant="ghost"
+                                                size="sm"
+                                                onClick={(e) => e.stopPropagation()}
+                                            >
+                                                {projectText.officialSite}
+                                            </ThemeButton>
+                                        );
+                                    }
+                                    
+                                    // 兼容旧的 link 字段（但排除github，因为已在图片上显示）
+                                    if (project.link && !project.links && !project.link.includes('github')) {
+                                        linkButtons.push(
+                                            <ThemeButton 
+                                                key="link"
+                                                as="a" 
+                                                href={project.link}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                variant="ghost"
+                                                size="sm"
+                                                onClick={(e) => e.stopPropagation()}
+                                            >
+                                                {projectText.liveDemo}
+                                            </ThemeButton>
+                                        );
+                                    }
+                                    
+                                    // 根据按钮数量决定布局
+                                    const totalButtons = 1 + linkButtons.length; // 1个view + N个链接按钮
+                                    let justifyClass = '';
+                                    
+                                    if (totalButtons === 1) {
+                                        // 只有view按钮，居右显示
+                                        justifyClass = 'justify-end';
+                                        buttons.push(viewButton);
+                                    } else if (totalButtons === 2) {
+                                        // view + 1个链接，左右对称
+                                        justifyClass = 'justify-between';
+                                        buttons.push(linkButtons[0], viewButton);
+                                    } else if (totalButtons === 3) {
+                                        // view + 2个链接，左中右均匀分布
+                                        justifyClass = 'justify-between';
+                                        buttons.push(linkButtons[0], viewButton, linkButtons[1]);
+                                    } else {
+                                        // 超过3个按钮，均匀分布
+                                        justifyClass = 'justify-between';
+                                        buttons.push(...linkButtons.slice(0, -1), viewButton, linkButtons[linkButtons.length - 1]);
+                                    }
+                                    
+                                    return (
+                                        <div className={`project-actions flex gap-2 mt-4 ${justifyClass}`}>
+                                            {buttons}
                                         </div>
-                                    )}
-                                </div>
+                                    );
+                                })()}
                             </div>
                         </div>
                     ))}
