@@ -81,29 +81,45 @@ const EffectAvatar = ({ imageSrc, hoverImageSrc }) => {
 
     // 监听浏览器缩放事件
     useEffect(() => {
+        let resizeTimeout;
+        
         const handleResize = () => {
             const canvas = canvasRef.current;
             if (!canvas) return;
 
-            // 获取父容器的宽度
-            const parentWidth = canvas.parentElement.clientWidth;
-            const parentHeight = canvas.parentElement.clientHeight;
+            // 防抖处理，避免频繁触发
+            clearTimeout(resizeTimeout);
+            resizeTimeout = setTimeout(() => {
+                // 获取父容器的宽度
+                const parentWidth = canvas.parentElement.clientWidth;
+                const parentHeight = canvas.parentElement.clientHeight;
 
-            // 根据宽高比计算 canvas 的新宽度和高度
-            let newWidth, newHeight;
-            if (parentWidth / parentHeight > aspectRatio) {
-                // 父容器宽度过大，以高度为基准
-                newHeight = parentHeight;
-                newWidth = newHeight * aspectRatio;
-            } else {
-                // 父容器高度过大，以宽度为基准
-                newWidth = parentWidth;
-                newHeight = newWidth / aspectRatio;
-            }
+                // 根据宽高比计算 canvas 的新宽度和高度
+                let newWidth, newHeight;
+                if (parentWidth / parentHeight > aspectRatio) {
+                    // 父容器宽度过大，以高度为基准
+                    newHeight = parentHeight;
+                    newWidth = newHeight * aspectRatio;
+                } else {
+                    // 父容器高度过大，以宽度为基准
+                    newWidth = parentWidth;
+                    newHeight = newWidth / aspectRatio;
+                }
 
-            // 设置 canvas 的宽度和高度
-            canvas.style.width = `${newWidth}px`;
-            canvas.style.height = `${newHeight}px`;
+                // 设置 canvas 的显示尺寸
+                canvas.style.width = `${newWidth}px`;
+                canvas.style.height = `${newHeight}px`;
+
+                // 重要：Canvas的内部分辨率需要保持固定，因为粒子坐标是基于原始图片计算的
+                // 不需要改变 canvas.width 和 canvas.height，它们应该保持与原始图片尺寸一致
+                
+                console.log('Canvas resized:', {
+                    displaySize: `${newWidth}x${newHeight}`,
+                    internalSize: `${canvas.width}x${canvas.height}`,
+                    aspectRatio,
+                    parentSize: `${parentWidth}x${parentHeight}`
+                });
+            }, 100); // 100ms防抖
         };
 
         // 初始化时调用一次
@@ -115,38 +131,50 @@ const EffectAvatar = ({ imageSrc, hoverImageSrc }) => {
         // 清理事件监听器
         return () => {
             window.removeEventListener("resize", handleResize);
+            clearTimeout(resizeTimeout);
         };
     }, [aspectRatio]);
 
-    // 鼠标悬停时只显示图片，不重新触发粒子动画
+    // 鼠标悬停时显示清晰照片
     const handleMouseEnter = () => {
-        setIsHovered(true); // 显示图片
-        gsap.fromTo(
-            hoverImgRef.current,
-            { 
-                opacity: 0, 
-                transform: "translate(-50%, -30%) scale(0.9)" // 调整垂直偏移到-30%
-            },
-            { 
-                opacity: 1, 
-                transform: "translate(-50%, -30%) scale(1.0)", // 调整垂直偏移到-30%
-                duration: 0.8, 
-                ease: "elastic.out"
-            }
-        );
-
-        // 移除了重新触发粒子动画的逻辑，避免与hover图片显示冲突
+        console.log('🎯 Mouse Enter - 显示清晰照片');
+        setIsHovered(true);
+        
+        // 立即停止任何进行中的动画
+        const hoverContainer = hoverImgRef.current?.parentElement;
+        if (hoverContainer) {
+            gsap.killTweensOf(hoverContainer); // 停止所有相关动画
+            gsap.fromTo(
+                hoverContainer,
+                { 
+                    opacity: 0, 
+                    transform: "translate(-50%, -50%) scale(0.9)"
+                },
+                { 
+                    opacity: 1, 
+                    transform: "translate(-50%, -50%) scale(1.0)",
+                    duration: 0.8, 
+                    ease: "elastic.out"
+                }
+            );
+        }
     };
 
-    // 鼠标离开时隐藏图片
+    // 鼠标离开时隐藏图片，显示粒子动画
     const handleMouseLeave = () => {
-        if (hoverImgRef.current) {
-            gsap.to(hoverImgRef.current, {
+        console.log('🎯 Mouse Leave - 显示粒子动画');
+        const hoverContainer = hoverImgRef.current?.parentElement;
+        if (hoverContainer) {
+            gsap.killTweensOf(hoverContainer); // 停止所有相关动画
+            gsap.to(hoverContainer, {
                 opacity: 0,
-                transform: "translate(-50%, -30%) scale(0.9)", // 调整垂直偏移到-30%
+                transform: "translate(-50%, -50%) scale(0.9)",
                 duration: 0.8,
                 ease: "elastic.out",
-                onComplete: () => setIsHovered(false), // 动画完成后隐藏图片
+                onComplete: () => {
+                    setIsHovered(false);
+                    console.log('✅ 粒子动画已恢复显示');
+                }
             });
         }
     };
@@ -161,6 +189,15 @@ const EffectAvatar = ({ imageSrc, hoverImageSrc }) => {
             }}
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
+            // 确保hover事件能够正确触发
+            onMouseOver={(e) => {
+                // 只有当鼠标真正进入容器时才触发
+                if (e.currentTarget === e.target || e.currentTarget.contains(e.target)) {
+                    if (!isHovered) {
+                        handleMouseEnter();
+                    }
+                }
+            }}
         >
             {/* 加载指示器 */}
             {isLoading && (
@@ -174,7 +211,7 @@ const EffectAvatar = ({ imageSrc, hoverImageSrc }) => {
                 </div>
             )}
             
-            {/* Canvas */}
+            {/* Canvas - 粒子动画背景 */}
             <canvas
                 ref={canvasRef}
                 style={{
@@ -186,34 +223,46 @@ const EffectAvatar = ({ imageSrc, hoverImageSrc }) => {
                     top: "50%",
                     left: "50%",
                     transform: "translate(-50%, -30%) scale(1.5)", // 调整垂直偏移到-30%
-                    opacity: isLoading ? 0 : (isHovered ? 0.2 : 1), // hover时降低透明度，避免遮挡真实照片
-                    transition: "opacity 0.3s ease",
+                    opacity: isLoading ? 0 : (isHovered ? 0.1 : 1), // hover时几乎完全透明，确保清晰照片可见
+                    transition: "opacity 0.5s ease", // 稍微加快切换速度
                     zIndex: -1 // 设置负z-index，确保在hover图片后面
                 }}
             />
 
-            {/* 覆盖图片 */}
-            <img
-                ref={hoverImgRef}
-                src={hoverImageSrc}
-                alt="Hover Image"
+            {/* 清晰照片容器 - hover时显示 */}
+            <div
                 style={{
                     position: "absolute",
                     top: "50%",
                     left: "50%",
-                    transform: "translate(-50%, -30%)", // 调整垂直偏移到-30%
-                    opacity: 0, // 初始状态
-                    visibility: isHovered ? "visible" : "hidden", // 控制可见性
-                    transition: "opacity 0.8s ease, transform 0.8s ease", // 添加过渡效果
-                    pointerEvents: "none", // 防止图片遮挡 Canvas 的交互
-                    width: "100%", // 宽度填满容器
-                    height: "auto", // 高度自适应，保持宽高比
-                    maxHeight: "100%", // 限制最大高度不超过容器
-                    objectFit: "cover", // 改为contain，完整显示图片不裁剪
-                    borderRadius: "inherit", // 继承父容器的圆角
-                    zIndex: 2 // hover图片在容器内的最高层级
+                    transform: "translate(-50%, -50%)",
+                    width: "100%",
+                    height: "100%",
+                    borderRadius: "50%", // 容器圆形
+                    overflow: "hidden", // 裁剪超出部分
+                    opacity: isHovered ? 1 : 0, // 明确的显示/隐藏状态
+                    visibility: isHovered ? "visible" : "hidden", // 确保完全隐藏
+                    transition: "opacity 0.5s ease, visibility 0.5s ease", // 同步过渡
+                    pointerEvents: "none", // 不阻挡鼠标事件
+                    zIndex: 2 // 最高层级，确保在粒子之上
                 }}
-            />
+            >
+                <img
+                    ref={hoverImgRef}
+                    src={hoverImageSrc}
+                    alt="Hover Image"
+                    style={{
+                        position: "absolute",
+                        top: "50%",
+                        left: "50%",
+                        transform: "translate(-50%, -50%)",
+                        width: "100%", // 填满圆形容器
+                        height: "100%", // 填满圆形容器
+                        objectFit: "cover", // 裁剪图片以填满圆形，保持比例
+                        pointerEvents: "none"
+                    }}
+                />
+            </div>
         </div>
     );
 };
