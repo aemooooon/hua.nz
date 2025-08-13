@@ -199,44 +199,8 @@ const GallerySection = ({ language = 'en' }) => {
                     ctx.stroke();
                 }
 
-                // 添加灯光面板效果 - 每个格栅单元中的LED面板
-                for (let x = gridSize/2; x < canvasSize; x += gridSize) {
-                    for (let y = gridSize/2; y < canvasSize; y += gridSize) {
-                        // 20%概率有LED面板
-                        if (Math.random() < 0.2) {
-                            const panelSize = gridSize * 0.6;
-                            
-                            // 创建面板渐变
-                            const gradient = ctx.createRadialGradient(
-                                x, y, 0,
-                                x, y, panelSize/2
-                            );
-                            gradient.addColorStop(0, 'rgba(255, 255, 255, 0.8)');
-                            gradient.addColorStop(0.7, 'rgba(250, 250, 250, 0.4)');
-                            gradient.addColorStop(1, 'rgba(240, 240, 240, 0.1)');
-
-                            ctx.fillStyle = gradient;
-                            ctx.fillRect(
-                                x - panelSize/2, 
-                                y - panelSize/2, 
-                                panelSize, 
-                                panelSize
-                            );
-                        }
-                    }
-                }
-
-                // 添加微妙的主题色点缀 - 极少量的青色LED指示灯
-                for (let i = 0; i < 15; i++) {
-                    const x = Math.random() * canvasSize;
-                    const y = Math.random() * canvasSize;
-                    const size = Math.random() * 3 + 1;
-                    
-                    ctx.fillStyle = 'rgba(0, 255, 170, 0.3)';
-                    ctx.beginPath();
-                    ctx.arc(x, y, size, 0, Math.PI * 2);
-                    ctx.fill();
-                }
+                // 天花板纹理完成 - 保持简洁的格栅设计
+                // 注意：王字装饰灯和画作射灯保持不变
 
                 const texture = new THREE.CanvasTexture(canvas);
                 texture.wrapS = THREE.RepeatWrapping;
