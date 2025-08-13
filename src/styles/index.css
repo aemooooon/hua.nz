@@ -53,6 +53,8 @@
   --theme-text-white-50: rgba(255, 255, 255, 0.5);  /* 50% 透明度 - 次要信息 */
   --theme-text-white-40: rgba(255, 255, 255, 0.4);  /* 40% 透明度 - 占位符 */
   --theme-text-white-30: rgba(255, 255, 255, 0.3);  /* 30% 透明度 - 微妙提示 */
+  --theme-text-white-20: rgba(255, 255, 255, 0.2);  /* 20% 透明度 - 用于阴影 */
+  --theme-text-white-10: rgba(255, 255, 255, 0.1);  /* 10% 透明度 - 用于阴影 */
   
   /* 中性边框颜色系统 - 避免与主题色冲突 */
   --theme-border-neutral: rgba(255, 255, 255, 0.2);     /* 中性边框 - 增强可见度 */
@@ -64,6 +66,11 @@
   --theme-border-white-20: rgba(255, 255, 255, 0.2);    /* 20% 透明度边框 */
   --theme-border-white-10: rgba(255, 255, 255, 0.1);    /* 10% 透明度边框 */
   --theme-border-white-05: rgba(255, 255, 255, 0.05);   /* 5% 透明度边框 */
+  
+  /* 通用白色背景层次 - 用于卡片和表面 */
+  --theme-bg-white-20: rgba(255, 255, 255, 0.2);       /* 20% 透明度背景 */
+  --theme-bg-white-10: rgba(255, 255, 255, 0.1);       /* 10% 透明度背景 */
+  --theme-bg-white-05: rgba(255, 255, 255, 0.05);      /* 5% 透明度背景 */
   
   --theme-border: #0080ff;
   --theme-divider: #0080ff;

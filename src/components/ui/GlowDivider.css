@@ -2,16 +2,16 @@
 .glow-divider {
     background: linear-gradient(90deg, 
         transparent, 
-        rgba(156, 163, 175, 0.3), 
-        rgba(255, 255, 255, 0.8), 
-        rgba(156, 163, 175, 0.3), 
+        var(--theme-text-white-30), 
+        var(--theme-text-white-80), 
+        var(--theme-text-white-30), 
         transparent
     );
     animation: glow-pulse 3s ease-in-out infinite alternate;
     box-shadow: 
-        0 0 10px rgba(255, 255, 255, 0.3),
-        0 0 20px rgba(156, 163, 175, 0.2),
-        0 0 30px rgba(156, 163, 175, 0.1);
+        0 0 10px var(--theme-text-white-30),
+        0 0 20px var(--theme-text-white-20),
+        0 0 30px var(--theme-text-white-10);
     /* 确保可见性的基础样式 */
     min-height: 2px;
     position: relative;
@@ -41,17 +41,17 @@
 .glow-divider.enhanced {
     background: linear-gradient(90deg, 
         transparent, 
-        rgba(59, 130, 246, 0.4), 
-        rgba(139, 92, 246, 0.9), 
-        rgba(236, 72, 153, 0.7),
-        rgba(59, 130, 246, 0.4), 
+        var(--theme-primary), 
+        var(--theme-secondary), 
+        var(--theme-accent),
+        var(--theme-primary), 
         transparent
     );
     animation: enhanced-glow-pulse 3s ease-in-out infinite alternate;
     box-shadow: 
-        0 0 20px rgba(139, 92, 246, 0.5),
-        0 0 40px rgba(59, 130, 246, 0.3),
-        0 0 60px rgba(236, 72, 153, 0.2);
+        0 0 20px var(--theme-primary),
+        0 0 40px var(--theme-secondary),
+        0 0 60px var(--theme-accent);
     /* 增强可见性 */
     min-height: 2px;
     position: relative;

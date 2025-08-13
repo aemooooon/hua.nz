@@ -78,7 +78,7 @@ const ContactSection = ({ language }) => {
     ];
 
     return (
-        <div className="min-h-screen w-full p-4 sm:p-8 text-white flex items-center justify-center">
+        <div className="min-h-screen w-full p-4 sm:p-8 text-theme-text-white flex items-center justify-center">
             <div className="max-w-7xl mx-auto w-full">
                 {/* 标题部分 */}
                 <div className="flex flex-col items-center text-center mb-12">
@@ -91,7 +91,7 @@ const ContactSection = ({ language }) => {
                     
                     {/* 标题与内容之间的分隔线 */}
                     <div className="w-full max-w-4xl mb-8">
-                        <GlowDivider width="w-full" enhanced={true} />
+                        <GlowDivider width="w-full" />
                     </div>
                     
                     <ThemeDescription className="text-base max-w-2xl mx-auto text-theme-text-muted">
@@ -112,22 +112,22 @@ const ContactSection = ({ language }) => {
                                         href={info.href}
                                         target={info.href.startsWith('http') ? '_blank' : '_self'}
                                         rel={info.href.startsWith('http') ? 'noopener noreferrer' : undefined}
-                                        className={`bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-sm rounded-2xl p-8 hover:from-white/20 hover:to-white/10 transition-all duration-300 group contact-info-card text-center border border-white/5 shine-card ${info.shineColor}`}
+                                        className={`bg-gradient-to-br from-theme-bg-white-10 to-theme-bg-white-05 backdrop-blur-sm rounded-2xl p-8 hover:from-theme-bg-white-20 hover:to-theme-bg-white-10 transition-all duration-300 group contact-info-card text-center border border-theme-border-white-05 shine-card ${info.shineColor}`}
                                     >
                                         <div className="shine-content">
                                             <div className="text-5xl mb-4 group-hover:scale-110 transition-transform duration-300 text-theme-primary">
                                                 <i className={info.icon}></i>
                                             </div>
-                                            <h3 className="text-xl font-bold text-white mb-2">
+                                            <h3 className="text-xl font-bold text-theme-text-white mb-2">
                                                 {info.title}
                                             </h3>
                                             <p className="text-blue-300 font-medium mb-3 text-lg phone">
                                                 {info.value.replace('037', '***')}
                                             </p>
-                                            <p className="text-sm text-gray-400">
+                                            <p className="text-sm text-theme-text-white-60">
                                                 {info.description}
                                             </p>
-                                            <div className="mt-4 text-white/60 group-hover:text-white transition-colors flex justify-center">
+                                            <div className="mt-4 text-theme-text-white-60 group-hover:text-theme-text-white transition-colors flex justify-center">
                                                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
                                                 </svg>
@@ -142,23 +142,23 @@ const ContactSection = ({ language }) => {
                         {/* WeChat Card - 中间位置 */}
                         <div
                             onClick={wechatInfo.onClick}
-                            className="bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-sm rounded-2xl p-8 hover:from-white/20 hover:to-white/10 transition-all duration-300 group contact-info-card text-center border border-white/5 shine-card shine-yellow cursor-pointer relative"
+                            className="bg-gradient-to-br from-theme-bg-white-10 to-theme-bg-white-05 backdrop-blur-sm rounded-2xl p-8 hover:from-theme-bg-white-20 hover:to-theme-bg-white-10 transition-all duration-300 group contact-info-card text-center border border-theme-border-white-05 shine-card shine-yellow cursor-pointer relative"
                         >
                             <div className="shine-content">
                                 {/* 默认布局 - 与其他卡片一致 */}
                                 <div className="text-5xl mb-4 group-hover:scale-110 transition-transform duration-300 text-theme-primary">
                                     <i className={wechatInfo.icon}></i>
                                 </div>
-                                <h3 className="text-xl font-bold text-white mb-2">
+                                <h3 className="text-xl font-bold text-theme-text-white mb-2">
                                     {wechatInfo.title}
                                 </h3>
                                 <p className="text-blue-300 font-medium mb-3 text-lg">
                                     {wechatInfo.value}
                                 </p>
-                                <p className="text-sm text-gray-400">
+                                <p className="text-sm text-theme-text-white-60">
                                     {wechatInfo.description}
                                 </p>
-                                <div className="mt-4 text-white/60 group-hover:text-white transition-colors flex justify-center">
+                                <div className="mt-4 text-theme-text-white-60 group-hover:text-theme-text-white transition-colors flex justify-center">
                                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
                                     </svg>
@@ -209,22 +209,22 @@ const ContactSection = ({ language }) => {
                                         href={info.href}
                                         target={info.href.startsWith('http') ? '_blank' : '_self'}
                                         rel={info.href.startsWith('http') ? 'noopener noreferrer' : undefined}
-                                        className={`bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-sm rounded-2xl p-8 hover:from-white/20 hover:to-white/10 transition-all duration-300 group contact-info-card text-center border border-white/5 shine-card ${info.shineColor}`}
+                                        className={`bg-gradient-to-br from-theme-bg-white-10 to-theme-bg-white-05 backdrop-blur-sm rounded-2xl p-8 hover:from-theme-bg-white-20 hover:to-theme-bg-white-10 transition-all duration-300 group contact-info-card text-center border border-theme-border-white-05 shine-card ${info.shineColor}`}
                                     >
                                         <div className="shine-content">
                                             <div className="text-5xl mb-4 group-hover:scale-110 transition-transform duration-300 text-theme-primary">
                                                 <i className={info.icon}></i>
                                             </div>
-                                            <h3 className="text-xl font-bold text-white mb-2">
+                                            <h3 className="text-xl font-bold text-theme-text-white mb-2">
                                                 {info.title}
                                             </h3>
                                             <p className="text-blue-300 font-medium mb-3 text-lg phone">
                                                 {info.value}
                                             </p>
-                                            <p className="text-sm text-gray-400">
+                                            <p className="text-sm text-theme-text-white-60">
                                                 {info.description}
                                             </p>
-                                            <div className="mt-4 text-white/60 group-hover:text-white transition-colors flex justify-center">
+                                            <div className="mt-4 text-theme-text-white-60 group-hover:text-theme-text-white transition-colors flex justify-center">
                                                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
                                                 </svg>
@@ -261,12 +261,12 @@ const ContactSection = ({ language }) => {
 
                 {/* 底部装饰 */}
                 <div className="mt-16 text-center">
-                    <div className="inline-flex items-center space-x-2 text-gray-400">
-                        <span className="w-8 h-px bg-gradient-to-r from-transparent to-gray-400 decorative-line"></span>
+                    <div className="inline-flex items-center space-x-2 text-theme-text-white-60">
+                        <span className="w-8 h-px bg-gradient-to-r from-transparent to-theme-text-white-60 decorative-line"></span>
                         <span className="text-sm">
                             {contactTexts.lookingForward}
                         </span>
-                        <span className="w-8 h-px bg-gradient-to-l from-transparent to-gray-400 decorative-line"></span>
+                        <span className="w-8 h-px bg-gradient-to-l from-transparent to-theme-text-white-60 decorative-line"></span>
                     </div>
                 </div>
             </div>

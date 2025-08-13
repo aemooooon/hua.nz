@@ -9,7 +9,7 @@ const GlowDivider = ({
 }) => {
     return (
         <div className={`flex items-center justify-center ${className}`}>
-            <div className={`${width} h-0.5 bg-white/30 backdrop-blur-sm shadow-lg ${animated ? (enhanced ? 'glow-divider enhanced' : 'glow-divider') : ''}`}></div>
+            <div className={`${width} h-0.5 bg-theme-text-white-30 backdrop-blur-sm shadow-lg ${animated ? (enhanced ? 'glow-divider enhanced' : 'glow-divider') : ''}`}></div>
         </div>
     );
 };

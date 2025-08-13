@@ -76,12 +76,18 @@ export default {
           'text-white-50': 'var(--theme-text-white-50)',
           'text-white-40': 'var(--theme-text-white-40)',
           'text-white-30': 'var(--theme-text-white-30)',
+          'text-white-20': 'var(--theme-text-white-20)',
+          'text-white-10': 'var(--theme-text-white-10)',
           border: 'var(--theme-border)',
           // 通用白色边框层次
           'border-white-30': 'var(--theme-border-white-30)',
           'border-white-20': 'var(--theme-border-white-20)',
           'border-white-10': 'var(--theme-border-white-10)',
           'border-white-05': 'var(--theme-border-white-05)',
+          // 通用白色背景层次
+          'bg-white-20': 'var(--theme-bg-white-20)',
+          'bg-white-10': 'var(--theme-bg-white-10)',
+          'bg-white-05': 'var(--theme-bg-white-05)',
           divider: 'var(--theme-divider)',
           hover: 'var(--theme-hover)',
           button: 'var(--theme-button)', // 新增按钮颜色
