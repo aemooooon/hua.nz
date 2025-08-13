@@ -5,6 +5,22 @@ import { ThemeTitle, ThemeSubtitle } from "../../ui/ThemeComponents";
 import GlowDivider from "../../ui/GlowDivider";
 import "./EducationSection.css";
 
+// 图标组件
+const MapPin = ({ className = "w-4 h-4" }) => (
+  <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+  </svg>
+);
+MapPin.propTypes = { className: PropTypes.string };
+
+const Calendar = ({ className = "w-4 h-4" }) => (
+  <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+  </svg>
+);
+Calendar.propTypes = { className: PropTypes.string };
+
 const EducationSection = ({ language }) => {
     const { getContent } = useAppStore();
     const [hoveredProject, setHoveredProject] = useState(null);
@@ -14,10 +30,10 @@ const EducationSection = ({ language }) => {
 
     // 获取成绩颜色的函数
     const getGradeColor = (grade) => {
-        if (grade === "A+") return "text-theme-success";
-        if (grade === "A") return "text-theme-text-white-95";
-        if (grade === "A-") return "text-theme-text-white-90";
-        if (grade === "B+") return "text-theme-text-white-80";
+        if (grade === "A+") return "text-theme-primary";
+        if (grade === "A") return "text-theme-secondary";
+        if (grade === "A-") return "text-theme-accent";
+        if (grade === "B+") return "text-theme-text-white-90";
         if (grade === "Passed" || grade === "通过") return "text-theme-primary";
         return "text-theme-text-white-60";
     };
@@ -46,33 +62,6 @@ const EducationSection = ({ language }) => {
     // 渲染单个教育卡片
     const renderEducationCard = (degreeConfig) => {
         const { data: degree, theme } = degreeConfig;
-
-        const themeConfig = {
-            emerald: {
-                gradient: "bg-theme-bg-white-10",
-                border: "border-theme-secondary/30",
-                accent: "text-theme-secondary",
-                badgeGradient: "from-theme-secondary to-theme-accent",
-                iconColor: "text-theme-secondary",
-                projectGradient: "from-theme-secondary to-theme-accent",
-                techBg: "bg-theme-bg-secondary-10 text-theme-secondary border-theme-secondary/30",
-                cardBg: "bg-theme-bg-white-10",
-                cardBorder: "border-theme-border-white-30",
-            },
-            blue: {
-                gradient: "bg-theme-bg-white-10",
-                border: "border-theme-primary/30",
-                accent: "text-theme-primary",
-                badgeGradient: "from-theme-primary to-theme-secondary",
-                iconColor: "text-theme-primary",
-                projectGradient: "from-theme-primary to-theme-secondary",
-                techBg: "bg-theme-bg-primary-10 text-theme-primary border-theme-primary/30",
-                cardBg: "bg-theme-bg-white-10",
-                cardBorder: "border-theme-border-white-30",
-            },
-        };
-
-        const colors = themeConfig[theme];
 
         return (
             <div key={degree.id} className="w-full mb-16 lg:mb-20">
@@ -103,18 +92,9 @@ const EducationSection = ({ language }) => {
                         {degree.degreeHonor && (
                         <div className="mt-1 sm:mt-0 sm:ml-6">
                             <span
-                                className={`
-                                        inline-flex items-center gap-1
-                                        px-2 py-1 sm:px-3 sm:py-2
-                                        bg-gradient-to-r ${colors.badgeGradient}
-                                        text-white text-xs sm:text-sm font-bold
-                                        rounded-lg sm:rounded-xl
-                                        shadow-lg shadow-black/30
-                                        backdrop-blur-sm
-                                        transform hover:scale-105 transition-transform duration-200
-                                    `}
+                                className="inline-flex items-center gap-1 px-2 py-1 sm:px-3 sm:py-2 text-theme-primary text-xs sm:text-sm font-bold rounded-lg sm:rounded-xl backdrop-blur-sm transform hover:scale-105 transition-transform duration-200"
                             >
-                                <span className="text-theme-accent">🏆</span>
+                                <span className="text-theme-primary">🏆</span>
                                 <span>{educationData.labels.withDistinction}</span>
                             </span>
                         </div>
@@ -130,9 +110,10 @@ const EducationSection = ({ language }) => {
                         </div>
 
                         <div
-                            className={`relative ${colors.cardBg} backdrop-blur-lg shadow-2xl shadow-black/20 rounded-3xl overflow-hidden`}
+                            className="relative backdrop-blur-lg shadow-lg shadow-black/10 rounded-3xl overflow-hidden"
                             style={{
-                                border: `1px solid var(--theme-border-white-30)`,
+                                background: "transparent",
+                                border: `1px solid var(--theme-border-white-10)`,
                                 borderTop: "none", // 移除顶部边框，用自定义边框替代
                             }}
                         >
@@ -148,11 +129,11 @@ const EducationSection = ({ language }) => {
                                     {/* 右边：地址和时间 */}
                                     <div className="flex items-center gap-6 text-theme-text-white-70 text-sm sm:text-base flex-wrap">
                                         <span className="flex items-center">
-                                            <span className="mr-2 text-theme-primary">📍</span>
+                                            <MapPin className="w-4 h-4 mr-2 text-theme-primary" />
                                             {degree.location}
                                         </span>
                                         <span className="flex items-center">
-                                            <span className="mr-2 text-theme-primary">📅</span>
+                                            <Calendar className="w-4 h-4 mr-2 text-theme-primary" />
                                             {degree.period}
                                         </span>
                                     </div>
@@ -170,7 +151,7 @@ const EducationSection = ({ language }) => {
                                         className="text-xl sm:text-2xl font-bold mb-6 flex items-center text-theme-text-white-90"
                                     >
                                         <span
-                                            className={`w-2 h-6 bg-gradient-to-b ${colors.projectGradient} rounded-full mr-3`}
+                                            className="w-2 h-6 bg-theme-primary rounded-full mr-3"
                                         ></span>
                                         {educationData.labels.academicRecords}
                                     </ThemeTitle>                                        {/* 总体统计 */}
@@ -247,7 +228,7 @@ const EducationSection = ({ language }) => {
                                 <div className="mb-10">
                                     <ThemeTitle level={4} className="text-xl sm:text-2xl font-bold text-theme-text-white-90 mb-6 flex items-center">
                                         <span
-                                            className={`w-2 h-6 bg-gradient-to-b ${colors.projectGradient} rounded-full mr-3`}
+                                            className="w-2 h-6 bg-theme-primary rounded-full mr-3"
                                         ></span>
                                         {educationData.labels.capstoneProjects}
                                     </ThemeTitle>
@@ -326,7 +307,7 @@ const EducationSection = ({ language }) => {
                                 {theme === "blue" && degree.awards && degree.awards.length > 0 && (
                                     <div>
                                         <ThemeTitle level={4} className="text-xl sm:text-2xl font-bold text-theme-text-white-90 mb-6 flex items-center">
-                                            <span className="w-2 h-6 bg-gradient-to-b from-theme-accent to-theme-secondary rounded-full mr-3"></span>
+                                            <span className="w-2 h-6 bg-theme-primary rounded-full mr-3"></span>
                                             {educationData.labels.academicAwards}
                                         </ThemeTitle>
                                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -356,7 +337,7 @@ const EducationSection = ({ language }) => {
 
                                                             {/* 奖项年份标识 */}
                                                             <div className="absolute top-3 left-3">
-                                                                <span className="px-2 py-1 bg-gradient-to-r from-theme-accent to-theme-secondary text-theme-text-white-100 text-xs font-bold rounded-full shadow-lg">
+                                                                <span className="px-2 py-1 bg-theme-primary text-theme-text-white-100 text-xs font-bold rounded-full shadow-lg">
                                                                     🏆 {award.year}
                                                                 </span>
                                                             </div>
@@ -371,10 +352,10 @@ const EducationSection = ({ language }) => {
                                                             {/* Hover详情显示 */}
                                                             <div className="absolute inset-0 bg-theme-bg-white-20 opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center p-4 backdrop-blur-md">
                                                                 <div className="text-center">
-                                                                    <div className="text-theme-accent text-4xl mb-3">
+                                                                    <div className="text-theme-primary text-4xl mb-3">
                                                                         🏆
                                                                     </div>
-                                                                    <h5 className="text-theme-accent font-bold text-lg mb-2">
+                                                                    <h5 className="text-theme-primary font-bold text-lg mb-2">
                                                                         {award.title}
                                                                     </h5>
                                                                     <p className="text-theme-text-white-70 text-sm">
