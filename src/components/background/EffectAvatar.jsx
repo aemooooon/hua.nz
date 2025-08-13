@@ -23,6 +23,31 @@ const EffectAvatar = ({ imageSrc, hoverImageSrc }) => {
     const workerRef = useRef(null);
     const particlesRef = useRef([]);
 
+    // 粒子散开动画函数
+    const animateParticles = useCallback(() => {
+        const particles = particlesRef.current;
+        if (!particles.length) return;
+
+        // 重置所有粒子到12点钟方向的初始位置
+        particles.forEach((particle) => {
+            gsap.set(particle, {
+                x1: particle.x0 + (Math.random() - 0.5) * 20, // 稍微随机化初始X位置
+                y1: -50 - Math.random() * 30, // 从12点钟方向更上方开始
+            });
+        });
+
+        // 粒子从12点钟方向散开到目标位置的动画
+        particles.forEach((particle) => {
+            gsap.to(particle, {
+                duration: particle.speed,
+                x1: particle.x0,
+                y1: particle.y0,
+                delay: particle.y0 / 200 + Math.random() * 0.3, // 增加随机延迟让动画更自然
+                ease: "elastic.out(1, 0.5)",
+            });
+        });
+    }, []);
+
     // 初始化 Web Worker 并设置粒子动画
     useEffect(() => {
         // 创建 Web Worker 处理粒子计算，避免阻塞主线程
@@ -30,17 +55,9 @@ const EffectAvatar = ({ imageSrc, hoverImageSrc }) => {
         
         workerRef.current.onmessage = (event) => {
             const particles = event.data;
-            // 使用 GSAP 批量处理粒子动画，性能优于逐个处理
-            particles.forEach((particle) => {
-                gsap.to(particle, {
-                    duration: particle.speed,
-                    x1: particle.x0,
-                    y1: particle.y0,
-                    delay: particle.y0 / 130,
-                    ease: "elastic.out",
-                });
-            });
             particlesRef.current = particles;
+            // 触发初始粒子散开动画
+            animateParticles();
         };
 
         // 清理资源
@@ -49,7 +66,7 @@ const EffectAvatar = ({ imageSrc, hoverImageSrc }) => {
                 workerRef.current.terminate();
             }
         };
-    }, []);
+    }, [animateParticles]);
 
     // 图片加载和 Canvas 初始化
     useEffect(() => {
@@ -198,7 +215,10 @@ const EffectAvatar = ({ imageSrc, hoverImageSrc }) => {
                 }
             );
         }
-    }, []);
+
+        // 鼠标进入时也触发粒子动画
+        animateParticles();
+    }, [animateParticles]);
 
     // 鼠标离开显示粒子动画（优化版）
     const handleMouseLeave = useCallback(() => {
@@ -210,10 +230,14 @@ const EffectAvatar = ({ imageSrc, hoverImageSrc }) => {
                 transform: "translate(-50%, -50%) scale(0.9)",
                 duration: 0.8,
                 ease: "elastic.out",
-                onComplete: () => setIsHovered(false)
+                onComplete: () => {
+                    setIsHovered(false);
+                    // 鼠标离开时重新触发粒子散开动画
+                    setTimeout(animateParticles, 100);
+                }
             });
         }
-    }, []);
+    }, [animateParticles]);
 
     // 组件卸载时的资源清理
     useEffect(() => {
