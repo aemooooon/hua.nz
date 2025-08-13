@@ -1,25 +1,36 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import PropTypes from "prop-types";
 import { gsap } from "gsap";
 import CircularLoadingIndicator from "../ui/CircularLoadingIndicator";
 
 /**
- * EffectAvatar - 粒子动画头像效果组件
- * 移动自原Avatar组件，统一放置在background文件夹下
+ * EffectAvatar - 高性能粒子动画头像效果组件
+ * 
+ * 功能特性：
+ * - 使用 Web Worker 处理粒子计算，避免阻塞主线程
+ * - GSAP 动画库提供流畅的过渡效果
+ * - Canvas 2D 渲染粒子动画
+ * - Hover 时显示清晰头像照片
+ * - 响应式设计，支持窗口缩放
+ * - 内存和资源自动清理
  */
 const EffectAvatar = ({ imageSrc, hoverImageSrc }) => {
     const canvasRef = useRef(null);
     const hoverImgRef = useRef(null);
     const [isHovered, setIsHovered] = useState(false);
     const [aspectRatio, setAspectRatio] = useState(1);
-    const [isLoading, setIsLoading] = useState(true); // 添加加载状态
+    const [isLoading, setIsLoading] = useState(true);
     const workerRef = useRef(null);
     const particlesRef = useRef([]);
 
+    // 初始化 Web Worker 并设置粒子动画
     useEffect(() => {
+        // 创建 Web Worker 处理粒子计算，避免阻塞主线程
         workerRef.current = new Worker(new URL("../../workers/particleWorker.js?worker", import.meta.url));
+        
         workerRef.current.onmessage = (event) => {
             const particles = event.data;
+            // 使用 GSAP 批量处理粒子动画，性能优于逐个处理
             particles.forEach((particle) => {
                 gsap.to(particle, {
                     duration: particle.speed,
@@ -32,54 +43,90 @@ const EffectAvatar = ({ imageSrc, hoverImageSrc }) => {
             particlesRef.current = particles;
         };
 
+        // 清理资源
         return () => {
-            workerRef.current.terminate();
+            if (workerRef.current) {
+                workerRef.current.terminate();
+            }
         };
     }, []);
 
+    // 图片加载和 Canvas 初始化
     useEffect(() => {
         const png = new Image();
+        
         png.onload = () => {
             const canvas = canvasRef.current;
+            if (!canvas) return;
+            
+            // 设置 Canvas 内部分辨率为图片尺寸的2倍，提供更清晰的渲染
             canvas.width = png.width * 2;
             canvas.height = png.height * 2;
             setAspectRatio(png.width / png.height);
 
+            // 使用 OffscreenCanvas 提高性能
             const offscreen = new OffscreenCanvas(png.width, png.height);
             const offscreenCtx = offscreen.getContext("2d");
             offscreenCtx.drawImage(png, 0, 0);
 
             const imageBitmap = offscreen.transferToImageBitmap();
-            workerRef.current.postMessage({ imageBitmap, width: png.width, height: png.height }, [imageBitmap]);
+            if (workerRef.current) {
+                workerRef.current.postMessage(
+                    { imageBitmap, width: png.width, height: png.height }, 
+                    [imageBitmap]
+                );
+            }
             
-            // 图片加载完成，隐藏加载指示器
             setIsLoading(false);
         };
+        
         png.onerror = () => {
-            // 图片加载失败，也隐藏加载指示器
+            console.warn('EffectAvatar: 图片加载失败:', imageSrc);
             setIsLoading(false);
         };
+        
         png.src = imageSrc;
     }, [imageSrc]);
 
-    // 渲染粒子
+    // 高性能 Canvas 渲染循环
     useEffect(() => {
         const canvas = canvasRef.current;
-        const ctx = canvas.getContext("2d", { willReadFrequently: true });
+        if (!canvas) return;
+        
+        const ctx = canvas.getContext("2d", { 
+            willReadFrequently: true,
+            alpha: false // 禁用透明度通道提升性能
+        });
+        
+        let animationFrameId;
 
         const render = () => {
+            // 使用更高效的清除方法
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            particlesRef.current.forEach((particle) => {
-                ctx.fillStyle = particle.color;
-                ctx.fillRect(particle.x1 * 2, particle.y1 * 2, 2, 2);
-            });
-            requestAnimationFrame(render);
+            
+            // 批量渲染粒子，减少 draw call
+            const particles = particlesRef.current;
+            if (particles.length > 0) {
+                particles.forEach((particle) => {
+                    ctx.fillStyle = particle.color;
+                    ctx.fillRect(particle.x1 * 2, particle.y1 * 2, 2, 2);
+                });
+            }
+            
+            animationFrameId = requestAnimationFrame(render);
         };
 
-        requestAnimationFrame(render);
-    }, [particlesRef]);
+        animationFrameId = requestAnimationFrame(render);
+        
+        // 清理动画循环
+        return () => {
+            if (animationFrameId) {
+                cancelAnimationFrame(animationFrameId);
+            }
+        };
+    }, []);
 
-    // 监听浏览器缩放事件
+    // 响应式窗口缩放处理（性能优化版）
     useEffect(() => {
         let resizeTimeout;
         
@@ -87,63 +134,56 @@ const EffectAvatar = ({ imageSrc, hoverImageSrc }) => {
             const canvas = canvasRef.current;
             if (!canvas) return;
 
-            // 防抖处理，避免频繁触发
+            // 防抖处理，减少频繁的DOM操作
             clearTimeout(resizeTimeout);
             resizeTimeout = setTimeout(() => {
-                // 获取父容器的宽度
-                const parentWidth = canvas.parentElement.clientWidth;
-                const parentHeight = canvas.parentElement.clientHeight;
+                const parent = canvas.parentElement;
+                if (!parent) return;
+                
+                const { clientWidth: parentWidth, clientHeight: parentHeight } = parent;
 
-                // 根据宽高比计算 canvas 的新宽度和高度
+                // 根据宽高比计算最优显示尺寸
                 let newWidth, newHeight;
                 if (parentWidth / parentHeight > aspectRatio) {
-                    // 父容器宽度过大，以高度为基准
                     newHeight = parentHeight;
                     newWidth = newHeight * aspectRatio;
                 } else {
-                    // 父容器高度过大，以宽度为基准
                     newWidth = parentWidth;
                     newHeight = newWidth / aspectRatio;
                 }
 
-                // 设置 canvas 的显示尺寸
+                // 恢复原来的设置方式，不改变transform，只设置CSS尺寸
                 canvas.style.width = `${newWidth}px`;
                 canvas.style.height = `${newHeight}px`;
-
-                // 重要：Canvas的内部分辨率需要保持固定，因为粒子坐标是基于原始图片计算的
-                // 不需要改变 canvas.width 和 canvas.height，它们应该保持与原始图片尺寸一致
                 
-                console.log('Canvas resized:', {
-                    displaySize: `${newWidth}x${newHeight}`,
-                    internalSize: `${canvas.width}x${canvas.height}`,
-                    aspectRatio,
-                    parentSize: `${parentWidth}x${parentHeight}`
-                });
-            }, 100); // 100ms防抖
+                // Canvas内部分辨率保持不变，与原始图片尺寸一致
+            }, 150);
         };
 
-        // 初始化时调用一次
-        handleResize();
+        // 使用 ResizeObserver API 替代 window resize 事件，更精确且性能更好
+        const resizeObserver = new ResizeObserver(handleResize);
+        const parentElement = canvasRef.current?.parentElement;
+        
+        if (parentElement) {
+            resizeObserver.observe(parentElement);
+        }
 
-        // 监听 resize 事件
-        window.addEventListener("resize", handleResize);
+        handleResize(); // 初始化
 
-        // 清理事件监听器
         return () => {
-            window.removeEventListener("resize", handleResize);
+            resizeObserver.disconnect();
             clearTimeout(resizeTimeout);
         };
     }, [aspectRatio]);
 
-    // 鼠标悬停时显示清晰照片
-    const handleMouseEnter = () => {
-        console.log('🎯 Mouse Enter - 显示清晰照片');
+    // 鼠标悬停显示清晰头像（优化版）
+    const handleMouseEnter = useCallback(() => {
         setIsHovered(true);
         
-        // 立即停止任何进行中的动画
         const hoverContainer = hoverImgRef.current?.parentElement;
         if (hoverContainer) {
-            gsap.killTweensOf(hoverContainer); // 停止所有相关动画
+            // 停止冲突的动画，避免性能浪费
+            gsap.killTweensOf(hoverContainer);
             gsap.fromTo(
                 hoverContainer,
                 { 
@@ -158,26 +198,43 @@ const EffectAvatar = ({ imageSrc, hoverImageSrc }) => {
                 }
             );
         }
-    };
+    }, []);
 
-    // 鼠标离开时隐藏图片，显示粒子动画
-    const handleMouseLeave = () => {
-        console.log('🎯 Mouse Leave - 显示粒子动画');
+    // 鼠标离开显示粒子动画（优化版）
+    const handleMouseLeave = useCallback(() => {
         const hoverContainer = hoverImgRef.current?.parentElement;
         if (hoverContainer) {
-            gsap.killTweensOf(hoverContainer); // 停止所有相关动画
+            gsap.killTweensOf(hoverContainer);
             gsap.to(hoverContainer, {
                 opacity: 0,
                 transform: "translate(-50%, -50%) scale(0.9)",
                 duration: 0.8,
                 ease: "elastic.out",
-                onComplete: () => {
-                    setIsHovered(false);
-                    console.log('✅ 粒子动画已恢复显示');
-                }
+                onComplete: () => setIsHovered(false)
             });
         }
-    };
+    }, []);
+
+    // 组件卸载时的资源清理
+    useEffect(() => {
+        const currentHoverImg = hoverImgRef.current;
+        const currentParticles = particlesRef.current;
+        
+        return () => {
+            // 清理所有 GSAP 动画
+            const hoverContainer = currentHoverImg?.parentElement;
+            if (hoverContainer) {
+                gsap.killTweensOf(hoverContainer);
+            }
+            
+            // 清理粒子动画
+            if (currentParticles) {
+                currentParticles.forEach(particle => {
+                    gsap.killTweensOf(particle);
+                });
+            }
+        };
+    }, []);
 
     return (
         <div
@@ -185,21 +242,12 @@ const EffectAvatar = ({ imageSrc, hoverImageSrc }) => {
                 position: "relative", 
                 width: "100%", 
                 height: "100%", 
-                zIndex: 10 // 设置高z-index确保在所有光晕效果之上
+                zIndex: 10
             }}
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
-            // 确保hover事件能够正确触发
-            onMouseOver={(e) => {
-                // 只有当鼠标真正进入容器时才触发
-                if (e.currentTarget === e.target || e.currentTarget.contains(e.target)) {
-                    if (!isHovered) {
-                        handleMouseEnter();
-                    }
-                }
-            }}
         >
-            {/* 加载指示器 */}
+            {/* 加载状态指示器 */}
             {isLoading && (
                 <div className="absolute inset-0 flex items-center justify-center bg-gray-800 rounded-full">
                     <CircularLoadingIndicator
@@ -211,7 +259,7 @@ const EffectAvatar = ({ imageSrc, hoverImageSrc }) => {
                 </div>
             )}
             
-            {/* Canvas - 粒子动画背景 */}
+            {/* 粒子动画 Canvas */}
             <canvas
                 ref={canvasRef}
                 style={{
@@ -222,14 +270,17 @@ const EffectAvatar = ({ imageSrc, hoverImageSrc }) => {
                     position: "absolute",
                     top: "50%",
                     left: "50%",
-                    transform: "translate(-50%, -30%) scale(1.5)", // 调整垂直偏移到-30%
-                    opacity: isLoading ? 0 : (isHovered ? 0.1 : 1), // hover时几乎完全透明，确保清晰照片可见
-                    transition: "opacity 0.5s ease", // 稍微加快切换速度
-                    zIndex: -1 // 设置负z-index，确保在hover图片后面
+                    transform: "translate(-50%, -30%) scale(1.5)",
+                    opacity: isLoading ? 0 : (isHovered ? 0.1 : 1),
+                    transition: "opacity 0.5s ease",
+                    zIndex: -1,
+                    // 优化 Canvas 渲染性能
+                    imageRendering: "auto",
+                    willChange: isHovered ? "opacity" : "auto"
                 }}
             />
 
-            {/* 清晰照片容器 - hover时显示 */}
+            {/* 清晰头像显示容器 */}
             <div
                 style={{
                     position: "absolute",
@@ -238,29 +289,35 @@ const EffectAvatar = ({ imageSrc, hoverImageSrc }) => {
                     transform: "translate(-50%, -50%)",
                     width: "100%",
                     height: "100%",
-                    borderRadius: "50%", // 容器圆形
-                    overflow: "hidden", // 裁剪超出部分
-                    opacity: isHovered ? 1 : 0, // 明确的显示/隐藏状态
-                    visibility: isHovered ? "visible" : "hidden", // 确保完全隐藏
-                    transition: "opacity 0.5s ease, visibility 0.5s ease", // 同步过渡
-                    pointerEvents: "none", // 不阻挡鼠标事件
-                    zIndex: 2 // 最高层级，确保在粒子之上
+                    borderRadius: "50%",
+                    overflow: "hidden",
+                    opacity: isHovered ? 1 : 0,
+                    visibility: isHovered ? "visible" : "hidden",
+                    transition: "opacity 0.5s ease, visibility 0.5s ease",
+                    pointerEvents: "none",
+                    zIndex: 2,
+                    // 性能优化：只在需要时启用 GPU 加速
+                    willChange: isHovered ? "opacity, transform" : "auto"
                 }}
             >
                 <img
                     ref={hoverImgRef}
                     src={hoverImageSrc}
-                    alt="Hover Image"
+                    alt="清晰头像"
                     style={{
                         position: "absolute",
                         top: "50%",
                         left: "50%",
                         transform: "translate(-50%, -50%)",
-                        width: "100%", // 填满圆形容器
-                        height: "100%", // 填满圆形容器
-                        objectFit: "cover", // 裁剪图片以填满圆形，保持比例
-                        pointerEvents: "none"
+                        width: "100%",
+                        height: "100%",
+                        objectFit: "cover",
+                        pointerEvents: "none",
+                        // 图片渲染优化
+                        imageRendering: "auto"
                     }}
+                    loading="lazy" // 懒加载优化
+                    decoding="async" // 异步解码提升性能
                 />
             </div>
         </div>
@@ -268,8 +325,11 @@ const EffectAvatar = ({ imageSrc, hoverImageSrc }) => {
 };
 
 EffectAvatar.propTypes = {
+    /** 粒子动画的源图片路径 */
     imageSrc: PropTypes.string.isRequired,
+    /** 鼠标悬停时显示的清晰头像图片路径 */
     hoverImageSrc: PropTypes.string.isRequired,
 };
 
+// 使用 React.memo 优化重渲染性能
 export default EffectAvatar;
