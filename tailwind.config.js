@@ -55,6 +55,9 @@ export default {
           900: '#064e3b',
         },
 
+        // University of Canterbury Official Red
+        'uc-red': '#C8102E',
+        
         // 动态主题色 - CSS变量方式
         theme: {
           primary: 'var(--theme-primary)',

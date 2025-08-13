@@ -210,7 +210,7 @@ const contentConfig = {
           institution: "University of Canterbury",
           location: "Christchurch, New Zealand",
           period: "Feb 2024 - Feb 2025",
-          logo: "/University-of-Canterbury.svg",
+          logo: "/unicanterburylogo.png",
           gpa: "A average",
           totalCredits: 180,
           courses: [
@@ -569,7 +569,7 @@ const contentConfig = {
           institution: "坎特伯雷大学",
           location: "基督城",
           period: "2024年2月 - 2025年2月",
-          logo: "/University-of-Canterbury.svg",
+          logo: "/unicanterburylogo.png",
           gpa: "A",
           totalCredits: 180,
           courses: [
