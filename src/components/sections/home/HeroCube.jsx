@@ -166,6 +166,11 @@ const HeroCube = ({
         renderer.domElement.style.zIndex = '10';
         renderer.domElement.style.pointerEvents = 'none'; // 去掉交互
         
+        // 添加数据属性，让智能光标识别这是不可点击的Canvas
+        renderer.domElement.setAttribute('data-no-custom-cursor', 'true');
+        renderer.domElement.setAttribute('data-hero-cube-canvas', 'true');
+        renderer.domElement.classList.add('hero-cube-canvas');
+        
         // 更新渲染器尺寸为全屏
         renderer.setSize(window.innerWidth, window.innerHeight);
         camera.aspect = window.innerWidth / window.innerHeight;

@@ -13,12 +13,19 @@
  * 3. 📊 实时反馈：根据鼠标滚轮力度显示0-100%的进度环和百分比
  * 4. 🚨 智能边界检测：区分section级别和页面内容级别的滚动边界
  * 5. 🎭 悬停交互：鼠标悬停时光标有微妙的视觉变化
+ * 6. 🖱️ 智能光标切换：在可点击元素上自动切换到原生光标，保证操作精准度
  * 
  * 【视觉组成】
  * - 外层圆环：显示滚动进度（0-100%）
  * - 内层箭头：指示可用的导航方向
  * - 中心数字：显示当前滚动强度百分比
  * - 动态颜色：根据操作有效性改变颜色
+ * - 可点击提示：在可点击元素上显示小绿点提示
+ * 
+ * 【光标行为规则】
+ * - 非可点击区域：显示个性化智能光标
+ * - 可点击元素：自动切换到原生系统光标
+ * - 移动设备：自动隐藏自定义光标
  * 
  * 【性能优化报告】
  * ⚡ 渲染性能：60fps动画 + 硬件加速（transform: translate3d）
@@ -26,9 +33,11 @@
  * ⚡ 内存优化：DOM缓存 + 完整清理机制 + 引用管理
  * ⚡ 更新频率：智能状态更新，减少不必要的重渲染
  * ⚡ 浏览器友好：避免layout/reflow，使用transform和opacity
+ * ⚡ 可点击检测：缓存机制 + 深度限制 + 智能清理
  * 
  * 【使用场景】
  * 适用于具有多个section的全屏滚动网站，如作品集、产品展示页等
+ * 特别适合需要保持用户界面一致性，同时不影响可点击元素操作精准度的场景
  */
 
 import { useEffect, useState, useCallback, useRef } from 'react';
@@ -58,6 +67,9 @@ const SmartDirectionalCursor = () => {
     /** 当前滚动方向：'up'|'down'|null，用于精确的边界检测 */
     const [scrollDirection, setScrollDirection] = useState(null);
     
+    /** 鼠标是否悬停在可点击元素上 */
+    const [isOverClickable, setIsOverClickable] = useState(false);
+    
     // ==================== 外部状态和引用 ====================
     
     /** 从全局状态获取当前section索引和所有sections数组 */
@@ -74,8 +86,232 @@ const SmartDirectionalCursor = () => {
     
     /** 缓存DOM容器引用，避免重复查询 */
     const containerRef = useRef(null);
+    
+    /** 可点击元素检测的缓存，避免重复计算 */
+    const clickableElementCache = useRef(new WeakMap());
 
     // ==================== 核心逻辑函数 ====================
+
+    /**
+     * 🎯 可点击元素检测器
+     * 检测鼠标位置下的元素是否为可点击元素
+     * 
+     * @param {number} x 鼠标X坐标
+     * @param {number} y 鼠标Y坐标
+     * @returns {boolean} 是否为可点击元素
+     * 
+     * 检测规则：
+     * - 标签：a, button, input, select, textarea
+     * - 属性：onclick, role="button", tabindex >= 0
+     * - CSS：cursor: pointer
+     * - 特殊类：.clickable, .btn, .button
+     */
+    const isClickableElement = useCallback((x, y) => {
+        const element = document.elementFromPoint(x, y);
+        if (!element) return false;
+
+        // 检查缓存
+        if (clickableElementCache.current.has(element)) {
+            return clickableElementCache.current.get(element);
+        }
+
+        // 定义可点击元素的选择器
+        const clickableSelectors = [
+            'a', 'button', 'input', 'select', 'textarea',
+            '[onclick]', '[role="button"]', '[role="link"]', '[role="menuitem"]',
+            '[tabindex]:not([tabindex="-1"])',
+            '.clickable', '.btn', '.button', '.cursor-pointer',
+            'summary', 'label', '[data-clickable="true"]'
+        ];
+
+        // 排除某些不应该被视为可点击的元素
+        const excludeSelectors = [
+            'canvas', 'svg', 'img', 'video', 
+            '.hero-cube', '.effect-avatar', '.lorenz-attractor',
+            '[data-no-custom-cursor="true"]',
+            // 添加更多排除条件
+            '[style*="pointer-events: none"]',
+            '[style*="pointerEvents: none"]',
+            // 排除常见的背景容器类
+            '.h-screen.w-screen',
+            '.overflow-hidden',
+            '.background-container',
+            '.bg-container'
+        ];
+
+        // 首先进行快速检查：是否有明确的排除标记
+        if (element.hasAttribute('data-no-custom-cursor') ||
+            element.hasAttribute('data-hero-cube-canvas') ||
+            element.classList.contains('hero-cube-canvas')) {
+            clickableElementCache.current.set(element, false);
+            return false;
+        }
+
+        // 检查元素的样式
+        const elementStyle = window.getComputedStyle(element);
+        
+        // 如果 pointerEvents 为 none，则不可点击
+        if (elementStyle.pointerEvents === 'none') {
+            clickableElementCache.current.set(element, false);
+            return false;
+        }
+
+        // 特殊检查：全屏容器元素，即使有 pointerEvents: auto，如果 cursor: none 也应该被排除
+        if (elementStyle.cursor === 'none' && 
+            (element.classList.contains('h-screen') || 
+             element.classList.contains('w-screen') ||
+             element.classList.contains('overflow-hidden'))) {
+            clickableElementCache.current.set(element, false);
+            return false;
+        }
+
+        // 特殊情况：检查是否是 Three.js 的 Canvas（通常有特定的类名或属性）
+        if (element.tagName.toLowerCase() === 'canvas') {
+            const parentElement = element.parentElement;
+            // 检查是否是 HeroCube 的 Canvas
+            if (parentElement && (
+                parentElement.classList.contains('hero-cube') ||
+                parentElement.hasAttribute('data-hero-cube') ||
+                parentElement.style.pointerEvents === 'none' ||
+                element.style.pointerEvents === 'none'
+            )) {
+                clickableElementCache.current.set(element, false);
+                return false;
+            }
+        }
+
+        let isClickable = false;
+
+        // 检查元素本身或其父元素是否匹配可点击选择器
+        let currentElement = element;
+        let depth = 0;
+        while (currentElement && currentElement !== document.body && depth < 5) { // 限制深度避免性能问题
+            
+            // 首先检查是否是应该排除的元素
+            if (excludeSelectors.some(selector => {
+                try {
+                    return currentElement.matches(selector);
+                } catch {
+                    return false;
+                }
+            })) {
+                // 如果是排除元素，直接判定为非可点击
+                isClickable = false;
+                break;
+            }
+
+            // 额外检查：背景容器判断
+            // 如果是 div 元素，且同时有全屏类名和 cursor: none，则排除
+            if (currentElement.tagName.toLowerCase() === 'div') {
+                const style = window.getComputedStyle(currentElement);
+                const classes = currentElement.classList;
+                
+                // 如果是全屏容器且cursor为none，则不应该被视为可点击
+                if (style.cursor === 'none' && 
+                    (classes.contains('h-screen') || classes.contains('w-screen'))) {
+                    isClickable = false;
+                    break;
+                }
+
+                // 如果只包含布局类名，没有实际交互内容，也排除
+                const layoutOnlyClasses = ['h-screen', 'w-screen', 'overflow-hidden', 'relative', 'absolute', 'fixed'];
+                const hasOnlyLayoutClasses = Array.from(classes).every(cls => 
+                    layoutOnlyClasses.includes(cls) || cls.startsWith('bg-') || cls.startsWith('backdrop-')
+                );
+                
+                if (hasOnlyLayoutClasses && style.cursor === 'none') {
+                    isClickable = false;
+                    break;
+                }
+            }
+
+            // 检查标签和属性
+            if (clickableSelectors.some(selector => {
+                try {
+                    return currentElement.matches(selector);
+                } catch {
+                    return false;
+                }
+            })) {
+                isClickable = true;
+                break;
+            }
+
+            // 检查CSS cursor样式，但排除某些特殊情况
+            const computedStyle = window.getComputedStyle(currentElement);
+            if (computedStyle.cursor === 'pointer') {
+                // 进一步检查是否真的是用户设置的pointer，而不是浏览器默认的
+                const tagName = currentElement.tagName.toLowerCase();
+                if (!['canvas', 'svg', 'img', 'video'].includes(tagName)) {
+                    // 额外检查：确保这个元素真的有交互意图
+                    if (currentElement.hasAttribute('onclick') ||
+                        currentElement.hasAttribute('role') ||
+                        currentElement.hasAttribute('tabindex') ||
+                        currentElement.classList.contains('clickable') ||
+                        currentElement.classList.contains('btn') ||
+                        currentElement.classList.contains('button') ||
+                        ['a', 'button', 'input', 'select', 'textarea'].includes(tagName)) {
+                        isClickable = true;
+                        break;
+                    }
+                }
+            }
+
+            // 检查是否有点击事件监听器（通过常见的React/Vue属性）
+            if (currentElement.onclick || 
+                currentElement.getAttribute('data-testid') ||
+                currentElement.classList.contains('cursor-pointer')) {
+                isClickable = true;
+                break;
+            }
+
+            currentElement = currentElement.parentElement;
+            depth++;
+        }
+
+        // 调试信息 - 在开发环境中输出
+        if (import.meta.env.DEV) {
+            // 如果检测为可点击，输出详细信息
+            if (isClickable) {
+                console.log('🖱️ Detected clickable element:', {
+                    element: element.tagName,
+                    classes: element.className,
+                    id: element.id,
+                    cursor: window.getComputedStyle(element).cursor,
+                    pointerEvents: window.getComputedStyle(element).pointerEvents,
+                    position: { x, y },
+                    hasOnclick: !!element.onclick,
+                    hasRole: !!element.getAttribute('role'),
+                    elementHTML: element.outerHTML.substring(0, 200)
+                });
+            }
+            // 也可以输出被排除的元素信息（可选，用于调试）
+            else if (element.tagName.toLowerCase() === 'div' && 
+                     element.classList.contains('h-screen')) {
+                console.log('🚫 Excluded background container:', {
+                    element: element.tagName,
+                    classes: element.className,
+                    cursor: window.getComputedStyle(element).cursor,
+                    reason: 'Background container with cursor: none'
+                });
+            }
+        }
+
+        // 缓存结果
+        clickableElementCache.current.set(element, isClickable);
+        
+        // 清理缓存以避免内存泄漏（保留最近的100个元素）
+        if (clickableElementCache.current.size > 100) {
+            const entries = Array.from(clickableElementCache.current.entries());
+            clickableElementCache.current.clear();
+            // 保留最后50个
+            entries.slice(-50).forEach(([el, clickable]) => {
+                clickableElementCache.current.set(el, clickable);
+            });
+        }
+
+        return isClickable;
+    }, []);
 
     /**
      * 🧭 方向判断逻辑
@@ -201,6 +437,7 @@ const SmartDirectionalCursor = () => {
     /**
      * 🖱️ 鼠标移动跟踪器
      * 实时跟踪鼠标位置，让光标能跟随鼠标移动
+     * 同时检测是否悬停在可点击元素上
      * 
      * 性能优化：8ms节流，120fps更新频率
      */
@@ -211,10 +448,14 @@ const SmartDirectionalCursor = () => {
         
         setCursorPosition({ x: e.clientX, y: e.clientY });
         
+        // 检测是否悬停在可点击元素上
+        const isOverClickableElement = isClickableElement(e.clientX, e.clientY);
+        setIsOverClickable(isOverClickableElement);
+        
         if (!isVisible) {
             setIsVisible(true);
         }
-    }, [isVisible]);
+    }, [isVisible, isClickableElement]);
 
     /**
      * 👋 鼠标进入页面处理器
@@ -289,14 +530,22 @@ const SmartDirectionalCursor = () => {
     }, [isHovering, lastScrollTime, scrollIntensity]);
 
     /**
-     * 🖱️ 系统光标隐藏
-     * 隐藏系统默认光标，让自定义光标完全接管
+     * 🖱️ 系统光标控制
+     * 根据是否悬停在可点击元素上，动态控制系统光标的显示
+     * - 可点击元素：显示原生光标（pointer或default）
+     * - 非可点击区域：隐藏系统光标，使用自定义光标
      * 
      * 性能优化：确保样式正确恢复，避免影响其他组件
      */
     useEffect(() => {
         const originalCursor = document.body.style.cursor;
-        document.body.style.cursor = 'none';
+        
+        // 根据是否在可点击元素上设置光标样式
+        if (isOverClickable) {
+            document.body.style.cursor = 'auto'; // 恢复自动光标，让元素自己的cursor生效
+        } else {
+            document.body.style.cursor = 'none'; // 隐藏系统光标
+        }
         
         return () => {
             document.body.style.cursor = originalCursor;
@@ -307,7 +556,7 @@ const SmartDirectionalCursor = () => {
             }
             glowIntensityRef.current = 0.3;
         };
-    }, []);
+    }, [isOverClickable]); // 依赖isOverClickable状态
 
     /**
      * 🎧 事件监听器注册
@@ -578,14 +827,14 @@ const SmartDirectionalCursor = () => {
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
-                            fontSize: '24px',
-                            fontWeight: '400',
-                            fontFamily: 'Monaco, "Courier New", monospace',
+                            fontSize: '14px', // 从24px减小到16px
+                            fontWeight: '400', // 增加字体粗细提高辨识度
+                            fontFamily: 'Arial, sans-serif', // 使用Arial字体
                             color: progressColor,
                             opacity: 0.95,
                             zIndex: 15,
                             textShadow: `0 0 4px ${progressColor}`,
-                            transform: 'translate3d(0, 0, 0)',
+                            transform: 'translate3d(-33px, 0, 0)', // 移动到圆环左边四分之一位置
                             willChange: 'opacity',
                         }}
                     >
@@ -625,13 +874,29 @@ const SmartDirectionalCursor = () => {
                         }}
                     />
                 )}
+
+                {/* 🎯 永久中央提示点 - 始终显示，使用主题色 */}
+                <div
+                    style={{
+                        position: 'absolute',
+                        width: '1rem', // 16px = 1rem
+                        height: '1rem', // 16px = 1rem
+                        borderRadius: '50%',
+                        backgroundColor: 'var(--theme-primary)',
+                        opacity: 0.9,
+                        zIndex: 20,
+                        transform: 'translate3d(0, 0, 0)',
+                        willChange: 'transform',
+                        boxShadow: `0 0 6px var(--theme-primary)`,
+                    }}
+                />
             </div>
         );
     };
 
     // ==================== 组件主渲染 ====================
     
-    /** 如果光标不可见，直接返回null，避免不必要的渲染 */
+    /** 如果光标不可见，直接返回null */
     if (!isVisible) return null;
 
     return (
@@ -669,31 +934,63 @@ const SmartDirectionalCursor = () => {
                     filter: brightness(1.2) contrast(1.1); /* 悬停时增强亮度和对比度 */
                 }
                 
+                .power-cursor.over-clickable {
+                    opacity: 0.3; /* 在可点击元素上时变淡 */
+                    transform: translate3d(-50%, -50%, 0) scale(0.8); /* 稍微缩小 */
+                }
+                
+                .clickable-hint {
+                    position: fixed;
+                    pointer-events: none;
+                    z-index: 9998;
+                    width: 1rem; /* 16px = 1rem */
+                    height: 1rem; /* 16px = 1rem */
+                    border-radius: 50%;
+                    background: var(--theme-primary); /* 使用主题色 */
+                    opacity: 0.9; /* 与中央提示点相同的透明度 */
+                    box-shadow: 0 0 6px var(--theme-primary); /* 使用主题色光晕 */
+                    transform: translate3d(-50%, -50%, 0);
+                }
+                
                 /* 📱 移动设备适配：在触摸设备上隐藏光标 */
                 @media (hover: none) and (pointer: coarse) {
-                    .power-cursor {
+                    .power-cursor, .clickable-hint {
                         display: none !important;
                     }
                 }
             `}</style>
+            
+            {/* 可点击元素提示点 - 当悬停在可点击元素上时显示 */}
+            {isOverClickable && (
+                <div
+                    className="clickable-hint"
+                    style={{
+                        left: cursorPosition.x,
+                        top: cursorPosition.y,
+                    }}
+                />
+            )}
             
             {/* 
              * 🎯 主光标容器
              * 
              * 跟随鼠标位置的主容器，包含所有光标视觉元素
              * 使用transform: translate3d触发硬件加速，优化性能
+             * 当悬停在可点击元素上时变淡，但不完全隐藏
              */}
-            <div
-                className={`power-cursor ${isHovering ? 'hovering' : ''}`}
-                style={{
-                    left: cursorPosition.x,
-                    top: cursorPosition.y,
-                    transform: `translate3d(-50%, -50%, 0)`, // 居中定位 + 硬件加速
-                    willChange: 'transform', // 提示浏览器优化此属性
-                }}
-            >
-                {renderPowerDirectionalIndicator()}
-            </div>
+            {!isOverClickable && (
+                <div
+                    className={`power-cursor ${isHovering ? 'hovering' : ''} ${isOverClickable ? 'over-clickable' : ''}`}
+                    style={{
+                        left: cursorPosition.x,
+                        top: cursorPosition.y,
+                        transform: `translate3d(-50%, -50%, 0)`, // 居中定位 + 硬件加速
+                        willChange: 'transform', // 提示浏览器优化此属性
+                    }}
+                >
+                    {renderPowerDirectionalIndicator()}
+                </div>
+            )}
         </>
     );
 };
