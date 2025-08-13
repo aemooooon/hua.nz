@@ -3,12 +3,12 @@
 
 /* 强制课程文字颜色 */
 .course-item .course-title {
-    color: #ffffff !important;
+    color: var(--theme-text-white-90) !important;
     font-weight: 500 !important;
 }
 
 .course-item .course-details {
-    color: #d1d5db !important;
+    color: var(--theme-text-white-70) !important;
 }
 
 .course-item .grade-badge {
@@ -17,7 +17,7 @@
 
 /* 学期标题颜色 */
 .semester-title {
-    color: #ffffff !important;
+    color: var(--theme-text-white-90) !important;
     font-weight: bold !important;
 }
 
@@ -34,10 +34,10 @@
     width: 100%;
     height: 100%;
     position: relative;
-    background: linear-gradient(135deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0.05) 100%);
+    background: var(--theme-bg-white-10);
     -webkit-backdrop-filter: blur(20px);
     backdrop-filter: blur(20px);
-    border: 1px solid rgba(255,255,255,0.2);
+    border: 1px solid var(--theme-border-white-20);
     border-radius: 24px;
     transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
     overflow: hidden;
@@ -45,22 +45,22 @@
 
 /* Masters卡片样式 */
 .masters-card {
-    background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(5, 150, 105, 0.05));
-    border: 2px solid rgba(16, 185, 129, 0.3);
+    background: var(--theme-bg-secondary-10);
+    border: 2px solid var(--theme-secondary);
     box-shadow: 
-        0 25px 50px -12px rgba(16, 185, 129, 0.25),
-        0 0 0 1px rgba(16, 185, 129, 0.1),
-        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        0 25px 50px -12px var(--theme-shadow-secondary-30),
+        0 0 0 1px var(--theme-border-white-10),
+        inset 0 1px 0 var(--theme-border-white-10);
 }
 
 /* Bachelors卡片样式 */
 .bachelors-card {
-    background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(37, 99, 235, 0.05));
-    border: 2px solid rgba(59, 130, 246, 0.3);
+    background: var(--theme-bg-primary-10);
+    border: 2px solid var(--theme-primary);
     box-shadow: 
-        0 25px 50px -12px rgba(59, 130, 246, 0.25),
-        0 0 0 1px rgba(59, 130, 246, 0.1),
-        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        0 25px 50px -12px var(--theme-shadow-primary-30),
+        0 0 0 1px var(--theme-border-white-10),
+        inset 0 1px 0 var(--theme-border-white-10);
 }
 
 /* Hover效果 - 移除3D旋转 */
@@ -73,18 +73,18 @@
     box-shadow: 
         0 50px 100px -20px rgba(0, 0, 0, 0.5),
         0 30px 60px -30px rgba(0, 0, 0, 0.35),
-        0 0 0 1px rgba(255, 255, 255, 0.2),
-        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+        0 0 0 1px var(--theme-border-white-20),
+        inset 0 1px 0 var(--theme-border-white-20);
 }
 
 .masters-card.hovered .card-inner {
-    border-color: rgba(16, 185, 129, 0.6);
-    background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(5, 150, 105, 0.1));
+    border-color: var(--theme-secondary);
+    background: var(--theme-bg-secondary-10);
 }
 
 .bachelors-card.hovered .card-inner {
-    border-color: rgba(59, 130, 246, 0.6);
-    background: linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(37, 99, 235, 0.1));
+    border-color: var(--theme-primary);
+    background: var(--theme-bg-primary-10);
 }
 
 /* Behind效果 - 当另一个卡片被hover时 */
@@ -151,44 +151,44 @@
 
 /* GitHub链接样式 */
 .github-link {
-    color: rgba(255, 255, 255, 0.8);
+    color: var(--theme-text-white-80);
     transition: all 0.3s ease;
     padding: 8px;
     border-radius: 50%;
-    background: rgba(0, 0, 0, 0.5);
+    background: var(--theme-bg-white-10);
     -webkit-backdrop-filter: blur(10px);
     backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    border: 1px solid var(--theme-border-white-20);
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
 .github-link:hover {
-    color: white;
-    background: rgba(0, 0, 0, 0.8);
+    color: var(--theme-text-white-100);
+    background: var(--theme-bg-white-20);
     transform: scale(1.1);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
 /* 小号GitHub链接样式 */
 .github-link-small {
-    color: rgba(255, 255, 255, 0.8);
+    color: var(--theme-text-white-80);
     transition: all 0.3s ease;
     padding: 6px;
     border-radius: 50%;
-    background: rgba(0, 0, 0, 0.5);
+    background: var(--theme-bg-white-10);
     -webkit-backdrop-filter: blur(10px);
     backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    border: 1px solid var(--theme-border-white-20);
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
 .github-link-small:hover {
-    color: white;
-    background: rgba(0, 0, 0, 0.8);
+    color: var(--theme-text-white-100);
+    background: var(--theme-bg-white-20);
     transform: scale(1.1);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
