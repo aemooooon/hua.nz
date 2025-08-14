@@ -24,6 +24,8 @@ const GallerySection = ({ language = 'en' }) => {
     const clockRef = useRef(new THREE.Clock());
     const wallsRef = useRef(null);
     const spotlightsRef = useRef([]); // 存储所有画作聚光灯
+    const cameraSpotlightRef = useRef(null); // 摄像机智能射灯
+    const paintingMeshesRef = useRef([]); // 存储所有画作网格用于检测
     
     const introAnimationRef = useRef(null);
     const loadingManagerRef = useRef(null);
@@ -446,7 +448,7 @@ const GallerySection = ({ language = 'en' }) => {
                     }
                     
                     const paintingGeometry = new THREE.PlaneGeometry(paintingWidth, paintingHeight);
-                    // 优化画作材质 - 保持色彩丰富度，增强照明响应
+                    // 优化画作材质 - 保持色彩丰富度，增强照明响应，增加微弱自发光
                     const paintingMaterial = new THREE.MeshPhysicalMaterial({
                         color: 0xffffff,     // 纯白色基础，不影响贴图色彩
                         metalness: 0.0,      // 无金属质感
@@ -454,6 +456,8 @@ const GallerySection = ({ language = 'en' }) => {
                         clearcoat: 0.1,      // 降低清漆效果，避免泛白
                         clearcoatRoughness: 0.1,
                         reflectivity: 0.3,   // 适度反射率
+                        emissive: 0x101010,  // 微弱的自发光，让画作即使在暗处也有轮廓
+                        emissiveIntensity: 0.02, // 极低的自发光强度，仅用于轮廓增强
                         side: THREE.DoubleSide
                     });
                     const painting = new THREE.Mesh(paintingGeometry, paintingMaterial);
@@ -497,6 +501,13 @@ const GallerySection = ({ language = 'en' }) => {
                     paintingWithFrame.castShadow = false;
                     paintingWithFrame.receiveShadow = false;
                     scene.add(paintingWithFrame);
+                    
+                    // 存储画作引用用于摄像机智能射灯检测
+                    paintingMeshesRef.current.push({
+                        mesh: paintingWithFrame,
+                        position: paintingWithFrame.position.clone(),
+                        painting: painting // 存储实际画作网格用于材质更新
+                    });
                     
                     setTimeout(() => {
                         createPaintingSpotlight(paintingWithFrame);
@@ -634,13 +645,15 @@ const GallerySection = ({ language = 'en' }) => {
             const createPaintingFrame = (painting, pWidth = 2.5, pHeight = 2.0) => {
                 const frameGroup = new THREE.Group();
                 
-                // 画框材质 - 黑色金属质感
+                // 画框材质 - 黑色金属质感，增加微弱自发光
                 const frameMaterial = new THREE.MeshPhysicalMaterial({ 
                     color: 0x1a1a1a,
                     metalness: 0.8,        // 高金属度
                     roughness: 0.2,        // 低粗糙度，更有光泽
                     clearcoat: 0.3,        // 清漆层
-                    clearcoatRoughness: 0.1 // 清漆粗糙度
+                    clearcoatRoughness: 0.1, // 清漆粗糙度
+                    emissive: 0x0a0a0a,    // 微弱的自发光，让相框轮廓更明显
+                    emissiveIntensity: 0.05 // 低强度自发光，不会太亮
                 });
                 
                 // 四条画框边
@@ -757,6 +770,60 @@ const GallerySection = ({ language = 'en' }) => {
                 // 加快亮度变化速度，让用户更容易感知
                 spotlight.intensity = THREE.MathUtils.lerp(spotlight.intensity, intensity, 0.12); // 从0.05提升到0.12
             });
+
+            // 🎯 摄像机智能射灯控制
+            updateCameraSpotlight(cameraPosition);
+        };
+
+        // 🎯 摄像机智能射灯更新函数 - 修复方向偏移问题
+        const updateCameraSpotlight = (cameraPosition) => {
+            const cameraSpotlight = cameraSpotlightRef.current;
+            if (!cameraSpotlight) return;
+
+            // 找到最近的画作用于强度计算
+            let closestDistance = Infinity;
+            paintingMeshesRef.current.forEach(paintingData => {
+                const distance = cameraPosition.distanceTo(paintingData.position);
+                if (distance < closestDistance) {
+                    closestDistance = distance;
+                }
+            });
+
+            // 🎯 关键修复：射灯目标始终保持在摄像机正前方，不追踪画作
+            // 这确保射灯方向与3D准心完全一致，不会左右偏移
+            const camera = cameraRef.current;
+            if (camera) {
+                // 获取摄像机的世界坐标系下的前方向量
+                const worldDirection = new THREE.Vector3();
+                camera.getWorldDirection(worldDirection);
+                
+                // 目标点始终设置在摄像机正前方10米处
+                const fixedTargetPosition = camera.position.clone()
+                    .add(worldDirection.multiplyScalar(10));
+                
+                // 更新射灯目标位置 - 这是射灯的世界坐标
+                cameraSpotlight.target.position.copy(fixedTargetPosition);
+                cameraSpotlight.target.updateMatrixWorld();
+            }
+
+            // 根据到最近画作的距离调整强度，但不改变方向
+            if (closestDistance <= 6.0) {
+                const intensityFactor = Math.max(0, (6.0 - closestDistance) / 6.0);
+                const targetIntensity = 3.0 + (intensityFactor * 12.0); // 3.0到15.0之间
+                
+                cameraSpotlight.intensity = THREE.MathUtils.lerp(
+                    cameraSpotlight.intensity, 
+                    targetIntensity, 
+                    0.1
+                );
+            } else {
+                // 距离太远，保持基础照明
+                cameraSpotlight.intensity = THREE.MathUtils.lerp(
+                    cameraSpotlight.intensity, 
+                    1.5,
+                    0.1
+                );
+            }
         };
         
         // 摄像机开场动画 - 电影级的引导式动画
@@ -899,6 +966,31 @@ const GallerySection = ({ language = 'en' }) => {
                 camera.position.set(0, 1.6, 0);
                 cameraRef.current = camera;
 
+                // 🎯 创建摄像机智能射灯 - 精确跟随3D准心方向
+                const cameraSpotlight = new THREE.SpotLight(
+                    0xfff4e6,     // 温暖的白色
+                    6.0,          // 增强初始强度 (从4.0提升到6.0)
+                    15,           // 增加射程 (从12提升到15)
+                    Math.PI / 5,  // 进一步扩大照射角度 (从π/6扩大到π/5，约36度)
+                    0.15,         // 减少边缘衰减，让光照更均匀扩散
+                    1.2           // 减少距离衰减，保持远距离亮度
+                );
+                
+                // 射灯位置与摄像机中心完全对齐，确保与3D准心同向
+                cameraSpotlight.position.set(0, 0, 0); // 完全居中，与准心对齐
+                cameraSpotlight.castShadow = false;
+                
+                // 🎯 关键修复：创建独立的目标点，不作为摄像机子对象
+                const spotlightTarget = new THREE.Object3D();
+                cameraSpotlight.target = spotlightTarget;
+                
+                // 将射灯添加到摄像机作为子对象，但目标点独立放在场景中
+                camera.add(cameraSpotlight);
+                scene.add(spotlightTarget); // 目标点直接添加到场景，避免坐标系混乱
+                scene.add(camera); // 确保摄像机添加到场景中
+                
+                cameraSpotlightRef.current = cameraSpotlight;
+
                 const renderer = new THREE.WebGLRenderer({ 
                     antialias: true,
                     alpha: false,
@@ -973,7 +1065,7 @@ const GallerySection = ({ language = 'en' }) => {
                 };
 
                 const addArtisticElements = (scene) => {
-                    // 创建完全填充入口的墙面发光区域（灯箱）- 更新为新尺寸
+                    // 创建完全填充入口的墙面发光区域（灯箱）- 更新为新尺寸，增加广告功能
                     const createWallLightBox = () => {
                         // 入口尺寸：宽12米（从x=-6到x=6），高12米（与墙体高度一致）
                         const entranceWidth = 12;  // 新的入口宽度（中间12米开口）
@@ -985,7 +1077,7 @@ const GallerySection = ({ language = 'en' }) => {
                         const lightBoxMaterial = new THREE.MeshStandardMaterial({
                             color: 0xffffff,        // 纯白色
                             emissive: 0xffffff,     // 自发光白色
-                            emissiveIntensity: 1.2   // 增强发光强度
+                            emissiveIntensity: 2.0   // 增强自发光强度，减少对外部光源依赖
                         });
                         
                         const lightBox = new THREE.Mesh(lightBoxGeometry, lightBoxMaterial);
@@ -993,28 +1085,104 @@ const GallerySection = ({ language = 'en' }) => {
                         lightBox.position.set(0, 3, 32 - lightBoxDepth/2);
                         scene.add(lightBox);
                         
-                        // 添加更多光源照亮整个入口区域
-                        const lightSources = [
-                            { pos: [0, 6, 31], intensity: 3.0 },   // 上方中心
-                            { pos: [-4, 3, 31], intensity: 2.5 },  // 左侧中央
-                            { pos: [4, 3, 31], intensity: 2.5 },   // 右侧中央
-                            { pos: [0, 0, 31], intensity: 2.0 },   // 下方中心
-                            { pos: [-2, 1, 31], intensity: 2.0 },  // 左下
-                            { pos: [2, 1, 31], intensity: 2.0 }    // 右下
+                        // 🎯 新增：在灯箱上添加广告画面 (加载八卦图)
+                        const createLightboxAd = () => {
+                            // 广告画面尺寸 - 与入口尺寸完全一致
+                            const adWidth = 11;    // 12米宽，与入口宽度一致
+                            const adHeight = 9;  // 12米高，与入口高度一致
+                            
+                            console.log(`🎯 创建全尺寸广告板 - 尺寸: ${adWidth}m × ${adHeight}m`);
+                            
+                            const adGeometry = new THREE.PlaneGeometry(adWidth, adHeight);
+                            
+                            // 🎨 加载八卦图片作为广告
+                            const adImagePath = '/gallery/Image_2025-08-11_154142_853.jpg';
+                            console.log('🎯 开始加载八卦广告，图片路径:', adImagePath);
+                            
+                            // 创建纹理加载器
+                            const textureLoader = new THREE.TextureLoader();
+                            
+                            // 🚀 性能优化的默认占位材质
+                            const defaultMaterial = new THREE.MeshLambertMaterial({
+                                color: 0x4444ff,           // 蓝色占位
+                                emissive: 0x222244,        // 蓝色自发光
+                                emissiveIntensity: 0.3,    
+                                transparent: false,        // 关闭透明度提升性能
+                                opacity: 1.0,              
+                                side: THREE.FrontSide      // 单面渲染提升性能
+                            });
+                            
+                            const adPlane = new THREE.Mesh(adGeometry, defaultMaterial);
+                            // 将广告贴在灯箱内表面，旋转180度让图片朝向美术馆内部
+                            adPlane.position.set(0, 3, 32 - lightBoxDepth - 0.02); // 贴在灯箱内表面
+                            adPlane.rotation.y = Math.PI; // 旋转180度，让图片正确朝向室内
+                            adPlane.name = 'BaguaAdvertisement';
+                            
+                            console.log('� 广告板位置:', adPlane.position);
+                            scene.add(adPlane);
+                            console.log('✅ 蓝色占位广告板已添加到场景，开始加载八卦图...');
+                            
+                            // 异步加载八卦图片
+                            textureLoader.load(
+                                adImagePath,
+                                (texture) => {
+                                    console.log('✅ 八卦图片加载成功!', texture);
+                                    
+                                    // 🚀 性能优化的灯箱广告材质
+                                    const baguaMaterial = new THREE.MeshLambertMaterial({
+                                        map: texture,
+                                        emissive: 0x222222,        // 适度自发光模拟背光效果
+                                        emissiveIntensity: 0.25,   
+                                        transparent: false,        // 关闭透明度提升性能
+                                        opacity: 1.0,              
+                                        side: THREE.FrontSide,     // 单面渲染提升性能
+                                        // 使用LambertMaterial替代StandardMaterial，计算更简单
+                                    });
+                                    
+                                    // 更新广告板材质
+                                    adPlane.material = baguaMaterial;
+                                    console.log('🎨 八卦图广告已更新到广告板');
+                                },
+                                (progress) => {
+                                    console.log('� 八卦图加载进度:', progress);
+                                },
+                                (error) => {
+                                    console.error('❌ 加载八卦图失败:', error);
+                                    console.log('🔄 保持蓝色占位广告');
+                                }
+                            );
+                            
+                            return adPlane;
+                        };
+                        
+                        // 创建广告画面 (同步调用测试)
+                        console.log('🚀 开始创建灯箱广告...');
+                        const lightboxAd = createLightboxAd();
+                        console.log('🎉 灯箱广告创建完成:', lightboxAd);
+                        
+                        // 🚀 性能优化：减少背光源数量，只保留必要的照明
+                        const backLightSources = [
+                            { pos: [0, 3, 32 - lightBoxDepth - 0.8], intensity: 1.8 }     // 只保留一个主背光源
                         ];
                         
-                        lightSources.forEach(light => {
-                            const lightSource = new THREE.PointLight(0xffffff, light.intensity, 25);
-                            lightSource.position.set(...light.pos);
-                            scene.add(lightSource);
+                        backLightSources.forEach(light => {
+                            const backLight = new THREE.PointLight(0xffffee, light.intensity, 12); // 减小照射范围
+                            backLight.position.set(...light.pos);
+                            backLight.decay = 1.8; // 增加衰减，减少计算负担
+                            scene.add(backLight);
                         });
                         
-                        return lightBox;
+                        console.log('💡 已添加灯箱背光源，营造真实灯箱效果');
+                        
+                        // 移除明显的点光源，只使用灯箱自身发光和广告自发光
+                        // 这样就不会看到明显的光点，只有柔和的灯箱亮度
+                        
+                        return { lightBox, lightboxAd };
                     };
                     
-                    const wallLightBox = createWallLightBox();
+                    const lightboxData = createWallLightBox();
                     
-                    return { wallLightBox };
+                    return { wallLightBox: lightboxData.lightBox, lightboxAd: lightboxData.lightboxAd };
                 };
 
                 const createWangCharacterLights = () => {
@@ -1070,6 +1238,7 @@ const GallerySection = ({ language = 'en' }) => {
 
                 setupBasicLighting(scene);
 
+                // 添加艺术元素（包括灯箱广告）
                 addArtisticElements(scene);
 
                 createWangCharacterLights();

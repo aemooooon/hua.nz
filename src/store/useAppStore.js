@@ -1641,8 +1641,8 @@ export const useAppStore = create(
         {
           id: 'gallery_10',
           type: 'image',
-          src: '/gallery/Image_2025-08-11_154142_853.jpg',
-          thumbnail: '/gallery/Image_2025-08-11_154142_853.jpg',
+          src: '/gallery/hua.nz.1.png',
+          thumbnail: '/gallery/hua.nz.1.png',
           title: {
             en: 'Creative Expression',
             zh: '创意表达'
