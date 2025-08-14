@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import * as THREE from 'three';
 import { PointerLockControls } from 'three-stdlib';
@@ -39,6 +39,34 @@ const GallerySection = ({ language = 'en' }) => {
     const [isMobile, setIsMobile] = useState(false);
     
     // ========================================
+    // Global State Integration
+    // ========================================
+    const galleryData = useAppStore(state => state.getAllGalleryItems());
+    const texts = useAppStore(state => state.texts);
+    const isPointerLocked = useAppStore(state => state.isPointerLocked);
+    const setIsPointerLocked = useAppStore(state => state.setIsPointerLocked);
+    
+    // 虚拟摇杆状态
+    const [joystickActive, setJoystickActive] = useState(false);
+    const [joystickPosition, setJoystickPosition] = useState({ x: 0, y: 0 });
+    const joystickRef = useRef(null);
+    const joystickKnobRef = useRef(null);
+    const joystickCenterRef = useRef({ x: 0, y: 0 });
+    const joystickMoveVector = useRef({ x: 0, y: 0 });
+    
+    // Keyboard input state tracking for WASD + Arrow keys
+    const keysPressed = useRef({
+        w: false,
+        a: false,
+        s: false,
+        d: false,
+        ArrowUp: false,
+        ArrowDown: false,
+        ArrowLeft: false,
+        ArrowRight: false
+    });
+    
+    // ========================================
     // Mobile Detection & Adaptation
     // ========================================
     useEffect(() => {
@@ -54,12 +82,124 @@ const GallerySection = ({ language = 'en' }) => {
     }, []);
     
     // ========================================
-    // Global State Integration
+    // Virtual Joystick for Mobile
     // ========================================
-    const galleryData = useAppStore(state => state.getAllGalleryItems());
-    const texts = useAppStore(state => state.texts);
-    const isPointerLocked = useAppStore(state => state.isPointerLocked);
-    const setIsPointerLocked = useAppStore(state => state.setIsPointerLocked);
+    const handleJoystickMove = useCallback((event) => {
+        if (!joystickActive || !isMobile || !isPointerLocked) return;
+        
+        event.preventDefault();
+        const touch = event.touches[0];
+        const center = joystickCenterRef.current;
+        
+        // 计算触摸点相对于摇杆中心的位置
+        const deltaX = touch.clientX - center.x;
+        const deltaY = touch.clientY - center.y;
+        
+        // 限制在摇杆范围内（半径40px）
+        const maxRadius = 40;
+        const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+        
+        let normalizedX = deltaX;
+        let normalizedY = deltaY;
+        
+        if (distance > maxRadius) {
+            normalizedX = (deltaX / distance) * maxRadius;
+            normalizedY = (deltaY / distance) * maxRadius;
+        }
+        
+        // 更新摇杆位置（用于UI显示）
+        setJoystickPosition({ x: normalizedX, y: normalizedY });
+        
+        // 更新移动向量（用于3D控制）
+        joystickMoveVector.current = {
+            x: normalizedX / maxRadius, // -1 到 1
+            y: -normalizedY / maxRadius  // -1 到 1，Y轴反向
+        };
+        
+        // 更新键盘状态以模拟WASD
+        const threshold = 0.3;
+        keysPressed.current.w = joystickMoveVector.current.y > threshold;
+        keysPressed.current.s = joystickMoveVector.current.y < -threshold;
+        keysPressed.current.a = joystickMoveVector.current.x < -threshold;
+        keysPressed.current.d = joystickMoveVector.current.x > threshold;
+        
+    }, [joystickActive, isMobile, isPointerLocked, keysPressed]);
+
+    const handleJoystickStart = useCallback((event) => {
+        if (!isMobile || !isPointerLocked) return;
+        
+        event.preventDefault();
+        const joystickElement = joystickRef.current;
+        
+        if (joystickElement) {
+            const rect = joystickElement.getBoundingClientRect();
+            joystickCenterRef.current = {
+                x: rect.left + rect.width / 2,
+                y: rect.top + rect.height / 2
+            };
+        }
+        
+        setJoystickActive(true);
+        handleJoystickMove(event);
+    }, [isMobile, isPointerLocked, handleJoystickMove]);
+
+    const handleJoystickEnd = useCallback(() => {
+        if (!isMobile) return;
+        
+        setJoystickActive(false);
+        setJoystickPosition({ x: 0, y: 0 });
+        joystickMoveVector.current = { x: 0, y: 0 };
+        
+        // 重置所有键盘状态
+        keysPressed.current.w = false;
+        keysPressed.current.s = false;
+        keysPressed.current.a = false;
+        keysPressed.current.d = false;
+    }, [isMobile, keysPressed]);
+
+    // 虚拟摇杆事件监听器
+    useEffect(() => {
+        if (!isMobile || !joystickRef.current) return;
+        
+        const joystick = joystickRef.current;
+        
+        joystick.addEventListener('touchstart', handleJoystickStart, { passive: false });
+        joystick.addEventListener('touchmove', handleJoystickMove, { passive: false });
+        joystick.addEventListener('touchend', handleJoystickEnd, { passive: false });
+        
+        return () => {
+            joystick.removeEventListener('touchstart', handleJoystickStart);
+            joystick.removeEventListener('touchmove', handleJoystickMove);
+            joystick.removeEventListener('touchend', handleJoystickEnd);
+        };
+    }, [isMobile, handleJoystickStart, handleJoystickMove, handleJoystickEnd]);
+
+    // 移动端触摸退出画廊
+    const handleTouchExit = useCallback((event) => {
+        if (!isMobile || !isPointerLocked) return;
+        
+        // 确保不是在摇杆上触摸
+        if (joystickRef.current && joystickRef.current.contains(event.target)) {
+            return;
+        }
+        
+        // 退出指针锁定
+        if (document.exitPointerLock) {
+            document.exitPointerLock();
+        }
+    }, [isMobile, isPointerLocked]);
+
+    // 移动端触摸退出事件监听器
+    useEffect(() => {
+        if (!isMobile || !containerRef.current) return;
+        
+        const container = containerRef.current;
+        container.addEventListener('touchstart', handleTouchExit, { passive: true });
+        
+        return () => {
+            container.removeEventListener('touchstart', handleTouchExit);
+        };
+    }, [isMobile, handleTouchExit]);
     
     // ========================================
     // Three.js References & Scene Management
@@ -87,17 +227,6 @@ const GallerySection = ({ language = 'en' }) => {
     // Input Control System
     // ========================================
     // Keyboard input state tracking for WASD + Arrow keys
-
-    const keysPressed = useRef({
-        w: false,
-        a: false,
-        s: false,
-        d: false,
-        ArrowUp: false,
-        ArrowDown: false,
-        ArrowLeft: false,
-        ArrowRight: false
-    });
 
     useEffect(() => {
         if (!containerRef.current) {
@@ -1437,6 +1566,31 @@ const GallerySection = ({ language = 'en' }) => {
                 className={`w-full h-screen relative bg-gray-200 ${(isLoading || !isIntroAnimationComplete) ? 'invisible' : 'visible'}`}
                 style={{ minHeight: '100vh' }}
             >
+                {/* Virtual Joystick for Mobile */}
+                {isMobile && isPointerLocked && (
+                    <div 
+                        ref={joystickRef}
+                        className="fixed bottom-6 left-6 w-20 h-20 bg-white/10 border border-white/20 rounded-full backdrop-blur-md shadow-lg flex items-center justify-center touch-none z-50 select-none"
+                        style={{ WebkitUserSelect: 'none', WebkitTouchCallout: 'none' }}
+                    >
+                        <div 
+                            ref={joystickKnobRef}
+                            className="w-8 h-8 bg-white/30 rounded-full border border-white/40 transition-transform duration-75"
+                            style={{
+                                transform: `translate(${joystickPosition.x}px, ${joystickPosition.y}px)`
+                            }}
+                        />
+                    </div>
+                )}
+
+                {/* Mobile Exit Instructions */}
+                {isMobile && isPointerLocked && (
+                    <div className="fixed top-6 left-1/2 transform -translate-x-1/2 z-50">
+                        <div className="bg-black/60 backdrop-blur-md rounded-lg px-4 py-2 text-white text-sm border border-white/10">
+                            {language === 'zh' ? '触摸屏幕退出长廊' : 'Touch screen to exit gallery'}
+                        </div>
+                    </div>
+                )}
             </div>
 
             {/* 第一人称控制提示 - 严格控制：只在动画完成且延迟时间到达且未锁定指针时显示 */}
@@ -1459,11 +1613,11 @@ const GallerySection = ({ language = 'en' }) => {
                                 <span className="w-2"></span>{language === 'zh' ? '拖拽屏幕 - 环视周围，探索画作' : 'Drag screen - Look around and explore'}
                             </p>
                             <p className="flex items-center">
-                                <span className="w-2"></span>{language === 'zh' ? '双指缩放 - 靠近或远离画作' : 'Pinch to zoom - Get closer to artworks'}
+                                <span className="w-2"></span>{language === 'zh' ? '左下摇杆 - 移动穿行长廊' : 'Virtual joystick - Move through gallery'}
                             </p>
                             <p className="flex items-center">
                                 <span className="w-2"></span>
-                                <span className="inline-flex items-center px-2 py-0.5 mr-2 bg-white/20 rounded text-xs font-mono border border-white/30">返回</span>
+                                <span className="inline-flex items-center px-2 py-0.5 mr-2 bg-white/20 rounded text-xs font-mono border border-white/30">{language === 'zh' ? '触屏' : 'Touch'}</span>
                                 <span>{language === 'zh' ? '退出长廊模式' : 'Exit gallery mode'}</span>
                             </p>
                         </>

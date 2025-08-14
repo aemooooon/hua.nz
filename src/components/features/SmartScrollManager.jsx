@@ -63,7 +63,8 @@ const SmartScrollManager = () => {
     const isHomePage = currentSectionConfig?.id === 'home';
 
     // 滚动敏感度配置
-    const SCROLL_THRESHOLD = 600;
+    const DESKTOP_SCROLL_THRESHOLD = 600; // 桌面端保持原来的值
+    const MOBILE_TOUCH_THRESHOLD = 80;     // 移动端触摸使用更低的阈值
     const SCROLL_RESET_TIME = 300;
     const PREVIEW_MAX_OFFSET = 80;
 
@@ -102,51 +103,30 @@ const SmartScrollManager = () => {
         
         const touch = event.touches[0];
         const deltaY = touch.clientY - touchStartRef.current.y;
+        const deltaX = touch.clientX - touchStartRef.current.x;
+        
+        // 检查是否为垂直滑动（避免误触水平滑动）
+        if (Math.abs(deltaX) > Math.abs(deltaY)) return;
+        
         touchMoveAccumulatorRef.current = Math.abs(deltaY);
         
         // 指针锁定状态处理
         if (isPointerLocked) {
-            if (touchMoveAccumulatorRef.current >= SCROLL_THRESHOLD) {
+            if (touchMoveAccumulatorRef.current >= MOBILE_TOUCH_THRESHOLD) {
                 touchMoveAccumulatorRef.current = 0;
                 triggerPointerLockWarning();
             }
             return;
         }
         
-        // 内容滚动模式处理
-        if (scrollMode === 'content' && isContentOverflowing && !isHomePage) {
-            const container = contentRef.current;
-            if (!container) return;
-            
-            const currentScrollTop = container.scrollTop;
-            const maxScrollTop = container.scrollHeight - container.clientHeight;
-            const isScrollingDown = deltaY < 0; // 触摸向上滑动表示向下滚动
-            const isScrollingUp = deltaY > 0;   // 触摸向下滑动表示向上滚动
-            
-            const SCROLL_BOUNDARY_THRESHOLD = 50;
-            
-            if (isScrollingDown && currentScrollTop >= maxScrollTop - SCROLL_BOUNDARY_THRESHOLD) {
-                if (touchMoveAccumulatorRef.current >= SCROLL_THRESHOLD && currentSection < sections.length - 1) {
-                    event.preventDefault();
-                    navigateNext();
-                    return;
-                }
-            } else if (isScrollingUp && currentScrollTop <= SCROLL_BOUNDARY_THRESHOLD) {
-                if (touchMoveAccumulatorRef.current >= SCROLL_THRESHOLD && currentSection > 0) {
-                    event.preventDefault();
-                    navigatePrev();
-                    return;
-                }
-            }
-            return;
-        }
-        
-        // 分段滚动模式处理
+        // 分段滚动模式处理 - 优先处理，确保主页和无内容溢出页面能正常翻页
         if (isHomePage || (!isContentOverflowing && scrollMode === 'slide')) {
-            if (touchMoveAccumulatorRef.current >= SCROLL_THRESHOLD) {
+            if (touchMoveAccumulatorRef.current >= MOBILE_TOUCH_THRESHOLD) {
                 event.preventDefault();
-                const isScrollingDown = deltaY < 0;
-                const isScrollingUp = deltaY > 0;
+                const isScrollingDown = deltaY < 0; // 向上滑动（显示下一页）
+                const isScrollingUp = deltaY > 0;   // 向下滑动（显示上一页）
+                
+                touchMoveAccumulatorRef.current = 0; // 重置累积器
                 
                 if (isScrollingDown && currentSection < sections.length - 1) {
                     navigateNext();
@@ -154,9 +134,43 @@ const SmartScrollManager = () => {
                     navigatePrev();
                 }
             }
+            return;
+        }
+        
+        // 内容滚动模式处理 - 只在内容页面且有溢出时处理
+        if (scrollMode === 'content' && isContentOverflowing && !isHomePage) {
+            const container = contentRef.current;
+            if (!container) return;
+            
+            const currentScrollTop = container.scrollTop;
+            const maxScrollTop = container.scrollHeight - container.clientHeight;
+            const SCROLL_BOUNDARY_THRESHOLD = 50;
+            
+            // 检查是否在边界，如果在边界则进行页面切换
+            const isAtTop = currentScrollTop <= SCROLL_BOUNDARY_THRESHOLD;
+            const isAtBottom = currentScrollTop >= maxScrollTop - SCROLL_BOUNDARY_THRESHOLD;
+            
+            if (touchMoveAccumulatorRef.current >= MOBILE_TOUCH_THRESHOLD) {
+                const isScrollingDown = deltaY < 0; // 向上滑动
+                const isScrollingUp = deltaY > 0;   // 向下滑动
+                
+                if (isScrollingDown && isAtBottom && currentSection < sections.length - 1) {
+                    event.preventDefault();
+                    touchMoveAccumulatorRef.current = 0;
+                    navigateNext();
+                    return;
+                } else if (isScrollingUp && isAtTop && currentSection > 0) {
+                    event.preventDefault();
+                    touchMoveAccumulatorRef.current = 0;
+                    navigatePrev();
+                    return;
+                }
+            }
+            // 如果不在边界，让默认滚动行为继续
+            return;
         }
     }, [isScrolling, isProjectModalOpen, isPointerLocked, scrollMode, isContentOverflowing, isHomePage, 
-        currentSection, sections.length, navigateNext, navigatePrev, triggerPointerLockWarning, SCROLL_THRESHOLD]);
+        currentSection, sections.length, navigateNext, navigatePrev, triggerPointerLockWarning]);
 
     const handleTouchEnd = useCallback(() => {
         touchMoveAccumulatorRef.current = 0;
@@ -168,7 +182,7 @@ const SmartScrollManager = () => {
             detail: { 
                 isBouncing, 
                 direction: bounceDirection,
-                intensity: scrollAccumulatorRef.current / SCROLL_THRESHOLD
+                intensity: scrollAccumulatorRef.current / DESKTOP_SCROLL_THRESHOLD
             }
         });
         window.dispatchEvent(bounceEvent);
@@ -235,13 +249,13 @@ const SmartScrollManager = () => {
         
         bounceTimerRef.current = setTimeout(() => {
             // 使用 ref 避免闭包问题，减少依赖
-            if (isPreviewingScroll && scrollAccumulatorRef.current < SCROLL_THRESHOLD) {
+            if (isPreviewingScroll && scrollAccumulatorRef.current < DESKTOP_SCROLL_THRESHOLD) {
                 setIsPreviewingScroll(false);
                 setPreviewOffset(0);
                 scrollAccumulatorRef.current = 0;
             }
         }, 150);
-    }, [isPreviewingScroll, SCROLL_THRESHOLD]);
+    }, [isPreviewingScroll]);
 
     // 滚动预览处理
     const handleScrollPreview = useCallback((event) => {
@@ -256,7 +270,7 @@ const SmartScrollManager = () => {
                 offsetMultiplier = 0.5;
             }
             
-            const progress = Math.min(scrollAccumulatorRef.current / SCROLL_THRESHOLD, 1);
+            const progress = Math.min(scrollAccumulatorRef.current / DESKTOP_SCROLL_THRESHOLD, 1);
             const maxOffset = (atBottomBoundary || atTopBoundary) ? 15 : PREVIEW_MAX_OFFSET;
             const offset = direction * progress * maxOffset * offsetMultiplier;
             
@@ -266,7 +280,7 @@ const SmartScrollManager = () => {
             setPreviewOffset(offset);
             
             if (atBottomBoundary || atTopBoundary) {
-                const intensity = Math.min(scrollAccumulatorRef.current / SCROLL_THRESHOLD, 1);
+                const intensity = Math.min(scrollAccumulatorRef.current / DESKTOP_SCROLL_THRESHOLD, 1);
                 const bounceDirection = atBottomBoundary ? 'down' : 'up';
                 
                 if (bounceTimerRef.current) {
@@ -356,7 +370,7 @@ const SmartScrollManager = () => {
             scrollAccumulatorRef.current += deltaY;
             
             // 当滚动累积超过阈值时显示警告
-            if (scrollAccumulatorRef.current >= SCROLL_THRESHOLD) {
+            if (scrollAccumulatorRef.current >= DESKTOP_SCROLL_THRESHOLD) {
                 scrollAccumulatorRef.current = 0; // 重置累积器
                 triggerPointerLockWarning();
             }
@@ -382,15 +396,15 @@ const SmartScrollManager = () => {
                     }
                     lastWheelTimeRef.current = now;
                     
-                    if (scrollAccumulatorRef.current < SCROLL_THRESHOLD) {
+                    if (scrollAccumulatorRef.current < DESKTOP_SCROLL_THRESHOLD) {
                         scrollAccumulatorRef.current += Math.abs(event.deltaY);
                         
                         if (currentScrollTop >= maxScrollTop - 5) {
-                            const intensity = Math.min(scrollAccumulatorRef.current / SCROLL_THRESHOLD, 1);
+                            const intensity = Math.min(scrollAccumulatorRef.current / DESKTOP_SCROLL_THRESHOLD, 1);
                             triggerBounceAnimation('down', intensity);
                         }
                         
-                        if (scrollAccumulatorRef.current >= SCROLL_THRESHOLD && currentSection < sections.length - 1) {
+                        if (scrollAccumulatorRef.current >= DESKTOP_SCROLL_THRESHOLD && currentSection < sections.length - 1) {
                             scrollAccumulatorRef.current = 0;
                             navigateNext();
                         }
@@ -407,15 +421,15 @@ const SmartScrollManager = () => {
                     }
                     lastWheelTimeRef.current = now;
                     
-                    if (scrollAccumulatorRef.current < SCROLL_THRESHOLD) {
+                    if (scrollAccumulatorRef.current < DESKTOP_SCROLL_THRESHOLD) {
                         scrollAccumulatorRef.current += Math.abs(event.deltaY);
                         
                         if (currentScrollTop <= 5) {
-                            const intensity = Math.min(scrollAccumulatorRef.current / SCROLL_THRESHOLD, 1);
+                            const intensity = Math.min(scrollAccumulatorRef.current / DESKTOP_SCROLL_THRESHOLD, 1);
                             triggerBounceAnimation('up', intensity);
                         }
                         
-                        if (scrollAccumulatorRef.current >= SCROLL_THRESHOLD && currentSection > 0) {
+                        if (scrollAccumulatorRef.current >= DESKTOP_SCROLL_THRESHOLD && currentSection > 0) {
                             scrollAccumulatorRef.current = 0;
                             navigatePrev();
                         }
@@ -473,7 +487,7 @@ const SmartScrollManager = () => {
             }
         }
         
-        if (scrollAccumulatorRef.current < SCROLL_THRESHOLD) {
+        if (scrollAccumulatorRef.current < DESKTOP_SCROLL_THRESHOLD) {
             return;
         }
         
@@ -494,7 +508,7 @@ const SmartScrollManager = () => {
     }, [isScrolling, isProjectModalOpen, scrollMode, isContentOverflowing, isHomePage, currentSection, sections.length, 
         navigateNext, navigatePrev, currentSectionConfig, isPreviewingScroll, sectionScrollPositions,
         setSectionScrollPositions, setIsPreviewingScroll, setPreviewOffset, triggerBounceAnimation, handleScrollPreview, triggerPreviewBounceBack, 
-        isPointerLocked, triggerPointerLockWarning, SCROLL_THRESHOLD]);
+        isPointerLocked, triggerPointerLockWarning]);
 
     // 键盘事件处理
     const handleKeyDown = useCallback((event) => {
