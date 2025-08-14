@@ -57,8 +57,15 @@ const SmartScrollManager = () => {
     const [showPointerLockWarning, setShowPointerLockWarning] = useState(false);
     const bounceTimerRef = useRef();
     const pointerLockWarningTimeoutRef = useRef();
+    const touchStartRef = useRef({ x: 0, y: 0, time: 0 });
+    const touchMoveAccumulatorRef = useRef(0);
     
     const isHomePage = currentSectionConfig?.id === 'home';
+
+    // 滚动敏感度配置
+    const SCROLL_THRESHOLD = 600;
+    const SCROLL_RESET_TIME = 300;
+    const PREVIEW_MAX_OFFSET = 80;
 
     // 触发指针锁定警告
     const triggerPointerLockWarning = useCallback(() => {
@@ -77,10 +84,84 @@ const SmartScrollManager = () => {
         }, 3000);
     }, []);
 
-    // 滚动敏感度配置
-    const SCROLL_THRESHOLD = 600;
-    const SCROLL_RESET_TIME = 300;
-    const PREVIEW_MAX_OFFSET = 80;
+    // 触摸事件处理 - 支持移动端滑动翻页
+    const handleTouchStart = useCallback((event) => {
+        if (isScrolling || isProjectModalOpen) return;
+        
+        const touch = event.touches[0];
+        touchStartRef.current = {
+            x: touch.clientX,
+            y: touch.clientY,
+            time: Date.now()
+        };
+        touchMoveAccumulatorRef.current = 0;
+    }, [isScrolling, isProjectModalOpen]);
+
+    const handleTouchMove = useCallback((event) => {
+        if (isScrolling || isProjectModalOpen) return;
+        
+        const touch = event.touches[0];
+        const deltaY = touch.clientY - touchStartRef.current.y;
+        touchMoveAccumulatorRef.current = Math.abs(deltaY);
+        
+        // 指针锁定状态处理
+        if (isPointerLocked) {
+            if (touchMoveAccumulatorRef.current >= SCROLL_THRESHOLD) {
+                touchMoveAccumulatorRef.current = 0;
+                triggerPointerLockWarning();
+            }
+            return;
+        }
+        
+        // 内容滚动模式处理
+        if (scrollMode === 'content' && isContentOverflowing && !isHomePage) {
+            const container = contentRef.current;
+            if (!container) return;
+            
+            const currentScrollTop = container.scrollTop;
+            const maxScrollTop = container.scrollHeight - container.clientHeight;
+            const isScrollingDown = deltaY < 0; // 触摸向上滑动表示向下滚动
+            const isScrollingUp = deltaY > 0;   // 触摸向下滑动表示向上滚动
+            
+            const SCROLL_BOUNDARY_THRESHOLD = 50;
+            
+            if (isScrollingDown && currentScrollTop >= maxScrollTop - SCROLL_BOUNDARY_THRESHOLD) {
+                if (touchMoveAccumulatorRef.current >= SCROLL_THRESHOLD && currentSection < sections.length - 1) {
+                    event.preventDefault();
+                    navigateNext();
+                    return;
+                }
+            } else if (isScrollingUp && currentScrollTop <= SCROLL_BOUNDARY_THRESHOLD) {
+                if (touchMoveAccumulatorRef.current >= SCROLL_THRESHOLD && currentSection > 0) {
+                    event.preventDefault();
+                    navigatePrev();
+                    return;
+                }
+            }
+            return;
+        }
+        
+        // 分段滚动模式处理
+        if (isHomePage || (!isContentOverflowing && scrollMode === 'slide')) {
+            if (touchMoveAccumulatorRef.current >= SCROLL_THRESHOLD) {
+                event.preventDefault();
+                const isScrollingDown = deltaY < 0;
+                const isScrollingUp = deltaY > 0;
+                
+                if (isScrollingDown && currentSection < sections.length - 1) {
+                    navigateNext();
+                } else if (isScrollingUp && currentSection > 0) {
+                    navigatePrev();
+                }
+            }
+        }
+    }, [isScrolling, isProjectModalOpen, isPointerLocked, scrollMode, isContentOverflowing, isHomePage, 
+        currentSection, sections.length, navigateNext, navigatePrev, triggerPointerLockWarning, SCROLL_THRESHOLD]);
+
+    const handleTouchEnd = useCallback(() => {
+        touchMoveAccumulatorRef.current = 0;
+    }, []);
+
     // 通知光标组件边界状态
     useEffect(() => {
         const bounceEvent = new CustomEvent('scrollBounce', {
@@ -584,11 +665,17 @@ const SmartScrollManager = () => {
         
         if (container) {
             container.addEventListener('wheel', handleWheel, { passive: false });
+            container.addEventListener('touchstart', handleTouchStart, { passive: false });
+            container.addEventListener('touchmove', handleTouchMove, { passive: false });
+            container.addEventListener('touchend', handleTouchEnd, { passive: false });
             document.addEventListener('keydown', handleKeyDown);
             window.addEventListener('resize', handleResize);
 
             return () => {
                 container.removeEventListener('wheel', handleWheel);
+                container.removeEventListener('touchstart', handleTouchStart);
+                container.removeEventListener('touchmove', handleTouchMove);
+                container.removeEventListener('touchend', handleTouchEnd);
                 document.removeEventListener('keydown', handleKeyDown);
                 window.removeEventListener('resize', handleResize);
                 
@@ -600,7 +687,7 @@ const SmartScrollManager = () => {
                 }
             };
         }
-    }, [handleWheel, handleKeyDown, checkContentOverflow]);
+    }, [handleWheel, handleTouchStart, handleTouchMove, handleTouchEnd, handleKeyDown, checkContentOverflow]);
 
     // 渲染当前section组件
     const renderCurrentSection = () => {

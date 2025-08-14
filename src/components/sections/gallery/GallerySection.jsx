@@ -36,6 +36,22 @@ const GallerySection = ({ language = 'en' }) => {
     const [isLoading, setIsLoading] = useState(true);
     const [isIntroAnimationComplete, setIsIntroAnimationComplete] = useState(false);
     const [showUICards, setShowUICards] = useState(false);
+    const [isMobile, setIsMobile] = useState(false);
+    
+    // ========================================
+    // Mobile Detection & Adaptation
+    // ========================================
+    useEffect(() => {
+        const checkMobile = () => {
+            const mobile = window.innerWidth <= 768 || 'ontouchstart' in window;
+            setIsMobile(mobile);
+        };
+        
+        checkMobile();
+        window.addEventListener('resize', checkMobile);
+        
+        return () => window.removeEventListener('resize', checkMobile);
+    }, []);
     
     // ========================================
     // Global State Integration
@@ -1434,26 +1450,46 @@ const GallerySection = ({ language = 'en' }) => {
                 </p>
                 <div className="space-y-3 text-sm">
                     <p className="flex items-center">
-                        <span className="w-2"></span>{language === 'zh' ? '点击进入长廊' : 'Click to enter the gallery'}
+                        <span className="w-2"></span>{language === 'zh' ? '点击进入长廊' : 'Tap to enter the gallery'}
                     </p>
-                    <p className="flex items-center">
-                        <span className="w-2"></span>{language === 'zh' ? '鼠标 - 环视周围，探索画作' : 'Mouse - Look around and explore'}
-                    </p>
-                    <p className="flex items-center">
-                        <span className="w-2"></span>
-                        <span className="inline-flex items-center gap-1 mr-2">
-                            <span className="inline-flex items-center px-1.5 py-0.5 bg-white/20 rounded text-xs font-mono border border-white/30">W</span>
-                            <span className="inline-flex items-center px-1.5 py-0.5 bg-white/20 rounded text-xs font-mono border border-white/30">A</span>
-                            <span className="inline-flex items-center px-1.5 py-0.5 bg-white/20 rounded text-xs font-mono border border-white/30">S</span>
-                            <span className="inline-flex items-center px-1.5 py-0.5 bg-white/20 rounded text-xs font-mono border border-white/30">D</span>
-                        </span>
-                        <span>{language === 'zh' ? '移动穿行长廊' : 'Move through the gallery'}</span>
-                    </p>
-                    <p className="flex items-center">
-                        <span className="w-2"></span>
-                        <span className="inline-flex items-center px-2 py-0.5 mr-2 bg-white/20 rounded text-xs font-mono border border-white/30">ESC</span>
-                        <span>{language === 'zh' ? '退出指针锁定模式' : 'Exit pointer lock mode'}</span>
-                    </p>
+                    {isMobile ? (
+                        // 移动端操作说明
+                        <>
+                            <p className="flex items-center">
+                                <span className="w-2"></span>{language === 'zh' ? '拖拽屏幕 - 环视周围，探索画作' : 'Drag screen - Look around and explore'}
+                            </p>
+                            <p className="flex items-center">
+                                <span className="w-2"></span>{language === 'zh' ? '双指缩放 - 靠近或远离画作' : 'Pinch to zoom - Get closer to artworks'}
+                            </p>
+                            <p className="flex items-center">
+                                <span className="w-2"></span>
+                                <span className="inline-flex items-center px-2 py-0.5 mr-2 bg-white/20 rounded text-xs font-mono border border-white/30">返回</span>
+                                <span>{language === 'zh' ? '退出长廊模式' : 'Exit gallery mode'}</span>
+                            </p>
+                        </>
+                    ) : (
+                        // 桌面端操作说明
+                        <>
+                            <p className="flex items-center">
+                                <span className="w-2"></span>{language === 'zh' ? '鼠标 - 环视周围，探索画作' : 'Mouse - Look around and explore'}
+                            </p>
+                            <p className="flex items-center">
+                                <span className="w-2"></span>
+                                <span className="inline-flex items-center gap-1 mr-2">
+                                    <span className="inline-flex items-center px-1.5 py-0.5 bg-white/20 rounded text-xs font-mono border border-white/30">W</span>
+                                    <span className="inline-flex items-center px-1.5 py-0.5 bg-white/20 rounded text-xs font-mono border border-white/30">A</span>
+                                    <span className="inline-flex items-center px-1.5 py-0.5 bg-white/20 rounded text-xs font-mono border border-white/30">S</span>
+                                    <span className="inline-flex items-center px-1.5 py-0.5 bg-white/20 rounded text-xs font-mono border border-white/30">D</span>
+                                </span>
+                                <span>{language === 'zh' ? '移动穿行长廊' : 'Move through the gallery'}</span>
+                            </p>
+                            <p className="flex items-center">
+                                <span className="w-2"></span>
+                                <span className="inline-flex items-center px-2 py-0.5 mr-2 bg-white/20 rounded text-xs font-mono border border-white/30">ESC</span>
+                                <span>{language === 'zh' ? '退出指针锁定模式' : 'Exit pointer lock mode'}</span>
+                            </p>
+                        </>
+                    )}
                 </div>
             </div>
 
@@ -1470,7 +1506,11 @@ const GallerySection = ({ language = 'en' }) => {
                     }
                 }}
             >
-                <div className="bg-white/10 backdrop-blur-md rounded-2xl p-8 text-center hover:bg-white/20 transition-all duration-300 border border-white/20">
+                <div className={`bg-white/10 backdrop-blur-md rounded-2xl p-8 text-center transition-all duration-300 border border-white/20 ${
+                    isMobile 
+                        ? 'active:bg-white/20 active:scale-95' 
+                        : 'hover:bg-white/20 hover:scale-105'
+                }`}>
                     <h2 className="text-2xl font-bold text-white mb-4">
                         {texts[language]?.gallery?.gallery3D?.title || '浮生长廊'}
                     </h2>
