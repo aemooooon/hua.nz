@@ -5,50 +5,16 @@ import { PointerLockControls } from 'three-stdlib';
 import { useAppStore } from '../../../store/useAppStore';
 import CircularLoadingIndicator from '../../ui/CircularLoadingIndicator';
 
-/**
- * Interactive 3D Gallery Component - "Corridor of Light and Shadow" 
- * 
- * An immersive 3D art gallery experience featuring:
- * - Polished concrete floors with realistic texturing
- * - Modern gallery ceiling with optimized lighting
- * - Smart lightbox advertisement system with bagua imagery
- * - Intelligent painting spotlights and camera-mounted lighting
- * - First-person controls with pointer lock functionality
- * - Performance-optimized materials and rendering pipeline
- * 
- * Technical Implementation:
- * - Three.js for 3D rendering and scene management
- * - PointerLockControls for immersive navigation
- * - Canvas API for procedural texture generation
- * - Lambert materials for optimal performance
- * - Single-side rendering to reduce computational load
- * 
- * @component
- * @param {Object} props - Component properties
- * @param {string} [props.language='en'] - UI language setting
- * @returns {JSX.Element} Rendered 3D gallery experience
- */
 const GallerySection = ({ language = 'en' }) => {
-    // ========================================
-    // Component State Management
-    // ========================================
-    // Loading and animation states
     const [isLoading, setIsLoading] = useState(true);
     const [isIntroAnimationComplete, setIsIntroAnimationComplete] = useState(false);
     const [showUICards, setShowUICards] = useState(false);
     
-    // ========================================
-    // Global State Integration
-    // ========================================
     const galleryData = useAppStore(state => state.getAllGalleryItems());
     const texts = useAppStore(state => state.texts);
     const isPointerLocked = useAppStore(state => state.isPointerLocked);
     const setIsPointerLocked = useAppStore(state => state.setIsPointerLocked);
     
-    // ========================================
-    // Three.js References & Scene Management
-    // ========================================
-    // Core Three.js scene components
     const containerRef = useRef(null);
     const sceneRef = useRef(null);
     const rendererRef = useRef(null);
@@ -56,21 +22,13 @@ const GallerySection = ({ language = 'en' }) => {
     const controlsRef = useRef(null);
     const animationFrameRef = useRef(null);
     const clockRef = useRef(new THREE.Clock());
-    
-    // Gallery-specific references
     const wallsRef = useRef(null);
-    const spotlightsRef = useRef([]); // Painting spotlight storage
-    const cameraSpotlightRef = useRef(null); // Camera-mounted smart spotlight
-    const paintingMeshesRef = useRef([]); // Painting meshes for collision detection
+    const spotlightsRef = useRef([]); // 存储所有画作聚光灯
+    const cameraSpotlightRef = useRef(null); // 摄像机智能射灯
+    const paintingMeshesRef = useRef([]); // 存储所有画作网格用于检测
     
-    // Animation and loading management
     const introAnimationRef = useRef(null);
     const loadingManagerRef = useRef(null);
-
-    // ========================================
-    // Input Control System
-    // ========================================
-    // Keyboard input state tracking for WASD + Arrow keys
 
     const keysPressed = useRef({
         w: false,
@@ -1150,15 +1108,15 @@ const GallerySection = ({ language = 'en' }) => {
                             adPlane.rotation.y = Math.PI; // 旋转180度，让图片正确朝向室内
                             adPlane.name = 'BaguaAdvertisement';
                             
-                            // Position advertisement plane at lightbox inner surface
+                            console.log('� 广告板位置:', adPlane.position);
                             scene.add(adPlane);
-                            // Begin loading bagua image texture
+                            console.log('✅ 蓝色占位广告板已添加到场景，开始加载八卦图...');
                             
                             // 异步加载八卦图片
                             textureLoader.load(
                                 adImagePath,
                                 (texture) => {
-                                    // Bagua image loaded successfully
+                                    console.log('✅ 八卦图片加载成功!', texture);
                                     
                                     // 🚀 性能优化的灯箱广告材质
                                     const baguaMaterial = new THREE.MeshLambertMaterial({
@@ -1173,14 +1131,14 @@ const GallerySection = ({ language = 'en' }) => {
                                     
                                     // 更新广告板材质
                                     adPlane.material = baguaMaterial;
-                                    // Apply bagua texture to advertisement plane
+                                    console.log('🎨 八卦图广告已更新到广告板');
                                 },
-                                () => {
-                                    // Loading progress tracked
+                                (progress) => {
+                                    console.log('� 八卦图加载进度:', progress);
                                 },
-                                () => {
-                                    // Handle image loading error - keep blue placeholder
-                                    // Placeholder remains active
+                                (error) => {
+                                    console.error('❌ 加载八卦图失败:', error);
+                                    console.log('🔄 保持蓝色占位广告');
                                 }
                             );
                             
@@ -1188,9 +1146,9 @@ const GallerySection = ({ language = 'en' }) => {
                         };
                         
                         // 创建广告画面 (同步调用测试)
-                        // Initialize lightbox advertisement creation
+                        console.log('🚀 开始创建灯箱广告...');
                         const lightboxAd = createLightboxAd();
-                        // Lightbox advertisement created successfully
+                        console.log('🎉 灯箱广告创建完成:', lightboxAd);
                         
                         // 🚀 性能优化：减少背光源数量，只保留必要的照明
                         const backLightSources = [
@@ -1204,7 +1162,7 @@ const GallerySection = ({ language = 'en' }) => {
                             scene.add(backLight);
                         });
                         
-                        // Add backlight effect for realistic lightbox appearance
+                        console.log('💡 已添加灯箱背光源，营造真实灯箱效果');
                         
                         // 移除明显的点光源，只使用灯箱自身发光和广告自发光
                         // 这样就不会看到明显的光点，只有柔和的灯箱亮度
@@ -1297,9 +1255,8 @@ const GallerySection = ({ language = 'en' }) => {
                 setIsLoading(false);
                 
             } catch (error) {
-                // Handle Three.js scene initialization error
+                console.error('Failed to initialize Three.js scene:', error);
                 setIsLoading(false);
-                throw error;
             }
         };
 
@@ -1358,7 +1315,7 @@ const GallerySection = ({ language = 'en' }) => {
             cameraRef.current = null;
             wallsRef.current = null;
         };
-    }, [galleryData, isIntroAnimationComplete, setIsPointerLocked]);
+    }, [galleryData, isIntroAnimationComplete]);
 
     // 按键监听 
     useEffect(() => {
