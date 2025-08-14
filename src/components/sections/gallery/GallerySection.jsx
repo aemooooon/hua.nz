@@ -1429,21 +1429,30 @@ const GallerySection = ({ language = 'en' }) => {
                     ? 'opacity-100 translate-y-0' 
                     : 'opacity-0 translate-y-4 pointer-events-none'
             }`}>
-                <p className="text-lg font-medium mb-2">
-                    {texts[language]?.gallery?.gallery3D?.title || '浮生长廊'}
+                <p className="text-lg font-medium mb-3">
+                    {language === 'zh' ? '如何操作？' : 'How to Play?'}
                 </p>
-                <div className="space-y-1 text-sm">
-                    <p>
-                        • {texts[language]?.gallery?.gallery3D?.instructions?.clickToStart || '点击进入'}
+                <div className="space-y-3 text-sm">
+                    <p className="flex items-center">
+                        <span className="w-2"></span>{language === 'zh' ? '点击进入长廊' : 'Click to enter the gallery'}
                     </p>
-                    <p>
-                        • {texts[language]?.gallery?.gallery3D?.instructions?.navigation?.wasd || 'WASD / 方向键移动'}
+                    <p className="flex items-center">
+                        <span className="w-2"></span>{language === 'zh' ? '鼠标 - 环视周围，探索画作' : 'Mouse - Look around and explore'}
                     </p>
-                    <p>
-                        • {texts[language]?.gallery?.gallery3D?.instructions?.navigation?.mouse || '鼠标环视'}
+                    <p className="flex items-center">
+                        <span className="w-2"></span>
+                        <span className="inline-flex items-center gap-1 mr-2">
+                            <span className="inline-flex items-center px-1.5 py-0.5 bg-white/20 rounded text-xs font-mono border border-white/30">W</span>
+                            <span className="inline-flex items-center px-1.5 py-0.5 bg-white/20 rounded text-xs font-mono border border-white/30">A</span>
+                            <span className="inline-flex items-center px-1.5 py-0.5 bg-white/20 rounded text-xs font-mono border border-white/30">S</span>
+                            <span className="inline-flex items-center px-1.5 py-0.5 bg-white/20 rounded text-xs font-mono border border-white/30">D</span>
+                        </span>
+                        <span>{language === 'zh' ? '移动穿行长廊' : 'Move through the gallery'}</span>
                     </p>
-                    <p>
-                        • {texts[language]?.gallery?.gallery3D?.instructions?.navigation?.esc || 'ESC 退出'}
+                    <p className="flex items-center">
+                        <span className="w-2"></span>
+                        <span className="inline-flex items-center px-2 py-0.5 mr-2 bg-white/20 rounded text-xs font-mono border border-white/30">ESC</span>
+                        <span>{language === 'zh' ? '退出指针锁定模式' : 'Exit pointer lock mode'}</span>
                     </p>
                 </div>
             </div>
