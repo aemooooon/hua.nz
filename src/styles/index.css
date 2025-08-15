@@ -1,9 +1,9 @@
+/* 导入移动端专用样式 */
+@import './mobile.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-/* 导入移动端专用样式 */
-@import './mobile.css';
 
 @layer base {
   /* 导入格鲁吉亚字体 */
