@@ -54,7 +54,14 @@ const HomeSection = ({
     }, []);
 
     return (
-        <div className="h-screen w-screen overflow-hidden" style={{ margin: 0, padding: 0, background: 'transparent' }}>
+        <div className="w-screen overflow-hidden" 
+             style={{ 
+                 margin: 0, 
+                 padding: 0, 
+                 background: 'transparent',
+                 height: '100vh',
+                 minHeight: '100dvh' // 动态视口高度确保在移动端正确显示
+             }}>
             {/* 主内容优先渲染 */}
             <div className={`absolute top-8 left-1/2 transform -translate-x-1/2 text-center text-white z-50 w-full px-4 ${
                 enableOpeningAnimation ? 'grand-title-entrance' : ''
@@ -85,12 +92,15 @@ const HomeSection = ({
             </div>
 
             {/* Slogan - 屏幕下方，宽屏一行显示，窄屏两行，闪烁光标 */}
-            <div className={`absolute bottom-16 left-1/2 transform -translate-x-1/2 text-center z-50 w-full px-4 ${
+            <div className={`absolute left-1/2 transform -translate-x-1/2 text-center z-50 w-full px-4 ${
                 enableOpeningAnimation ? 'grand-slogan-entrance' : ''
-            }`} style={!enableOpeningAnimation ? {
-                animation: 'sloganEntrance 3s ease-out forwards 5s',
-                animationFillMode: 'both'
-            } : {}}>
+            }`} style={{
+                bottom: 'max(4rem, env(safe-area-inset-bottom) + 3rem)', // 使用安全区域，确保在所有设备上都可见
+                ...(!enableOpeningAnimation ? {
+                    animation: 'sloganEntrance 3s ease-out forwards 5s',
+                    animationFillMode: 'both'
+                } : {})
+            }}>
                 <div className="space-y-2 sm:space-y-4">
                     {/* 英文slogan - 使用统一的打字机效果解决对齐问题 */}
                     <div className="text-center">
@@ -144,7 +154,10 @@ const HomeSection = ({
             {showToggleButtons && (
                 <>
                     {/* Language Toggle - 左下角 */}
-                    <div className="absolute bottom-6 left-6 z-50 transition-opacity duration-1000 opacity-100">
+                    <div className="absolute z-50 transition-opacity duration-1000 opacity-100" style={{
+                        bottom: 'max(1.5rem, env(safe-area-inset-bottom) + 1rem)',
+                        left: 'max(1.5rem, env(safe-area-inset-left) + 1rem)'
+                    }}>
                         <Tooltip 
                             content={language === 'en' ? 'English' : '中文'} 
                             placement="top"
@@ -161,7 +174,10 @@ const HomeSection = ({
                     </div>
 
                     {/* Theme Toggle - 右下角 */}
-                    <div className="absolute bottom-6 right-6 z-50 transition-opacity duration-1000 opacity-100">
+                    <div className="absolute z-50 transition-opacity duration-1000 opacity-100" style={{
+                        bottom: 'max(1.5rem, env(safe-area-inset-bottom) + 1rem)',
+                        right: 'max(1.5rem, env(safe-area-inset-right) + 1rem)'
+                    }}>
                         <Tooltip 
                             content={currentThemeConfig.name[language] || currentThemeConfig.name.en} 
                             placement="left"

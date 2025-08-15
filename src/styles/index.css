@@ -2,6 +2,9 @@
 @tailwind components;
 @tailwind utilities;
 
+/* 导入移动端专用样式 */
+@import './mobile.css';
+
 @layer base {
   /* 导入格鲁吉亚字体 */
   @import url('https://fonts.googleapis.com/css2?family=Georgia&display=swap');
@@ -1833,4 +1836,90 @@ body {
 /* Smooth scrolling for thumbnail navigation */
 .smooth-scroll {
     scroll-behavior: smooth;
+}
+
+/* ================================================ */
+/* 移动端安全区域适配                                  */
+/* ================================================ */
+
+/* 基础根容器设置 - 确保使用完整视口高度并考虑安全区域 */
+html, body {
+    height: 100vh;
+    height: 100dvh; /* 动态视口高度，自动适配移动端UI */
+    overflow: hidden;
+}
+
+/* 主应用容器 */
+#root {
+    height: 100vh;
+    height: 100dvh;
+    width: 100vw;
+    width: 100dvw; /* 动态视口宽度 */
+    overflow: hidden;
+}
+
+/* 通用安全区域工具类 */
+.safe-area-inset-top {
+    padding-top: env(safe-area-inset-top);
+}
+
+.safe-area-inset-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
+}
+
+.safe-area-inset-left {
+    padding-left: env(safe-area-inset-left);
+}
+
+.safe-area-inset-right {
+    padding-right: env(safe-area-inset-right);
+}
+
+.safe-area-inset {
+    padding-top: env(safe-area-inset-top);
+    padding-right: env(safe-area-inset-right);
+    padding-bottom: env(safe-area-inset-bottom);
+    padding-left: env(safe-area-inset-left);
+}
+
+/* 移动端特殊处理 */
+@media (max-width: 768px) {
+    /* 确保移动端容器使用完整可用空间 */
+    .mobile-safe-container {
+        height: calc(100vh - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+        height: calc(100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+        width: calc(100vw - env(safe-area-inset-left) - env(safe-area-inset-right));
+        width: calc(100dvw - env(safe-area-inset-left) - env(safe-area-inset-right));
+    }
+    
+    /* 移动端底部固定元素的安全定位 */
+    .mobile-bottom-safe {
+        bottom: max(1rem, env(safe-area-inset-bottom) + 0.5rem);
+    }
+    
+    /* 移动端顶部固定元素的安全定位 */
+    .mobile-top-safe {
+        top: max(1rem, env(safe-area-inset-top) + 0.5rem);
+    }
+}
+
+/* iOS Safari特殊处理 */
+@supports (-webkit-appearance: none) {
+    /* iOS Safari滚动优化 */
+    body {
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    /* iOS Safari地址栏隐藏优化 */
+    html {
+        height: -webkit-fill-available;
+    }
+    
+    body {
+        min-height: -webkit-fill-available;
+    }
+    
+    #root {
+        min-height: -webkit-fill-available;
+    }
 }

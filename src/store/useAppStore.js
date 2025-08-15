@@ -361,13 +361,13 @@ const contentConfig = {
     },
     contact: {
       title: "Get In Touch",
-      subtitle: "Let's discuss your next project",
+      subtitle: "Looking forward to hearing from you",
       description: "Get in touch for opportunities, collaborations, or just to say hello.",
       location: "Christchurch, New Zealand",
       emailAddress: "aemooooon@gmail.com",
       phone: "+64 21 037 0520",
       connectWithMe: "Connect with me",
-      lookingForward: "Looking forward to hearing from you!",
+      lookingForward: "Copyright © 2025 Hua Wang",
       contactMethods: {
         email: {
           title: "Email",
@@ -719,14 +719,14 @@ const contentConfig = {
       ]
     },
     contact: {
-      title: "青鸟殷勤",
-      subtitle: "共商鸿猷",
+      title: "青鸟殷勤，共商鸿猷",
+      subtitle: "翘盼汝之玉音！",
       description: "倘蒙垂询，或谋事，或叙契，一函可达。",
       location: "新西兰",
       emailAddress: "aemooooon@gmail.com",
       phone: "+64 21 *** 0520",
       connectWithMe: "社交媒体",
-      lookingForward: "翘盼汝之玉音！",
+      lookingForward: "版权所有 © 2025 王华",
       contactMethods: {
         email: {
           title: "邮箱",

@@ -207,12 +207,30 @@ const SmartScrollManager = () => {
         const containerRect = container.getBoundingClientRect();
         const isOverflowing = container.scrollHeight > containerRect.height + 10;
         
+        // 移动端首次加载时的特殊处理 - 如果是长内容section，给予更多检测时间
+        const isMobile = window.innerWidth < 768;
+        const isLongContentSection = ['projects', 'education'].includes(currentSectionConfig?.id);
+        
+        if (isMobile && isLongContentSection && !isOverflowing) {
+            // 移动端长内容section如果首次检测未溢出，延迟再检测一次
+            setTimeout(() => {
+                if (contentRef.current) {
+                    const updatedRect = contentRef.current.getBoundingClientRect();
+                    const updatedOverflowing = contentRef.current.scrollHeight > updatedRect.height + 10;
+                    
+                    setIsContentOverflowing(updatedOverflowing);
+                    const updatedMode = isHomePage ? 'slide' : (updatedOverflowing ? 'content' : 'slide');
+                    setScrollMode(updatedMode);
+                }
+            }, 500); // 给更多时间让内容完全渲染
+        }
+        
         // 确保状态始终得到正确更新，特别是首次进入section时
         setIsContentOverflowing(isOverflowing);
         
         const newMode = isHomePage ? 'slide' : (isOverflowing ? 'content' : 'slide');
         setScrollMode(newMode);
-    }, [isHomePage]);
+    }, [isHomePage, currentSectionConfig]);
 
     // iOS风格回弹动画
     const triggerBounceAnimation = useCallback((direction, intensity = 0.5) => {
@@ -628,39 +646,77 @@ const SmartScrollManager = () => {
         // 立即检测一次
         checkContentOverflow();
         
-        // 使用多次检测确保新内容完全渲染后的准确检测
-        const checkTimer1 = setTimeout(() => {
-            checkContentOverflow();
-        }, 50);
+        // 针对移动端和长内容section的优化检测策略
+        const isMobile = window.innerWidth < 768;
+        const isLongContentSection = ['projects', 'education'].includes(currentSectionConfig?.id);
         
-        const checkTimer2 = setTimeout(() => {
-            checkContentOverflow();
-        }, 150);
-        
-        const checkTimer3 = setTimeout(() => {
-            checkContentOverflow();
-        }, 300);
-        
-        // ResizeObserver 用于后续的动态检测
-        let resizeObserver;
-        if (contentRef.current && window.ResizeObserver) {
-            resizeObserver = new ResizeObserver(() => {
+        if (isMobile && isLongContentSection) {
+            // 移动端长内容页面使用更密集的检测
+            const checkTimers = [50, 100, 200, 300, 500, 800, 1200].map(delay => 
+                setTimeout(() => {
+                    checkContentOverflow();
+                }, delay)
+            );
+            
+            // 清理定时器的函数
+            const clearTimers = () => checkTimers.forEach(timer => clearTimeout(timer));
+            
+            // 添加图片加载监听
+            const handleImageLoad = () => {
                 setTimeout(() => {
                     checkContentOverflow();
                 }, 50);
-            });
-            resizeObserver.observe(contentRef.current);
+            };
+            
+            // 保存 contentRef.current 的引用以避免闭包问题
+            const currentContentRef = contentRef.current;
+            
+            // 监听容器内所有图片的加载
+            if (currentContentRef) {
+                const images = currentContentRef.querySelectorAll('img');
+                images.forEach(img => {
+                    if (img.complete) {
+                        handleImageLoad();
+                    } else {
+                        img.addEventListener('load', handleImageLoad, { once: true });
+                        img.addEventListener('error', handleImageLoad, { once: true });
+                    }
+                });
+            }
+            
+            return () => {
+                clearTimers();
+                // 清理图片监听器
+                if (currentContentRef) {
+                    const images = currentContentRef.querySelectorAll('img');
+                    images.forEach(img => {
+                        img.removeEventListener('load', handleImageLoad);
+                        img.removeEventListener('error', handleImageLoad);
+                    });
+                }
+            };
+        } else {
+            // 非移动端或非长内容section使用原有的检测策略
+            const checkTimer1 = setTimeout(() => {
+                checkContentOverflow();
+            }, 50);
+            
+            const checkTimer2 = setTimeout(() => {
+                checkContentOverflow();
+            }, 150);
+            
+            const checkTimer3 = setTimeout(() => {
+                checkContentOverflow();
+            }, 300);
+            
+            return () => {
+                clearTimeout(checkTimer1);
+                clearTimeout(checkTimer2);
+                clearTimeout(checkTimer3);
+            };
         }
         
-        return () => {
-            clearTimeout(checkTimer1);
-            clearTimeout(checkTimer2);
-            clearTimeout(checkTimer3);
-            if (resizeObserver) {
-                resizeObserver.disconnect();
-            }
-        };
-    }, [currentSection, checkContentOverflow]);
+    }, [currentSection, checkContentOverflow, currentSectionConfig]);
 
     // 事件监听器
     useEffect(() => {
@@ -732,8 +788,12 @@ const SmartScrollManager = () => {
     return (
         <div 
             ref={containerRef}
-            className="relative w-full h-screen m-0 p-0"
-            style={{ overflow: 'hidden' }}
+            className="relative w-full m-0 p-0 h-screen"
+            style={{ 
+                overflow: 'hidden',
+                height: 'var(--vh-fallback, 100vh)', // 支持自定义视口高度变量
+                minHeight: '100dvh' // 动态视口高度作为最小高度
+            }}
         >
             {/* 背景画布 */}
             {currentSectionConfig?.backgroundEffect && (

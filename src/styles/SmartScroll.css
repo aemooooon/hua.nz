@@ -83,6 +83,24 @@
     transition: opacity 0.2s ease-in-out;
 }
 
+/* 移动端优化：确保滚动条在内容加载后立即可见 */
+@media (max-width: 768px) {
+    .scroll-mode-auto::-webkit-scrollbar {
+        width: 4px;
+        opacity: 0.6; /* 移动端默认显示滚动条 */
+    }
+    
+    .scroll-mode-auto::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.4);
+        border-radius: 2px;
+    }
+    
+    .scroll-mode-auto::-webkit-scrollbar-track {
+        background: rgba(0, 0, 0, 0.1);
+        border-radius: 2px;
+    }
+}
+
 .scroll-mode-auto:hover::-webkit-scrollbar {
     opacity: 1;
 }
