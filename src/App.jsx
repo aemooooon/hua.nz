@@ -1,15 +1,19 @@
 import SmartScrollManager from "./components/features/SmartScrollManager";
 import SmartDirectionalCursor from "./components/features/SmartDirectionalCursor";
+import NetworkStatus from "./components/ui/NetworkStatus";
+import SectionProgressBar from "./components/ui/SectionProgressBar";
 import ErrorBoundary from "./components/ui/ErrorBoundary";
 import DeveloperPanel from "./components/performancepanel/DeveloperPanel";
 import LoadingTest from "./components/test/LoadingTest";
 import { useDeveloperPanel } from "./hooks/useDeveloperPanel";
 import { useTheme } from "./hooks/useTheme";
+import { useAppStore } from "./store/useAppStore";
 import { useState, useEffect } from "react";
 
 const App = () => {
     const developerPanel = useDeveloperPanel();
     const [showLoadingTest, setShowLoadingTest] = useState(false);
+    const { language } = useAppStore();
     
     // 初始化主题系统
     useTheme();
@@ -47,6 +51,12 @@ const App = () => {
     return (
         <ErrorBoundary>
             <div className="App min-h-screen">
+                {/* Section进度条 */}
+                <SectionProgressBar />
+                
+                {/* 网络状态检测 */}
+                <NetworkStatus language={language} />
+                
                 {/* 智能方向光标 */}
                 <SmartDirectionalCursor />
                 

@@ -320,6 +320,9 @@ const EffectAvatar = ({ imageSrc, hoverImageSrc }) => {
                     transition: "opacity 0.5s ease, visibility 0.5s ease",
                     pointerEvents: "none",
                     zIndex: 2,
+                    // iOS Safari 兼容性修复
+                    WebkitBorderRadius: "50%",
+                    WebkitMaskImage: "radial-gradient(circle, white 100%, black 100%)",
                     // 性能优化：只在需要时启用 GPU 加速
                     willChange: isHovered ? "opacity, transform" : "auto"
                 }}
@@ -337,6 +340,8 @@ const EffectAvatar = ({ imageSrc, hoverImageSrc }) => {
                         height: "100%",
                         objectFit: "cover",
                         pointerEvents: "none",
+                        borderRadius: "50%", // iOS Safari 兼容性修复
+                        WebkitBorderRadius: "50%", // iOS Safari 兼容性修复
                         // 图片渲染优化
                         imageRendering: "auto"
                     }}
