@@ -66,7 +66,7 @@ const EducationSection = ({ language }) => {
         return (
             <div key={degree.id} className="w-full mb-16 lg:mb-20">
                 {/* 简化的卡片容器 */}
-                <div className="relative bg-theme-bg-white-5 border border-theme-border-white-10 rounded-2xl p-8 hover:bg-theme-bg-white-10 hover:border-theme-border-white-20 transition-all duration-300">
+                <div className="relative bg-theme-bg-white-5 border border-theme-border-white-10 rounded-2xl p-6 lg:p-8 hover:bg-theme-bg-white-10 hover:border-theme-border-white-20 transition-all duration-300">
                     
                     {/* 学位信息和学校信息 - 统一在顶部 */}
                     <div className="space-y-6 mb-8">
@@ -382,9 +382,10 @@ const EducationSection = ({ language }) => {
     };
 
     return (
-        <div className="min-h-screen w-full p-8 text-theme-text-white relative education-section-bg">
+        <div className="min-h-screen w-full px-4 sm:px-6 lg:px-8 py-8 text-theme-text-white relative education-section-bg">
+            <div className="max-w-6xl mx-auto">
             {/* Education标题 - 居中显示，使用主题化组件 */}
-            <div className="flex flex-col pt-12">
+            <div className="flex flex-col pt-4">
                 <div className="flex flex-col items-center text-center">
                     <ThemeTitle
                         level={1}
@@ -404,12 +405,11 @@ const EducationSection = ({ language }) => {
             </div>
 
             {/* 学历内容 - 垂直滚动，使用主题化文本颜色 */}
-            <div className="w-full p-4 sm:p-6 lg:p-8 text-theme-text-primary pt-0">
-                <div className="max-w-6xl mx-auto">
-                    {degrees.map((degree) => (
-                        <div key={degree.id}>{renderEducationCard(degree)}</div>
-                    ))}
-                </div>
+            <div className="w-full text-theme-text-primary pt-0">
+                {degrees.map((degree) => (
+                    <div key={degree.id}>{renderEducationCard(degree)}</div>
+                ))}
+            </div>
             </div>
         </div>
     );

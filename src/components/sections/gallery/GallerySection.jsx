@@ -1659,6 +1659,13 @@ const GallerySection = ({ language = 'en' }) => {
                         controlsRef.current?.lock();
                     }
                 }}
+                onTouchStart={(e) => {
+                    // 防止移动端双重触发
+                    e.preventDefault();
+                    if (!isLoading && isIntroAnimationComplete && showUICards && !isPointerLocked) {
+                        controlsRef.current?.lock();
+                    }
+                }}
             >
                 <div className={`bg-white/10 backdrop-blur-md rounded-2xl p-8 text-center transition-all duration-300 border border-white/20 ${
                     isMobile 
@@ -1669,7 +1676,10 @@ const GallerySection = ({ language = 'en' }) => {
                         {texts[language]?.gallery?.gallery3D?.title || '浮生长廊'}
                     </h2>
                     <p className="text-white/80 mb-6">
-                        {texts[language]?.gallery?.gallery3D?.instructions?.clickToStart || '点击进入'}
+                        {isMobile 
+                            ? (language === 'zh' ? '触摸进入' : 'Tap to Start')
+                            : (texts[language]?.gallery?.gallery3D?.instructions?.clickToStart || '点击进入')
+                        }
                     </p>
                     <div className="animate-bounce">
                         <svg className="w-8 h-8 text-white mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">

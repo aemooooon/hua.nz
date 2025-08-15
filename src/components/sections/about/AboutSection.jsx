@@ -46,7 +46,8 @@ const AboutSection = ({ language = 'en' }) => {
     return (
         <div className="min-h-screen w-full relative overflow-hidden golden-ratio-container">
             {/* 主要内容容器 - 按黄金分割比例布局 */}
-            <div className="flex flex-col lg:flex-row items-center lg:items-stretch min-h-screen p-4 lg:p-6 xl:p-8 about-section-spacing">
+            <div className="flex flex-col lg:flex-row items-center lg:items-stretch min-h-screen px-4 sm:px-6 lg:px-8 py-8 about-section-spacing">
+                <div className="max-w-6xl mx-auto w-full flex flex-col lg:flex-row items-center lg:items-stretch">
                 {/* 头像区域 - 黄金分割的较小部分 (约38%) */}
                 <div className="w-full about-avatar-area flex items-center justify-center mb-8 lg:mb-0 order-1 lg:order-1 avatar-cube-alignment">
                     {/* 头像包装器 - 向左移动以与cube对齐 */}
@@ -231,6 +232,7 @@ const AboutSection = ({ language = 'en' }) => {
                             </div>
                         </div>
                     </div>
+                </div>
                 </div>
             </div>
         </div>

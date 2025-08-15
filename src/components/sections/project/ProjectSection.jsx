@@ -112,9 +112,9 @@ const ProjectSection = ({ language }) => {
     };
 
     return (
-        <div className="min-h-screen w-full p-8 text-theme-text-white relative project-section-bg">
+        <div className="min-h-screen w-full px-4 sm:px-6 lg:px-8 py-8 text-theme-text-white relative project-section-bg">
             {/* 顶部标题栏 - 左右分布 */}
-            <div className="flex flex-col lg:flex-row lg:justify-between lg:items-center p-8 pt-12 mb-8">
+            <div className="flex flex-col lg:flex-row lg:justify-between lg:items-center py-4 mb-8">
                 {/* 左侧：Projects标题和副标题 */}
                 <div className="flex flex-col text-center lg:text-left">
                     <ThemeTitle level={1} className="text-5xl md:text-6xl lg:text-7xl font-bold font-montserrat text-theme-section-title mb-3">
@@ -141,40 +141,41 @@ const ProjectSection = ({ language }) => {
             </div>
 
             {/* 标题与内容之间的分隔线 */}
-            <GlowDivider className="my-8 px-4 sm:px-6 lg:px-8" width="w-full" />
+            <GlowDivider className="my-8" width="w-full" />
             
             {/* 全屏内容区域 */}
             <div className="relative z-10 backdrop-protection">
-                {/* 项目分类过滤区域 */}
-                <div className="px-4 sm:px-6 lg:px-8 mb-12">
-                    {/* 分类过滤按钮 - 响应式布局 */}
-                    <div className="flex flex-wrap gap-3 md:gap-4 justify-center items-center">
-                        {/* All 按钮 */}
-                        <button
-                            className={`category-filter-btn bg-theme-bg-white-10 text-theme-text-white-90 border-theme-text-white-50 hover:border-theme-text-white-70 ${activeFilter === 'all' ? 'active' : ''}`}
-                            onClick={() => setActiveFilter('all')}
-                        >
-                            All
-                        </button>
-                        
-                        {/* 各个分类按钮 */}
-                        {Object.keys(projectsByCategory).map((category) => {
-                            const style = getCategoryStyle(category);
-                            return (
-                                <button
-                                    key={category}
-                                    className={`category-filter-btn ${activeFilter === category ? 'active' : ''} ${style.bg} ${style.text} ${style.border}`}
-                                    onClick={() => setActiveFilter(category)}
-                                >
-                                    {category}
-                                </button>
-                            );
-                        })}
+                <div className="max-w-6xl mx-auto">
+                    {/* 项目分类过滤区域 */}
+                    <div className="mb-12">
+                        {/* 分类过滤按钮 - 响应式布局 */}
+                        <div className="flex flex-wrap gap-3 md:gap-4 justify-center items-center">
+                            {/* All 按钮 */}
+                            <button
+                                className={`category-filter-btn bg-theme-bg-white-10 text-theme-text-white-90 border-theme-text-white-50 hover:border-theme-text-white-70 ${activeFilter === 'all' ? 'active' : ''}`}
+                                onClick={() => setActiveFilter('all')}
+                            >
+                                All
+                            </button>
+                            
+                            {/* 各个分类按钮 */}
+                            {Object.keys(projectsByCategory).map((category) => {
+                                const style = getCategoryStyle(category);
+                                return (
+                                    <button
+                                        key={category}
+                                        className={`category-filter-btn ${activeFilter === category ? 'active' : ''} ${style.bg} ${style.text} ${style.border}`}
+                                        onClick={() => setActiveFilter(category)}
+                                    >
+                                        {category}
+                                    </button>
+                                );
+                            })}
+                        </div>
                     </div>
-                </div>
 
-                {/* 项目网格 - 全屏宽度布局，增加边距避免遮挡cube */}
-                <div className="project-grid-container grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6 lg:gap-8 pb-12 px-4 sm:px-6 lg:px-8">
+                    {/* 项目网格 - 限制最大宽度，避免在窄屏上过于稀疏 */}
+                    <div className="project-grid-container grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6 lg:gap-8 pb-12">
                     {filteredProjects.map((project, idx) => (
                         <div 
                             key={idx} 
@@ -264,8 +265,8 @@ const ProjectSection = ({ language }) => {
                 </div>
 
                 {/* 底部说明 - 全屏宽度 */}
-                <div className="text-center py-12 border-t border-theme-border-white-10 bg-black/20 backdrop-blur-sm rounded-xl mt-8 mx-4 sm:mx-6 lg:mx-8">
-                    <div className="max-w-4xl mx-auto px-4">
+                <div className="text-center py-12 border-t border-theme-border-white-10 bg-black/20 backdrop-blur-sm rounded-xl mt-8">
+                    <div className="max-w-4xl mx-auto">
                         <p className="text-theme-text-white-80 text-lg mb-3 font-medium">
                             {projectText.bottomSubtitle}
                         </p>
@@ -273,6 +274,7 @@ const ProjectSection = ({ language }) => {
                             {projectText.description}
                         </p>
                     </div>
+                </div>
                 </div>
             </div>
 

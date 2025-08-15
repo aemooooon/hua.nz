@@ -78,8 +78,8 @@ const ContactSection = ({ language }) => {
     ];
 
     return (
-        <div className="min-h-screen w-full p-4 sm:p-8 text-theme-text-white flex items-center justify-center">
-            <div className="max-w-7xl mx-auto w-full">
+        <div className="min-h-screen w-full px-4 sm:px-6 lg:px-8 py-8 text-theme-text-white flex items-center justify-center">
+            <div className="max-w-6xl mx-auto w-full">
                 {/* 标题部分 */}
                 <div className="flex flex-col items-center text-center mb-12">
                     <ThemeTitle level={1} className="text-5xl md:text-6xl lg:text-7xl font-bold font-montserrat text-theme-section-title mb-3">
@@ -100,7 +100,7 @@ const ContactSection = ({ language }) => {
                 </div>
 
                 {/* 主要内容区域 - 居中布局 */}
-                <div className="max-w-6xl mx-auto">
+                <div className="w-full">
                     {/* 联系方式卡片 - 3列网格布局：phone, wechat, location */}
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
                         {/* Phone Card */}
