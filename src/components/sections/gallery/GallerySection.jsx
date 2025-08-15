@@ -183,11 +183,14 @@ const GallerySection = ({ language = 'en' }) => {
             return;
         }
         
-        // 退出指针锁定
+        // 退出指针锁定 - 支持fallback模式
         if (document.exitPointerLock) {
             document.exitPointerLock();
+        } else {
+            // Fallback for mobile devices that don't support pointer lock
+            setIsPointerLocked(false);
         }
-    }, [isMobile, isPointerLocked]);
+    }, [isMobile, isPointerLocked, setIsPointerLocked]);
 
     // 移动端触摸退出事件监听器
     useEffect(() => {
@@ -1656,14 +1659,48 @@ const GallerySection = ({ language = 'en' }) => {
                 }`}
                 onClick={() => {
                     if (!isLoading && isIntroAnimationComplete && showUICards && !isPointerLocked) {
-                        controlsRef.current?.lock();
+                        if (controlsRef.current?.lock) {
+                            try {
+                                controlsRef.current.lock();
+                                // 对于不支持pointer lock的浏览器，设置fallback
+                                setTimeout(() => {
+                                    if (!isPointerLocked) {
+                                        console.log('Fallback: manually setting pointer locked state');
+                                        setIsPointerLocked(true);
+                                    }
+                                }, 100);
+                            } catch (err) {
+                                console.log('Pointer lock failed, using fallback:', err.message);
+                                setIsPointerLocked(true);
+                            }
+                        } else {
+                            setIsPointerLocked(true);
+                        }
                     }
                 }}
                 onTouchStart={(e) => {
                     // 防止移动端双重触发
                     e.preventDefault();
                     if (!isLoading && isIntroAnimationComplete && showUICards && !isPointerLocked) {
-                        controlsRef.current?.lock();
+                        // 移动端可能不支持pointer lock，尝试锁定，如果失败则直接进入
+                        if (controlsRef.current?.lock) {
+                            try {
+                                controlsRef.current.lock();
+                                // 设置一个短暂的延迟，如果pointer lock没有触发，手动设置状态
+                                setTimeout(() => {
+                                    if (!isPointerLocked) {
+                                        console.log('Mobile fallback: manually setting pointer locked state');
+                                        setIsPointerLocked(true);
+                                    }
+                                }, 100);
+                            } catch (err) {
+                                console.log('Pointer lock failed, using mobile fallback:', err.message);
+                                setIsPointerLocked(true);
+                            }
+                        } else {
+                            // 如果没有lock方法，直接进入移动端模式
+                            setIsPointerLocked(true);
+                        }
                     }
                 }}
             >
