@@ -64,7 +64,7 @@ const SmartScrollManager = () => {
 
     // 滚动敏感度配置
     const DESKTOP_SCROLL_THRESHOLD = 600; // 桌面端保持原来的值
-    const MOBILE_TOUCH_THRESHOLD = 400;   // 移动端触摸阈值调整为400，降低敏感度
+    const MOBILE_TOUCH_THRESHOLD = 200;   // 移动端触摸阈值调整为400，降低敏感度
     const SCROLL_RESET_TIME = 300;
     const PREVIEW_MAX_OFFSET = 80;
 
