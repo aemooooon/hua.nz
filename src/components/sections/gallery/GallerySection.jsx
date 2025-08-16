@@ -1,9 +1,10 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 import * as THREE from 'three';
 import { PointerLockControls } from 'three-stdlib';
 import { useAppStore } from '../../../store/useAppStore';
 import CircularLoadingIndicator from '../../ui/CircularLoadingIndicator';
+import GalleryMobile from './GalleryMobile';
 
 /**
  * Interactive 3D Gallery Component - "Corridor of Light and Shadow" 
@@ -37,6 +38,8 @@ const GallerySection = ({ language = 'en' }) => {
     const [isIntroAnimationComplete, setIsIntroAnimationComplete] = useState(false);
     const [showUICards, setShowUICards] = useState(false);
     const [isMobile, setIsMobile] = useState(false);
+    const [showMobileWarning, setShowMobileWarning] = useState(false);
+    const [showMobileGallery, setShowMobileGallery] = useState(false);
     
     // ========================================
     // Global State Integration
@@ -45,14 +48,6 @@ const GallerySection = ({ language = 'en' }) => {
     const texts = useAppStore(state => state.texts);
     const isPointerLocked = useAppStore(state => state.isPointerLocked);
     const setIsPointerLocked = useAppStore(state => state.setIsPointerLocked);
-    
-    // 虚拟摇杆状态
-    const [joystickActive, setJoystickActive] = useState(false);
-    const [joystickPosition, setJoystickPosition] = useState({ x: 0, y: 0 });
-    const joystickRef = useRef(null);
-    const joystickKnobRef = useRef(null);
-    const joystickCenterRef = useRef({ x: 0, y: 0 });
-    const joystickMoveVector = useRef({ x: 0, y: 0 });
     
     // Keyboard input state tracking for WASD + Arrow keys
     const keysPressed = useRef({
@@ -73,6 +68,9 @@ const GallerySection = ({ language = 'en' }) => {
         const checkMobile = () => {
             const mobile = window.innerWidth <= 768 || 'ontouchstart' in window;
             setIsMobile(mobile);
+            if (mobile) {
+                setShowMobileWarning(true);
+            }
         };
         
         checkMobile();
@@ -80,129 +78,6 @@ const GallerySection = ({ language = 'en' }) => {
         
         return () => window.removeEventListener('resize', checkMobile);
     }, []);
-    
-    // ========================================
-    // Virtual Joystick for Mobile
-    // ========================================
-    const handleJoystickMove = useCallback((event) => {
-        if (!joystickActive || !isMobile || !isPointerLocked) return;
-        
-        event.preventDefault();
-        const touch = event.touches[0];
-        const center = joystickCenterRef.current;
-        
-        // 计算触摸点相对于摇杆中心的位置
-        const deltaX = touch.clientX - center.x;
-        const deltaY = touch.clientY - center.y;
-        
-        // 限制在摇杆范围内（半径40px）
-        const maxRadius = 40;
-        const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
-        
-        let normalizedX = deltaX;
-        let normalizedY = deltaY;
-        
-        if (distance > maxRadius) {
-            normalizedX = (deltaX / distance) * maxRadius;
-            normalizedY = (deltaY / distance) * maxRadius;
-        }
-        
-        // 更新摇杆位置（用于UI显示）
-        setJoystickPosition({ x: normalizedX, y: normalizedY });
-        
-        // 更新移动向量（用于3D控制）
-        joystickMoveVector.current = {
-            x: normalizedX / maxRadius, // -1 到 1
-            y: -normalizedY / maxRadius  // -1 到 1，Y轴反向
-        };
-        
-        // 更新键盘状态以模拟WASD
-        const threshold = 0.3;
-        keysPressed.current.w = joystickMoveVector.current.y > threshold;
-        keysPressed.current.s = joystickMoveVector.current.y < -threshold;
-        keysPressed.current.a = joystickMoveVector.current.x < -threshold;
-        keysPressed.current.d = joystickMoveVector.current.x > threshold;
-        
-    }, [joystickActive, isMobile, isPointerLocked, keysPressed]);
-
-    const handleJoystickStart = useCallback((event) => {
-        if (!isMobile || !isPointerLocked) return;
-        
-        event.preventDefault();
-        const joystickElement = joystickRef.current;
-        
-        if (joystickElement) {
-            const rect = joystickElement.getBoundingClientRect();
-            joystickCenterRef.current = {
-                x: rect.left + rect.width / 2,
-                y: rect.top + rect.height / 2
-            };
-        }
-        
-        setJoystickActive(true);
-        handleJoystickMove(event);
-    }, [isMobile, isPointerLocked, handleJoystickMove]);
-
-    const handleJoystickEnd = useCallback(() => {
-        if (!isMobile) return;
-        
-        setJoystickActive(false);
-        setJoystickPosition({ x: 0, y: 0 });
-        joystickMoveVector.current = { x: 0, y: 0 };
-        
-        // 重置所有键盘状态
-        keysPressed.current.w = false;
-        keysPressed.current.s = false;
-        keysPressed.current.a = false;
-        keysPressed.current.d = false;
-    }, [isMobile, keysPressed]);
-
-    // 虚拟摇杆事件监听器
-    useEffect(() => {
-        if (!isMobile || !joystickRef.current) return;
-        
-        const joystick = joystickRef.current;
-        
-        joystick.addEventListener('touchstart', handleJoystickStart, { passive: false });
-        joystick.addEventListener('touchmove', handleJoystickMove, { passive: false });
-        joystick.addEventListener('touchend', handleJoystickEnd, { passive: false });
-        
-        return () => {
-            joystick.removeEventListener('touchstart', handleJoystickStart);
-            joystick.removeEventListener('touchmove', handleJoystickMove);
-            joystick.removeEventListener('touchend', handleJoystickEnd);
-        };
-    }, [isMobile, handleJoystickStart, handleJoystickMove, handleJoystickEnd]);
-
-    // 移动端触摸退出画廊
-    const handleTouchExit = useCallback((event) => {
-        if (!isMobile || !isPointerLocked) return;
-        
-        // 确保不是在摇杆上触摸
-        if (joystickRef.current && joystickRef.current.contains(event.target)) {
-            return;
-        }
-        
-        // 退出指针锁定 - 支持fallback模式
-        if (document.exitPointerLock) {
-            document.exitPointerLock();
-        } else {
-            // Fallback for mobile devices that don't support pointer lock
-            setIsPointerLocked(false);
-        }
-    }, [isMobile, isPointerLocked, setIsPointerLocked]);
-
-    // 移动端触摸退出事件监听器
-    useEffect(() => {
-        if (!isMobile || !containerRef.current) return;
-        
-        const container = containerRef.current;
-        container.addEventListener('touchstart', handleTouchExit, { passive: true });
-        
-        return () => {
-            container.removeEventListener('touchstart', handleTouchExit);
-        };
-    }, [isMobile, handleTouchExit]);
     
     // ========================================
     // Three.js References & Scene Management
@@ -1549,84 +1424,90 @@ const GallerySection = ({ language = 'en' }) => {
     }, []); // galleryData 是来自store的，不需要包含函数依赖
 
     return (
-        <section 
-            id="gallery" 
-            className="min-h-screen flex flex-col justify-center items-center bg-gray-100 relative overflow-hidden"
-        >
-            {/* 全屏加载指示器 - 使用统一的加载组件 */}
-            {(isLoading || !isIntroAnimationComplete) && (
-                <CircularLoadingIndicator
-                    size={160}
-                    strokeWidth={12}
-                    showMask={true}
-                    maskColor="black-solid"
-                />
-            )}
-
-            {/* 3D画廊容器 - 只在非加载状态时显示 */}
-            <div 
-                ref={containerRef}
-                className={`w-full h-screen relative bg-gray-200 ${(isLoading || !isIntroAnimationComplete) ? 'invisible' : 'visible'}`}
-                style={{ minHeight: '100vh' }}
-            >
-                {/* Virtual Joystick for Mobile */}
-                {isMobile && isPointerLocked && (
-                    <div 
-                        ref={joystickRef}
-                        className="fixed bottom-6 left-6 w-20 h-20 bg-white/10 border border-white/20 rounded-full backdrop-blur-md shadow-lg flex items-center justify-center touch-none z-50 select-none"
-                        style={{ WebkitUserSelect: 'none', WebkitTouchCallout: 'none' }}
-                    >
-                        <div 
-                            ref={joystickKnobRef}
-                            className="w-8 h-8 bg-white/30 rounded-full border border-white/40 transition-transform duration-75"
-                            style={{
-                                transform: `translate(${joystickPosition.x}px, ${joystickPosition.y}px)`
-                            }}
-                        />
-                    </div>
-                )}
-
-                {/* Mobile Exit Instructions */}
-                {isMobile && isPointerLocked && (
-                    <div className="fixed top-6 left-1/2 transform -translate-x-1/2 z-50">
-                        <div className="bg-black/60 backdrop-blur-md rounded-lg px-4 py-2 text-white text-sm border border-white/10">
-                            {language === 'zh' ? '触摸屏幕退出长廊' : 'Touch screen to exit gallery'}
+        <>
+            {/* 移动端警告提示 */}
+            {isMobile && showMobileWarning && (
+                <div className="fixed inset-0 z-[99999] bg-black/90 backdrop-blur-sm flex items-center justify-center p-4">
+                    <div className="bg-white/10 backdrop-blur-md rounded-2xl p-8 text-center max-w-md border border-white/20">
+                        <div className="mb-6">
+                            <svg className="w-16 h-16 text-yellow-400 mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.732-.833-2.464 0L4.35 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                            </svg>
+                            <h3 className="text-2xl font-bold text-white mb-2">
+                                {language === 'zh' ? '移动端体验提示' : 'Mobile Experience Notice'}
+                            </h3>
+                            <p className="text-white/80 leading-relaxed">
+                                {language === 'zh' 
+                                    ? '3D 画廊采用第一人称漫游技术，需要键盘和鼠标操作，移动端体验可能不佳。建议使用桌面设备以获得最佳浏览效果。'
+                                    : 'The 3D gallery uses first-person navigation technology requiring keyboard and mouse controls. For the best experience, Hua recommend using a desktop device.'
+                                }
+                            </p>
+                        </div>
+                        
+                        <div className="space-y-3">
+                            <button
+                                onClick={() => {
+                                    setShowMobileWarning(false);
+                                    setShowMobileGallery(true);
+                                }}
+                                className="w-full bg-theme-primary/20 hover:bg-theme-primary/30 text-theme-primary border border-theme-primary/30 hover:border-theme-primary/50 py-3 px-6 rounded-lg transition-all duration-300"
+                            >
+                                {language === 'zh' ? '继续浏览图片集' : 'View Image Gallery'}
+                            </button>
+                            
+                            <p className="text-white/60 text-sm">
+                                {language === 'zh' 
+                                    ? '或在桌面设备上体验完整的 3D 画廊'
+                                    : 'Or visit on desktop for the full 3D gallery experience'
+                                }
+                            </p>
                         </div>
                     </div>
-                )}
-            </div>
+                </div>
+            )}
 
-            {/* 第一人称控制提示 - 严格控制：只在动画完成且延迟时间到达且未锁定指针时显示 */}
-            <div className={`absolute bottom-6 left-6 bg-black/50 backdrop-blur-md rounded-xl p-4 text-white z-20 max-w-sm transition-all duration-1000 ${
-                (!isLoading && isIntroAnimationComplete && showUICards && !isPointerLocked) 
-                    ? 'opacity-100 translate-y-0' 
-                    : 'opacity-0 translate-y-4 pointer-events-none'
-            }`}>
-                <p className="text-lg font-medium mb-3">
-                    {language === 'zh' ? '如何操作？' : 'How to Play?'}
-                </p>
-                <div className="space-y-3 text-sm">
-                    <p className="flex items-center">
-                        <span className="w-2"></span>{language === 'zh' ? '点击进入长廊' : 'Tap to enter the gallery'}
-                    </p>
-                    {isMobile ? (
-                        // 移动端操作说明
-                        <>
+            {/* 移动端图片画廊 */}
+            {isMobile && showMobileGallery && (
+                <GalleryMobile language={language} texts={texts} />
+            )}
+
+            {/* 桌面端3D画廊 */}
+            {!isMobile && (
+                <section 
+                    id="gallery" 
+                    className="min-h-screen flex flex-col justify-center items-center bg-gray-100 relative overflow-hidden"
+                >
+                    {/* 全屏加载指示器 - 使用统一的加载组件 */}
+                    {(isLoading || !isIntroAnimationComplete) && (
+                        <CircularLoadingIndicator
+                            size={160}
+                            strokeWidth={12}
+                            showMask={true}
+                            maskColor="black-solid"
+                        />
+                    )}
+
+                    {/* 3D画廊容器 - 只在非加载状态时显示 */}
+                    <div 
+                        ref={containerRef}
+                        className={`w-full h-screen relative bg-gray-200 ${(isLoading || !isIntroAnimationComplete) ? 'invisible' : 'visible'}`}
+                        style={{ minHeight: '100vh' }}
+                    >
+                    </div>
+
+                    {/* 第一人称控制提示 - 严格控制：只在动画完成且延迟时间到达且未锁定指针时显示 */}
+                    <div className={`absolute bottom-6 left-6 bg-black/50 backdrop-blur-md rounded-xl p-4 text-white z-20 max-w-sm transition-all duration-1000 ${
+                        (!isLoading && isIntroAnimationComplete && showUICards && !isPointerLocked) 
+                            ? 'opacity-100 translate-y-0' 
+                            : 'opacity-0 translate-y-4 pointer-events-none'
+                    }`}>
+                        <p className="text-lg font-medium mb-3">
+                            {language === 'zh' ? '如何操作？' : 'How to Play?'}
+                        </p>
+                        <div className="space-y-3 text-sm">
                             <p className="flex items-center">
-                                <span className="w-2"></span>{language === 'zh' ? '拖拽屏幕 - 环视周围，探索画作' : 'Drag screen - Look around and explore'}
+                                <span className="w-2"></span>{language === 'zh' ? '点击进入长廊' : 'Click to enter the gallery'}
                             </p>
-                            <p className="flex items-center">
-                                <span className="w-2"></span>{language === 'zh' ? '左下摇杆 - 移动穿行长廊' : 'Virtual joystick - Move through gallery'}
-                            </p>
-                            <p className="flex items-center">
-                                <span className="w-2"></span>
-                                <span className="inline-flex items-center px-2 py-0.5 mr-2 bg-white/20 rounded text-xs font-mono border border-white/30">{language === 'zh' ? '触屏' : 'Touch'}</span>
-                                <span>{language === 'zh' ? '退出长廊模式' : 'Exit gallery mode'}</span>
-                            </p>
-                        </>
-                    ) : (
-                        // 桌面端操作说明
-                        <>
                             <p className="flex items-center">
                                 <span className="w-2"></span>{language === 'zh' ? '鼠标 - 环视周围，探索画作' : 'Mouse - Look around and explore'}
                             </p>
@@ -1645,102 +1526,69 @@ const GallerySection = ({ language = 'en' }) => {
                                 <span className="inline-flex items-center px-2 py-0.5 mr-2 bg-white/20 rounded text-xs font-mono border border-white/30">ESC</span>
                                 <span>{language === 'zh' ? '退出指针锁定模式' : 'Exit pointer lock mode'}</span>
                             </p>
-                        </>
-                    )}
-                </div>
-            </div>
-
-            {/* 点击开始探索 - 严格控制：只在动画完成且延迟时间到达且未锁定指针时显示 */}
-            <div 
-                className={`absolute inset-0 flex items-center justify-center cursor-pointer z-10 transition-all duration-1000 ${
-                    (!isLoading && isIntroAnimationComplete && showUICards && !isPointerLocked) 
-                        ? 'opacity-100 scale-100' 
-                        : 'opacity-0 scale-95 pointer-events-none'
-                }`}
-                onClick={() => {
-                    if (!isLoading && isIntroAnimationComplete && showUICards && !isPointerLocked) {
-                        if (controlsRef.current?.lock) {
-                            try {
-                                controlsRef.current.lock();
-                                // 对于不支持pointer lock的浏览器，设置fallback
-                                setTimeout(() => {
-                                    if (!isPointerLocked) {
-                                        console.log('Fallback: manually setting pointer locked state');
-                                        setIsPointerLocked(true);
-                                    }
-                                }, 100);
-                            } catch (err) {
-                                console.log('Pointer lock failed, using fallback:', err.message);
-                                setIsPointerLocked(true);
-                            }
-                        } else {
-                            setIsPointerLocked(true);
-                        }
-                    }
-                }}
-                onTouchStart={(e) => {
-                    // 防止移动端双重触发
-                    e.preventDefault();
-                    if (!isLoading && isIntroAnimationComplete && showUICards && !isPointerLocked) {
-                        // 移动端可能不支持pointer lock，尝试锁定，如果失败则直接进入
-                        if (controlsRef.current?.lock) {
-                            try {
-                                controlsRef.current.lock();
-                                // 设置一个短暂的延迟，如果pointer lock没有触发，手动设置状态
-                                setTimeout(() => {
-                                    if (!isPointerLocked) {
-                                        console.log('Mobile fallback: manually setting pointer locked state');
-                                        setIsPointerLocked(true);
-                                    }
-                                }, 100);
-                            } catch (err) {
-                                console.log('Pointer lock failed, using mobile fallback:', err.message);
-                                setIsPointerLocked(true);
-                            }
-                        } else {
-                            // 如果没有lock方法，直接进入移动端模式
-                            setIsPointerLocked(true);
-                        }
-                    }
-                }}
-            >
-                <div className={`bg-white/10 backdrop-blur-md rounded-2xl p-8 text-center transition-all duration-300 border border-white/20 ${
-                    isMobile 
-                        ? 'active:bg-white/20 active:scale-95' 
-                        : 'hover:bg-white/20 hover:scale-105'
-                }`}>
-                    <h2 className="text-2xl font-bold text-white mb-4">
-                        {texts[language]?.gallery?.gallery3D?.title || '浮生长廊'}
-                    </h2>
-                    <p className="text-white/80 mb-6">
-                        {isMobile 
-                            ? (language === 'zh' ? '触摸进入' : 'Tap to Start')
-                            : (texts[language]?.gallery?.gallery3D?.instructions?.clickToStart || '点击进入')
-                        }
-                    </p>
-                    <div className="animate-bounce">
-                        <svg className="w-8 h-8 text-white mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                        </svg>
+                        </div>
                     </div>
-                </div>
-            </div>
 
-            {/* 第一人称模式时的准星 */}
-            {isPointerLocked && (
-                <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-20">
-                    {/* 中心圆点 - 调大一些 */}
-                    <div className="w-2 h-2 bg-white rounded-full shadow-lg border border-white/30"></div>
-                    {/* 水平线 - 调长一些 */}
-                    <div className="absolute w-6 h-0.5 bg-white/60 rounded shadow-sm"></div>
-                    {/* 垂直线 - 调长一些 */}
-                    <div className="absolute w-0.5 h-6 bg-white/60 rounded shadow-sm"></div>
-                    {/* 外圈指示 - 增加更清晰的轮廓 */}
-                    <div className="absolute w-8 h-8 border border-white/20 rounded-full"></div>
-                </div>
+                    {/* 点击开始探索 - 严格控制：只在动画完成且延迟时间到达且未锁定指针时显示 */}
+                    <div 
+                        className={`absolute inset-0 flex items-center justify-center cursor-pointer z-10 transition-all duration-1000 ${
+                            (!isLoading && isIntroAnimationComplete && showUICards && !isPointerLocked) 
+                                ? 'opacity-100 scale-100' 
+                                : 'opacity-0 scale-95 pointer-events-none'
+                        }`}
+                        onClick={() => {
+                            if (!isLoading && isIntroAnimationComplete && showUICards && !isPointerLocked) {
+                                if (controlsRef.current?.lock) {
+                                    try {
+                                        controlsRef.current.lock();
+                                        setTimeout(() => {
+                                            if (!isPointerLocked) {
+                                                console.log('Fallback: manually setting pointer locked state');
+                                                setIsPointerLocked(true);
+                                            }
+                                        }, 100);
+                                    } catch (err) {
+                                        console.log('Pointer lock failed, using fallback:', err.message);
+                                        setIsPointerLocked(true);
+                                    }
+                                } else {
+                                    setIsPointerLocked(true);
+                                }
+                            }
+                        }}
+                    >
+                        <div className="bg-white/10 backdrop-blur-md rounded-2xl p-8 text-center transition-all duration-300 border border-white/20 hover:bg-white/20 hover:scale-105">
+                            <h2 className="text-2xl font-bold text-white mb-4">
+                                {texts[language]?.gallery?.gallery3D?.title || '浮生长廊'}
+                            </h2>
+                            <p className="text-white/80 mb-6">
+                                {texts[language]?.gallery?.gallery3D?.instructions?.clickToStart || '点击进入'}
+                            </p>
+                            <div className="animate-bounce">
+                                <svg className="w-8 h-8 text-white mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* 第一人称模式时的准星 */}
+                    {isPointerLocked && (
+                        <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-20">
+                            {/* 中心圆点 - 调大一些 */}
+                            <div className="w-2 h-2 bg-white rounded-full shadow-lg border border-white/30"></div>
+                            {/* 水平线 - 调长一些 */}
+                            <div className="absolute w-6 h-0.5 bg-white/60 rounded shadow-sm"></div>
+                            {/* 垂直线 - 调长一些 */}
+                            <div className="absolute w-0.5 h-6 bg-white/60 rounded shadow-sm"></div>
+                            {/* 外圈指示 - 增加更清晰的轮廓 */}
+                            <div className="absolute w-8 h-8 border border-white/20 rounded-full"></div>
+                        </div>
+                    )}
+                </section>
             )}
-        </section>
+        </>
     );
 };
 

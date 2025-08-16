@@ -5,6 +5,7 @@ import SectionProgressBar from "./components/ui/SectionProgressBar";
 import ErrorBoundary from "./components/ui/ErrorBoundary";
 import DeveloperPanel from "./components/performancepanel/DeveloperPanel";
 import LoadingTest from "./components/test/LoadingTest";
+import { PhotoSwipeProvider } from "./components/ui/PhotoSwipe";
 import { useDeveloperPanel } from "./hooks/useDeveloperPanel";
 import { useTheme } from "./hooks/useTheme";
 import { useAppStore } from "./store/useAppStore";
@@ -50,27 +51,29 @@ const App = () => {
 
     return (
         <ErrorBoundary>
-            <div className="App min-h-screen">
-                {/* Section进度条 */}
-                <SectionProgressBar />
-                
-                {/* 网络状态检测 */}
-                <NetworkStatus language={language} />
-                
-                {/* 智能方向光标 */}
-                <SmartDirectionalCursor />
-                
-                {/* 智能滚动管理器（已优化：降低敏感度，禁止轮播） */}
-                <SmartScrollManager />
+            <PhotoSwipeProvider>
+                <div className="App min-h-screen">
+                    {/* Section进度条 */}
+                    <SectionProgressBar />
+                    
+                    {/* 网络状态检测 */}
+                    <NetworkStatus language={language} />
+                    
+                    {/* 智能方向光标 */}
+                    <SmartDirectionalCursor />
+                    
+                    {/* 智能滚动管理器（已优化：降低敏感度，禁止轮播） */}
+                    <SmartScrollManager />
 
-                {/* 统一开发者面板 - 仅在开发模式下可用，通过 Ctrl+M 切换 */}
-                {developerPanel.isDev && (
-                    <DeveloperPanel 
-                        visible={developerPanel.isVisible}
-                        onToggle={developerPanel.toggle}
-                    />
-                )}
-            </div>
+                    {/* 统一开发者面板 - 仅在开发模式下可用，通过 Ctrl+M 切换 */}
+                    {developerPanel.isDev && (
+                        <DeveloperPanel 
+                            visible={developerPanel.isVisible}
+                            onToggle={developerPanel.toggle}
+                        />
+                    )}
+                </div>
+            </PhotoSwipeProvider>
         </ErrorBoundary>
     );
 };
