@@ -1,7 +1,8 @@
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import PropTypes from 'prop-types';
 import { useAppStore } from '../../../store/useAppStore';
+import { usePhotoSwipe } from '../../../hooks/usePhotoSwipe';
 import GlowDivider from '../../ui/GlowDivider';
 import './ProjectDetail.css';
 
@@ -51,7 +52,7 @@ BarChart3.propTypes = { className: PropTypes.string };
 
 const ProjectDetail = ({ project = null, isOpen, onClose }) => {
   const { language, getProjectsText, getProjectDescription } = useAppStore();
-  const [activeImageIndex, setActiveImageIndex] = useState(0);
+  const { openPhotoSwipe } = usePhotoSwipe();
 
   // 获取当前语言的项目文本
   const projectText = getProjectsText();
@@ -132,6 +133,19 @@ const ProjectDetail = ({ project = null, isOpen, onClose }) => {
 
   const images = Array.isArray(project.img) ? project.img : [project.img].filter(Boolean);
   const hasMultipleImages = images.length > 1;
+
+  // 准备 PhotoSwipe 图片数据
+  const photoSwipeItems = images.map((img, index) => ({
+    src: img,
+    title: `${language === 'en' ? project.name : (project.nameZh || project.name)} - ${index + 1}`,
+    width: 1200, // 默认宽度，PhotoSwipe 会自动调整
+    height: 800,  // 默认高度
+  }));
+
+  // 点击图片打开 PhotoSwipe
+  const handleImageClick = (index = 0) => {
+    openPhotoSwipe(photoSwipeItems, index);
+  };
 
   const renderTechStack = () => {
     if (!project.tech || project.tech.length === 0) return null;
@@ -301,72 +315,101 @@ const ProjectDetail = ({ project = null, isOpen, onClose }) => {
           {/* Main Content Layout */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8 xl:gap-12 mb-8">
             
-            {/* Left Column - Images (2/3 width on large screens, full width on mobile) */}
+            {/* Left Column - Images Gallery (2/3 width on large screens, full width on mobile) */}
             {images.length > 0 && (
               <div className="lg:col-span-2 order-1 lg:order-1">
-                <div className="lg:sticky lg:top-6">{/* Main Image */}
-                  <div className="relative mb-4">
-                    <img
-                      src={images[activeImageIndex]}
-                      alt={language === 'en' ? project.name : (project.nameZh || project.name)}
-                      className="w-full aspect-video object-cover rounded-xl shadow-2xl"
-                      onError={(e) => {
-                        e.target.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjI0MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iNDAwIiBoZWlnaHQ9IjI0MCIgZmlsbD0iIzMzNCI+PC9yZWN0Pjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBmaWxsPSJ3aGl0ZSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iIGZvbnQtZmFtaWx5PSJzeXN0ZW0tdWkiIGZvbnQtc2l6ZT0iMTZweCIgZm9udC13ZWlnaHQ9IjMwMCI+SW1hZ2UgTm90IEZvdW5kPC90ZXh0Pjwvc3ZnPg==';
-                      }}
-                    />
-                    
-                    {/* Image Counter */}
-                    {hasMultipleImages && (
-                      <div className="absolute top-4 right-4 bg-black/60 backdrop-blur-sm rounded-full px-3 py-1 text-white text-sm">
-                        {activeImageIndex + 1} / {images.length}
-                      </div>
-                    )}
-                    
-                    {/* Navigation Dots */}
-                    {hasMultipleImages && (
-                      <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2">
-                        <div className="flex space-x-2">
-                          {images.map((_, index) => (
-                            <button
-                              key={index}
-                              onClick={() => setActiveImageIndex(index)}
-                              className={`w-3 h-3 rounded-full transition-colors ${
-                                index === activeImageIndex ? 'bg-theme-primary' : 'bg-white/40 hover:bg-white/60'
-                              }`}
-                              style={{ cursor: 'pointer' }}
-                            />
-                          ))}
+                <div className="lg:sticky lg:top-6">
+                  
+                  {/* Single Image Mode */}
+                  {!hasMultipleImages && (
+                    <div className="relative group">
+                      <img
+                        src={images[0]}
+                        alt={language === 'en' ? project.name : (project.nameZh || project.name)}
+                        className="w-full aspect-video object-cover rounded-xl shadow-2xl cursor-pointer transition-all duration-300 hover:shadow-3xl"
+                        onClick={() => handleImageClick(0)}
+                        onError={(e) => {
+                          e.target.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjI0MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iNDAwIiBoZWlnaHQ9IjI0MCIgZmlsbD0iIzMzNCI+PC9yZWN0Pjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBmaWxsPSJ3aGl0ZSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iIGZvbnQtZmFtaWx5PSJzeXN0ZW0tdWkiIGZvbnQtc2l6ZT0iMTZweCIgZm9udC13ZWlnaHQ9IjMwMCI+SW1hZ2UgTm90IEZvdW5kPC90ZXh0Pjwvc3ZnPg==';
+                        }}
+                      />
+                      
+                      {/* Single image hover overlay */}
+                      <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-all duration-300 rounded-xl flex items-center justify-center opacity-0 group-hover:opacity-100">
+                        <div className="bg-white/20 backdrop-blur-sm rounded-full p-4 transform scale-90 group-hover:scale-100 transition-transform">
+                          <svg className="w-8 h-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7" />
+                          </svg>
                         </div>
                       </div>
-                    )}
-                  </div>
-                  
-                  {/* Thumbnail Grid - Responsive wrapping */}
+                    </div>
+                  )}
+
+                  {/* Gallery Grid Mode for Multiple Images */}
                   {hasMultipleImages && (
-                    <div className="relative">
-                      <div className="flex flex-wrap gap-2 md:gap-3 justify-start">
-                        {images.map((img, index) => (
-                          <button
-                            key={index}
-                            onClick={() => setActiveImageIndex(index)}
-                            className={`flex-shrink-0 w-16 h-10 md:w-20 md:h-12 lg:w-24 lg:h-14 xl:w-28 xl:h-16 rounded-lg border-2 overflow-hidden transition-all ${
-                              index === activeImageIndex 
-                                ? 'border-theme-primary opacity-100 shadow-lg shadow-theme-primary/25' 
-                                : 'border-theme-border opacity-60 hover:opacity-80'
-                            }`}
-                            style={{ cursor: 'pointer' }}
-                          >
-                            <img
-                              src={img}
-                              alt={`${language === 'en' ? project.name : (project.nameZh || project.name)} ${index + 1}`}
-                              className="w-full h-full object-cover"
-                              onError={(e) => {
-                                e.target.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAiIGhlaWdodD0iNDgiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9IjgwIiBoZWlnaHQ9IjQ4IiBmaWxsPSIjMzMzIj48L3JlY3Q+PC9zdmc+';
-                              }}
-                            />
-                          </button>
-                        ))}
+                    <div className="space-y-4">
+                      {/* Primary large image */}
+                      <div className="relative group">
+                        <img
+                          src={images[0]}
+                          alt={`${language === 'en' ? project.name : (project.nameZh || project.name)} - Main`}
+                          className="w-full aspect-video object-cover rounded-xl shadow-2xl cursor-pointer transition-all duration-300 hover:shadow-3xl"
+                          onClick={() => handleImageClick(0)}
+                          onError={(e) => {
+                            e.target.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjI0MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iNDAwIiBoZWlnaHQ9IjI0MCIgZmlsbD0iIzMzNCI+PC9yZWN0Pjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBmaWxsPSJ3aGl0ZSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iIGZvbnQtZmFtaWx5PSJzeXN0ZW0tdWkiIGZvbnQtc2l6ZT0iMTZweCIgZm9udC13ZWlnaHQ9IjMwMCI+SW1hZ2UgTm90IEZvdW5kPC90ZXh0Pjwvc3ZnPg==';
+                          }}
+                        />
+                        
+                        {/* Image counter badge */}
+                        <div className="absolute top-4 right-4 bg-black/70 backdrop-blur-sm rounded-full px-3 py-1.5 text-white text-sm font-medium">
+                          {images.length} {language === 'zh' ? '张图片' : 'Images'}
+                        </div>
+                        
+                        {/* Primary image hover overlay */}
+                        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-all duration-300 rounded-xl flex items-center justify-center opacity-0 group-hover:opacity-100">
+                          <div className="bg-white/20 backdrop-blur-sm rounded-full p-4 transform scale-90 group-hover:scale-100 transition-transform">
+                            <svg className="w-8 h-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7" />
+                            </svg>
+                          </div>
+                        </div>
                       </div>
+
+                      {/* Secondary images grid - show remaining images */}
+                      {images.length > 1 && (
+                        <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                          {images.slice(1, Math.min(images.length, 6)).map((img, index) => (
+                            <div key={index + 1} className="relative group aspect-video overflow-hidden rounded-lg">
+                              <img
+                                src={img}
+                                alt={`${language === 'en' ? project.name : (project.nameZh || project.name)} ${index + 2}`}
+                                className="w-full h-full object-cover cursor-pointer transition-all duration-300 group-hover:scale-105"
+                                onClick={() => handleImageClick(index + 1)}
+                                onError={(e) => {
+                                  e.target.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAiIGhlaWdodD0iNDgiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9IjgwIiBoZWlnaHQ9IjQ4IiBmaWxsPSIjMzMzIj48L3JlY3Q+PC9zdmc+';
+                                }}
+                              />
+                              
+                              {/* Overlay for additional images indication */}
+                              {index === 4 && images.length > 6 && (
+                                <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
+                                  <div className="text-white text-lg font-bold">
+                                    +{images.length - 5}
+                                  </div>
+                                </div>
+                              )}
+                              
+                              {/* Hover overlay */}
+                              <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all duration-300 flex items-center justify-center opacity-0 group-hover:opacity-100">
+                                <div className="bg-white/30 backdrop-blur-sm rounded-full p-2">
+                                  <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7" />
+                                  </svg>
+                                </div>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
                     </div>
                   )}
                 </div>
@@ -376,6 +419,27 @@ const ProjectDetail = ({ project = null, isOpen, onClose }) => {
             {/* Right Column - Project Info (1/3 width on large screens, full width on mobile) */}
             <div className={`order-2 lg:order-2 ${images.length === 0 ? 'lg:col-span-3' : 'lg:col-span-1'}`}>
               <div className="space-y-4 md:space-y-6">
+                
+                {/* Image viewing hint */}
+                {images.length > 0 && (
+                  <div className="bg-theme-primary/10 border border-theme-primary/20 rounded-lg p-3 mb-4">
+                    <div className="flex items-center gap-2 text-theme-primary text-sm">
+                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                      </svg>
+                      <span>
+                        {language === 'zh' 
+                          ? hasMultipleImages 
+                            ? `💫 点击任意图片开始浏览${images.length}张作品` 
+                            : '� 点击图片查看高清大图'
+                          : hasMultipleImages 
+                            ? `💫 Click any image to browse all ${images.length} works` 
+                            : '� Click image to view in full size'
+                        }
+                      </span>
+                    </div>
+                  </div>
+                )}
                 
                 {/* Company & Title */}
                 <div className="bg-theme-surface/30 p-5 rounded-lg">

@@ -71,14 +71,19 @@ export const PhotoSwipeProvider = ({ children, language = 'en' }) => {
         // UI配置
         bgOpacity: 0.95,
         spacing: 0.1,
-        allowPanToNext: true,
-        loop: true,
+        loop: true, // 循环播放
         zoom: true,
         
         // 动画配置
         showAnimationDuration: 300,
         hideAnimationDuration: 300,
         showHideAnimationType: 'zoom',
+        
+        // 移动端手势支持
+        allowMouseDrag: true, // 允许鼠标拖拽（桌面端）
+        allowPanToNext: true, // 允许平移到下一张（左右滑动）
+        allowSwipeToClose: true, // 允许向下滑动关闭（移动端）
+        wheelToZoom: true, // 滚轮缩放（桌面端）
         
         // 交互配置
         imageClickAction: 'close',
@@ -95,8 +100,9 @@ export const PhotoSwipeProvider = ({ children, language = 'en' }) => {
         errorMsg: language === 'zh' ? '图片无法加载' : 'The image cannot be loaded',
         
         // 移动端优化
-        pinchToClose: true,
-        closeOnVerticalDrag: true,
+        pinchToClose: true, // 捏合手势关闭
+        closeOnVerticalDrag: true, // 垂直拖拽关闭
+        returnFocus: false, // 关闭后不返回焦点
         padding: { top: 40, bottom: 40, left: 20, right: 20 },
         
         // 预加载设置
@@ -246,9 +252,40 @@ export const PhotoSwipeProvider = ({ children, language = 'en' }) => {
             height: 40px;
           }
           
-          .pswp__top-bar {
-            height: 60px;
+          /* 确保触摸手势正常工作 */
+          .pswp__container {
+            touch-action: pan-x pan-y;
+            user-select: none;
+            -webkit-user-select: none;
           }
+          
+          .pswp__zoom-wrap {
+            touch-action: manipulation;
+          }
+          
+          /* 手势提示 */
+          .pswp__ui--fit .pswp__top-bar::after {
+            content: '${language === 'zh' ? '左右滑动切换 • 上下滑动关闭' : 'Swipe left/right to navigate • Swipe up/down to close'}';
+            position: absolute;
+            bottom: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 12px;
+            white-space: nowrap;
+            pointer-events: none;
+            opacity: 1;
+            transition: opacity 0.3s ease;
+          }
+          
+          .pswp__ui--fit .pswp__top-bar:not(:hover)::after {
+            animation: fadeInOut 3s ease-in-out;
+          }
+        }
+        
+        @keyframes fadeInOut {
+          0%, 100% { opacity: 0; }
+          15%, 85% { opacity: 1; }
         }
         
         /* 加载动画 */

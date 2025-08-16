@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import PropTypes from 'prop-types';
 import ProjectGeoViewer from './ProjectGeoViewer';
-import ProjectDetail from './ProjectDetail';
+import ProjectDetailNew from './ProjectDetailNew';
 import GlowDivider from '../../ui/GlowDivider';
 import useAppStore from '../../../store/useAppStore';
 import { ThemeTitle } from '../../ui/ThemeComponents';
@@ -286,7 +286,7 @@ const ProjectSection = ({ language }) => {
             />
             
             {/* 项目详情弹窗 */}
-            <ProjectDetail
+            <ProjectDetailNew
                 project={selectedProject}
                 isOpen={!!selectedProject}
                 onClose={() => setSelectedProject(null)}

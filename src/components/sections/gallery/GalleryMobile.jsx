@@ -1,13 +1,20 @@
 import PropTypes from 'prop-types';
+import { useRef, useEffect, useState, useMemo } from 'react';
 import { useAppStore } from '../../../store/useAppStore';
 import { usePhotoSwipe } from '../../../hooks/usePhotoSwipe';
 
 const GalleryMobile = ({ language = 'zh' }) => {
   const galleryData = useAppStore((state) => state.getAllGalleryItems());
   const { openPhotoSwipe } = usePhotoSwipe();
+  const containerRef = useRef(null);
+  const [canScroll, setCanScroll] = useState(false);
+  const [showScrollHint, setShowScrollHint] = useState(false);
 
   // 安全检查：确保 galleryData 存在且是数组
-  const safeGalleryData = Array.isArray(galleryData) ? galleryData : [];
+  const safeGalleryData = useMemo(() => 
+    Array.isArray(galleryData) ? galleryData : [], 
+    [galleryData]
+  );
 
   // 转换数据格式以适配PhotoSwipe
   const galleryItems = safeGalleryData.map((item, index) => ({
@@ -17,6 +24,33 @@ const GalleryMobile = ({ language = 'zh' }) => {
     title: item.title || '',
     description: item.description || ''
   }));
+
+  // 检测是否可以滚动
+  useEffect(() => {
+    const checkScrollable = () => {
+      if (containerRef.current) {
+        const isScrollable = containerRef.current.scrollHeight > containerRef.current.clientHeight;
+        setCanScroll(isScrollable);
+        
+        // 如果可以滚动，短暂显示提示
+        if (isScrollable && !showScrollHint) {
+          setShowScrollHint(true);
+          setTimeout(() => setShowScrollHint(false), 3000);
+        }
+      }
+    };
+
+    checkScrollable();
+    window.addEventListener('resize', checkScrollable);
+    return () => window.removeEventListener('resize', checkScrollable);
+  }, [safeGalleryData, showScrollHint]);
+
+  // 滚动事件处理
+  const handleScroll = () => {
+    if (showScrollHint) {
+      setShowScrollHint(false);
+    }
+  };
 
   const handleImageClick = (index) => {
     openPhotoSwipe(galleryItems, index); // 修复参数顺序：(imageList, index)
@@ -28,13 +62,26 @@ const GalleryMobile = ({ language = 'zh' }) => {
       <style>{`
         .gallery-mobile-container {
           min-height: 100vh;
+          max-height: 100vh;
           overflow-y: auto;
+          overflow-x: hidden;
           overscroll-behavior: none;
+          
           /* iOS 安全区域支持 */
           padding-top: max(1rem, env(safe-area-inset-top));
           padding-bottom: max(1.5rem, env(safe-area-inset-bottom));
           padding-left: env(safe-area-inset-left);
           padding-right: env(safe-area-inset-right);
+          
+          /* 确保在iOS上平滑滚动 */
+          -webkit-overflow-scrolling: touch;
+          
+          /* 防止选择文本 */
+          -webkit-user-select: none;
+          user-select: none;
+          
+          /* 确保触摸滚动正常工作 */
+          touch-action: pan-y;
         }
         
         /* 自定义滚动条样式 */
@@ -52,13 +99,51 @@ const GalleryMobile = ({ language = 'zh' }) => {
           background: rgba(255, 255, 255, 0.3);
         }
         
-        /* 防止bounce效果在iOS上 */
-        .gallery-mobile-container {
-          -webkit-overflow-scrolling: touch;
+        /* 移动端特殊处理 */
+        @media (max-width: 768px) {
+          .gallery-mobile-container {
+            /* 在移动设备上隐藏滚动条 */
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+          }
+          
+          .gallery-mobile-container::-webkit-scrollbar {
+            display: none;
+          }
+          
+          /* 确保图片点击区域可用 */
+          .gallery-image-item {
+            touch-action: manipulation;
+          }
+        }
+        
+        /* 滚动提示 */
+        .scroll-indicator {
+          position: fixed;
+          bottom: calc(env(safe-area-inset-bottom) + 20px);
+          right: 20px;
+          background: rgba(0, 0, 0, 0.6);
+          color: white;
+          padding: 8px 12px;
+          border-radius: 20px;
+          font-size: 12px;
+          backdrop-filter: blur(10px);
+          opacity: 0;
+          transition: opacity 0.3s ease;
+          pointer-events: none;
+          z-index: 10;
+        }
+        
+        .scroll-indicator.visible {
+          opacity: 1;
         }
       `}</style>
       
-      <div className="gallery-mobile-container w-full">
+      <div 
+        ref={containerRef}
+        className="gallery-mobile-container w-full"
+        onScroll={handleScroll}
+      >
         {/* 标题部分 */}
         <div className="text-center mb-8 px-4">
           <h2 className="text-3xl md:text-4xl font-bold text-theme-text-primary mb-4">
@@ -142,6 +227,20 @@ const GalleryMobile = ({ language = 'zh' }) => {
           )}
         </div>
       </div>
+
+      {/* 滚动提示 */}
+      {canScroll && showScrollHint && (
+        <div className={`scroll-indicator ${showScrollHint ? 'visible' : ''}`}>
+          <div className="flex items-center gap-2">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M7 10L12 15L17 10" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+            <span>
+              {language === 'zh' ? '上下滑动查看更多' : 'Scroll to see more'}
+            </span>
+          </div>
+        </div>
+      )}
     </>
   );
 };

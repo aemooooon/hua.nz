@@ -1,32 +1,55 @@
 /* ProjectDetail specific styles */
 
-/* Ensure consistent scrollbar styling within ProjectDetail */
+/* 使用全局透明滚动条样式 */
 .project-detail-container::-webkit-scrollbar {
     width: 6px;
-    height: 6px;
+    opacity: 0;
+    transition: opacity 0.2s ease-in-out;
 }
 
 .project-detail-container::-webkit-scrollbar-track {
-    background: var(--theme-surface);
+    background: rgba(0, 0, 0, 0.1);
     border-radius: 3px;
 }
 
 .project-detail-container::-webkit-scrollbar-thumb {
-    background: linear-gradient(45deg, var(--theme-primary), var(--theme-secondary));
+    background: rgba(255, 255, 255, 0.3);
     border-radius: 3px;
-    border: 1px solid var(--theme-surface);
+    transition: background 0.2s ease-in-out;
+}
+
+.project-detail-container:hover::-webkit-scrollbar {
+    opacity: 1;
 }
 
 .project-detail-container::-webkit-scrollbar-thumb:hover {
-    background: linear-gradient(45deg, var(--theme-secondary), var(--theme-accent));
+    background: rgba(255, 255, 255, 0.5);
 }
 
 .project-detail-container::-webkit-scrollbar-corner {
-    background: var(--theme-surface);
+    background: transparent;
 }
 
 /* For Firefox */
 .project-detail-container {
     scrollbar-width: thin;
-    scrollbar-color: var(--theme-primary) var(--theme-surface);
+    scrollbar-color: rgba(255, 255, 255, 0.3) rgba(0, 0, 0, 0.1);
+}
+
+/* 移动端优化 */
+@media (max-width: 768px) {
+    .project-detail-container::-webkit-scrollbar {
+        width: 4px;
+        opacity: 0.6;
+    }
+    
+    .project-detail-container::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.4);
+        border-radius: 2px;
+    }
+    
+    .project-detail-container::-webkit-scrollbar-track {
+        background: rgba(0, 0, 0, 0.1);
+        border-radius: 2px;
+    }
 }

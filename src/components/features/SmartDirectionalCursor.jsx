@@ -795,7 +795,7 @@ const SmartDirectionalCursor = () => {
                         fill="none"
                         stroke={baseColor}
                         strokeWidth={strokeWidth}
-                        opacity="0.4"
+                        opacity="0.8"
                     />
                     
                     {/* 进度圆环：只在滚动时显示 */}
