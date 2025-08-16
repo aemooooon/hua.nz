@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import PropTypes from 'prop-types';
 import ProjectGeoViewer from './ProjectGeoViewer';
-import ProjectDetailNew from './ProjectDetailNew';
+import ProjectDetailNew from './ProjectDetail';
 import GlowDivider from '../../ui/GlowDivider';
 import useAppStore from '../../../store/useAppStore';
 import { ThemeTitle } from '../../ui/ThemeComponents';
