@@ -857,7 +857,7 @@ export const useAppStore = create(
             "live": "https://www.hua.nz/",
             "github": "https://github.com/aemooooon/hua.nz"
           },
-          "img": ["/hua.nz.1.png", "/hua.nz.2.jpg", "hua.nz.3.jpg", "/hua.nz.4.jpg"]
+          "img": ["/hua.nz/hua.nz.1.png", "/hua.nz/hua.nz.2.jpg", "/hua.nz/hua.nz.3.jpg", "/hua.nz/hua.nz.4.jpg"]
         },
         {
           "type": "Full Stack",
@@ -874,7 +874,7 @@ export const useAppStore = create(
           "links": {
             "official": "https://www.zespri.com"
           },
-          "img": "/zespri_poster.png"
+          "img": ["/zespri/zespri-ors.jpg", "/zespri/zespri_poster.png", "/zespri/zespri.1.jpg", "/zespri/zespri.2.jpg"]
         },
         {
           "type": "Front End",
@@ -905,7 +905,7 @@ export const useAppStore = create(
           "links": {
             "live": "https://aqi.eseemc.cn/",
           },
-          "img": ["/aqi.jpg", "AQI1.webp", "AQI2.webp", "AQI3.jpg", "AQI4.jpg", "AQI5.jpg"]
+          "img": ["/aqi/aqi01.jpg", "/aqi/aqi02.png", "/aqi/aqi03.png", "/aqi/aqi04.jpg", "/aqi/aqi05.jpg", "/aqi/aqi06.jpg", "/aqi/aqi07.png", "/aqi/aqi08.jpg", "/aqi/aqi09.jpg", "/aqi/aqi10.png", "/aqi/aqi11.png", "/aqi/aqi12.png", "/aqi/aqi13.png"],
         },
         {
           "type": "WebGL",
@@ -919,7 +919,7 @@ export const useAppStore = create(
           "coordinates": [30.2888597, 109.4846285],
           "location": "Chongqing, China",
           "year": "2020-2021",
-          "img": ["/fhjy.jpg", "/changpingli.jpg", "/dalincheng.jpg", "/gyyh.jpg", "/htfxj.jpg", "/jhhy.jpg", "/jlw.jpg", "/jxmm.jpg", "/jsjxmm.jpg", "/pzf.jpg", "/tf.jpg", "/tsyhy.jpg", "/wjsf.jpg", "/xcsd.jpg", "/ybhf.jpg", "/ysxc.jpg", "/zyyc.jpg"],
+          "img": ["/vr/fhjy.jpg", "/vr/changpingli.jpg", "/vr/dalincheng.jpg", "/vr/gyyh.jpg", "/vr/htfxj.jpg", "/vr/jhhy.jpg", "/vr/jlw.jpg", "/vr/jxmm.jpg", "/vr/jsjxmm.jpg", "/vr/pzf.jpg", "/vr/tf.jpg", "/vr/wjsf.jpg", "/vr/xcsd.jpg", "/vr/ybhf.jpg", "/vr/ysxc.jpg", "/vr/zyyc.jpg", "/vr/tsyhy.jpg"],
           "tech": ["JavaScript", "WebGL", "3D Libraries", "HTML5", "CSS3", "Responsive Design"],
           "stats": {
             "projects": 18,
@@ -934,7 +934,7 @@ export const useAppStore = create(
               "links": {
                 "live": ""
               },
-              "img": "/changpingli.jpg"
+              "img": "/vr/changpingli.jpg"
             },
             {
               "name": "Dalincheng Virtual Experience",
@@ -943,7 +943,7 @@ export const useAppStore = create(
               "links": {
                 "live": ""
               },
-              "img": "/dalincheng.jpg"
+              "img": "/vr/dalincheng.jpg"
             },
             {
               "name": "Guanyin Lakeside VR",
@@ -952,7 +952,7 @@ export const useAppStore = create(
               "links": {
                 "live": ""
               },
-              "img": "/gyyh.jpg"
+              "img": "/vr/gyyh.jpg"
             },
             {
               "name": "Huatian International",
@@ -961,7 +961,7 @@ export const useAppStore = create(
               "links": {
                 "live": ""
               },
-              "img": "/htfxj.jpg"
+              "img": "/vr/htfxj.jpg"
             },
             {
               "name": "Jinhai Bay Villa",
@@ -970,7 +970,7 @@ export const useAppStore = create(
               "links": {
                 "live": ""
               },
-              "img": "/jhhy.jpg"
+              "img": "/vr/jhhy.jpg"
             }
           ]
         },
@@ -987,7 +987,7 @@ export const useAppStore = create(
           "location": "Enshi, Hubei, China",
           "year": "2019",
           "link": "https://www.es9e.cn/",
-          "img": ["/es9e.jpg", "/tld.jpg"],
+          "img": ["/website/tenglongdong.jpg", "/website/enshitusicheng01.jpg", "/website/enshitusicheng02.jpg", "/website/yangshegnhefeng.jpg", "/website/es9e.jpg", "/website/enshizhoubowuguan.jpg", "/website/enshizhousheyingjiaxiehui.jpg"],
           "tech": ["CMS Platform", "PHP", "MySQL", "HTML5", "CSS3", "JavaScript", "Responsive Design", "Apache", "Linux"],
           "stats": {
             "clients": "6+ organizations",
@@ -1050,7 +1050,7 @@ export const useAppStore = create(
           "links": {
             "github": "https://github.com/aemooooon/FitsGo"
           },
-          "img": ["/fitsgo.gif", "fitsgo-team.jpg"]
+          "img": ["/fitsgo/fitsgo.01.gif", "/fitsgo/fitsgo.02.png", "/fitsgo/fitsgo.03.jpg", "/fitsgo/fitsgo.04.jpg", "/fitsgo/fitsgo.05.jpg", "/fitsgo/fitsgo.06.jpg", "/fitsgo/fitsgo.07.jpg", "/fitsgo/fitsgo.08.jpg", "/fitsgo/fitsgo.09.jpg", "/fitsgo/fitsgo.10.jpg"]
         },
         {
           "type": "Mobile Apps",
@@ -1067,7 +1067,7 @@ export const useAppStore = create(
           "links": {
             "github": "https://github.com/aemooooon/Travel-Assistant"
           },
-          "img": ["/TravelAssistant.jpg"]
+          "img": ["/travelassistant/ta01.jpg", "/travelassistant/ta02.jpg", "/travelassistant/ta03.jpg", "/travelassistant/ta04.jpg", "/travelassistant/ta05.jpg", "/travelassistant/ta06.jpg", "/travelassistant/ta07.jpg", "/travelassistant/ta08.jpg"]
         },
         {
           "type": "Full Stack",
@@ -1084,7 +1084,7 @@ export const useAppStore = create(
           "links": {
             "github": "https://github.com/aemooooon/DATA472-Individual-Project-Submission"
           },
-          "img": ["/data472/472.png", "/data472/af01.jpg", "/data472/datapipeline.png", "/data472/FuelPriceData.jpg", "/data472/GasStationData.jpg", "/data472/ProjectManagement.jpg", "/data472/services.png", "/data472/v1.gif", "/data472/v2.gif", "/data472/", "/data472/WebApiResponse.jpg",]
+          "img": ["/data472/v1.gif", "/data472/v2.gif", "/data472/472.png", "/data472/af01.jpg", "/data472/datapipeline.png", "/data472/FuelPriceData.jpg", "/data472/GasStationData.jpg", "/data472/ProjectManagement.jpg", "/data472/services.png", "/data472/WebApiResponse.jpg",]
         },
         {
           "type": "Activity",
@@ -1101,7 +1101,7 @@ export const useAppStore = create(
           "links": {
             "official": "https://www.cita.org.nz/"
           },
-          "img": ["cita-02.jpg", "cita-01.jpg", "cita-04.jpg", "cita-03.jpg", "cita-05.jpg"]
+          "img": ["/citanz/cita-00.jpg", "/citanz/cita-01.jpg", "/citanz/cita-02.jpg", "/citanz/cita-03.jpg", "/citanz/cita-04.jpg", "/citanz/cita-04.5.jpg", "/citanz/cita-05.jpg", "/citanz/cita-07.jpg", "/citanz/cita-08.jpg", "/citanz/cita-09.jpg"]
         },
         {
           "type": "Activity",
@@ -1118,7 +1118,7 @@ export const useAppStore = create(
           "links": {
             "official": "https://aihackathon.nz/ai-hackathon-2024/"
           },
-          "img": ["/UC_F4.001.jpeg", "/UC_F4.002.jpeg", "f4.jpg"]
+          "img": ["/f4/f4.3.jpeg", "/f4/f4.jpg", "/f4/f4.1.jpg", "/f4/f4.2.jpg", "/f4/f4.4.jpeg", "/f4/f4.5.jpg"]
         }
       ],
 
