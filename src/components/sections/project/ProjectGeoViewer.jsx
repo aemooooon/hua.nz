@@ -8,6 +8,7 @@ import 'leaflet.markercluster/dist/leaflet.markercluster';
 import './ProjectGeoViewer.css';
 import useAppStore from '../../../store/useAppStore';
 import { useTheme } from '../../../hooks/useTheme';
+import CornerCloseButton from '../../ui/CornerCloseButton';
 
 // 修复 Leaflet 默认图标问题
 delete L.Icon.Default.prototype._getIconUrl;
@@ -748,26 +749,24 @@ const ProjectGeoViewer = ({ isOpen, onClose, language = 'en' }) => {
       
       {/* 地图容器 */}
       <div className="relative w-full h-full bg-theme-surface overflow-hidden shadow-2xl project-geo-viewer-container">
-        {/* 右上角关闭按钮 - 地图专用高对比度设计 */}
-        <button
+        {/* 地图关闭按钮 - 使用通用CornerCloseButton组件
+            配置说明：
+            - 与ProjectDetail保持一致的大小和效果
+            - 深色背景适合地图界面，不干扰地图内容
+            - hover时红色提示退出操作 */}
+        <CornerCloseButton
           onClick={onClose}
-          className="absolute top-6 right-6 z-20 group map-close-button"
-          aria-label={projectText.map.closeMap}
-        >
-          <svg 
-            className="w-8 h-8 text-theme-map-button-text group-hover:text-theme-map-button-text-hover transition-colors duration-300" 
-            fill="none" 
-            stroke="currentColor" 
-            viewBox="0 0 24 24"
-          >
-            <path 
-              strokeLinecap="round" 
-              strokeLinejoin="round" 
-              strokeWidth={2.5} 
-              d="M6 18L18 6M6 6l12 12" 
-            />
-          </svg>
-        </button>
+          ariaLabel={projectText.map.closeMap}
+          // 地图界面配置 - 保持与ProjectDetail视觉一致性
+          iconSize="w-16 h-16"                         // 与ProjectDetail相同的图标大小
+          iconColor="text-white"                       // 纯白色图标
+          iconHoverColor="text-red-400"                // hover时红色，表示退出操作
+          circleColor="bg-slate-800"                   // 深色背景，适合地图界面
+          circleSize="w-80 h-80"                       // 与ProjectDetail相同的大圆形
+          strokeWidth={1.5}                            // 与ProjectDetail相同的线条粗细
+          animationDuration="duration-500"            // 统一的动画时长
+          position={{ top: 'top-8', right: 'right-8' }} // 与ProjectDetail相同的位置
+        />
         
         {/* 地图 */}
         <div 

@@ -53,3 +53,29 @@
         border-radius: 2px;
     }
 }
+
+/* 图片切换淡入动画 */
+@keyframes fadeInImage {
+    0% {
+        opacity: 0;
+        transform: scale(1.02);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* 为轮播图缩略图添加更好的过渡效果 */
+.carousel-thumbnail {
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.carousel-thumbnail:hover {
+    transform: scale(1.08);
+}
+
+.carousel-thumbnail.active {
+    transform: scale(1.05);
+    box-shadow: 0 8px 25px rgba(59, 130, 246, 0.4);
+}

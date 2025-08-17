@@ -229,10 +229,23 @@ const ProjectDetailNew = ({ project = null, isOpen, onClose }) => {
 
   return createPortal(
     <div className="fixed inset-0 z-[99999] bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900" style={{ cursor: 'default' }}>
-      {/* Close Button */}
+      {/* 项目详情页关闭按钮 - 使用通用CornerCloseButton组件 
+          配置说明：
+          - 恢复到之前调试好的大圆形效果
+          - 红色圆形背景完全包围X图标区域
+          - 白色图标确保在深色背景上的可见性 */}
       <CornerCloseButton 
         onClick={onClose}
         ariaLabel={projectText.detail.closeModal}
+        // 项目详情页专用配置 - 恢复大圆形效果
+        iconSize="w-16 h-16"              // 大号图标
+        iconColor="text-white"            // 纯白色图标
+        iconHoverColor="text-white"       // hover保持白色
+        circleColor="bg-red-500"          // 红色背景圆，表示关闭操作
+        circleSize="w-80 h-80"            // 大圆形，完全包围X区域
+        strokeWidth={1.5}                 // 稍细的线条，更优雅
+        animationDuration="duration-500"  // 流畅的动画时长
+        position={{ top: 'top-8', right: 'right-8' }} // 稍微调整位置适配大圆形
       />
 
       {/* Content */}
@@ -243,10 +256,10 @@ const ProjectDetailNew = ({ project = null, isOpen, onClose }) => {
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-theme-text-primary leading-tight mb-4">
             {language === 'en' ? project.name : (project.nameZh || project.name)}
           </h1>
-          <div className="text-lg md:text-xl text-theme-text-secondary/80 font-medium">
+          <GlowDivider className="mx-auto mb-6" width="w-48" />
+          <div className="text-xl md:text-2xl text-theme-text-white-70 font-light italic">
             {project.company && `${project.company} • `}{project.year}
           </div>
-          <GlowDivider className="mx-auto mt-6" width="w-48" />
         </div>
 
         {/* Hero Gallery Section - Full Width Immersive */}
@@ -289,10 +302,14 @@ const ProjectDetailNew = ({ project = null, isOpen, onClose }) => {
                     <img
                       src={images[activeImageIndex]}
                       alt={`${language === 'en' ? project.name : (project.nameZh || project.name)} - ${activeImageIndex + 1}`}
-                      className="w-full h-full object-cover cursor-pointer transition-all duration-300"
+                      className="w-full h-full object-cover cursor-pointer transition-all duration-700 ease-in-out opacity-100"
                       onClick={() => handleMainImageClick(activeImageIndex)}
                       onError={(e) => {
                         e.target.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjI0MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iNDAwIiBoZWlnaHQ9IjI0MCIgZmlsbD0iIzMzNCI+PC9yZWN0Pjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBmaWxsPSJ3aGl0ZSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iIGZvbnQtZmFtaWx5PSJzeXN0ZW0tdWkiIGZvbnQtc2l6ZT0iMTZweCIgZm9udC13ZWlnaHQ9IjMwMCI+SW1hZ2UgTm90IEZvdW5kPC90ZXh0Pjwvc3ZnPg==';
+                      }}
+                      key={activeImageIndex}
+                      style={{
+                        animation: 'fadeInImage 0.6s ease-in-out'
                       }}
                     />
                   </div>                  {/* Gallery indicator */}
@@ -326,10 +343,10 @@ const ProjectDetailNew = ({ project = null, isOpen, onClose }) => {
                     <button
                       key={index}
                       onClick={() => handleThumbnailClick(index)}
-                      className={`flex-shrink-0 w-16 h-16 md:w-18 md:h-18 lg:w-20 lg:h-20 rounded-lg border-2 overflow-hidden transition-all duration-300 ${
+                      className={`carousel-thumbnail flex-shrink-0 w-16 h-16 md:w-18 md:h-18 lg:w-20 lg:h-20 rounded-lg border-2 overflow-hidden ${
                         index === activeImageIndex 
-                          ? 'border-theme-primary opacity-100 shadow-lg shadow-theme-primary/25 scale-105' 
-                          : 'border-theme-border/30 opacity-70 hover:opacity-90 hover:scale-105'
+                          ? 'active border-theme-primary opacity-100 shadow-lg shadow-theme-primary/25' 
+                          : 'border-theme-border/30 opacity-70 hover:opacity-90'
                       }`}
                       style={{ cursor: 'pointer' }}
                     >
