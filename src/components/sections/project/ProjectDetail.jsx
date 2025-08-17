@@ -252,11 +252,11 @@ const ProjectDetailNew = ({ project = null, isOpen, onClose }) => {
       <div className="h-full overflow-y-auto pt-6 pb-6 px-6 md:px-8 lg:px-12 project-detail-container" style={{ cursor: 'default' }}>
         
         {/* Header - Project Name */}
-        <div className="text-center mb-8 pt-16 md:pt-8">
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-theme-text-primary leading-tight mb-4">
+        <div className="text-center mb-12 pt-20 md:pt-12 lg:pt-16">
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-theme-text-primary leading-tight mb-6">
             {language === 'en' ? project.name : (project.nameZh || project.name)}
           </h1>
-          <GlowDivider className="mx-auto mb-6" width="w-48" />
+          <GlowDivider className="mx-auto mb-8" width="w-full max-w-4xl" />
           <div className="text-xl md:text-2xl text-theme-text-white-70 font-light italic">
             {project.company && `${project.company} • `}{project.year}
           </div>
@@ -363,19 +363,6 @@ const ProjectDetailNew = ({ project = null, isOpen, onClose }) => {
                 </div>
               </div>
             )}
-            
-            {/* Gallery interaction hint */}
-            <div className="text-center mt-6">
-              <div className="inline-flex items-center gap-2 text-theme-text-secondary/60 text-sm">
-                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                </svg>
-                <span>
-                  {language === 'zh' ? '点击图片进入沉浸式浏览体验' : 'Click images for immersive viewing experience'}
-                </span>
-              </div>
-            </div>
           </div>
         )}
 
@@ -436,7 +423,7 @@ const ProjectDetailNew = ({ project = null, isOpen, onClose }) => {
             {renderTechStack()}
 
             {/* Links */}
-            {(project.links || project.link) && (
+            {(project.links?.live || project.links?.github || project.link) && (
               <div className="space-y-3">
                 <h3 className="text-lg font-semibold text-theme-text-primary flex items-center gap-2">
                   <svg className="w-5 h-5 text-theme-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">

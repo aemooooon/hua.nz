@@ -228,6 +228,28 @@ export const PhotoSwipeProvider = ({ children, language = 'en' }) => {
           backdrop-filter: blur(20px);
         }
         
+        /* 修复光标问题 - 确保整个PhotoSwipe区域都有正确的光标 */
+        .pswp,
+        .pswp__container,
+        .pswp__zoom-wrap {
+          cursor: grab;
+        }
+        
+        .pswp:active,
+        .pswp__container:active,
+        .pswp__zoom-wrap:active {
+          cursor: grabbing;
+        }
+        
+        /* 在图片上的光标 */
+        .pswp__img {
+          cursor: grab;
+        }
+        
+        .pswp__img:active {
+          cursor: grabbing;
+        }
+        
         .pswp__zoom-wrap {
           transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }

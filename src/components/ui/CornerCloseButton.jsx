@@ -8,26 +8,12 @@ import PropTypes from 'prop-types';
  * - 统一的基础尺寸和布局确保一致性体验
  * - 可配置的颜色方案适应不同场景的视觉需求
  * - 流畅的hover动画提供良好的交互反馈
- * - 右上角扩展的圆形背景动画，从小缩放到完整覆盖
+ * - 从右上角扩展的半圆背景动画，优雅的视觉效果
  * 
- * 核心特性：
- * - 固定在屏幕右上角 (z-index: 100000)
- * - hover时从右上角扩展的圆形背景动画
- * - X图标居中显示，支持大小和颜色自定义
- * - 24x24px的点击热区确保易于点击
- * - 完全的无障碍支持 (aria-label)
+ * 使用场景示例：
  * 
- * 使用场景：
- * 1. ProjectDetail (全屏模态框): 红色圆背景 + 白色图标，强调关闭操作
- * 2. MapView (地图界面): 深色圆背景 + 白色图标，hover时红色提示
- * 3. 其他弹窗组件: 可根据需要自定义所有视觉参数
- * 
- * 使用示例：
- * 
- * // 基础用法 (使用默认样式)
- * <CornerCloseButton onClick={handleClose} />
- * 
- * // ProjectDetail 场景配置
+ * 1. 项目详情页 (全屏模态框):
+ * ```jsx
  * <CornerCloseButton 
  *   onClick={onClose}
  *   ariaLabel="关闭项目详情"
@@ -40,9 +26,11 @@ import PropTypes from 'prop-types';
  *   animationDuration="duration-500"
  *   position={{ top: 'top-8', right: 'right-8' }}
  * />
+ * ```
  * 
- * // MapView 场景配置
- * <CornerCloseButton 
+ * 2. 地图界面:
+ * ```jsx
+ * <CornerCloseButton
  *   onClick={onClose}
  *   ariaLabel="关闭地图"
  *   iconSize="w-16 h-16"
@@ -54,33 +42,37 @@ import PropTypes from 'prop-types';
  *   animationDuration="duration-500"
  *   position={{ top: 'top-8', right: 'right-8' }}
  * />
+ * ```
  * 
- * // 自定义小尺寸配置
- * <CornerCloseButton 
- *   onClick={onClose}
- *   iconSize="w-12 h-12"
- *   circleSize="w-32 h-32"
- *   circleColor="bg-blue-500"
- *   position={{ top: 'top-6', right: 'right-6' }}
- * />
+ * 3. 简单弹窗 (使用默认值):
+ * ```jsx
+ * <CornerCloseButton onClick={onClose} />
+ * ```
  * 
- * @param {Function} onClick - 点击关闭的回调函数 (必需)
- * @param {string} className - 额外的CSS类名 (可选)
- * @param {string} ariaLabel - 无障碍标签 (可选，默认: "Close")
- * @param {string} iconSize - X图标大小，推荐: w-12 h-12, w-16 h-16 (可选)
- * @param {string} iconColor - X图标默认颜色 (可选，默认: text-theme-primary)
- * @param {string} iconHoverColor - X图标hover颜色 (可选，默认: text-white)
- * @param {string} circleColor - 圆形背景颜色，支持: bg-red-500, bg-slate-800, bg-blue-500 等 (可选)
- * @param {string} circleSize - 圆形大小，推荐: w-32 h-32 (中), w-80 h-80 (大) (可选)
- * @param {number} strokeWidth - X图标线条粗细，推荐: 1.2-2 (可选，默认: 1.2)
- * @param {string} animationDuration - 动画持续时间，推荐: duration-300, duration-500 (可选)
- * @param {Object} position - X图标位置，格式: {top: 'top-6', right: 'right-6'} (可选)
+ * 核心特性：
+ * - 固定在右上角位置 (z-index: 100000)
+ * - hover时从右上角扩展的圆形背景动画
+ * - 大尺寸的点击热区确保易用性
+ * - 支持键盘导航和屏幕阅读器
  * 
- * 注意事项：
- * - 组件使用固定定位 (position: fixed)，适用于模态框和全屏界面
- * - 圆形背景使用 origin-top-right 确保从右上角扩展
- * - 建议在深色背景上使用，以确保白色图标的可见性
- * - 大圆形 (w-80 h-80) 适合全屏界面，小圆形 (w-32 h-32) 适合小弹窗
+ * 推荐配置：
+ * - iconSize: "w-16 h-16" (标准大小)
+ * - circleSize: "w-80 h-80" (完整包围效果)
+ * - strokeWidth: 1.5 (优雅线条)
+ * - animationDuration: "duration-500" (流畅动画)
+ * - position: { top: 'top-8', right: 'right-8' } (标准位置)
+ * 
+ * @param {Function} onClick - 必需，点击关闭的回调函数
+ * @param {string} className - 可选，额外的CSS类名
+ * @param {string} ariaLabel - 可选，无障碍标签，默认'Close'
+ * @param {string} iconSize - 可选，X图标大小，支持: w-10/w-12/w-16 h-*
+ * @param {string} iconColor - 可选，X图标默认颜色
+ * @param {string} iconHoverColor - 可选，X图标hover颜色  
+ * @param {string} circleColor - 可选，圆形背景颜色，支持: bg-red-500/bg-slate-800/bg-theme-primary
+ * @param {string} circleSize - 可选，圆形大小，支持: w-24/w-32/w-80 h-*
+ * @param {number} strokeWidth - 可选，X图标线条粗细，推荐1.2-2
+ * @param {string} animationDuration - 可选，动画持续时间，支持: duration-300/duration-500
+ * @param {Object} position - 可选，X图标位置，格式: {top: 'top-*', right: 'right-*'}
  */
 const CornerCloseButton = ({ 
   onClick, 
@@ -188,7 +180,6 @@ const CornerCloseButton = ({
   );
 };
 
-// 导出组件的PropTypes定义
 CornerCloseButton.propTypes = {
   onClick: PropTypes.func.isRequired,
   className: PropTypes.string,
@@ -205,9 +196,5 @@ CornerCloseButton.propTypes = {
     right: PropTypes.string
   })
 };
-
-// 版本信息
-CornerCloseButton.version = '1.0.0';
-CornerCloseButton.displayName = 'CornerCloseButton';
 
 export default CornerCloseButton;
