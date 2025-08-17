@@ -879,7 +879,7 @@ export const useAppStore = create(
         {
           "type": "Front End",
           "title": "Front End Developer",
-          "name": "Realibox 3D Editor",
+          "name": "Realibox SaaS Platform Apps Chains",
           "company": "Realibox",
           "description": "Developed and maintained the central hub for Realibox’s 3D assets, using React with a WebGL-based library for the frontend and Node.js/Python for the backend. Implemented CI/CD pipelines using GitLab for code integration and deployment. Worked in an Agile environment, collaborating closely with PMs, QAs, and Designers to ensure feature delivery aligned with requirements.",
           "coordinates": [22.9951158, 113.3335372],
@@ -888,7 +888,7 @@ export const useAppStore = create(
           "links": {
             "live": "https://hub.realibox.com/",
           },
-          "img": ["/realibox-00.jpg", "realibox-01.jpeg"]
+          "img": ["/realibox/official/official.01.jpg", "/realibox/official/official.02.jpg", "/realibox/official/official.03.jpg"]
         },
         {
           "type": "Full Stack",
