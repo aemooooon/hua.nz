@@ -383,7 +383,7 @@ const EducationSection = ({ language }) => {
 
     return (
         <div className="min-h-screen w-full px-4 sm:px-6 lg:px-8 py-8 text-theme-text-white relative education-section-bg">
-            <div className="max-w-6xl mx-auto">
+            <div className="max-w-screen-2xl mx-auto">
             {/* Education标题 - 居中显示，使用主题化组件 */}
             <div className="flex flex-col pt-4">
                 <div className="flex flex-col items-center text-center">
@@ -401,7 +401,7 @@ const EducationSection = ({ language }) => {
 
             {/* 标题与内容之间的分隔线 - 使用白色透明并有光往两边延伸 */}
             <div className="flex justify-center my-8">
-                <GlowDivider className="w-full max-w-6xl" />
+                <GlowDivider className="w-full max-w-screen-2xl" />
             </div>
 
             {/* 学历内容 - 垂直滚动，使用主题化文本颜色 */}

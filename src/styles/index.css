@@ -895,13 +895,38 @@ body {
 
 .project-image-container {
     width: 100%;
-    height: 12rem;
+    height: 12rem; /* 移动端默认高度 */
     background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
     border-radius: 12px;
     margin-bottom: 1.5rem;
     overflow: hidden;
     position: relative;
     border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* 响应式图片容器高度 - 为landscape图片优化 */
+@media (min-width: 768px) {
+    .project-image-container {
+        height: 10rem; /* md: 160px */
+    }
+}
+
+@media (min-width: 1024px) {
+    .project-image-container {
+        height: 9rem; /* lg: 144px */
+    }
+}
+
+@media (min-width: 1280px) {
+    .project-image-container {
+        height: 8rem; /* xl: 128px */
+    }
+}
+
+@media (min-width: 1536px) {
+    .project-image-container {
+        height: 10rem; /* 2xl: 160px - 超宽屏下4列布局，卡片更宽，可以用更高的图片 */
+    }
 }
 
 .project-image {
@@ -991,7 +1016,7 @@ body {
 }
 
 .project-title {
-    font-size: 1.25rem;
+    font-size: 1rem; /* 从 1.125rem (text-lg) 改为 1rem (text-base) */
     font-weight: 700;
     margin-bottom: 0.75rem;
     color: #ffffff;

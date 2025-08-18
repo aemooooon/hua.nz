@@ -114,27 +114,29 @@ const ProjectSection = ({ language }) => {
     return (
         <div className="min-h-screen w-full px-4 sm:px-6 lg:px-8 py-8 text-theme-text-white relative project-section-bg">
             {/* 顶部标题栏 - 左右分布 */}
-            <div className="flex flex-col lg:flex-row lg:justify-between lg:items-center py-4 mb-8">
-                {/* 左侧：Projects标题和副标题 */}
-                <div className="flex flex-col text-center lg:text-left">
-                    <ThemeTitle level={1} className="text-5xl md:text-6xl lg:text-7xl font-bold font-montserrat text-theme-section-title mb-3">
-                        {projectText.title}
-                    </ThemeTitle>
-                    <h2 className="text-xl md:text-2xl text-theme-text-white-70 font-light italic">
-                        {projectText.subtitle}
-                    </h2>
-                </div>
+            <div className="max-w-screen-2xl mx-auto">
+                <div className="flex flex-col lg:flex-row lg:justify-between lg:items-center py-4 mb-8">
+                    {/* 左侧：Projects标题和副标题 */}
+                    <div className="flex flex-col text-center lg:text-left">
+                        <ThemeTitle level={1} className="text-5xl md:text-6xl lg:text-7xl font-bold font-montserrat text-theme-section-title mb-3">
+                            {projectText.title}
+                        </ThemeTitle>
+                        <h2 className="text-xl md:text-2xl text-theme-text-white-70 font-light italic">
+                            {projectText.subtitle}
+                        </h2>
+                    </div>
 
-                {/* 右侧：Explore Map 按钮 - 恢复原有圆形光晕样式 */}
-                <div className="flex items-center justify-center lg:justify-end mt-8 lg:mt-0">
-                    <div 
-                        className="flex flex-col items-center justify-center cursor-pointer bg-gradient-to-br from-theme-primary/20 to-theme-secondary/20 border border-theme-primary/30 hover:border-theme-primary/50 transition-all duration-300 hover:scale-105 explore-map-button rounded-full backdrop-blur-sm"
-                        onClick={() => setIsMapOpen(true)}
-                        title={projectText.exploreMapTooltip}
-                    >
-                        <div className="text-5xl xl:text-6xl text-theme-primary mb-1 flex items-center justify-center">🗺️</div>
-                        <div className="text-xs xl:text-sm text-theme-primary font-medium text-center leading-tight px-2">
-                            {projectText.exploreMap}
+                    {/* 右侧：Explore Map 按钮 - 恢复原有圆形光晕样式 */}
+                    <div className="flex items-center justify-center lg:justify-end mt-8 lg:mt-0">
+                        <div 
+                            className="flex flex-col items-center justify-center cursor-pointer bg-gradient-to-br from-theme-primary/20 to-theme-secondary/20 border border-theme-primary/30 hover:border-theme-primary/50 transition-all duration-300 hover:scale-105 explore-map-button rounded-full backdrop-blur-sm"
+                            onClick={() => setIsMapOpen(true)}
+                            title={projectText.exploreMapTooltip}
+                        >
+                            <div className="text-5xl xl:text-6xl text-theme-primary mb-1 flex items-center justify-center">🗺️</div>
+                            <div className="text-xs xl:text-sm text-theme-primary font-medium text-center leading-tight px-2">
+                                {projectText.exploreMap}
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -145,7 +147,7 @@ const ProjectSection = ({ language }) => {
             
             {/* 全屏内容区域 */}
             <div className="relative z-10 backdrop-protection">
-                <div className="max-w-6xl mx-auto">
+                <div className="max-w-screen-2xl mx-auto">
                     {/* 项目分类过滤区域 */}
                     <div className="mb-12">
                         {/* 分类过滤按钮 - 响应式布局 */}
@@ -174,8 +176,8 @@ const ProjectSection = ({ language }) => {
                         </div>
                     </div>
 
-                    {/* 项目网格 - 限制最大宽度，避免在窄屏上过于稀疏 */}
-                    <div className="project-grid-container grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6 lg:gap-8 pb-12">
+                    {/* 项目网格 - 最多4列，保持舒适的卡片尺寸 */}
+                    <div className="project-grid-container grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-4 gap-6 lg:gap-8 pb-12">
                     {filteredProjects.map((project, idx) => (
                         <div 
                             key={idx} 
