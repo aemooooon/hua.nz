@@ -130,8 +130,9 @@ export class ParticlePool {
 }
 
 export default class EffectHeartBeats {
-    constructor(canvas, params = {}) {
+    constructor(canvas, params = {}, componentId = 'BackgroundCanvas') {
         this.canvas = canvas;
+        this.componentId = componentId;
         this.context = this.canvas.getContext("2d");
         this.width = params.width || 180;
         this.height = params.height || 130;

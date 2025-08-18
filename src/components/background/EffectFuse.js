@@ -1,9 +1,11 @@
 import webglResourceManager from "../../utils/WebGLResourceManager";
 
 export class EffectFuse {
-    constructor(canvas, params = {}) {
+    constructor(canvas, params = {}, componentId = 'BackgroundCanvas') {
 
         this.canvas = canvas;
+        this.componentId = componentId;
+        this.componentId = componentId;
         this.gl = this.canvas.getContext('webgl') || this.canvas.getContext('experimental-webgl');
         
         if (!this.gl) {
@@ -11,8 +13,8 @@ export class EffectFuse {
             throw new Error('WebGL not supported');
         }
         
-        // 注册WebGL资源（原生WebGL上下文）
-        this.resourceId = webglResourceManager.registerResources('BackgroundCanvas', {
+        // 注册WebGL资源（原生WebGL上下文）- 使用传入的componentId
+        this.resourceId = webglResourceManager.registerResources(this.componentId, {
             gl: this.gl,
             canvas: this.canvas
         });

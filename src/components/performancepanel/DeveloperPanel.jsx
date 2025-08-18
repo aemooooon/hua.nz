@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 import webglResourceManager from '../../utils/WebGLResourceManager';
+import { useAppStore } from '../../store/useAppStore';
 
 const DeveloperPanel = ({ visible, onToggle }) => {
     const [activeTab, setActiveTab] = useState('memory');
@@ -11,6 +12,9 @@ const DeveloperPanel = ({ visible, onToggle }) => {
     const fpsRef = useRef(0);
     const frameCountRef = useRef(0);
     const lastTimeRef = useRef(performance.now());
+    
+    // 获取当前section信息
+    const { currentSection, sections, getCurrentSection } = useAppStore();
 
     // FPS monitoring
     useEffect(() => {
@@ -73,7 +77,8 @@ const DeveloperPanel = ({ visible, onToggle }) => {
 
     const tabs = [
         { id: 'memory', label: 'Memory' },
-        { id: 'webgl', label: 'WebGL' }
+        { id: 'webgl', label: 'WebGL' },
+        { id: 'sections', label: 'Sections' }
     ];
 
     const renderMemoryTab = () => (
@@ -135,6 +140,37 @@ const DeveloperPanel = ({ visible, onToggle }) => {
                     </div>
                 </div>
             )}
+
+            {/* Section详细信息 */}
+            {webglInfo?.sectionBreakdown && Object.keys(webglInfo.sectionBreakdown).length > 0 && (
+                <div className="bg-white/10 backdrop-blur-md border border-white/20 p-2 rounded-lg">
+                    <div className="text-yellow-400 font-semibold mb-2">Section Resources</div>
+                    <div className="space-y-2 max-h-32 overflow-y-auto">
+                        {Object.entries(webglInfo.sectionBreakdown).map(([sectionName, data]) => (
+                            <div key={sectionName} className="bg-white/5 border border-white/10 p-1.5 rounded">
+                                <div className="flex items-center justify-between">
+                                    <div className="font-medium text-white text-xs">
+                                        {sectionName.replace('BackgroundCanvas_', '').replace('HeroCube', 'HomeCube')}
+                                    </div>
+                                    <div className="flex items-center space-x-1">
+                                        <span className="bg-blue-500/30 text-blue-200 px-1 py-0.5 rounded text-xs">
+                                            {data.count}
+                                        </span>
+                                        {data.persistent > 0 && (
+                                            <span className="bg-green-500/30 text-green-200 px-1 py-0.5 rounded text-xs">
+                                                P:{data.persistent}
+                                            </span>
+                                        )}
+                                    </div>
+                                </div>
+                                <div className="text-xs text-gray-400 mt-0.5">
+                                    {new Date(data.lastActive).toLocaleTimeString()}
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            )}
             
             <div className="bg-white/10 backdrop-blur-md border border-white/20 p-2 rounded-lg">
                 <div className="text-blue-400 font-semibold">Memory Usage</div>
@@ -144,6 +180,66 @@ const DeveloperPanel = ({ visible, onToggle }) => {
             </div>
         </div>
     );
+
+    const renderSectionsTab = () => {
+        const currentSectionConfig = getCurrentSection();
+        
+        return (
+            <div className="space-y-3">
+                <div className="bg-white/10 backdrop-blur-md border border-white/20 p-2 rounded-lg">
+                    <div className="text-cyan-400 font-semibold mb-2">Current Section</div>
+                    <div className="text-white text-lg">
+                        {currentSectionConfig?.title || currentSectionConfig?.id || 'Unknown'}
+                    </div>
+                    <div className="text-gray-400 text-xs mt-1">
+                        Section {currentSection + 1} of {sections.length}
+                    </div>
+                    {currentSectionConfig?.backgroundEffect && (
+                        <div className="text-gray-300 text-xs mt-1">
+                            Effect: {currentSectionConfig.backgroundEffect}
+                        </div>
+                    )}
+                </div>
+
+                <div className="bg-white/10 backdrop-blur-md border border-white/20 p-2 rounded-lg">
+                    <div className="text-green-400 font-semibold mb-2">Section List</div>
+                    <div className="space-y-1 max-h-32 overflow-y-auto">
+                        {sections.map((section, index) => (
+                            <div 
+                                key={section.id}
+                                className={`flex items-center justify-between p-1 rounded text-xs ${
+                                    index === currentSection 
+                                        ? 'bg-blue-500/30 text-blue-200' 
+                                        : 'bg-white/5 text-gray-300'
+                                }`}
+                            >
+                                <span className="truncate">
+                                    {section.title || section.id}
+                                </span>
+                                <span className="text-gray-400 ml-1">
+                                    {index === currentSection ? '●' : '○'}
+                                </span>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+
+                <div className="bg-white/10 backdrop-blur-md border border-white/20 p-2 rounded-lg">
+                    <div className="text-purple-400 font-semibold mb-2">Performance</div>
+                    <div className="grid grid-cols-2 gap-1 text-xs">
+                        <div className="flex justify-between">
+                            <span>FPS:</span>
+                            <span className="font-mono text-white">{performanceData.fps || 0}</span>
+                        </div>
+                        <div className="flex justify-between">
+                            <span>WebGL:</span>
+                            <span className="font-mono text-white">{webglInfo?.activeResourceGroups || 0}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        );
+    };
 
     return (
         <div className={`fixed top-4 right-4 z-[9999] bg-white/10 backdrop-blur-md border border-white/20 rounded-lg text-white font-mono text-xs transition-all duration-300 ${
@@ -198,6 +294,7 @@ const DeveloperPanel = ({ visible, onToggle }) => {
                     <div className="p-3 max-h-72 overflow-y-auto">
                         {activeTab === 'memory' && renderMemoryTab()}
                         {activeTab === 'webgl' && renderWebGLTab()}
+                        {activeTab === 'sections' && renderSectionsTab()}
                     </div>
 
                     {/* Footer */}

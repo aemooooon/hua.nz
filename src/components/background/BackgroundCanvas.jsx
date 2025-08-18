@@ -9,10 +9,11 @@ import { debounce } from 'lodash';
 import webglResourceManager from '../../utils/WebGLResourceManager';
 import { useAppStore } from '../../store/useAppStore';
 
-const BackgroundCanvas = ({ effectType = 'effectfuse' }) => {
+const BackgroundCanvas = ({ effectType = 'effectfuse', sectionName = 'unknown' }) => {
     const canvasRef = useRef(null);
     const effectInstanceRef = useRef(null);
     const cleanupTimeoutRef = useRef(null);
+    const resourceIdRef = useRef(null); // 存储资源ID以便清理
     
     // 获取当前主题
     const theme = useAppStore(state => state.theme);
@@ -130,7 +131,7 @@ const BackgroundCanvas = ({ effectType = 'effectfuse' }) => {
                 const currentEffect = effectInstanceRef.current;
                 effectInstanceRef.current = null;
                 
-                // 缩短延迟清理时间，减少页面切换时的冲突
+                // 延长延迟清理时间，减少和SmartScrollManager清理的冲突
                 cleanupTimeoutRef.current = setTimeout(() => {
                     try {
                         if (typeof currentEffect.stop === 'function') {
@@ -145,7 +146,7 @@ const BackgroundCanvas = ({ effectType = 'effectfuse' }) => {
                             console.error('Error stopping previous effect:', error);
                         }
                     }
-                }, 50); // 缩短到50ms
+                }, 200); // 延长到200ms，给资源管理器更多时间
             }
 
             // 默认参数配置 - 使用原始参数值
@@ -161,19 +162,22 @@ const BackgroundCanvas = ({ effectType = 'effectfuse' }) => {
             try {
 
                   // 创建新效果
+                // 创建section-specific的componentId
+                const componentId = `BackgroundCanvas_${sectionName}`;
+                
                 switch (effectType) {
                     case 'effectfuse': {
-                        effectInstanceRef.current = new EffectFuse(canvas, defaultParams);
+                        effectInstanceRef.current = new EffectFuse(canvas, defaultParams, componentId);
                         break;
                     }
                     case 'effectmonjori':
-                        effectInstanceRef.current = EffectMonjori(canvas, defaultParams);
+                        effectInstanceRef.current = EffectMonjori(canvas, defaultParams, componentId);
                         break;
                     case 'effectheartbeats':
-                        effectInstanceRef.current = new EffectHeartBeats(canvas, defaultParams);
+                        effectInstanceRef.current = new EffectHeartBeats(canvas, defaultParams, componentId);
                         break;
                     case 'effectlorenz': {
-                        effectInstanceRef.current = new EffectLorenzAttractor(canvas, defaultParams);
+                        effectInstanceRef.current = new EffectLorenzAttractor(canvas, defaultParams, componentId);
                         break;
                     }
 
@@ -190,11 +194,11 @@ const BackgroundCanvas = ({ effectType = 'effectfuse' }) => {
                             colorInside: defaultParams.colorInside || '#fff8dc',
                             colorOutside: defaultParams.colorOutside || '#ffa575'
                         };
-                        effectInstanceRef.current = new EffectChaos(canvas, chaosParams);
+                        effectInstanceRef.current = new EffectChaos(canvas, chaosParams, componentId);
                         break;
                     }
                     default:
-                        effectInstanceRef.current = new EffectHeartBeats(canvas, defaultParams);
+                        effectInstanceRef.current = new EffectHeartBeats(canvas, defaultParams, componentId);
                 }
 
                 // 启动效果 - 注意不同特效的启动方式
@@ -202,6 +206,17 @@ const BackgroundCanvas = ({ effectType = 'effectfuse' }) => {
                     effectInstanceRef.current.start();
                 } else if (effectType === 'effectmonjori') {
                     // EffectMonjori在创建时自动启动，不需要调用start()
+                }
+                
+                // 注册WebGL资源到资源管理器，使用section-specific的componentId
+                resourceIdRef.current = webglResourceManager.registerResources(componentId, {
+                    canvas: canvas,
+                    effect: effectInstanceRef.current,
+                    effectType: effectType
+                }, { persistent: false }); // 背景效果为非持久资源，可以被智能清理
+                
+                if (import.meta.env.DEV) {
+                    console.log(`🎨 背景效果已启动: ${effectType} (Section: ${sectionName})`);
                 }
             } catch (error) {
                 console.error('Error creating background effect:', error);
@@ -260,7 +275,13 @@ const BackgroundCanvas = ({ effectType = 'effectfuse' }) => {
             }
             
             // 使用资源管理器清理背景效果相关的资源
-            webglResourceManager.cleanupByComponent('BackgroundCanvas');
+            if (resourceIdRef.current) {
+                webglResourceManager.cleanup(resourceIdRef.current);
+                resourceIdRef.current = null;
+            } else {
+                // 兼容旧的清理方式
+                webglResourceManager.cleanupByComponent(`BackgroundCanvas_${sectionName}`);
+            }
             
             // 强制清理画布
             if (canvas && document.body.contains(canvas)) {
@@ -280,7 +301,7 @@ const BackgroundCanvas = ({ effectType = 'effectfuse' }) => {
                 setTimeout(() => window.gc(), 100);
             }
         };
-    }, [effectType]);
+    }, [effectType, sectionName]);
 
     // 监听主题变化，更新粒子颜色
     useEffect(() => {
@@ -298,7 +319,8 @@ const BackgroundCanvas = ({ effectType = 'effectfuse' }) => {
 };
 
 BackgroundCanvas.propTypes = {
-    effectType: PropTypes.string
+    effectType: PropTypes.string,
+    sectionName: PropTypes.string
 };
 
 export default BackgroundCanvas;

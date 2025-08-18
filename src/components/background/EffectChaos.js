@@ -2,9 +2,10 @@ import * as THREE from "three";
 import webglResourceManager from "../../utils/WebGLResourceManager";
 
 export class EffectChaos {
-    constructor(canvas, params = {}) {
+    constructor(canvas, params = {}, componentId = 'BackgroundCanvas') {
         // 初始化Chaos效果
         this.canvas = canvas;
+        this.componentId = componentId;
         this.renderer = null;
         this.scene = null;
         this.camera = null;
@@ -147,8 +148,8 @@ export class EffectChaos {
         this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5)); // 限制像素比
         this.renderer.setSize(this.canvas.width, this.canvas.height, false);
 
-        // 注册WebGL资源
-        this.resourceId = webglResourceManager.registerResources('BackgroundCanvas', {
+        // 注册WebGL资源 - 使用传入的componentId
+        this.resourceId = webglResourceManager.registerResources(this.componentId, {
             renderer: this.renderer,
             scene: this.scene,
             camera: this.camera

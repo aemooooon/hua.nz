@@ -1,7 +1,7 @@
 import * as THREE from "three";
 import webglResourceManager from "../../utils/WebGLResourceManager";
 
-export function EffectMonjori(canvas, params = {}) {
+export function EffectMonjori(canvas, params = {}, componentId = 'BackgroundCanvas') {
     let renderer, scene, camera, uniforms, animationFrameId, resourceId;
     let lastFrameTime = 0;
     const fps = 30;
@@ -110,8 +110,8 @@ export function EffectMonjori(canvas, params = {}) {
         renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
         renderer.setSize(window.innerWidth, window.innerHeight);
 
-        // 注册WebGL资源
-        resourceId = webglResourceManager.registerResources('BackgroundCanvas', {
+        // 注册WebGL资源 - 使用传入的componentId
+        resourceId = webglResourceManager.registerResources(componentId, {
             renderer,
             scene,
             camera,

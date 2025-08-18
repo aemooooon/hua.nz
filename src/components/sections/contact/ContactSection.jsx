@@ -166,7 +166,7 @@ const ContactSection = ({ language }) => {
                                 
                                 {/* 二维码悬浮层 - 固定定位在视口中央，最高层级 */}
                                 <div className="fixed inset-0 bg-black/50 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center z-[9999] pointer-events-none group-hover:pointer-events-auto">
-                                    <div className="glass-card rounded-2xl p-6 shadow-2xl max-w-sm mx-4 transform scale-95 group-hover:scale-100 transition-transform duration-300" style={{border: 'none'}}>
+                                    <div className="glass-card rounded-2xl p-6 shadow-2xl max-w-sm mx-4 transform scale-95 group-hover:scale-100 transition-transform duration-300">
                                         {/* 标题 */}
                                         <div className="text-center mb-4">
                                             <div className="text-3xl mb-2 text-theme-primary">

@@ -16,6 +16,7 @@
 import { useEffect, useCallback, useRef, useState, useMemo } from 'react';
 import { useAppStore } from '../../store/useAppStore';
 import BackgroundCanvas from '../background/BackgroundCanvas';
+import webglResourceManager from '../../utils/WebGLResourceManager';
 import '../../styles/SmartScroll.css';
 
 import { lazy, Suspense } from 'react';
@@ -61,6 +62,29 @@ const SmartScrollManager = () => {
     const touchMoveAccumulatorRef = useRef(0);
     
     const isHomePage = currentSectionConfig?.id === 'home';
+
+    // 智能资源管理：当section切换时，清理其他section的非持久资源
+    useEffect(() => {
+        if (currentSectionConfig?.id) {
+            const currentSectionName = currentSectionConfig.id;
+            
+            // 延迟执行清理，给新section足够时间初始化资源
+            const cleanupTimer = setTimeout(() => {
+                // 智能清理：保留当前section和HeroCube（持久资源）
+                // 延长延迟时间以确保背景效果有足够时间初始化
+                const cleanedCount = webglResourceManager.cleanupOtherSections(
+                    `BackgroundCanvas_${currentSectionName}`,
+                    ['HeroCube'] // 额外保留HeroCube
+                );
+                
+                if (import.meta.env.DEV && cleanedCount > 0) {
+                    console.log(`🎯 Section切换到 "${currentSectionName}"，智能清理完成`);
+                }
+            }, 3000); // 进一步延长到3秒延迟，确保背景效果有充足时间稳定运行
+            
+            return () => clearTimeout(cleanupTimer);
+        }
+    }, [currentSectionConfig?.id]);
 
     // 滚动敏感度配置
     const DESKTOP_SCROLL_THRESHOLD = 600; // 桌面端保持原来的值
@@ -799,6 +823,7 @@ const SmartScrollManager = () => {
             {currentSectionConfig?.backgroundEffect && (
                 <BackgroundCanvas 
                     effectType={currentSectionConfig.backgroundEffect}
+                    sectionName={currentSectionConfig.id || 'unknown'}
                 />
             )}
 

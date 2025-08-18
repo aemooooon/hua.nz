@@ -280,15 +280,41 @@ class WebGLResourceManager {
             activeResourceGroups: resourceCount,
             timestamp: Date.now(),
             persistentResources: 0,
-            temporaryResources: 0
+            temporaryResources: 0,
+            sectionBreakdown: {} // 新增：按section分类统计
         };
 
-        // 统计持久和临时资源
-        for (const [, resourceData] of this.activeResources) {
+        // 统计持久和临时资源，同时按section分类
+        for (const [resourceId, resourceData] of this.activeResources) {
             if (resourceData.persistent) {
                 memoryInfo.persistentResources++;
             } else {
                 memoryInfo.temporaryResources++;
+            }
+            
+            // 按componentId（section）分类统计
+            const componentId = resourceData.componentId;
+            if (!memoryInfo.sectionBreakdown[componentId]) {
+                memoryInfo.sectionBreakdown[componentId] = {
+                    count: 0,
+                    persistent: 0,
+                    temporary: 0,
+                    resourceIds: [],
+                    lastActive: resourceData.timestamp
+                };
+            }
+            
+            memoryInfo.sectionBreakdown[componentId].count++;
+            memoryInfo.sectionBreakdown[componentId].resourceIds.push(resourceId);
+            memoryInfo.sectionBreakdown[componentId].lastActive = Math.max(
+                memoryInfo.sectionBreakdown[componentId].lastActive,
+                resourceData.timestamp
+            );
+            
+            if (resourceData.persistent) {
+                memoryInfo.sectionBreakdown[componentId].persistent++;
+            } else {
+                memoryInfo.sectionBreakdown[componentId].temporary++;
             }
         }
 
@@ -314,7 +340,9 @@ class WebGLResourceManager {
             scenes: 0,
             geometries: 0,
             materials: 0,
-            textures: 0
+            textures: 0,
+            webglContexts: 0, // 新增：原生WebGL上下文统计
+            canvas2dContexts: 0 // 新增：Canvas 2D上下文统计
         };
 
         for (const [, resourceData] of this.activeResources) {
@@ -322,6 +350,8 @@ class WebGLResourceManager {
             
             if (resources.renderer) stats.renderers++;
             if (resources.scene) stats.scenes++;
+            if (resources.gl) stats.webglContexts++; // 统计原生WebGL上下文
+            if (resources.context2d) stats.canvas2dContexts++; // 统计Canvas 2D上下文
             if (resources.geometry) {
                 stats.geometries += Array.isArray(resources.geometry) ? resources.geometry.length : 1;
             }
@@ -369,6 +399,41 @@ class WebGLResourceManager {
         if (toDelete.length > 0 && import.meta.env.DEV) {
             console.log(`🧹 清理了 ${toDelete.length} 个过期资源 (页面不可见)`);
         }
+    }
+
+    /**
+     * 智能清理：只保留当前section的资源，清理其他section的非持久资源
+     * @param {string} currentSection - 当前激活的section名称
+     * @param {Array<string>} keepSections - 需要保留的section列表（可选）
+     */
+    cleanupOtherSections(currentSection, keepSections = []) {
+        if (!currentSection) return;
+        
+        const sectionsToKeep = new Set([currentSection, ...keepSections]);
+        const toDelete = [];
+        let cleanedCount = 0;
+
+        for (const [resourceId, resourceData] of this.activeResources) {
+            // 跳过持久资源的清理
+            if (resourceData.persistent) {
+                continue;
+            }
+            
+            // 如果资源不属于需要保留的section，则清理
+            if (!sectionsToKeep.has(resourceData.componentId)) {
+                this.disposeResources(resourceData.resources);
+                toDelete.push(resourceId);
+                cleanedCount++;
+            }
+        }
+
+        toDelete.forEach(id => this.activeResources.delete(id));
+
+        if (cleanedCount > 0 && import.meta.env.DEV) {
+            console.log(`🎯 智能清理：保留 [${Array.from(sectionsToKeep).join(', ')}]，清理了 ${cleanedCount} 个其他section资源`);
+        }
+        
+        return cleanedCount;
     }
 }
 

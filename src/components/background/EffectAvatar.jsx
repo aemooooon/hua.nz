@@ -2,6 +2,7 @@ import { useEffect, useRef, useState, useCallback } from "react";
 import PropTypes from "prop-types";
 import { gsap } from "gsap";
 import CircularLoadingIndicator from "../ui/CircularLoadingIndicator";
+import webglResourceManager from "../../utils/WebGLResourceManager";
 
 /**
  * EffectAvatar - 高性能粒子动画头像效果组件
@@ -71,6 +72,7 @@ const EffectAvatar = ({ imageSrc, hoverImageSrc }) => {
     // 图片加载和 Canvas 初始化
     useEffect(() => {
         const png = new Image();
+        let resourceId = null; // 用于跟踪资源ID
         
         png.onload = () => {
             const canvas = canvasRef.current;
@@ -94,6 +96,16 @@ const EffectAvatar = ({ imageSrc, hoverImageSrc }) => {
                 );
             }
             
+            // 注册Canvas 2D资源到WebGL资源管理器
+            // 这样About section会显示额外的资源组
+            const ctx = canvas.getContext("2d");
+            resourceId = webglResourceManager.registerResources('EffectAvatar_about', {
+                canvas: canvas,
+                context2d: ctx,
+                worker: workerRef.current,
+                offscreenCanvas: offscreen
+            }, { persistent: false });
+            
             setIsLoading(false);
         };
         
@@ -103,6 +115,13 @@ const EffectAvatar = ({ imageSrc, hoverImageSrc }) => {
         };
         
         png.src = imageSrc;
+        
+        // 清理函数
+        return () => {
+            if (resourceId) {
+                webglResourceManager.cleanup(resourceId);
+            }
+        };
     }, [imageSrc]);
 
     // 高性能 Canvas 渲染循环
