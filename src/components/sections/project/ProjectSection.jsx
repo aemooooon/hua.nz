@@ -44,14 +44,11 @@ const ProjectSection = ({ language }) => {
         ? projects 
         : projectsByCategory[activeFilter] || [];
 
-    // 状态颜色映射 - 使用主题色
+    // 状态颜色映射 - 统一使用主题色
     const getStatusColor = (status) => {
-        if (!status) return `bg-theme-muted/20 text-theme-textSecondary border-theme-muted/50`;
-        const s = String(status).toLowerCase();
-        if (s.includes('完成') || s.includes('2019') || s.includes('2024')) return `bg-theme-success/20 text-theme-success border-theme-success/50`;
-        if (s.includes('progress') || s.includes('进行') || s.includes('2020-2021')) return `bg-theme-primary/20 text-theme-primary border-theme-primary/50`;
-        if (s.includes('plan') || s.includes('规划') || s.includes('2024-2025')) return `bg-theme-warning/20 text-theme-warning border-theme-warning/50`;
-        return `bg-theme-muted/20 text-theme-textSecondary border-theme-muted/50`;
+        if (!status) return `bg-theme-primary/20 text-theme-primary border-theme-primary/50`;
+        // 所有年份都使用主题色，不再区分不同状态
+        return `bg-theme-primary/20 text-theme-primary border-theme-primary/50`;
     };
 
     // 获取类别颜色和样式
@@ -181,7 +178,7 @@ const ProjectSection = ({ language }) => {
                     {filteredProjects.map((project, idx) => (
                         <div 
                             key={idx} 
-                            className="project-card group cursor-pointer"
+                            className="glass-card group cursor-pointer p-6"
                             onClick={() => setSelectedProject(project)}
                         >
                             {/* 项目图片 */}

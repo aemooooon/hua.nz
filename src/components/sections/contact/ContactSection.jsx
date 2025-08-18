@@ -112,9 +112,9 @@ const ContactSection = ({ language }) => {
                                         href={info.href}
                                         target={info.href.startsWith('http') ? '_blank' : '_self'}
                                         rel={info.href.startsWith('http') ? 'noopener noreferrer' : undefined}
-                                        className={`bg-gradient-to-br from-theme-bg-white-10 to-theme-bg-white-05 backdrop-blur-sm rounded-2xl p-8 hover:from-theme-bg-white-20 hover:to-theme-bg-white-10 transition-all duration-300 group contact-info-card text-center border border-theme-border-white-05 shine-card ${info.shineColor}`}
+                                        className={`bg-gradient-to-br from-theme-bg-white-10 to-theme-bg-white-05 backdrop-blur-sm rounded-2xl p-8 hover:from-theme-bg-white-20 hover:to-theme-bg-white-10 transition-all duration-300 group glass-card text-center border border-theme-border-white-05 `}
                                     >
-                                        <div className="shine-content">
+                                        <div>
                                             <div className="text-5xl mb-4 group-hover:scale-110 transition-transform duration-300 text-theme-primary">
                                                 <i className={info.icon}></i>
                                             </div>
@@ -142,9 +142,9 @@ const ContactSection = ({ language }) => {
                         {/* WeChat Card - 中间位置 */}
                         <div
                             onClick={wechatInfo.onClick}
-                            className="bg-gradient-to-br from-theme-bg-white-10 to-theme-bg-white-05 backdrop-blur-sm rounded-2xl p-8 hover:from-theme-bg-white-20 hover:to-theme-bg-white-10 transition-all duration-300 group contact-info-card text-center border border-theme-border-white-05 shine-card shine-yellow cursor-pointer relative"
+                            className="bg-gradient-to-br from-theme-bg-white-10 to-theme-bg-white-05 backdrop-blur-sm rounded-2xl p-8 hover:from-theme-bg-white-20 hover:to-theme-bg-white-10 transition-all duration-300 group glass-card text-center border border-theme-border-white-05 glass-card"
                         >
-                            <div className="shine-content">
+                            <div>
                                 {/* 默认布局 - 与其他卡片一致 */}
                                 <div className="text-5xl mb-4 group-hover:scale-110 transition-transform duration-300 text-theme-primary">
                                     <i className={wechatInfo.icon}></i>
@@ -166,32 +166,32 @@ const ContactSection = ({ language }) => {
                                 
                                 {/* 二维码悬浮层 - 固定定位在视口中央，最高层级 */}
                                 <div className="fixed inset-0 bg-black/50 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center z-[9999] pointer-events-none group-hover:pointer-events-auto">
-                                    <div className="bg-white rounded-2xl p-6 shadow-2xl border-2 border-gray-200 max-w-sm mx-4 transform scale-95 group-hover:scale-100 transition-transform duration-300">
+                                    <div className="glass-card rounded-2xl p-6 shadow-2xl max-w-sm mx-4 transform scale-95 group-hover:scale-100 transition-transform duration-300" style={{border: 'none'}}>
                                         {/* 标题 */}
                                         <div className="text-center mb-4">
-                                            <div className="text-3xl mb-2 text-green-500">
+                                            <div className="text-3xl mb-2 text-theme-primary">
                                                 <i className={wechatInfo.icon}></i>
                                             </div>
-                                            <h4 className="text-lg font-bold text-gray-800">
+                                            <h4 className="text-lg font-bold text-theme-text-white-90">
                                                 {wechatInfo.title}
                                             </h4>
                                         </div>
                                         
-                                        {/* 二维码图片 - 大尺寸，完全可见 */}
-                                        <div className="flex justify-center mb-4">
+                                        {/* 二维码图片 - 四周等距间距 */}
+                                        <div className="flex justify-center mb-4 p-4">
                                             <img 
                                                 src={wechatInfo.qrCode} 
                                                 alt="WeChat QR Code"
-                                                className="w-40 h-40 object-contain"
+                                                className="w-32 h-32 object-cover rounded-lg"
                                             />
                                         </div>
                                         
                                         {/* 底部信息 */}
                                         <div className="text-center">
-                                            <p className="text-green-600 font-bold mb-2 text-lg">
+                                            <p className="text-theme-primary font-bold mb-2 text-lg">
                                                 {wechatInfo.value}
                                             </p>
-                                            <p className="text-sm text-gray-600">
+                                            <p className="text-sm text-theme-text-white-70">
                                                 {language === 'zh' ? '扫描二维码或点击复制微信号' : 'Scan QR code or click to copy WeChat ID'}
                                             </p>
                                         </div>
@@ -209,9 +209,9 @@ const ContactSection = ({ language }) => {
                                         href={info.href}
                                         target={info.href.startsWith('http') ? '_blank' : '_self'}
                                         rel={info.href.startsWith('http') ? 'noopener noreferrer' : undefined}
-                                        className={`bg-gradient-to-br from-theme-bg-white-10 to-theme-bg-white-05 backdrop-blur-sm rounded-2xl p-8 hover:from-theme-bg-white-20 hover:to-theme-bg-white-10 transition-all duration-300 group contact-info-card text-center border border-theme-border-white-05 shine-card ${info.shineColor}`}
+                                        className={`bg-gradient-to-br from-theme-bg-white-10 to-theme-bg-white-05 backdrop-blur-sm rounded-2xl p-8 hover:from-theme-bg-white-20 hover:to-theme-bg-white-10 transition-all duration-300 group glass-card text-center border border-theme-border-white-05 `}
                                     >
-                                        <div className="shine-content">
+                                        <div>
                                             <div className="text-5xl mb-4 group-hover:scale-110 transition-transform duration-300 text-theme-primary">
                                                 <i className={info.icon}></i>
                                             </div>
@@ -249,7 +249,7 @@ const ContactSection = ({ language }) => {
                                     href={social.url}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className={`w-16 h-16 inline-flex items-center justify-center p-4 bg-theme-surface/20 backdrop-blur-sm border-2 border-theme-border rounded-full text-2xl text-theme-text-primary no-underline transition-all duration-500 hover:shadow-2xl hover:scale-110 social-link hover:border-theme-primary/60 hover:bg-theme-hover`}
+                                    className={`w-16 h-16 inline-flex items-center justify-center p-4 bg-theme-surface/20 backdrop-blur-sm border-2 border-theme-border-white-10 rounded-full text-2xl text-theme-text-primary no-underline transition-all duration-500 hover:shadow-2xl hover:scale-110 social-link hover:border-theme-primary hover:bg-theme-hover`}
                                     title={social.label}
                                 >
                                     <i className={social.icon}></i>

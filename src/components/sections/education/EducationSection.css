@@ -1,6 +1,3 @@
-/* 导入通用的光影卡片效果 */
-@import '../../ui/ShineCard.css';
-
 /* 强制课程文字颜色 */
 .course-item .course-title {
     color: var(--theme-text-white-90) !important;

@@ -65,15 +65,15 @@ const EducationSection = ({ language }) => {
 
         return (
             <div key={degree.id} className="w-full mb-16 lg:mb-20">
-                {/* 简化的卡片容器 */}
-                <div className="relative bg-theme-bg-white-5 border border-theme-border-white-10 rounded-2xl p-6 lg:p-8 hover:bg-theme-bg-white-10 hover:border-theme-border-white-20 transition-all duration-300">
+                {/* 应用通用光影卡片效果 */}
+                <div className="glass-card p-6 lg:p-8">
                     
                     {/* 学位信息和学校信息 - 统一在顶部 */}
                     <div className="space-y-6 mb-8">
-                        {/* 大屏幕：左右分布 - 学位信息居左，logo+学校名称居右 */}
+                        {/* 大屏幕：左右分布 - 学位信息居左，学校名称+logo居右 */}
                         <div className="hidden lg:flex items-start justify-between gap-12">
                             {/* 左边：学位名称 + 地址时间信息 */}
-                            <div className="flex-1 flex flex-col justify-between h-full space-y-6">
+                            <div className="flex-1 flex flex-col space-y-6">
                                 {/* 学位名称 + 荣誉徽章 */}
                                 <div className="space-y-4">
                                     <ThemeTitle level={3} className="text-2xl xl:text-3xl text-theme-section-title font-bold leading-tight">
@@ -81,7 +81,7 @@ const EducationSection = ({ language }) => {
                                     </ThemeTitle>
                                     {degree.degreeHonor && (
                                         <div className="flex justify-start">
-                                            <span className="inline-flex items-center gap-2 px-3 py-2 text-theme-primary text-sm font-bold rounded-xl bg-theme-bg-white-10 border border-theme-border-white-20">
+                                            <span className="glass-card inline-flex items-center gap-2 px-3 py-2 text-theme-primary text-sm font-bold">
                                                 <span className="text-theme-primary">🏆</span>
                                                 <span>{educationData.labels.withDistinction}</span>
                                             </span>
@@ -102,19 +102,22 @@ const EducationSection = ({ language }) => {
                                 </div>
                             </div>
 
-                            {/* 右边：大学标志 + 学校名称 */}
-                            <div className="flex-shrink-0 flex flex-col items-center space-y-4">
-                                <div className="rounded-xl p-4">
+                            {/* 右边：学校名称在上，logo在下 */}
+                            <div className="flex-shrink-0 flex flex-col justify-between h-full">
+                                {/* 学校名称 - 与学位名称对齐 */}
+                                <div className="text-right">
+                                    <ThemeTitle level={4} className="text-lg xl:text-xl text-theme-text-white-90 font-semibold leading-tight">
+                                        {degree.institution}
+                                    </ThemeTitle>
+                                </div>
+                                
+                                {/* logo - 与时间信息底部对齐 */}
+                                <div className="rounded-xl p-4 self-end">
                                     <img 
                                         src={degree.logo}
                                         alt={`${degree.institution} Logo`}
                                         className="w-32 h-32 xl:w-40 xl:h-40 object-contain opacity-90 hover:opacity-100 transition-opacity duration-300"
                                     />
-                                </div>
-                                <div className="text-center">
-                                    <ThemeTitle level={4} className="text-xl xl:text-2xl text-theme-text-white-90 font-semibold leading-tight">
-                                        {degree.institution}
-                                    </ThemeTitle>
                                 </div>
                             </div>
                         </div>
@@ -128,7 +131,7 @@ const EducationSection = ({ language }) => {
                                 </ThemeTitle>
                                 {degree.degreeHonor && (
                                     <div className="flex justify-center">
-                                        <span className="inline-flex items-center gap-2 px-3 py-2 text-theme-primary text-sm font-bold rounded-xl bg-theme-bg-white-10 border border-theme-border-white-20">
+                                        <span className="glass-card inline-flex items-center gap-2 px-3 py-2 text-theme-primary text-sm font-bold">
                                             <span className="text-theme-primary">🏆</span>
                                             <span>{educationData.labels.withDistinction}</span>
                                         </span>
@@ -150,7 +153,7 @@ const EducationSection = ({ language }) => {
                             {/* 学校信息 - 三行 */}
                             <div className="space-y-3 text-center sm:text-left">
                                 <div>
-                                    <ThemeTitle level={4} className="text-lg sm:text-xl text-theme-text-white-90 font-semibold leading-tight">
+                                    <ThemeTitle level={4} className="text-base sm:text-lg text-theme-text-white-90 font-semibold leading-tight">
                                         {degree.institution}
                                     </ThemeTitle>
                                 </div>
@@ -176,15 +179,15 @@ const EducationSection = ({ language }) => {
                             
                             {/* 总体统计 */}
                             <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-8">
-                                <div className="bg-theme-bg-white-20 backdrop-blur-md rounded-xl p-4 text-center shadow-lg">
+                                <div className="glass-card p-4 text-center">
                                     <div className="text-2xl font-bold text-theme-primary">{degree.totalCredits}</div>
                                     <div className="text-theme-text-white-70 text-sm">{educationData.labels.totalCredits}</div>
                                 </div>
-                                <div className="bg-theme-bg-white-20 backdrop-blur-md rounded-xl p-4 text-center shadow-lg">
+                                <div className="glass-card p-4 text-center">
                                     <div className="text-2xl font-bold text-theme-secondary">{degree.gpa}</div>
                                     <div className="text-theme-text-white-70 text-sm">{educationData.labels.gpa}</div>
                                 </div>
-                                <div className="bg-theme-bg-white-20 backdrop-blur-md rounded-xl p-4 text-center shadow-lg">
+                                <div className="glass-card p-4 text-center">
                                     <div className="text-2xl font-bold text-theme-accent">
                                         {degree.courses.reduce((total, semester) => total + semester.courses.length, 0)}
                                     </div>
@@ -195,7 +198,7 @@ const EducationSection = ({ language }) => {
                             {/* 学期课程详细信息 */}
                             <div className="space-y-6">
                                 {degree.courses.map((semester, semesterIdx) => (
-                                    <div key={semesterIdx} className="bg-theme-bg-white-10 backdrop-blur-md rounded-xl p-6 shadow-lg">
+                                    <div key={semesterIdx} className="bg-theme-bg-white-10 backdrop-blur-md rounded-xl p-6 border border-theme-border-white-10">
                                         <h5 className="text-lg font-bold mb-4 flex items-center text-theme-text-white-90">
                                             <span className="text-2xl mr-2">📚</span>
                                             {semester.year} - {semester.semester}
@@ -204,7 +207,7 @@ const EducationSection = ({ language }) => {
                                             {semester.courses.map((course, courseIdx) => (
                                                 <div
                                                     key={courseIdx}
-                                                    className="flex items-center justify-between bg-theme-bg-white-10 backdrop-blur-sm rounded-lg p-3 hover:bg-theme-bg-white-20 hover:shadow-md transition-all duration-200 border border-theme-border-white-20"
+                                                    className="glass-card flex items-center justify-between p-3"
                                                 >
                                                     <div className="flex-1">
                                                         <div className="font-medium text-sm leading-tight text-theme-text-white-90">
@@ -295,7 +298,7 @@ const EducationSection = ({ language }) => {
 
                                             {/* Hover详情显示 - 只显示项目描述，无背景闪光 */}
                                             <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center p-4">
-                                                <div className="text-center bg-theme-bg-white-20 rounded-lg px-4 py-2 backdrop-blur-sm">
+                                                <div className="glass-card text-center px-4 py-2">
                                                     <p className="text-theme-text-white-90 text-sm leading-relaxed">
                                                         {project.description}
                                                     </p>
@@ -354,8 +357,8 @@ const EducationSection = ({ language }) => {
                                                 </div>
 
                                                 {/* Hover详情显示 */}
-                                                <div className="absolute inset-0 bg-theme-bg-white-20 opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center p-4 backdrop-blur-md">
-                                                    <div className="text-center">
+                                                <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center p-4">
+                                                    <div className="glass-card text-center p-4">
                                                         <div className="text-theme-primary text-4xl mb-3">
                                                             🏆
                                                         </div>

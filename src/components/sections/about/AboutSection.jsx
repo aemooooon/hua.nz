@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import imageSrc from '../../../data/hua_icon_base64';
 import hoverImageSrc from '../../../assets/images/hua_500w1.jpg';
 import { useAppStore } from '../../../store/useAppStore';
-import '../../ui/ShineCard.css'; // 导入光影效果
 
 const EffectAvatar = lazy(() => import('../../background/EffectAvatar'));
 
@@ -146,9 +145,9 @@ const AboutSection = ({ language = 'en' }) => {
                     {/* 内容容器 - 内部也应用黄金比例的留白 */}
                     <div className="about-card-container">
                         {/* 使用与 ProjectSection 相同的卡片样式 */}
-                        <div className="content-section shine-card project-card p-6 lg:p-8 xl:p-10 w-full relative">
+                        <div className="content-section glass-card p-6 lg:p-8 xl:p-10 w-full relative">
                             {/* 内容层 */}
-                            <div className="relative z-10 about-card-content shine-content">
+                            <div className="relative z-10 about-card-content">
                                 {/* 个人陈述内容 */}
                                 <div className="space-y-6" style={{ overflow: 'visible' }}>
                                     {/* 简化的一行式问候语 */}
