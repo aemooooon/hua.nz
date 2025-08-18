@@ -237,11 +237,11 @@ const ProjectDetailNew = ({ project = null, isOpen, onClose }) => {
       <CornerCloseButton 
         onClick={onClose}
         ariaLabel={projectText.detail.closeModal}
-        // 项目详情页专用配置 - 恢复大圆形效果
+        // 项目详情页专用配置 - 使用主题色背景
         iconSize="w-16 h-16"              // 大号图标
         iconColor="text-white"            // 纯白色图标
         iconHoverColor="text-white"       // hover保持白色
-        circleColor="bg-red-500"          // 红色背景圆，表示关闭操作
+        circleColor="bg-theme-primary"    // 主题色背景圆
         circleSize="w-80 h-80"            // 大圆形，完全包围X区域
         strokeWidth={1.5}                 // 稍细的线条，更优雅
         animationDuration="duration-500"  // 流畅的动画时长
