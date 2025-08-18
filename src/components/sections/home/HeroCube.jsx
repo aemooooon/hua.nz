@@ -32,12 +32,11 @@ const HeroCube = ({
     const { getThemeColors } = useTheme();
     const themeColors = getThemeColors();
 
-    // 获取全屏画布尺寸
+    // 获取全屏画布尺寸 - 移除状态，改为直接计算
     const getCanvasSize = useCallback(() => {
         return Math.max(window.innerWidth, window.innerHeight);
     }, []);
     
-    const [canvasSize, setCanvasSize] = useState(getCanvasSize());
     const [texturesReady, setTexturesReady] = useState(false); // 纹理预加载状态
 
     // 固定的6个面配置 - 只用于首页展示，添加高质量图片贴图
@@ -79,7 +78,7 @@ const HeroCube = ({
     // 监听窗口大小变化和用户活动
     useEffect(() => {
         const handleResize = () => {
-            setCanvasSize(getCanvasSize());
+            // 移除canvasSize状态更新，resize将由WebGL上下文内部的handleCanvasResize处理
             // 更新渲染器尺寸
             if (mountRef.current?.firstChild) {
                 const canvas = mountRef.current.firstChild;
@@ -115,6 +114,24 @@ const HeroCube = ({
         };
     }, [getCanvasSize]);
 
+    // 将变化的依赖项分离到refs中，避免频繁重新创建WebGL上下文
+    const themeColorsRef = useRef(themeColors);
+    const onAnimationCompleteRef = useRef(onAnimationComplete);
+    const onReadyRef = useRef(onReady);
+    
+    // 更新refs而不触发重新渲染
+    useEffect(() => {
+        themeColorsRef.current = themeColors;
+    }, [themeColors]);
+    
+    useEffect(() => {
+        onAnimationCompleteRef.current = onAnimationComplete;
+    }, [onAnimationComplete]);
+    
+    useEffect(() => {
+        onReadyRef.current = onReady;
+    }, [onReady]);
+
     useEffect(() => {
         // 等待纹理预加载完成
         if (!texturesReady) {
@@ -146,7 +163,8 @@ const HeroCube = ({
         
         // 设置透明背景，让3D背景可见
         renderer.setClearColor(0x000000, 0); // 完全透明背景
-        renderer.setSize(canvasSize, canvasSize);
+        // 初始设置为全屏尺寸，不依赖canvasSize状态
+        renderer.setSize(window.innerWidth, window.innerHeight);
         // 限制像素比以提升性能
         renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
         
@@ -184,6 +202,24 @@ const HeroCube = ({
         renderer.outputColorSpace = THREE.SRGBColorSpace;
         
         mountElement.appendChild(renderer.domElement);
+        
+        // 添加resize处理函数，避免重新创建整个WebGL上下文
+        const handleCanvasResize = debounce(() => {
+            if (renderer && camera) {
+                const newWidth = window.innerWidth;
+                const newHeight = window.innerHeight;
+                
+                renderer.setSize(newWidth, newHeight);
+                camera.aspect = newWidth / newHeight;
+                camera.updateProjectionMatrix();
+                
+                if (import.meta.env.DEV) {
+                    console.log(`📐 HeroCube画布尺寸更新: ${newWidth}x${newHeight}`);
+                }
+            }
+        }, 100); // 100ms防抖
+        
+        window.addEventListener('resize', handleCanvasResize);
         
         // 增强光照系统 - 更亮更丰富的灯光
         // 环境光 - 提升基础亮度
@@ -231,12 +267,12 @@ const HeroCube = ({
             for (let i = 0; i < 8; i++) {
                 for (let j = 0; j < 8; j++) {
                     // 使用主题色创建棋盘格效果
-                    context.fillStyle = (i + j) % 2 === 0 ? themeColors.surface : themeColors.muted;
+                    context.fillStyle = (i + j) % 2 === 0 ? themeColorsRef.current.surface : themeColorsRef.current.muted;
                     context.fillRect(i * squareSize, j * squareSize, squareSize, squareSize);
                 }
             }
             
-            context.fillStyle = themeColors.primary;
+            context.fillStyle = themeColorsRef.current.primary;
             context.font = `bold ${size / 16}px Arial`;
             context.textAlign = 'center';
             context.textBaseline = 'middle';
@@ -397,7 +433,7 @@ const HeroCube = ({
             context.shadowBlur = 6;
             const fontSize = 36;
             context.font = `bold ${fontSize}px "Helvetica Neue", Arial`;
-            context.fillStyle = themeColors.text || '#ffffff';
+            context.fillStyle = themeColorsRef.current.text || '#ffffff';
             context.textAlign = 'center';
             context.textBaseline = 'middle';
             context.fillText(face.label, textureSize / 2, textureSize / 2);
@@ -450,8 +486,8 @@ const HeroCube = ({
             // 创建震撼开场动画序列
             openingAnimationRef.current = gsap.timeline({
                 onComplete: () => {
-                    if (onAnimationComplete) {
-                        onAnimationComplete();
+                    if (onAnimationCompleteRef.current) {
+                        onAnimationCompleteRef.current();
                     }
                     window.dispatchEvent(new CustomEvent('cubeAnimationComplete'));
                 }
@@ -807,10 +843,11 @@ const HeroCube = ({
         };
         
         // 组件初始化完成后调用onReady
-        if (onReady) {
+        // 使用ref中的值而不是直接使用props，避免依赖项变化
+        if (onReadyRef.current) {
             // 使用setTimeout确保在下一帧调用，避免在渲染期间修改state
             setTimeout(() => {
-                onReady();
+                onReadyRef.current();
             }, 100);
         }
         
@@ -838,11 +875,12 @@ const HeroCube = ({
             
             // 移除事件监听器
             window.removeEventListener('mousemove', handleGlobalMouseMove);
+            window.removeEventListener('resize', handleCanvasResize);
             
             // 使用资源管理器清理
             webglResourceManager.cleanup(resourceId);
         };
-    }, [faces, canvasSize, enableOpeningAnimation, onAnimationComplete, onReady, texturesReady, themeColors]);
+    }, [faces, texturesReady, enableOpeningAnimation]); // 减少依赖项，避免频繁重建
 
     return (
         <div className="relative">
