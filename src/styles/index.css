@@ -1963,3 +1963,51 @@ html, body {
         min-height: -webkit-fill-available;
     }
 }
+
+/* Performance Panel 自定义滚动条样式 */
+.custom-scrollbar::-webkit-scrollbar {
+    width: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 3px;
+    margin: 2px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.1));
+    border-radius: 3px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: all 0.3s ease;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.2));
+    border-color: rgba(255, 255, 255, 0.2);
+    box-shadow: 0 0 8px rgba(255, 255, 255, 0.1);
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:active {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0.3));
+}
+
+/* Firefox 滚动条样式 */
+.custom-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.2) rgba(255, 255, 255, 0.05);
+}
+
+/* 性能面板特有的滚动条动画 */
+@keyframes scrollbar-glow {
+    0%, 100% {
+        box-shadow: 0 0 5px rgba(255, 255, 255, 0.1);
+    }
+    50% {
+        box-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
+    }
+}
+
+.custom-scrollbar:hover::-webkit-scrollbar-thumb {
+    animation: scrollbar-glow 2s ease-in-out infinite;
+}
