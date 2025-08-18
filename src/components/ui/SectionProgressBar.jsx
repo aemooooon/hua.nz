@@ -26,7 +26,7 @@ const SectionProgressBar = () => {
     const progress = getProgress();
     
     return (
-        <div className="fixed top-0 left-0 right-0 z-40 h-[6px]">
+        <div className="fixed top-0 left-0 right-0 z-40 h-[5px]">
             {/* 进度条背景 - 首页全透明，其他section白色透明 */}
             <div className={`w-full h-full transition-opacity duration-300 ${
                 currentSection === 0 ? 'bg-transparent' : 'bg-white/20'

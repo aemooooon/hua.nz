@@ -64,7 +64,7 @@ const SmartScrollManager = () => {
 
     // 滚动敏感度配置
     const DESKTOP_SCROLL_THRESHOLD = 600; // 桌面端保持原来的值
-    const MOBILE_TOUCH_THRESHOLD = 200;   // 移动端触摸阈值调整为400，降低敏感度
+    const MOBILE_TOUCH_THRESHOLD = 200;   // 移动端触摸阈值调整为200，降低敏感度
     const SCROLL_RESET_TIME = 256;
     const PREVIEW_MAX_OFFSET = 80;
 
@@ -209,7 +209,7 @@ const SmartScrollManager = () => {
         
         // 移动端首次加载时的特殊处理 - 如果是长内容section，给予更多检测时间
         const isMobile = window.innerWidth < 768;
-        const isLongContentSection = ['projects', 'education'].includes(currentSectionConfig?.id);
+        const isLongContentSection = ['projects', 'education', 'about', 'contact'].includes(currentSectionConfig?.id);
         
         if (isMobile && isLongContentSection && !isOverflowing) {
             // 移动端长内容section如果首次检测未溢出，延迟再检测一次
@@ -648,7 +648,7 @@ const SmartScrollManager = () => {
         
         // 针对移动端和长内容section的优化检测策略
         const isMobile = window.innerWidth < 768;
-        const isLongContentSection = ['projects', 'education'].includes(currentSectionConfig?.id);
+        const isLongContentSection = ['projects', 'education', 'about', 'contact'].includes(currentSectionConfig?.id);
         
         if (isMobile && isLongContentSection) {
             // 移动端长内容页面使用更密集的检测
