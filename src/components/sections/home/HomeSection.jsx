@@ -91,7 +91,7 @@ const HomeSection = ({
                 </div>
             </div>
 
-            {/* Slogan - 屏幕下方，宽屏一行显示，窄屏两行，闪烁光标 */}
+            {/* Slogan - 屏幕下方 */}
             <div className={`absolute left-1/2 transform -translate-x-1/2 text-center z-50 w-full px-4 ${
                 enableOpeningAnimation ? 'grand-slogan-entrance' : ''
             }`} style={{
@@ -101,34 +101,9 @@ const HomeSection = ({
                     animationFillMode: 'both'
                 } : {})
             }}>
-                <div className="space-y-2 sm:space-y-4">
-                    {/* 英文slogan - 使用统一的打字机效果解决对齐问题 */}
-                    <div className="text-center">
-                        <p 
-                            className={`text-base sm:text-lg md:text-xl lg:text-2xl font-light text-theme-primary tracking-wider leading-relaxed inline-block transition-colors duration-300 ${
-                                enableOpeningAnimation ? '' : 'typewriter-text typewriter-optimized'
-                            }`} 
-                            style={!enableOpeningAnimation ? {
-                                animationDelay: '6s',
-                                animationFillMode: 'both'
-                            } : {}}
-                        >
-                            Order from Chaos, Innovation through Tradeoffs.
-                            <span className="inline-block ml-1 w-px h-5 sm:h-6 md:h-7 lg:h-8 bg-theme-cursor input-cursor"></span>
-                        </p>
-                    </div>
-                    
-                    {/* 中文slogan */}
-                    <p 
-                        className={`text-sm sm:text-base md:text-lg lg:text-xl font-light text-theme-primary tracking-wide leading-relaxed mt-4 transition-colors duration-300 ${
-                            enableOpeningAnimation ? '' : 'typewriter-text typewriter-optimized'
-                        }`} 
-                        style={!enableOpeningAnimation ? {
-                            animationDelay: '8s',
-                            animationFillMode: 'both'
-                        } : {}}
-                    >
-                        观混沌之纷，立秩序之象；守中庸之衡，启创新之变！
+                <div className="text-center">
+                    <p className="text-base sm:text-lg md:text-xl lg:text-2xl font-light text-theme-primary tracking-wider leading-relaxed transition-colors duration-300">
+                        {content.home.slogan}
                     </p>
                 </div>
             </div>

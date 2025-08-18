@@ -64,10 +64,7 @@ const contentConfig = {
     home: {
       name: "Hua Wang",
       title: "Full Stack Developer",
-      slogan: {
-        chinese: "观混沌之纷，立秩序之象；守中庸之衡，启创新之变！",
-        english: "Order from Chaos. Innovation through Tradeoffs."
-      }
+      slogan: "Order from Chaos. Innovation through Tradeoffs..."
     },
     about: {
       title: "About Me",
@@ -423,10 +420,7 @@ const contentConfig = {
     home: {
       name: "王华",
       title: "全栈工程师",
-      slogan: {
-        chinese: "观混沌之纷，立秩序之象；守中庸之衡，启创新之变！",
-        english: "Order from Chaos. Innovation through Tradeoffs..."
-      }
+      slogan: "观混沌之纷，立秩序之象；守中庸之衡，启创新之变……"
     },
     about: {
       title: "关于我",
