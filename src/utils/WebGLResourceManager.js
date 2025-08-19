@@ -8,9 +8,13 @@ class WebGLResourceManager {
         this.activeResources = new Map(); // 活跃的资源映射
         this.resourceCounter = 0;
         this.isPageVisible = !document.hidden; // 页面可见性状态
+        this.lastActivityTime = Date.now(); // 记录最后活动时间
         
         // 监听页面可见性变化
         this.initPageVisibilityListener();
+        
+        // 监听用户活动
+        this.initActivityListener();
     }
 
     /**
@@ -28,8 +32,27 @@ class WebGLResourceManager {
                 // 如果页面重新变为可见，刷新资源时间戳，防止被清理
                 if (this.isPageVisible) {
                     this.refreshActiveResources();
+                    this.lastActivityTime = Date.now(); // 更新活动时间
                 }
             });
+        }
+    }
+    
+    /**
+     * 初始化用户活动监听器
+     */
+    initActivityListener() {
+        if (typeof document !== 'undefined') {
+            const updateActivity = () => {
+                this.lastActivityTime = Date.now();
+            };
+            
+            // 监听多种用户活动
+            document.addEventListener('mousemove', updateActivity, { passive: true });
+            document.addEventListener('mousedown', updateActivity, { passive: true });
+            document.addEventListener('keydown', updateActivity, { passive: true });
+            document.addEventListener('scroll', updateActivity, { passive: true });
+            document.addEventListener('touchstart', updateActivity, { passive: true });
         }
     }
 
@@ -38,12 +61,18 @@ class WebGLResourceManager {
      */
     refreshActiveResources() {
         const now = Date.now();
+        let refreshedCount = 0;
+        
         for (const [, resourceData] of this.activeResources) {
-            resourceData.timestamp = now;
+            // 只刷新非持久资源的时间戳（持久资源本来就不会被清理）
+            if (!resourceData.persistent) {
+                resourceData.timestamp = now;
+                refreshedCount++;
+            }
         }
         
         if (import.meta.env.DEV) {
-            console.log(`🔄 已刷新 ${this.activeResources.size} 个资源的时间戳`);
+            console.log(`🔄 已刷新 ${refreshedCount} 个非持久资源的时间戳（共 ${this.activeResources.size} 个资源）`);
         }
     }
 
@@ -371,10 +400,10 @@ class WebGLResourceManager {
      * @param {number} maxAge - 最大年龄（毫秒）
      */
     cleanupOldResources(maxAge = 300000) { // 默认5分钟
-        // 如果页面当前可见，不执行清理
-        if (this.isPageVisible) {
+        // 🔧 更保守的页面可见性检查 - 增加额外的检查条件
+        if (this.isPageVisible || this.hasRecentActivity()) {
             if (import.meta.env.DEV) {
-                console.log(`👁️ 页面可见，跳过资源清理`);
+                console.log(`👁️ 页面活跃，跳过资源清理`);
             }
             return;
         }
@@ -388,7 +417,12 @@ class WebGLResourceManager {
                 continue;
             }
             
-            if (now - resourceData.timestamp > maxAge) {
+            // 🔧 对于背景效果，使用更长的清理时间（30分钟）
+            const effectiveMaxAge = resourceData.componentId && 
+                                  resourceData.componentId.includes('BackgroundCanvas') ? 
+                                  1800000 : maxAge; // 30分钟 vs 5分钟
+            
+            if (now - resourceData.timestamp > effectiveMaxAge) {
                 this.disposeResources(resourceData.resources);
                 toDelete.push(resourceId);
             }
@@ -399,6 +433,45 @@ class WebGLResourceManager {
         if (toDelete.length > 0 && import.meta.env.DEV) {
             console.log(`🧹 清理了 ${toDelete.length} 个过期资源 (页面不可见)`);
         }
+    }
+    
+    /**
+     * 检查是否有最近的用户活动
+     */
+    hasRecentActivity() {
+        // 检查是否有鼠标或键盘活动
+        if (typeof window !== 'undefined') {
+            const now = Date.now();
+            // 如果最近5分钟内有活动，认为页面是活跃的
+            return (now - (this.lastActivityTime || 0)) < 300000;
+        }
+        return false;
+    }
+    
+    /**
+     * 获取当前资源状态的调试信息
+     */
+    getDebugInfo() {
+        const now = Date.now();
+        const resources = [];
+        
+        for (const [resourceId, resourceData] of this.activeResources) {
+            resources.push({
+                id: resourceId,
+                componentId: resourceData.componentId,
+                persistent: resourceData.persistent,
+                age: Math.round((now - resourceData.timestamp) / 1000), // 秒
+                isBackgroundCanvas: resourceData.componentId && resourceData.componentId.includes('BackgroundCanvas')
+            });
+        }
+        
+        return {
+            totalResources: this.activeResources.size,
+            isPageVisible: this.isPageVisible,
+            hasRecentActivity: this.hasRecentActivity(),
+            lastActivityAge: Math.round((now - (this.lastActivityTime || 0)) / 1000), // 秒
+            resources
+        };
     }
 
     /**
@@ -440,11 +513,22 @@ class WebGLResourceManager {
 // 创建单例实例
 const webglResourceManager = new WebGLResourceManager();
 
-// 定期清理过期资源
+// 🔧 开发环境下暴露调试功能
+if (import.meta.env.DEV && typeof window !== 'undefined') {
+    window.webglDebug = {
+        getResourceInfo: () => webglResourceManager.getDebugInfo(),
+        forceCleanup: () => webglResourceManager.cleanupOldResources(0),
+        refreshResources: () => webglResourceManager.refreshActiveResources()
+    };
+    
+    console.log('🔧 WebGL调试工具已启用，使用 window.webglDebug 来调试资源状态');
+}
+
+// 定期清理过期资源 - 降低频率，减少对性能的影响
 if (typeof window !== 'undefined') {
     setInterval(() => {
         webglResourceManager.cleanupOldResources();
-    }, 60000); // 每分钟检查一次
+    }, 300000); // 🔧 改为每5分钟检查一次（而不是每分钟）
 }
 
 export default webglResourceManager;

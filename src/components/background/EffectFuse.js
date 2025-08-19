@@ -13,10 +13,12 @@ export class EffectFuse {
             throw new Error('WebGL not supported');
         }
         
-        // 注册WebGL资源（原生WebGL上下文）- 使用传入的componentId
+        // 注册WebGL资源（原生WebGL上下文）- 使用传入的componentId，标记为持久资源
         this.resourceId = webglResourceManager.registerResources(this.componentId, {
             gl: this.gl,
             canvas: this.canvas
+        }, { 
+            persistent: true // 🔧 标记为持久资源，防止自动清理背景效果
         });
         
         // 设置默认参数 - 平衡粒子大小和可见性

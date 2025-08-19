@@ -148,11 +148,13 @@ export class EffectChaos {
         this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5)); // 限制像素比
         this.renderer.setSize(this.canvas.width, this.canvas.height, false);
 
-        // 注册WebGL资源 - 使用传入的componentId
+        // 注册WebGL资源 - 使用传入的componentId，标记为持久资源
         this.resourceId = webglResourceManager.registerResources(this.componentId, {
             renderer: this.renderer,
             scene: this.scene,
             camera: this.camera
+        }, { 
+            persistent: true // 🔧 标记为持久资源，防止自动清理背景效果
         });
 
         // 添加WebGL上下文丢失/恢复处理（可选，减少控制台警告）

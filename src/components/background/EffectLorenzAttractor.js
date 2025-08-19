@@ -82,11 +82,13 @@ export class EffectLorenzAttractor {
         this.renderer.setSize(this.canvas.width, this.canvas.height, false);
         this.renderer.setClearColor(0x000a15, 1.0); // 与场景背景一致
         
-        // 注册WebGL资源 - 使用传入的componentId
+        // 注册WebGL资源 - 使用传入的componentId，标记为持久资源
         this.resourceId = webglResourceManager.registerResources(this.componentId, {
             renderer: this.renderer,
             scene: this.scene,
             camera: this.camera
+        }, { 
+            persistent: true // 🔧 标记为持久资源，防止自动清理背景效果
         });
         
         // 设置后处理管道以实现发光效果
