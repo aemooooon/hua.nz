@@ -66,7 +66,7 @@ const EducationSection = ({ language }) => {
         return (
             <div key={degree.id} className="w-full mb-16 lg:mb-20">
                 {/* 移除glass-card效果，降低透明度，使用更不透明的背景 */}
-                <div className="bg-theme-bg-white-15 backdrop-blur-sm rounded-2xl p-6 lg:p-8 border border-theme-border-white-15">{/* 从glass-card改为自定义样式，降低透明度 */}
+                <div className="bg-theme-bg-white-5 backdrop-blur-sm rounded-2xl p-6 lg:p-8 border border-theme-border-white-15">{/* 从glass-card改为自定义样式，降低透明度 */}
                     
                     {/* 学位信息和学校信息 - 统一在顶部 */}
                     <div className="space-y-6 mb-8">

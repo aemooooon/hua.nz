@@ -2,11 +2,8 @@ import { useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { EffectFuse } from './EffectFuse';
 import { EffectMonjori } from './EffectMonjori';
-import EffectHeartBeats from './EffectHeartBeats';
 import { EffectLorenzAttractor } from './EffectLorenzAttractor';
 import { EffectChaos } from './EffectChaos';
-import { EffectNetworkGraph } from './EffectNetworkGraph';
-import { EffectParticleCommunication } from './EffectParticleCommunication';
 import { EffectRippleWaves } from './EffectRippleWaves';
 import { debounce } from 'lodash';
 import webglResourceManager from '../../utils/WebGLResourceManager';
@@ -201,38 +198,14 @@ const BackgroundCanvas = ({ effectType = 'effectfuse', sectionName = 'unknown' }
                         break;
                     }
 
-                    case 'effectnetwork': {
-                        // Network Graph 效果 - 适合contact section
-                        const networkParams = {
-                            nodeCount: 40,           // 节点数量
-                            maxConnections: 3,       // 每个节点最大连接数
-                            connectionDistance: 150, // 连接距离
-                            nodeSpeed: 0.3          // 节点移动速度
-                        };
-                        effectInstanceRef.current = new EffectNetworkGraph(canvas, networkParams, componentId);
-                        break;
-                    }
-
-                    case 'effectparticlecommunication': {
-                        // Particle Communication 效果 - 粒子通信网络
-                        const commParams = {
-                            hubCount: 5,              // 通信中心数量
-                            particlesPerHub: 12,      // 每个中心的粒子数
-                            orbitRadius: 60,          // 轨道半径
-                            transmissionSpeed: 1.2    // 传输速度
-                        };
-                        effectInstanceRef.current = new EffectParticleCommunication(canvas, commParams, componentId);
-                        break;
-                    }
-
                     case 'effectripple': {
                         // Ripple Waves 效果 - 波纹传播效果
                         const rippleParams = {
-                            waveSourceCount: 4,       // 波源数量
+                            waveSourceCount: 6,       // 波源数量
                             maxRings: 8,              // 每个波源最大圆环数
-                            waveSpeed: 2.0,           // 波传播速度
-                            ringSpacing: 40,          // 圆环间距
-                            maxRadius: 300            // 最大半径
+                            waveSpeed: 1.2,           // 波传播速度
+                            ringSpacing: 45,          // 圆环间距
+                            maxRadius: 400            // 最大半径
                         };
                         effectInstanceRef.current = new EffectRippleWaves(canvas, rippleParams, componentId);
                         break;
@@ -347,7 +320,7 @@ const BackgroundCanvas = ({ effectType = 'effectfuse', sectionName = 'unknown' }
     // 监听主题变化，更新粒子颜色
     useEffect(() => {
         // 支持主题色更新的效果类型
-        const supportedEffects = ['effectchaos', 'effectlorenz', 'effectheartbeats', 'effectmonjori', 'effectnetwork', 'effectparticlecommunication'];
+        const supportedEffects = ['effectchaos', 'effectlorenz', 'effectheartbeats', 'effectmonjori', 'effectripple'];
         
         if (effectInstanceRef.current && 
             effectInstanceRef.current.updateThemeColors && 
