@@ -733,19 +733,33 @@ const SmartDirectionalCursor = () => {
         const baseColor = getBaseColor();
         const progressColor = getProgressColor();
         
-        // 真实滚动数值显示逻辑 - 使用当前滚动增量
+        // 真实滚动数值显示逻辑 - 根据方向调整位置和格式
         const getDisplayValue = () => {
             // 使用动画值（动画时）或当前滚动增量（滚动时）
             const valueToShow = isAnimatingDown ? animatedValue : currentScrollDelta;
             
             if (valueToShow === 0) return '0';
             
-            // 格式化显示：正数显示+号，负数自带-号
-            const prefix = valueToShow > 0 ? '+' : '';
-            return `${prefix}${valueToShow}`;
+            // 去掉符号，只显示绝对值
+            return Math.abs(valueToShow).toString();
+        };
+        
+        // 根据滚动方向决定数字位置
+        const getNumberPosition = () => {
+            if (scrollDirection === 'down') {
+                // 向下滚动：数字显示在右边
+                return 'translate3d(24px, 0, 0)';
+            } else if (scrollDirection === 'up') {
+                // 向上滚动：数字显示在左边
+                return 'translate3d(-24px, 0, 0)';
+            } else {
+                // 默认位置（无滚动时）
+                return 'translate3d(0, 0, 0)';
+            }
         };
         
         const displayValue = getDisplayValue();
+        const numberPosition = getNumberPosition();
         const shouldShowValue = (scrollIntensity > 0 || currentScrollDelta !== 0 || isAnimatingDown);
         const strokeWidth = 0.2; // 细线宽度
         const progressStrokeWidth = 5; // 粗线宽度
@@ -883,7 +897,11 @@ const SmartDirectionalCursor = () => {
                     height={size}
                     style={{
                         position: 'absolute',
-                        transform: 'rotate(-90deg)', // 旋转-90°让进度从12点钟开始
+                        // 根据滚动方向动态调整旋转角度
+                        // 向下滚动：从12点钟顺时针 (-90deg)
+                        // 向上滚动：从6点钟逆时针 (90deg)
+                        transform: scrollDirection === 'up' ? 'rotate(90deg)' : 'rotate(-90deg)',
+                        transition: 'transform 0.2s ease-out',
                     }}
                 >
                     {/* 底层边界圆环：细线，半透明 */}
@@ -918,7 +936,7 @@ const SmartDirectionalCursor = () => {
                     )}
                 </svg>
 
-                {/* 📈 真实滚动数值显示：显示实际的滚动增量，位置在左边圆的正中间 */}
+                {/* 📈 智能滚动数值显示：根据滚动方向动态定位 */}
                 {shouldShowValue && (
                     <div
                         style={{
@@ -933,11 +951,11 @@ const SmartDirectionalCursor = () => {
                             opacity: 0.95,
                             zIndex: 15,
                             textShadow: `0 0 6px ${progressColor}40`, // 更柔和的发光效果
-                            transform: 'translate3d(-24px, 0, 0)', // 向左偏移更多一些
+                            transform: numberPosition, // 动态位置：向下滚动在右边，向上滚动在左边
                             willChange: 'opacity, transform',
                             minWidth: '32px', // 确保有足够宽度显示数字
                             textAlign: 'center',
-                            transition: isAnimatingDown ? 'none' : 'all 0.1s ease-out', // 动画时不使用过渡
+                            transition: isAnimatingDown ? 'none' : 'all 0.2s ease-out', // 包含位置过渡动画
                         }}
                     >
                         <span 
