@@ -6,6 +6,7 @@ import { useAppStore } from '../../../store/useAppStore';
 import { gsap } from 'gsap';
 import { debounce } from 'lodash';
 import texturePreloader from '../../../utils/texturePreloader';
+import smartTextureLoader from '../../../utils/SmartTextureLoader';
 import webglResourceManager from '../../../utils/WebGLResourceManager';
 import { useTheme } from '../../../hooks/useTheme';
 
@@ -39,15 +40,65 @@ const HeroCube = ({
     
     const [texturesReady, setTexturesReady] = useState(false); // 纹理预加载状态
 
-    // 固定的6个面配置 - 只用于首页展示，添加高质量图片贴图
-    const faces = useMemo(() => [
-        { name: 'home', label: content.navigation?.home || 'Home', color: '#afcc8f', effect: 'effectchaos', video: '/cube-textures/home.mp4' },
-        { name: 'about', label: content.navigation?.about || 'About', color: '#7ca65c', effect: 'effectlorenz', image: '/cube-textures/about.jpg' },
-        { name: 'projects', label: content.navigation?.projects || 'Projects', color: '#5d7d4b', effect: 'effectmonjori', image: '/cube-textures/projects.jpg' },
-        { name: 'gallery', label: content.navigation?.gallery || 'Gallery', color: '#768e90', effect: 'effectheartbeats', image: '/cube-textures/gallery.jpg' },
-        { name: 'education', label: content.navigation?.education || 'Education', color: '#4a636a', effect: 'effectfuse', image: '/cube-textures/education.jpg' },
-        { name: 'contact', label: content.navigation?.contact || 'Contact', color: '#3a4e55', effect: 'effectpixeldistortion', image: '/cube-textures/contact.jpg' }
-    ], [content.navigation]);
+    // 智能cube纹理配置 - 自动选择最优格式
+    const faces = useMemo(() => {
+        // 显示格式检测信息
+        const compressionInfo = smartTextureLoader.getCompressionInfo();
+        console.log(`🎯 智能纹理加载器: ${compressionInfo.format} (${compressionInfo.description})`);
+        
+        const format = smartTextureLoader.getBestFormat();
+        const directory = smartTextureLoader.getBestDirectory();
+        
+        return [
+            { 
+                name: 'home', 
+                label: content.navigation?.home || 'Home', 
+                color: '#afcc8f', 
+                effect: 'effectchaos', 
+                video: '/cube-textures/home.mp4' // 视频保持原路径
+            },
+            { 
+                name: 'about', 
+                label: content.navigation?.about || 'About', 
+                color: '#7ca65c', 
+                effect: 'effectlorenz', 
+                image: format === 'jpg' ? '/cube-textures/about.jpg' : `/${directory}/about.${format}`,
+                fallback: '/cube-textures/about.jpg'
+            },
+            { 
+                name: 'projects', 
+                label: content.navigation?.projects || 'Projects', 
+                color: '#5d7d4b', 
+                effect: 'effectmonjori', 
+                image: format === 'jpg' ? '/cube-textures/projects.jpg' : `/${directory}/projects.${format}`,
+                fallback: '/cube-textures/projects.jpg'
+            },
+            { 
+                name: 'gallery', 
+                label: content.navigation?.gallery || 'Gallery', 
+                color: '#768e90', 
+                effect: 'effectheartbeats', 
+                image: format === 'jpg' ? '/cube-textures/gallery.jpg' : `/${directory}/gallery.${format}`,
+                fallback: '/cube-textures/gallery.jpg'
+            },
+            { 
+                name: 'education', 
+                label: content.navigation?.education || 'Education', 
+                color: '#4a636a', 
+                effect: 'effectfuse', 
+                image: format === 'jpg' ? '/cube-textures/education.jpg' : `/${directory}/education.${format}`,
+                fallback: '/cube-textures/education.jpg'
+            },
+            { 
+                name: 'contact', 
+                label: content.navigation?.contact || 'Contact', 
+                color: '#3a4e55', 
+                effect: 'effectpixeldistortion', 
+                image: format === 'jpg' ? '/cube-textures/contact.jpg' : `/${directory}/contact.${format}`,
+                fallback: '/cube-textures/contact.jpg'
+            }
+        ];
+    }, [content.navigation]);
 
     // 预加载所有纹理资源
     useEffect(() => {

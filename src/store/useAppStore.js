@@ -1095,7 +1095,7 @@ export const useAppStore = create(
           "links": {
             "official": "https://www.cita.org.nz/"
           },
-          "img": ["/citanz/cita-00.jpg", "/citanz/cita-01.jpg", "/citanz/cita-02.jpg", "/citanz/cita-03.jpg", "/citanz/cita-04.jpg", "/citanz/cita-04.5.jpg", "/citanz/cita-05.jpg", "/citanz/cita-07.jpg", "/citanz/cita-08.jpg", "/citanz/cita-09.jpg"]
+          "img": ["/citanz/cita-00.jpg", "/citanz/cita-01.jpg", "/citanz/cita-02.jpg", "/citanz/cita-03.jpg", "/citanz/cita-04.jpg", "/citanz/cita-04.5.jpg", "/citanz/cita-05.jpg", "/citanz/cita-06.jpg", "/citanz/cita-07.jpg", "/citanz/cita-08.jpg", "/citanz/cita-09.jpg"]
         },
         {
           "type": "Activity",
