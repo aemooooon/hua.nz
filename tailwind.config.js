@@ -85,10 +85,12 @@ export default {
           // 通用白色边框层次
           'border-white-30': 'var(--theme-border-white-30)',
           'border-white-20': 'var(--theme-border-white-20)',
+          'border-white-15': 'var(--theme-border-white-15)',
           'border-white-10': 'var(--theme-border-white-10)',
           'border-white-05': 'var(--theme-border-white-05)',
           // 通用白色背景层次
           'bg-white-20': 'var(--theme-bg-white-20)',
+          'bg-white-15': 'var(--theme-bg-white-15)',
           'bg-white-10': 'var(--theme-bg-white-10)',
           'bg-white-05': 'var(--theme-bg-white-05)',
           // 主题色背景

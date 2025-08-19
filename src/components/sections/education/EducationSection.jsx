@@ -65,8 +65,8 @@ const EducationSection = ({ language }) => {
 
         return (
             <div key={degree.id} className="w-full mb-16 lg:mb-20">
-                {/* 应用通用光影卡片效果 */}
-                <div className="glass-card p-6 lg:p-8">
+                {/* 移除glass-card效果，降低透明度，使用更不透明的背景 */}
+                <div className="bg-theme-bg-white-15 backdrop-blur-sm rounded-2xl p-6 lg:p-8 border border-theme-border-white-15">{/* 从glass-card改为自定义样式，降低透明度 */}
                     
                     {/* 学位信息和学校信息 - 统一在顶部 */}
                     <div className="space-y-6 mb-8">
@@ -385,8 +385,8 @@ const EducationSection = ({ language }) => {
     };
 
     return (
-        <div className="min-h-screen w-full px-4 sm:px-6 lg:px-8 py-8 text-theme-text-white relative education-section-bg">
-            <div className="max-w-screen-2xl mx-auto">
+        <div className="min-h-screen w-full px-6 sm:px-8 lg:px-12 xl:px-16 py-8 text-theme-text-white relative education-section-bg">
+            <div className="max-w-screen-xl mx-auto">{/* 从 max-w-screen-2xl 改为 max-w-screen-xl，增加两边空白 */}
             {/* Education标题 - 居中显示，使用主题化组件 */}
             <div className="flex flex-col pt-4">
                 <div className="flex flex-col items-center text-center">
@@ -404,7 +404,7 @@ const EducationSection = ({ language }) => {
 
             {/* 标题与内容之间的分隔线 - 使用白色透明并有光往两边延伸 */}
             <div className="flex justify-center my-8">
-                <GlowDivider className="w-full max-w-screen-2xl" />
+                <GlowDivider className="w-full max-w-screen-xl" />{/* 与容器宽度保持一致 */}
             </div>
 
             {/* 学历内容 - 垂直滚动，使用主题化文本颜色 */}
