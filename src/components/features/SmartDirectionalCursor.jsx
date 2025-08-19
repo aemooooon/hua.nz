@@ -111,6 +111,24 @@ const SmartDirectionalCursor = () => {
     
     /** 可点击元素检测的缓存，避免重复计算 */
     const clickableElementCache = useRef(new WeakMap());
+    
+    /** 存储最新状态值的refs，避免闭包问题 */
+    const stateRefs = useRef({
+        currentScrollDelta: 0,
+        animatedValue: 0,
+        isAnimatingDown: false,
+        scrollIntensity: 0
+    });
+    
+    // 同步状态到refs
+    useEffect(() => {
+        stateRefs.current = {
+            currentScrollDelta,
+            animatedValue,
+            isAnimatingDown,
+            scrollIntensity
+        };
+    }, [currentScrollDelta, animatedValue, isAnimatingDown, scrollIntensity]);
 
     // ==================== 核心逻辑函数 ====================
 
@@ -415,38 +433,79 @@ const SmartDirectionalCursor = () => {
      * 创造平滑的视觉反馈效果
      */
     const startCountdownAnimation = useCallback(() => {
+        // 如果已经在动画中，先停止
+        if (countdownAnimationRef.current) {
+            cancelAnimationFrame(countdownAnimationRef.current);
+            countdownAnimationRef.current = null;
+        }
+        
         setIsAnimatingDown(true);
         
-        const startValue = currentScrollDelta; // 使用当前滚动增量而不是累积值
+        const startValue = Math.abs(currentScrollDelta); // 使用绝对值确保动画正确
+        if (startValue === 0) {
+            // 如果没有值需要动画，直接重置
+            if (import.meta.env.DEV) {
+                console.log('🚫 No value to animate, resetting states');
+            }
+            setIsAnimatingDown(false);
+            setAnimatedValue(0);
+            setCurrentScrollDelta(0);
+            setScrollIntensity(0);
+            return;
+        }
+        
+        if (import.meta.env.DEV) {
+            console.log('🎬 Starting animation from value:', startValue);
+        }
+        
         const startTime = performance.now();
-        const duration = Math.min(Math.abs(startValue) * 3, 800); // 调整动画时长，更快一些
+        const duration = Math.min(startValue * 2, 600); // 根据数值大小调整动画时长
         
         const animate = () => {
             const now = performance.now();
             const elapsed = now - startTime;
             const progress = Math.min(elapsed / duration, 1);
             
-            // 使用缓动函数创造自然的递减效果
-            const easeOutCubic = 1 - Math.pow(1 - progress, 3);
-            const currentValue = Math.round(startValue * (1 - easeOutCubic));
+            // 使用更平滑的缓动函数
+            const easeOutQuart = 1 - Math.pow(1 - progress, 4);
+            const currentValue = Math.round(startValue * (1 - easeOutQuart));
             
             setAnimatedValue(currentValue);
             
             if (progress < 1) {
                 countdownAnimationRef.current = requestAnimationFrame(animate);
             } else {
-                // 动画结束，重置所有状态
+                // 动画结束，确保完全重置
+                if (import.meta.env.DEV) {
+                    console.log('✅ Animation completed, resetting all states');
+                }
+                
+                // 分批重置状态，确保UI正确更新
                 setAnimatedValue(0);
                 setCurrentScrollDelta(0);
-                setScrollIntensity(0);
-                setScrollDirection(null);
                 setIsAnimatingDown(false);
+                
+                // 延迟重置其他状态，确保UI有时间更新
+                setTimeout(() => {
+                    setScrollIntensity(0);
+                    setScrollDirection(null);
+                    
+                    // 额外安全检查：如果状态还未完全清理，强制清理
+                    setTimeout(() => {
+                        setAnimatedValue(0);
+                        setCurrentScrollDelta(0);
+                        if (import.meta.env.DEV) {
+                            console.log('🔄 Force cleanup completed');
+                        }
+                    }, 100);
+                }, 50);
+                
                 countdownAnimationRef.current = null;
             }
         };
         
         countdownAnimationRef.current = requestAnimationFrame(animate);
-    }, [currentScrollDelta]);
+    }, [currentScrollDelta]); // 只需要currentScrollDelta作为依赖
 
     // ==================== 副作用和事件处理 ====================
 
@@ -505,6 +564,15 @@ const SmartDirectionalCursor = () => {
         setCurrentScrollDelta(roundedDelta);
         setAnimatedValue(roundedDelta); // 立即显示当前滚动值
         
+        if (import.meta.env.DEV) {
+            console.log('🔄 Scroll event processed:', {
+                rawDelta,
+                roundedDelta,
+                direction,
+                now: Date.now()
+            });
+        }
+        
         // 保留累积逻辑用于其他功能（如边界检测）
         setAccumulatedScroll(prev => {
             const newTotal = prev + roundedDelta;
@@ -514,13 +582,24 @@ const SmartDirectionalCursor = () => {
         // 清理并重设衰减定时器
         if (scrollDecayTimerRef.current) {
             clearTimeout(scrollDecayTimerRef.current);
+            scrollDecayTimerRef.current = null;
         }
         
-        // 500ms后开始递减动画
+        // 800ms后开始递减动画（给用户足够时间看清数值）
         scrollDecayTimerRef.current = setTimeout(() => {
+            if (import.meta.env.DEV) {
+                console.log('🎬 Starting countdown animation with value:', roundedDelta);
+                console.log('🎬 Current states before animation:', {
+                    currentScrollDelta,
+                    animatedValue,
+                    isAnimatingDown,
+                    scrollIntensity
+                });
+            }
             startCountdownAnimation();
-        }, 500); // 给用户足够时间看清最终数值
-    }, [startCountdownAnimation]);
+            scrollDecayTimerRef.current = null;
+        }, 800);
+    }, [startCountdownAnimation, currentScrollDelta, animatedValue, isAnimatingDown, scrollIntensity]);
 
     /**
      * 🖱️ 鼠标移动跟踪器
@@ -672,7 +751,22 @@ const SmartDirectionalCursor = () => {
         };
     }, [handleMouseMove, handleMouseEnter, handleMouseLeave, handleWheelForce]);
 
-    // ==================== 渲染逻辑 ====================
+    // 添加一个备用清理机制，确保数值不会永久停留
+    useEffect(() => {
+        if (!isAnimatingDown && currentScrollDelta !== 0 && scrollIntensity === 0) {
+            // 如果没有在动画但还有数值显示，启动清理
+            const cleanupTimeout = setTimeout(() => {
+                if (import.meta.env.DEV) {
+                    console.log('🧹 Backup cleanup triggered');
+                }
+                setCurrentScrollDelta(0);
+                setAnimatedValue(0);
+                setScrollDirection(null);
+            }, 1500); // 1.5秒后强制清理
+            
+            return () => clearTimeout(cleanupTimeout);
+        }
+    }, [isAnimatingDown, currentScrollDelta, scrollIntensity]);
 
     /**
      * 🎨 智能光标渲染器
@@ -756,7 +850,19 @@ const SmartDirectionalCursor = () => {
             // 使用动画值（动画时）或当前滚动增量（滚动时）
             const valueToShow = isAnimatingDown ? animatedValue : currentScrollDelta;
             
-            if (valueToShow === 0) return '0';
+            // 添加调试信息
+            if (import.meta.env.DEV && (valueToShow !== 0 || isAnimatingDown)) {
+                console.log('📊 Display state:', {
+                    isAnimatingDown,
+                    animatedValue,
+                    currentScrollDelta,
+                    valueToShow,
+                    scrollIntensity
+                });
+            }
+            
+            // 如果值为0，返回null表示不显示
+            if (valueToShow === 0) return null;
             
             // 去掉符号，只显示绝对值
             return Math.abs(valueToShow).toString();
@@ -778,7 +884,13 @@ const SmartDirectionalCursor = () => {
         
         const displayValue = getDisplayValue();
         const numberPosition = getNumberPosition();
-        const shouldShowValue = (scrollIntensity > 0 || currentScrollDelta !== 0 || isAnimatingDown);
+        // 改进显示条件：只有在有实际非零值时才显示数字
+        const shouldShowValue = displayValue !== null && (
+            scrollIntensity > 0 || 
+            Math.abs(currentScrollDelta) > 0 || 
+            isAnimatingDown || 
+            Math.abs(animatedValue) > 0
+        );
         const strokeWidth = 0.2; // 细线宽度
         const progressStrokeWidth = 5; // 粗线宽度
         

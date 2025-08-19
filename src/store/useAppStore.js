@@ -53,7 +53,7 @@ const sectionsConfig = [
     index: 5,
     name: { en: "Contact", zh: "联系我" },
     description: { en: "Get in touch", zh: "联系方式" },
-    backgroundEffect: "effectheartbeats", // HeartBeats 背景
+    backgroundEffect: "effectripple", // Ripple Waves 背景 - 波纹传播效果
     cubeImage: "/cube-textures/contact.jpg", // 修正立方体图片路径
   }
 ];
