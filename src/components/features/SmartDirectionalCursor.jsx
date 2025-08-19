@@ -42,8 +42,15 @@
 
 import { useEffect, useState, useCallback, useRef } from 'react';
 import { useAppStore } from '../../store/useAppStore';
+import { useTheme } from '../../hooks/useTheme';
 
 const SmartDirectionalCursor = () => {
+    // ==================== 主题系统 ====================
+    
+    /** 获取当前主题色配置 */
+    const { getThemeColors } = useTheme();
+    const themeColors = getThemeColors();
+    
     // ==================== 状态管理 ====================
     
     /** 光标在屏幕上的实时坐标位置 */
@@ -715,18 +722,29 @@ const SmartDirectionalCursor = () => {
          * 🎨 颜色生成器
          * 根据当前状态动态生成颜色
          */
+        
+        // 辅助函数：将hex颜色转换为RGB数组
+        const hexToRgb = (hex) => {
+            const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+            return result ? [
+                parseInt(result[1], 16),
+                parseInt(result[2], 16),
+                parseInt(result[3], 16)
+            ] : [255, 255, 255]; // 默认返回白色
+        };
+        
         const getBaseColor = () => {
             if (shouldShowBoundaryWarning && scrollIntensity > 0) {
                 return '#ff4444'; // 边界警告红色
             }
-            return '#ffffff'; // 默认白色
+            return themeColors.primary; // 使用主题主色
         };
         
         const getProgressColor = () => {
             if (shouldShowBoundaryWarning && scrollIntensity > 0) {
                 return '#ff4444'; // 边界警告红色
             }
-            return '#00ff88'; // 正常操作绿色
+            return themeColors.accent; // 使用主题辅助色
         };
         
         // 颜色和样式配置
@@ -804,17 +822,17 @@ const SmartDirectionalCursor = () => {
              * 根据滚动状态和边界检测结果，实时计算箭头颜色
              * 
              * 颜色状态：
-             * 1. 静态状态：纯白色
-             * 2. 正常滚动：白色到绿色的渐变
-             * 3. 边界警告：白色到红色的渐变
+             * 1. 静态状态：主题主色
+             * 2. 正常滚动：主题色渐变
+             * 3. 边界警告：红色警告渐变
              */
             const getArrowColor = () => {
                 if (scrollIntensity === 0) {
-                    return '#ffffff'; // 静态时为纯白色
+                    return themeColors.primary; // 静态时使用主题主色
                 }
                 
                 if (shouldShowBoundaryWarning) {
-                    // 边界警告：计算白色到红色的渐变
+                    // 边界警告：计算红色渐变
                     const lightRed = [255, 68, 68];   // #ff4444 RGB
                     const darkRed = [180, 20, 20];    // 深红色 RGB
                     
@@ -824,13 +842,13 @@ const SmartDirectionalCursor = () => {
                     
                     return `rgb(${r}, ${g}, ${b})`;
                 } else {
-                    // 正常状态：计算白色到绿色的渐变
-                    const lightGreen = [0, 255, 136]; // #00ff88 RGB
-                    const darkGreen = [0, 180, 60];   // 深绿色 RGB
+                    // 正常状态：计算主题色渐变
+                    const lightColor = hexToRgb(themeColors.accent); // 主题辅助色
+                    const darkColor = hexToRgb(themeColors.secondary); // 主题次要色
                     
-                    const r = Math.round(lightGreen[0] + (darkGreen[0] - lightGreen[0]) * scrollIntensity);
-                    const g = Math.round(lightGreen[1] + (darkGreen[1] - lightGreen[1]) * scrollIntensity);
-                    const b = Math.round(lightGreen[2] + (darkGreen[2] - lightGreen[2]) * scrollIntensity);
+                    const r = Math.round(lightColor[0] + (darkColor[0] - lightColor[0]) * scrollIntensity);
+                    const g = Math.round(lightColor[1] + (darkColor[1] - lightColor[1]) * scrollIntensity);
+                    const b = Math.round(lightColor[2] + (darkColor[2] - lightColor[2]) * scrollIntensity);
                     
                     return `rgb(${r}, ${g}, ${b})`;
                 }
