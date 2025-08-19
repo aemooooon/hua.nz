@@ -10,15 +10,15 @@
  * 【主要功能特性】
  * 1. 🎯 方向指示：显示向上/向下/双向箭头，告知用户可用的导航方向
  * 2. 🎨 颜色语义：绿色=可操作，红色=边界警告，白色=默认状态
- * 3. 📊 实时反馈：根据鼠标滚轮力度显示0-100%的进度环和百分比
+ * 3. 📊 真实滚动反馈：显示实际的滚动增量值（+300, -150等），而非模拟百分比
  * 4. 🚨 智能边界检测：区分section级别和页面内容级别的滚动边界
  * 5. 🎭 悬停交互：鼠标悬停时光标有微妙的视觉变化
  * 6. 🖱️ 智能光标切换：在可点击元素上自动切换到原生光标，保证操作精准度
  * 
  * 【视觉组成】
- * - 外层圆环：显示滚动进度（0-100%）
+ * - 外层圆环：显示滚动进度（基于滚动强度）
  * - 内层箭头：指示可用的导航方向
- * - 中心数字：显示当前滚动强度百分比
+ * - 中心数字：显示真实的累积滚动增量（+/-数值）
  * - 动态颜色：根据操作有效性改变颜色
  * - 可点击提示：在可点击元素上显示小绿点提示
  * 
@@ -61,6 +61,18 @@ const SmartDirectionalCursor = () => {
     /** 滚轮滚动的力度强度，范围0-1，用于显示进度环 */
     const [scrollIntensity, setScrollIntensity] = useState(0);
     
+    /** 累积的滚动距离，用于显示总的滚动量 */
+    const [accumulatedScroll, setAccumulatedScroll] = useState(0);
+    
+    /** 当前单次滚动的增量值，用于显示实时滚动力度 */
+    const [currentScrollDelta, setCurrentScrollDelta] = useState(0);
+    
+    /** 动画显示的数值，用于从最大值递减到0的动画效果 */
+    const [animatedValue, setAnimatedValue] = useState(0);
+    
+    /** 是否正在进行递减动画 */
+    const [isAnimatingDown, setIsAnimatingDown] = useState(false);
+    
     /** 最后一次滚动的时间戳，用于实现滚动强度的自然衰减 */
     const [lastScrollTime, setLastScrollTime] = useState(0);
     
@@ -83,6 +95,9 @@ const SmartDirectionalCursor = () => {
     
     /** 滚动衰减定时器的引用，用于清理定时器 */
     const scrollDecayTimerRef = useRef();
+    
+    /** 数值递减动画定时器的引用 */
+    const countdownAnimationRef = useRef();
     
     /** 缓存DOM容器引用，避免重复查询 */
     const containerRef = useRef(null);
@@ -387,6 +402,45 @@ const SmartDirectionalCursor = () => {
         };
     }, [currentSection, sections.length]);
 
+    /**
+     * 🎬 数值递减动画函数
+     * 从当前累积值开始，逐步递减到0
+     * 创造平滑的视觉反馈效果
+     */
+    const startCountdownAnimation = useCallback(() => {
+        setIsAnimatingDown(true);
+        
+        const startValue = currentScrollDelta; // 使用当前滚动增量而不是累积值
+        const startTime = performance.now();
+        const duration = Math.min(Math.abs(startValue) * 3, 800); // 调整动画时长，更快一些
+        
+        const animate = () => {
+            const now = performance.now();
+            const elapsed = now - startTime;
+            const progress = Math.min(elapsed / duration, 1);
+            
+            // 使用缓动函数创造自然的递减效果
+            const easeOutCubic = 1 - Math.pow(1 - progress, 3);
+            const currentValue = Math.round(startValue * (1 - easeOutCubic));
+            
+            setAnimatedValue(currentValue);
+            
+            if (progress < 1) {
+                countdownAnimationRef.current = requestAnimationFrame(animate);
+            } else {
+                // 动画结束，重置所有状态
+                setAnimatedValue(0);
+                setCurrentScrollDelta(0);
+                setScrollIntensity(0);
+                setScrollDirection(null);
+                setIsAnimatingDown(false);
+                countdownAnimationRef.current = null;
+            }
+        };
+        
+        countdownAnimationRef.current = requestAnimationFrame(animate);
+    }, [currentScrollDelta]);
+
     // ==================== 副作用和事件处理 ====================
 
     /**
@@ -398,41 +452,68 @@ const SmartDirectionalCursor = () => {
     }, [getAvailableDirections]);
 
     /**
-     * 🎡 滚轮事件处理器
-     * 检测用户的滚轮操作，计算滚动强度和方向
+     * 🎡 滚轮事件处理器 - 真实滚动力度检测 + 动画递减
+     * 检测用户的滚轮操作，捕获真实的滚动增量和累积距离
+     * 
+     * 新特性：
+     * - 记录真实的 deltaY 值，实时显示
+     * - 累积滚动距离，及时更新动画显示值
+     * - 用户停止滚动后，数字从当前值动画递减到0
      * 
      * 性能优化：
      * - 8ms节流限制，达到120fps响应速度
-     * - 200ms自动衰减，避免长时间显示进度
+     * - 500ms延迟后开始递减动画
      * 
      * @param {WheelEvent} event 滚轮事件对象
      */
     const handleWheelForce = useCallback((event) => {
-        // 计算滚动力度：deltaY越大，force越接近1
-        const force = Math.min(Math.abs(event.deltaY) / 80, 1);
+        // 获取真实的滚动增量值
+        const rawDelta = event.deltaY;
+        
+        // 计算视觉反馈用的强度（0-1）
+        const visualIntensity = Math.min(Math.abs(rawDelta) / 80, 1);
+        
         // 确定滚动方向：deltaY > 0为向下，< 0为向上
-        const direction = event.deltaY > 0 ? 'down' : 'up';
+        const direction = rawDelta > 0 ? 'down' : 'up';
         
         // 性能节流：限制更新频率到120fps
         const now = performance.now();
         if (now - (handleWheelForce.lastTime || 0) < 8) return;
         handleWheelForce.lastTime = now;
         
-        // 更新状态
-        setScrollIntensity(force);
+        // 停止任何正在进行的递减动画
+        if (countdownAnimationRef.current) {
+            cancelAnimationFrame(countdownAnimationRef.current);
+            countdownAnimationRef.current = null;
+        }
+        setIsAnimatingDown(false);
+        
+        // 更新状态 - 使用真实数值
+        setScrollIntensity(visualIntensity); // 保留视觉反馈
         setScrollDirection(direction);
         setLastScrollTime(now);
+        
+        // 设置当前滚动增量（单次滚动的力度）
+        const roundedDelta = Math.round(rawDelta);
+        setCurrentScrollDelta(roundedDelta);
+        setAnimatedValue(roundedDelta); // 立即显示当前滚动值
+        
+        // 保留累积逻辑用于其他功能（如边界检测）
+        setAccumulatedScroll(prev => {
+            const newTotal = prev + roundedDelta;
+            return Math.max(-9999, Math.min(9999, newTotal));
+        });
         
         // 清理并重设衰减定时器
         if (scrollDecayTimerRef.current) {
             clearTimeout(scrollDecayTimerRef.current);
         }
         
+        // 500ms后开始递减动画
         scrollDecayTimerRef.current = setTimeout(() => {
-            setScrollIntensity(0);
-            setScrollDirection(null);
-        }, 200);
-    }, []);
+            startCountdownAnimation();
+        }, 500); // 给用户足够时间看清最终数值
+    }, [startCountdownAnimation]);
 
     /**
      * 🖱️ 鼠标移动跟踪器
@@ -527,7 +608,7 @@ const SmartDirectionalCursor = () => {
                 cancelAnimationFrame(animationFrameRef.current);
             }
         };
-    }, [isHovering, lastScrollTime, scrollIntensity]);
+    }, [isHovering, lastScrollTime, scrollIntensity, accumulatedScroll]);
 
     /**
      * 🖱️ 系统光标控制
@@ -574,8 +655,12 @@ const SmartDirectionalCursor = () => {
             document.removeEventListener('mouseleave', handleMouseLeave);
             document.removeEventListener('wheel', handleWheelForce);
             
+            // 清理所有动画和定时器
             if (scrollDecayTimerRef.current) {
                 clearTimeout(scrollDecayTimerRef.current);
+            }
+            if (countdownAnimationRef.current) {
+                cancelAnimationFrame(countdownAnimationRef.current);
             }
         };
     }, [handleMouseMove, handleMouseEnter, handleMouseLeave, handleWheelForce]);
@@ -647,7 +732,21 @@ const SmartDirectionalCursor = () => {
         // 颜色和样式配置
         const baseColor = getBaseColor();
         const progressColor = getProgressColor();
-        const percentage = Math.round(scrollIntensity * 100);
+        
+        // 真实滚动数值显示逻辑 - 使用当前滚动增量
+        const getDisplayValue = () => {
+            // 使用动画值（动画时）或当前滚动增量（滚动时）
+            const valueToShow = isAnimatingDown ? animatedValue : currentScrollDelta;
+            
+            if (valueToShow === 0) return '0';
+            
+            // 格式化显示：正数显示+号，负数自带-号
+            const prefix = valueToShow > 0 ? '+' : '';
+            return `${prefix}${valueToShow}`;
+        };
+        
+        const displayValue = getDisplayValue();
+        const shouldShowValue = (scrollIntensity > 0 || currentScrollDelta !== 0 || isAnimatingDown);
         const strokeWidth = 0.2; // 细线宽度
         const progressStrokeWidth = 5; // 粗线宽度
         
@@ -819,26 +918,37 @@ const SmartDirectionalCursor = () => {
                     )}
                 </svg>
 
-                {/* 📈 滚动百分比显示：精确数值反馈 */}
-                {scrollIntensity > 0 && (
+                {/* 📈 真实滚动数值显示：显示实际的滚动增量，位置在左边圆的正中间 */}
+                {shouldShowValue && (
                     <div
                         style={{
                             position: 'absolute',
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
-                            fontSize: '14px', // 从24px减小到16px
-                            fontWeight: '400', // 增加字体粗细提高辨识度
-                            fontFamily: 'Arial, sans-serif', // 使用Arial字体
+                            fontSize: '11px', // 适中的字体大小
+                            fontWeight: '600', // 加粗以提高可读性
+                            fontFamily: 'Monaco, "SF Mono", "Consolas", monospace', // 使用等宽字体，数字对齐更好
                             color: progressColor,
                             opacity: 0.95,
                             zIndex: 15,
-                            textShadow: `0 0 4px ${progressColor}`,
-                            transform: 'translate3d(-33px, 0, 0)', // 移动到圆环左边四分之一位置
-                            willChange: 'opacity',
+                            textShadow: `0 0 6px ${progressColor}40`, // 更柔和的发光效果
+                            transform: 'translate3d(-24px, 0, 0)', // 向左偏移更多一些
+                            willChange: 'opacity, transform',
+                            minWidth: '32px', // 确保有足够宽度显示数字
+                            textAlign: 'center',
+                            transition: isAnimatingDown ? 'none' : 'all 0.1s ease-out', // 动画时不使用过渡
                         }}
                     >
-                        <span className="percentage">{percentage}%</span>
+                        <span 
+                            className="scroll-value"
+                            style={{
+                                transform: isAnimatingDown ? 'scale(0.95)' : 'scale(1)',
+                                transition: 'transform 0.15s ease-out',
+                            }}
+                        >
+                            {displayValue}
+                        </span>
                     </div>
                 )}
 
