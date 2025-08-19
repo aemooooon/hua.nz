@@ -61,19 +61,19 @@ const ContactSection = ({ language }) => {
             icon: "ri-github-fill",
             url: contactTexts.social.github.url,
             label: contactTexts.social.github.label,
-            color: "hover:bg-theme-surface"
+            iconColor: "text-theme-primary hover:text-theme-accent"
         },
         {
             icon: "ri-linkedin-fill", 
             url: contactTexts.social.linkedin.url,
             label: contactTexts.social.linkedin.label,
-            color: "hover:bg-theme-primary/80"
+            iconColor: "text-theme-primary hover:text-theme-accent"
         },
         {
             icon: "ri-google-fill",
             url: contactTexts.social.email.url,
             label: contactTexts.social.email.label,
-            color: "hover:bg-theme-error/80"
+            iconColor: "text-theme-primary hover:text-theme-accent"
         }
     ];
 
@@ -166,7 +166,7 @@ const ContactSection = ({ language }) => {
                                 
                                 {/* 二维码悬浮层 - 固定定位在视口中央，最高层级 */}
                                 <div className="fixed inset-0 bg-black/50 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center z-[9999] pointer-events-none group-hover:pointer-events-auto">
-                                    <div className="glass-card rounded-2xl p-6 shadow-2xl max-w-sm mx-4 transform scale-95 group-hover:scale-100 transition-transform duration-300">
+                                    <div className="bg-transparent rounded-2xl p-6 shadow-2xl max-w-sm mx-4 transform scale-95 group-hover:scale-100 transition-transform duration-300">
                                         {/* 标题 */}
                                         <div className="text-center mb-4">
                                             <div className="text-3xl mb-2 text-theme-primary">
@@ -249,10 +249,10 @@ const ContactSection = ({ language }) => {
                                     href={social.url}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className={`w-16 h-16 inline-flex items-center justify-center p-4 bg-theme-surface/20 backdrop-blur-sm border-2 border-theme-border-white-10 rounded-full text-2xl text-theme-text-primary no-underline transition-all duration-500 hover:shadow-2xl hover:scale-110 social-link hover:border-theme-primary hover:bg-theme-hover`}
+                                    className="w-16 h-16 inline-flex items-center justify-center p-4 bg-theme-surface/20 backdrop-blur-sm border-2 border-theme-border-white-10 rounded-full text-2xl no-underline transition-all duration-500 hover:shadow-2xl hover:scale-110 social-link hover:border-theme-primary hover:bg-theme-hover"
                                     title={social.label}
                                 >
-                                    <i className={social.icon}></i>
+                                    <i className={`${social.icon} ${social.iconColor} transition-colors duration-300`}></i>
                                 </a>
                             ))}
                         </div>

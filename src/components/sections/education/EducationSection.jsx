@@ -402,9 +402,13 @@ const EducationSection = ({ language }) => {
                 </div>
             </div>
 
-            {/* 标题与内容之间的分隔线 - 使用白色透明并有光往两边延伸 */}
+            {/* 标题与内容之间的分隔线 - 与教育卡片内容区域宽度完全保持一致 */}
             <div className="flex justify-center my-8">
-                <GlowDivider className="w-full max-w-screen-xl" />{/* 与容器宽度保持一致 */}
+                <div className="w-full">
+                    <div className="bg-transparent rounded-2xl px-6 lg:px-8">
+                        <GlowDivider className="w-full" />
+                    </div>
+                </div>
             </div>
 
             {/* 学历内容 - 垂直滚动，使用主题化文本颜色 */}
