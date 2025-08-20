@@ -406,7 +406,7 @@ const EducationSection = ({ language }) => {
             <div className="flex justify-center my-8">
                 <div className="w-full">
                     <div className="bg-transparent rounded-2xl px-6 lg:px-8">
-                        <GlowDivider className="w-full" />
+                        {/* <GlowDivider className="w-full" /> */}
                     </div>
                 </div>
             </div>

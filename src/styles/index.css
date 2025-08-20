@@ -6,8 +6,7 @@
 @tailwind utilities;
 
 @layer base {
-  /* 导入格鲁吉亚字体 */
-  @import url('https://fonts.googleapis.com/css2?family=Georgia&display=swap');
+  /* Georgia是系统自带字体，无需导入 */
 }
 
 * {
