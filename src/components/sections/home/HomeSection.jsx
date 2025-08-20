@@ -167,6 +167,17 @@ const HomeSection = ({
                             </button>
                         </Tooltip>
                     </div>
+
+                    {/* Mobile Scroll Hint - 移动端滚动提示 (只在移动端和窄屏显示) */}
+                    <div className={`absolute z-50 transition-opacity duration-1000 md:hidden ${showToggleButtons ? 'opacity-100' : 'opacity-0'}`} style={{
+                        bottom: 'max(1.5rem, env(safe-area-inset-bottom) + 1rem)',
+                        left: '50%',
+                        transform: 'translateX(-50%)'
+                    }}>
+                        <p className="text-white/70 text-sm font-medium whitespace-nowrap animate-pulse">
+                            {content.ui.mobileScrollHint}
+                        </p>
+                    </div>
                 </>
             )}
         </div>

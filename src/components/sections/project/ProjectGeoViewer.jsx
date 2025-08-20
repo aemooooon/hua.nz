@@ -36,7 +36,6 @@ const ProjectGeoViewer = ({ isOpen, onClose, language = 'en' }) => {
   // 获取项目数据，只取有坐标的项目
   const projects = useMemo(() => {
     return getAllLocations().filter(loc => 
-      loc.type === 'project' && 
       loc.coordinates && 
       Array.isArray(loc.coordinates) && 
       loc.coordinates.length === 2
@@ -351,8 +350,8 @@ const ProjectGeoViewer = ({ isOpen, onClose, language = 'en' }) => {
 
   // 创建项目弹窗内容（深色主题）
   const createPopupContent = useCallback((project) => {
-    const projectName = getBilingualText(project.title) || getBilingualText(project.name);
-    const projectDescription = getBilingualText(project.description);
+    const projectName = getBilingualText(project.name);
+    const projectClient = getBilingualText(project.client);
     const projectLocation = getBilingualText(project.location);
     const projectImage = Array.isArray(project.img) ? project.img[0] : project.img;
     
@@ -393,18 +392,12 @@ const ProjectGeoViewer = ({ isOpen, onClose, language = 'en' }) => {
           
           <h3 style="margin: 0 0 10px 0; color: #f9fafb; font-size: 16px; font-weight: 700; line-height: 1.3; text-shadow: 0 1px 2px rgba(0,0,0,0.5);">${projectName}</h3>
           
-          ${projectDescription ? `
-            <p style="margin: 0 0 12px 0; color: #d1d5db; font-size: 13px; line-height: 1.5;">
-              ${projectDescription.length > 120 ? projectDescription.substring(0, 120) + '...' : projectDescription}
-            </p>
-          ` : ''}
-          
           ${projectLocation ? `
             <div style="display: flex; align-items: center; margin-bottom: 10px; color: #9ca3af; font-size: 12px;">
               <svg width="14" height="14" viewBox="0 0 20 20" fill="currentColor" style="margin-right: 6px;">
                 <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd" />
               </svg>
-              ${projectLocation}
+              ${projectClient}, ${projectLocation}
             </div>
           ` : ''}
           
@@ -776,8 +769,8 @@ const ProjectGeoViewer = ({ isOpen, onClose, language = 'en' }) => {
         />
 
         {/* 左下角标题 - 使用地图高对比度样式 */}
-        <div className="absolute bottom-4 left-4 z-10 map-info-panel">
-          <h2 className="text-lg font-bold">
+        <div className="absolute bottom-8 left-4 z-10 map-info-panel">
+          <h2 className="text-sm font-bold">
             {projectText.map.title}
           </h2>
         </div>

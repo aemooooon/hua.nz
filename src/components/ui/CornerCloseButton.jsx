@@ -122,61 +122,95 @@ const CornerCloseButton = ({
   };
 
   return (
-    <div className={`fixed top-0 right-0 ${className} z-[100000]`} style={{ width: '4rem', height: '4rem' }}>
-      {/* 背景圆 - hover时从右上角扩展的圆形背景 */}
-      <div
-        className={`absolute top-0 right-0 rounded-full transition-all ${animationDuration} ease-in-out ${isHovered ? 'scale-100 opacity-100' : 'scale-50 opacity-0'} origin-top-right shadow-lg z-0`}
-        style={{
-          ...circleSizeMap[circleSize] || circleSizeMap['w-32 h-32'],
-          backgroundColor: colorMap[circleColor] || colorMap['bg-theme-primary'],
-          transform: 'translate(50%, -50%)'
-        }}
-      />
-
-      {/* 点击区域 - 不可见的点击热区，确保易于点击 */}
-      <button
-        className="absolute top-0 right-0 w-24 h-24 focus:outline-none z-20"
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
-        onClick={(e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          onClick();
-        }}
-        aria-label={ariaLabel}
-      />
-      
-      {/* X 图标 - 可视化的关闭标识，支持完全自定义样式 */}
-      <div 
-        className={`absolute pointer-events-none z-30`}
-        style={{
-          top: positionMap[position.top] || positionMap['top-6'],
-          right: positionMap[position.right] || positionMap['right-6']
-        }}
-      >
-        <svg 
-          className={`transition-all ${animationDuration} ease-in-out drop-shadow-lg`}
+    <>
+      {/* 桌面端版本 - 保持原有设计 */}
+      <div className={`fixed top-0 right-0 ${className} z-[100000] hidden md:block`} style={{ width: '4rem', height: '4rem' }}>
+        {/* 背景圆 - hover时从右上角扩展的圆形背景 */}
+        <div
+          className={`absolute top-0 right-0 rounded-full transition-all ${animationDuration} ease-in-out ${isHovered ? 'scale-100 opacity-100' : 'scale-50 opacity-0'} origin-top-right shadow-lg z-0`}
           style={{
-            ...sizeMap[iconSize] || sizeMap['w-12 h-12'],
-            color: isHovered ? 
-              (colorMap[iconHoverColor] || colorMap['text-white']) : 
-              (colorMap[iconColor] || colorMap['text-white']),
-            transform: isHovered ? 'scale(1.1)' : 'scale(1)'
+            ...circleSizeMap[circleSize] || circleSizeMap['w-32 h-32'],
+            backgroundColor: colorMap[circleColor] || colorMap['bg-theme-primary'],
+            transform: 'translate(50%, -50%)'
           }}
-          fill="none" 
-          viewBox="0 0 24 24" 
-          stroke="currentColor"
-          strokeWidth={strokeWidth}
+        />
+
+        {/* 点击区域 - 不可见的点击热区，确保易于点击 */}
+        <button
+          className="absolute top-0 right-0 w-24 h-24 focus:outline-none z-20"
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            onClick();
+          }}
+          aria-label={ariaLabel}
+        />
+        
+        {/* X 图标 - 可视化的关闭标识，支持完全自定义样式 */}
+        <div 
+          className={`absolute pointer-events-none z-30`}
+          style={{
+            top: positionMap[position.top] || positionMap['top-6'],
+            right: positionMap[position.right] || positionMap['right-6']
+          }}
         >
-          {/* X的两条交叉线 */}
-          <path 
-            strokeLinecap="round" 
-            strokeLinejoin="round" 
-            d="M6 18L18 6M6 6l12 12" 
-          />
-        </svg>
+          <svg 
+            className={`transition-all ${animationDuration} ease-in-out drop-shadow-lg`}
+            style={{
+              ...sizeMap[iconSize] || sizeMap['w-12 h-12'],
+              color: isHovered ? 
+                (colorMap[iconHoverColor] || colorMap['text-white']) : 
+                (colorMap[iconColor] || colorMap['text-white']),
+              transform: isHovered ? 'scale(1.1)' : 'scale(1)'
+            }}
+            fill="none" 
+            viewBox="0 0 24 24" 
+            stroke="currentColor"
+            strokeWidth={strokeWidth}
+          >
+            {/* X的两条交叉线 */}
+            <path 
+              strokeLinecap="round" 
+              strokeLinejoin="round" 
+              d="M6 18L18 6M6 6l12 12" 
+            />
+          </svg>
+        </div>
       </div>
-    </div>
+
+      {/* 移动端版本 - 参考Contact Section的social icon样式 */}
+      <div className={`fixed z-[100000] block md:hidden ${className}`} style={{
+        top: 'max(1rem, env(safe-area-inset-top) + 0.5rem)',
+        left: '50%',
+        transform: 'translateX(-50%)'
+      }}>
+        <button
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            onClick();
+          }}
+          className="w-12 h-12 inline-flex items-center justify-center bg-theme-surface/20 backdrop-blur-sm border-2 border-theme-border-white-10 rounded-full transition-all duration-300 hover:scale-110 hover:border-theme-primary hover:bg-theme-hover shadow-lg"
+          aria-label={ariaLabel}
+        >
+          <svg 
+            className="w-6 h-6 text-theme-primary transition-colors duration-300"
+            fill="none" 
+            viewBox="0 0 24 24" 
+            stroke="currentColor"
+            strokeWidth={1.5}
+          >
+            <path 
+              strokeLinecap="round" 
+              strokeLinejoin="round" 
+              d="M6 18L18 6M6 6l12 12" 
+            />
+          </svg>
+        </button>
+      </div>
+    </>
   );
 };
 
