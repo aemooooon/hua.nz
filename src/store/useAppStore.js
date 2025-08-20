@@ -343,14 +343,14 @@ const contentConfig = {
               description: "An Android app using Kotlin, Jetpack, Google Maps, and Room DB for trip planning.",
               technologies: ["Kotlin", "Android", "Google Maps"],
               githubUrl: "https://github.com/aemooooon/travel-assistant",
-              image: "/TravelAssistant.jpg"
+              image: "/travelassistant/ta02.jpg"
             },
             {
               name: "FitsGo",
               description: "A Fitness tracker app built with React Native and Firebase, supporting location tracking and workout history.",
               technologies: ["React Native", "Firebase"],
               githubUrl: "https://github.com/aemooooon/fitsgo",
-              image: "/fitsgo-team.jpg"
+              image: "/fitsgo/fitsgo.02.png"
             }
           ]
         }
@@ -699,14 +699,14 @@ const contentConfig = {
               description: "使用Kotlin、Jetpack、Google Maps和Room DB开发的Android旅行规划应用。",
               technologies: ["Kotlin", "Android", "Google Maps"],
               githubUrl: "https://github.com/aemooooon/travel-assistant",
-              image: "/TravelAssistant.jpg"
+              image: "/travelassistant/ta02.jpg"
             },
             {
               name: "FitsGo",
               description: "使用React Native和Firebase构建的健身追踪应用，支持位置跟踪和锻炼历史。",
               technologies: ["React Native", "Firebase"],
               githubUrl: "https://github.com/aemooooon/fitsgo",
-              image: "/fitsgo-team.jpg"
+              image: "/fitsgo/fitsgo.02.png"
             }
           ]
         }

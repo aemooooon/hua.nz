@@ -5,8 +5,7 @@ import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.j
 import { useAppStore } from '../../../store/useAppStore';
 import { gsap } from 'gsap';
 import { debounce } from 'lodash';
-import texturePreloader from '../../../utils/texturePreloader';
-import smartTextureLoader from '../../../utils/SmartTextureLoader';
+import textureSystem from '../../../utils/texture';
 import webglResourceManager from '../../../utils/WebGLResourceManager';
 import { useTheme } from '../../../hooks/useTheme';
 
@@ -40,15 +39,8 @@ const HeroCube = ({
     
     const [texturesReady, setTexturesReady] = useState(false); // 纹理预加载状态
 
-    // 智能cube纹理配置 - 自动选择最优格式
+    // 智能cube纹理配置 - 使用新的纹理系统
     const faces = useMemo(() => {
-        // 显示格式检测信息
-        const compressionInfo = smartTextureLoader.getCompressionInfo();
-        console.log(`🎯 智能纹理加载器: ${compressionInfo.format} (${compressionInfo.description})`);
-        
-        const format = smartTextureLoader.getBestFormat();
-        const directory = smartTextureLoader.getBestDirectory();
-        
         return [
             { 
                 name: 'home', 
@@ -62,40 +54,35 @@ const HeroCube = ({
                 label: content.navigation?.about || 'About', 
                 color: '#7ca65c', 
                 effect: 'effectlorenz', 
-                image: format === 'jpg' ? '/cube-textures/about.jpg' : `/${directory}/about.${format}`,
-                fallback: '/cube-textures/about.jpg'
+                texture: 'about' // 只需要基础名称，新系统会自动选择最优格式
             },
             { 
                 name: 'projects', 
                 label: content.navigation?.projects || 'Projects', 
                 color: '#5d7d4b', 
                 effect: 'effectmonjori', 
-                image: format === 'jpg' ? '/cube-textures/projects.jpg' : `/${directory}/projects.${format}`,
-                fallback: '/cube-textures/projects.jpg'
+                texture: 'projects'
             },
             { 
                 name: 'gallery', 
                 label: content.navigation?.gallery || 'Gallery', 
                 color: '#768e90', 
                 effect: 'effectheartbeats', 
-                image: format === 'jpg' ? '/cube-textures/gallery.jpg' : `/${directory}/gallery.${format}`,
-                fallback: '/cube-textures/gallery.jpg'
+                texture: 'gallery'
             },
             { 
                 name: 'education', 
                 label: content.navigation?.education || 'Education', 
                 color: '#4a636a', 
                 effect: 'effectfuse', 
-                image: format === 'jpg' ? '/cube-textures/education.jpg' : `/${directory}/education.${format}`,
-                fallback: '/cube-textures/education.jpg'
+                texture: 'education'
             },
             { 
                 name: 'contact', 
                 label: content.navigation?.contact || 'Contact', 
                 color: '#3a4e55', 
                 effect: 'effectpixeldistortion', 
-                image: format === 'jpg' ? '/cube-textures/contact.jpg' : `/${directory}/contact.${format}`,
-                fallback: '/cube-textures/contact.jpg'
+                texture: 'contact'
             }
         ];
     }, [content.navigation]);
@@ -103,22 +90,28 @@ const HeroCube = ({
     // 预加载所有纹理资源
     useEffect(() => {
         const preloadTextures = async () => {
-            // 预加载纹理，减少首次渲染卡顿
-            
-            // 收集所有需要预加载的资源
-            const urls = faces.filter(face => face.video || face.image)
-                             .map(face => face.video || face.image);
-            
-            if (urls.length === 0) {
-                setTexturesReady(true);
-                return;
-            }
-            
             try {
-                await texturePreloader.preloadBatch(urls);
+                // 显示格式检测信息
+                const compressionInfo = await textureSystem.getCompressionInfo();
+                console.log(`🎯 智能纹理系统: ${compressionInfo.format} (${compressionInfo.description})`);
+                
+                // 收集需要预加载的纹理名称
+                const textureNames = faces
+                    .filter(face => face.texture)
+                    .map(face => face.texture);
+                
+                if (textureNames.length > 0) {
+                    // 使用新的纹理系统预加载
+                    await textureSystem.preloadTextures(textureNames, {
+                        onProgress: (progress, loaded, total) => {
+                            console.log(`📦 纹理预加载进度: ${loaded}/${total} (${Math.round(progress * 100)}%)`);
+                        }
+                    });
+                }
+                
                 setTexturesReady(true);
-            } catch {
-                // 部分纹理加载失败，使用fallback继续
+            } catch (error) {
+                console.warn('纹理预加载部分失败，继续渲染:', error);
                 setTexturesReady(true);
             }
         };
@@ -350,13 +343,12 @@ const HeroCube = ({
             // 索引5: 背面 (Z-) - Projects面
             faces.find(f => f.name === 'projects')
         ].map((face) => {
-            // 如果是视频贴图，使用预加载的纹理
+            // 如果是视频贴图，直接创建视频纹理
             if (face.video) {
-                const preloadedTexture = texturePreloader.getTexture(face.video);
                 const fallbackTexture = createCheckerboardTexture(256);
                 
                 const material = new THREE.MeshLambertMaterial({
-                    map: preloadedTexture || fallbackTexture,
+                    map: fallbackTexture, // 初始使用fallback
                     transparent: true,
                     opacity: 0.9,
                     side: THREE.FrontSide // 只渲染正面，提升性能
@@ -425,22 +417,28 @@ const HeroCube = ({
                 return material;
             }
             
-            // 如果是图片贴图，使用预加载的纹理
-            if (face.image) {
-                const preloadedTexture = texturePreloader.getTexture(face.image);
-                
+            // 如果是图片贴图，使用新的纹理系统
+            if (face.texture) {
+                // 先创建带fallback的材质
+                const fallbackTexture = createCheckerboardTexture(256);
                 const material = new THREE.MeshLambertMaterial({
-                    map: preloadedTexture || createCheckerboardTexture(256),
+                    map: fallbackTexture, // 初始使用fallback
                     transparent: true,
                     opacity: 0.9,
                     side: THREE.FrontSide
                 });
                 
-                if (preloadedTexture) {
-                    // 使用预加载的纹理
-                } else {
-                    // 预加载的纹理未找到，使用fallback
-                }
+                // 异步加载实际纹理
+                (async () => {
+                    try {
+                        const texture = await textureSystem.loadTexture(face.texture);
+                        material.map = texture;
+                        material.needsUpdate = true;
+                    } catch (error) {
+                        console.warn(`加载纹理失败: ${face.texture}`, error);
+                        // 保持使用fallback纹理
+                    }
+                })();
                 
                 return material;
             }

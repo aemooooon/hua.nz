@@ -179,7 +179,26 @@ sections/
 **用途**: 工具函数和调试工具
 **包含**: 纯函数、工具类、调试组件
 **特点**: 无副作用、可复用、独立功能
-**示例**: `texturePreloader.js`, `MemoryMonitor.jsx`, `performance.js`
+**示例**: `MemoryMonitor.jsx`, `performance.js`, `texture/`
+
+#### 纹理系统 (`utils/texture/`)
+**现代化纹理管理系统**，支持智能格式选择和自动回退：
+- `FormatDetector.js` - 图像格式检测器（AVIF/WebP支持检测）
+- `TextureLoader.js` - 核心纹理加载器（智能格式选择）
+- `TextureManager.js` - 高级纹理管理器（内存管理、性能优化）
+- `index.js` - 统一API入口
+
+**使用方式**:
+```javascript
+import textureSystem from '../utils/texture';
+const texture = await textureSystem.loadTexture('about');
+```
+
+**特性**:
+- ✅ AVIF > WebP > JPEG 智能格式选择
+- ✅ 自动回退机制
+- ✅ 内存管理和性能监控
+- ✅ 统一的异步API
 
 ### 🪝 `hooks/`
 **用途**: 自定义React Hooks
