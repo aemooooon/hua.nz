@@ -875,7 +875,7 @@ export const useAppStore = create(
         {
           "type": "Front End",
           "title": "Front End Developer",
-          "name": "Realibox SaaS Platform Apps Chains",
+          "name": "Realibox Portal",
           "company": "Realibox",
           "description": "Developed and maintained the central hub for Realibox’s 3D assets, using React with a WebGL-based library for the frontend and Node.js/Python for the backend. Implemented CI/CD pipelines using GitLab for code integration and deployment. Worked in an Agile environment, collaborating closely with PMs, QAs, and Designers to ensure feature delivery aligned with requirements.",
           "coordinates": [22.9951158, 113.3335372],
@@ -885,6 +885,20 @@ export const useAppStore = create(
             "live": "https://hub.realibox.com/",
           },
           "img": ["/realibox/official/official.01.jpg", "/realibox/official/official.02.jpg", "/realibox/official/official.03.jpg"]
+        },
+                {
+          "type": "Front End",
+          "title": "Front End Developer",
+          "name": "Realibox 3D Editor",
+          "company": "Realibox",
+          "description": "Developed and maintained the central hub for Realibox’s 3D assets, using React with a WebGL-based library for the frontend and Node.js/Python for the backend. Implemented CI/CD pipelines using GitLab for code integration and deployment. Worked in an Agile environment, collaborating closely with PMs, QAs, and Designers to ensure feature delivery aligned with requirements.",
+          "coordinates": [22.9951158, 113.3335372],
+          "location": "Guangzhou, China",
+          "year": "2021-2023",
+          "links": {
+            "live": "https://hub.realibox.com/",
+          },
+          "img": ["/realibox/editor/editor.01.jpg", "/realibox/editor/editor.02.jpg", "/realibox/editor/editor.03.jpg", "/realibox/editor/editor.04.jpg", "/realibox/editor/editor.05.jpg", "/realibox/editor/editor.06.jpg"]
         },
         {
           "type": "Full Stack",
@@ -906,7 +920,7 @@ export const useAppStore = create(
         {
           "type": "WebGL",
           "title": "Interactive 360° Virtual Tour Platform",
-          "name": "Real Estate VR Solutions",
+          "name": "Real Estate VR Collections",
           "company": "Neuclear Stone Digital",
           "description": {
             "en": "Developed a comprehensive 360° virtual tour platform for real estate marketing, serving 18+ property developments across China. Built using JavaScript and WebGL-based 3D libraries, enabling immersive panoramic exploration of buildings, rooms, and outdoor spaces. Implemented advanced features including clickable hotspots, scene transitions, interactive floor plans, and cross-platform compatibility for web and mobile devices. The platform helped property developers showcase their projects remotely, significantly reducing on-site visits while maintaining high engagement rates.",
@@ -973,7 +987,7 @@ export const useAppStore = create(
         {
           "type": "Website",
           "title": "Corporate Website Development Platform",
-          "name": "Enterprises official website",
+          "name": "Enterprises Portal Collections",
           "company": "Day Digital",
           "description": {
             "en": "Comprehensive corporate website development solution serving government agencies, healthcare institutions, tourism bureaus, and private enterprises. Built using CMS platforms with custom database architecture, responsive UI implementation from design mockups, and full deployment management across multiple production servers.",
@@ -1086,7 +1100,7 @@ export const useAppStore = create(
           "type": "Activity",
           "title": "Assisted IT Meetups",
           "company": "CITANZ",
-          "name": "CITANZ CHCH Volunteer",
+          "name": "CITANZ CHCH Events",
           "description": {
             "en": "Active volunteer contributor to CITANZ (Computing and Information Technology Association of New Zealand) Christchurch chapter, facilitating monthly IT community meetups that bring together professionals, students, and technology enthusiasts. Serve as both speaker and engaged listener, sharing technical expertise on software development, data engineering, and emerging technologies while learning from diverse industry perspectives. Actively mentor newcomers to the tech industry, providing guidance on career development, technical skills, and industry best practices. Foster collaborative learning environments through organizing workshops, panel discussions, and networking sessions that strengthen the local tech community. Contribute to knowledge exchange initiatives by facilitating discussions on current technology trends, helping members solve technical challenges, and connecting professionals across different specializations. This volunteer work exemplifies the spirit of giving back to the community while continuously growing through peer learning and mentorship opportunities.",
             "zh": "作为新西兰计算机和信息技术协会(CITANZ)基督城分会的积极志愿者贡献者，协助举办月度IT社区聚会，汇聚专业人士、学生和技术爱好者。既担任演讲者又是积极的倾听者，分享软件开发、数据工程和新兴技术方面的专业知识，同时从多元化的行业视角中学习。积极指导技术行业新人，在职业发展、技术技能和行业最佳实践方面提供指导。通过组织研讨会、小组讨论和网络交流会，营造协作学习环境，加强本地技术社区建设。通过促进当前技术趋势讨论、帮助成员解决技术挑战、连接不同专业领域的专业人士，为知识交流倡议做出贡献。这项志愿工作体现了回馈社区的精神，同时通过同伴学习和导师机会持续成长。"
