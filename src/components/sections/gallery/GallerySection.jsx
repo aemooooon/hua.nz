@@ -122,7 +122,7 @@ const GallerySection = ({ language = 'en' }) => {
 
             // 地板 - 人字拼木地板材质（温暖明亮）
             const floorWidth = 32;  // 左右宽度32米
-            const floorDepth = 64;  // 前后深度64米
+            const floorDepth = 72;  // 前后深度72米（从64米扩展）
             const floorGeometry = new THREE.PlaneGeometry(floorWidth, floorDepth);
             
             // 创建现代美术馆抛光混凝土地板纹理
@@ -301,7 +301,7 @@ const GallerySection = ({ language = 'en' }) => {
                 transparent: false
             });
             const frontBackWallWidth = 32;  // 前后墙宽度32米
-            const leftRightWallWidth = 64;  // 左右墙宽度64米
+            const leftRightWallWidth = 72;  // 左右墙宽度72米（从64米扩展到72米，便于8张画的完美分配）
             const wallHeight = 12;
             const wallThickness = 0.5;
 
@@ -310,7 +310,7 @@ const GallerySection = ({ language = 'en' }) => {
                 new THREE.BoxGeometry(frontBackWallWidth, wallHeight, wallThickness),
                 wallMaterial
             );
-            backWall.position.set(0, 3, -32); // 位置调整到-32 (64/2)
+            backWall.position.set(0, 3, -36); // 位置调整到-36 (72/2)
             backWall.receiveShadow = true;
             backWall.castShadow = false;
             wallGroup.add(backWall);
@@ -321,7 +321,7 @@ const GallerySection = ({ language = 'en' }) => {
                 new THREE.BoxGeometry(10, wallHeight, wallThickness), // 左段10米
                 wallMaterial
             );
-            frontWallLeft.position.set(-11, 3, 32); // 左段位置调整
+            frontWallLeft.position.set(-11, 3, 36); // 左段位置调整
             frontWallLeft.receiveShadow = true;
             frontWallLeft.castShadow = false;
             wallGroup.add(frontWallLeft);
@@ -331,29 +331,29 @@ const GallerySection = ({ language = 'en' }) => {
                 new THREE.BoxGeometry(10, wallHeight, wallThickness), // 右段10米
                 wallMaterial
             );
-            frontWallRight.position.set(11, 3, 32); // 右段位置调整
+            frontWallRight.position.set(11, 3, 36); // 右段位置调整
             frontWallRight.receiveShadow = true;
             frontWallRight.castShadow = false;
             wallGroup.add(frontWallRight);
             scene.add(frontWallRight);
 
-            // 左墙（西）- 64米深
+            // 左墙（西）- 72米深
             const leftWall = new THREE.Mesh(
                 new THREE.BoxGeometry(wallThickness, wallHeight, leftRightWallWidth),
                 wallMaterial
             );
-            leftWall.position.set(-16, 3, 0); // 位置调整到-16 (32/2)
+            leftWall.position.set(-16, 3, 0); // 位置保持在-16 (32/2)
             leftWall.receiveShadow = true;
             leftWall.castShadow = false;
             wallGroup.add(leftWall);
             scene.add(leftWall);
 
-            // 右墙（东）- 64米深
+            // 右墙（东）- 72米深
             const rightWall = new THREE.Mesh(
                 new THREE.BoxGeometry(wallThickness, wallHeight, leftRightWallWidth),
                 wallMaterial
             );
-            rightWall.position.set(16, 3, 0); // 位置调整到16 (32/2)
+            rightWall.position.set(16, 3, 0); // 位置保持在16 (32/2)
             rightWall.receiveShadow = true;
             rightWall.castShadow = false;
             wallGroup.add(rightWall);
@@ -383,8 +383,7 @@ const GallerySection = ({ language = 'en' }) => {
             const maxPaintings = Math.min(galleryData.length, 22); // 更新为22张，匹配实际数据
             const basePaintingHeight = 2.2;
             const maxPaintingWidth = 4;
-            const paintingCenterHeight = 1.6; // 下层画作高度
-            // 上层画作高度：paintingCenterHeight + 1.6 = 3.2米
+            // 下层画作高度：1.6米，上层画作高度：1.6 + 1.6 = 3.2米
             // 最佳观看高度：(1.6 + 3.2) / 2 = 2.4米
 
             // 首先分析所有图片的长宽比，为智能分配做准备
@@ -514,10 +513,8 @@ const GallerySection = ({ language = 'en' }) => {
                     const paintingWithFrame = createPaintingFrame(painting, paintingWidth, paintingHeight);
                     
                     // 设置位置（更新为新分配方案）
-                    const backWallOffset = 31.5;   // 后墙偏移量
-                    const frontWallOffset = 31.5;  // 前墙偏移量
-                    const leftWallOffset = 15.5;   // 左墙偏移量
-                    const rightWallOffset = 15.5;  // 右墙偏移量
+                    const backWallOffset = 35.5;   // 后墙偏移量（72/2 - 0.5）
+                    const frontWallOffset = 35.5;  // 前墙偏移量
                     
                     switch(wallType) {
                         case 'backWall':
@@ -526,82 +523,16 @@ const GallerySection = ({ language = 'en' }) => {
                             paintingWithFrame.rotation.y = 0;
                             break;
                         case 'rightWall': {
-                            // 右墙64米：8张画双层错位分布，确保到墙角距离相等
-                            const isUpper = imageData.item.layer === 'upper';
-                            
-                            // 重新计算位置确保到墙角距离相等
-                            // 墙总长64米，从Z=-32到Z=32
-                            // 预留墙角距离：前后各7.5米，可用空间49米
-                            // 4张画分布在49米内，间距：49/3 = 16.33米
-                            const cornerMargin = 7.5; // 到墙角的距离
-                            const usableLength = 64 - 2 * cornerMargin; // 49米可用空间
-                            const spacing = usableLength / 3; // 16.33米间距
-                            
-                            if (isUpper) {
-                                // 上层画作：较高位置3.2米，错位一半间距
-                                const rightWallUpperImages = wallAssignments.rightWall.filter(img => img.item.layer === 'upper');
-                                const upperIndex = rightWallUpperImages.findIndex(img => img.item.id === imageData.item.id);
-                                const offset = spacing / 2; // 错位8.17米
-                                const upperPositions = [
-                                    -32 + cornerMargin + offset,                    // -16.33
-                                    -32 + cornerMargin + offset + spacing,         // 0
-                                    -32 + cornerMargin + offset + 2 * spacing,     // 16.33
-                                    -32 + cornerMargin + offset + 3 * spacing      // 32.67 - 但这会超出，需要调整
-                                ];
-                                // 调整最后一个位置确保不超出墙边界
-                                upperPositions[3] = 32 - cornerMargin - offset; // 16.33
-                                paintingWithFrame.position.set(rightWallOffset, paintingCenterHeight + 1.6, upperPositions[upperIndex]);
-                            } else {
-                                // 下层画作：标准高度1.6米
-                                const rightWallLowerImages = wallAssignments.rightWall.filter(img => img.item.layer === 'lower');
-                                const lowerIndex = rightWallLowerImages.findIndex(img => img.item.id === imageData.item.id);
-                                const lowerPositions = [
-                                    -32 + cornerMargin,                    // -24.5
-                                    -32 + cornerMargin + spacing,         // -8.17
-                                    -32 + cornerMargin + 2 * spacing,     // 8.17
-                                    -32 + cornerMargin + 3 * spacing      // 24.5
-                                ];
-                                paintingWithFrame.position.set(rightWallOffset, paintingCenterHeight, lowerPositions[lowerIndex]);
-                            }
+                            // 右墙64米：8张画双层精确定位（修复重叠问题）
+                            const { x, y, z } = getRightWallHardcodedPosition(imageData.item, wallAssignments.rightWall);
+                            paintingWithFrame.position.set(x, y, z);
                             paintingWithFrame.rotation.y = -Math.PI / 2;
                             break;
                         }
                         case 'leftWall': {
-                            // 左墙64米：8张画双层错位分布，完全镜像右墙确保到墙角距离相等
-                            const isUpper = imageData.item.layer === 'upper';
-                            
-                            const cornerMargin = 7.5; // 到墙角的距离
-                            const usableLength = 64 - 2 * cornerMargin; // 49米可用空间
-                            const spacing = usableLength / 3; // 16.33米间距
-                            
-                            if (isUpper) {
-                                // 上层画作：镜像右墙上层位置
-                                const leftWallUpperImages = wallAssignments.leftWall.filter(img => img.item.layer === 'upper');
-                                const upperIndex = leftWallUpperImages.findIndex(img => img.item.id === imageData.item.id);
-                                const offset = spacing / 2; // 错位8.17米
-                                const rightUpperPositions = [
-                                    -32 + cornerMargin + offset,                    // -16.33
-                                    -32 + cornerMargin + offset + spacing,         // 0
-                                    -32 + cornerMargin + offset + 2 * spacing,     // 16.33
-                                    32 - cornerMargin - offset                     // 16.33
-                                ];
-                                const rightZ = rightUpperPositions[upperIndex];
-                                const leftZ = -rightZ; // 镜像到左墙
-                                paintingWithFrame.position.set(-leftWallOffset, paintingCenterHeight + 1.6, leftZ);
-                            } else {
-                                // 下层画作：镜像右墙下层位置
-                                const leftWallLowerImages = wallAssignments.leftWall.filter(img => img.item.layer === 'lower');
-                                const lowerIndex = leftWallLowerImages.findIndex(img => img.item.id === imageData.item.id);
-                                const rightLowerPositions = [
-                                    -32 + cornerMargin,                    // -24.5
-                                    -32 + cornerMargin + spacing,         // -8.17
-                                    -32 + cornerMargin + 2 * spacing,     // 8.17
-                                    -32 + cornerMargin + 3 * spacing      // 24.5
-                                ];
-                                const rightZ = rightLowerPositions[lowerIndex];
-                                const leftZ = -rightZ; // 镜像到左墙
-                                paintingWithFrame.position.set(-leftWallOffset, paintingCenterHeight, leftZ);
-                            }
+                            // 左墙64米：8张画双层精确定位（修复重叠问题）
+                            const { x, y, z } = getLeftWallHardcodedPosition(imageData.item, wallAssignments.leftWall);
+                            paintingWithFrame.position.set(x, y, z);
                             paintingWithFrame.rotation.y = Math.PI / 2;
                             break;
                         }
@@ -713,7 +644,67 @@ const GallerySection = ({ language = 'en' }) => {
                 });
             };
 
-            // 智能画作聚光灯系统（优化色彩保真度和亮度感知）
+            // 🎨 72米墙面精确位置设置函数 - 完美的8画分配
+            const getRightWallHardcodedPosition = (item, rightWallImages) => {
+                const rightWallOffset = 15.5;  // 右墙X坐标
+                const paintingCenterHeight = 1.6; // 下层画作高度
+                
+                // 72米墙从 Z=-36 到 Z=36
+                // 8张画需要9个相等间隔：72米÷9 = 8米（完美整数）
+                // 间隔分布：墙角8米 + 画1 + 8米 + 画2 + 8米 + 画3 + 8米 + 画4 + 墙角8米
+                
+                const wallStart = -36;  // 墙起始Z坐标
+                const intervalWidth = 8;  // 完美的8米间隔
+                
+                // 下层4张画位置（高度1.6米）- 完美对称分布
+                const lowerPositions = [
+                    wallStart + intervalWidth,          // Z = -28 (第1张)
+                    wallStart + 3 * intervalWidth,     // Z = -12 (第2张)
+                    wallStart + 5 * intervalWidth,     // Z = 4 (第3张)
+                    wallStart + 7 * intervalWidth      // Z = 20 (第4张)
+                ];
+                
+                // 上层4张画位置（高度3.2米）- 错位4米避免重叠
+                const upperPositions = [
+                    wallStart + 2 * intervalWidth,     // Z = -20 (第1张，错位)
+                    wallStart + 4 * intervalWidth,     // Z = -4 (第2张)
+                    wallStart + 6 * intervalWidth,     // Z = 12 (第3张)
+                    wallStart + 8 * intervalWidth      // Z = 28 (第4张)
+                ];
+                
+                if (item.layer === 'upper') {
+                    const upperIndex = rightWallImages.filter(img => img.item.layer === 'upper')
+                        .findIndex(img => img.item.id === item.id);
+                    return {
+                        x: rightWallOffset,
+                        y: paintingCenterHeight + 1.6, // 上层高度
+                        z: upperPositions[upperIndex] || 0
+                    };
+                } else {
+                    const lowerIndex = rightWallImages.filter(img => img.item.layer === 'lower')
+                        .findIndex(img => img.item.id === item.id);
+                    return {
+                        x: rightWallOffset,
+                        y: paintingCenterHeight, // 下层高度
+                        z: lowerPositions[lowerIndex] || 0
+                    };
+                }
+            };
+
+            const getLeftWallHardcodedPosition = (item, leftWallImages) => {
+                const leftWallOffset = -15.5;  // 左墙X坐标（负值）
+                
+                // 左墙完全镜像右墙位置
+                const rightPos = getRightWallHardcodedPosition(item, leftWallImages);
+                
+                return {
+                    x: leftWallOffset,  // 镜像X坐标
+                    y: rightPos.y,      // 相同Y坐标
+                    z: -rightPos.z      // 镜像Z坐标
+                };
+            };
+
+            // 🎨 智能画作聚光灯系统（优化色彩保真度和亮度感知）
             const createPaintingSpotlight = (paintingMesh) => {
                 // 使用暖白色光源，保护照片色彩不被冲淡
                 const spotLight = new THREE.SpotLight(0xfff8e1, 1.5, 15, Math.PI / 6, 0.15, 1.0); // 暖白色 + 降低基础亮度
@@ -843,11 +834,11 @@ const GallerySection = ({ language = 'en' }) => {
             updateSmartLighting(camera.position);
         };
 
-        // 简单的边界碰撞检测（更新为新房间尺寸）
+        // 简单的边界碰撞检测（更新为新房间尺寸：32×72米）
         const checkCollision = (camera) => {
             const position = camera.position;
             const boundaryX = 14.5; // 左右边界 (32/2 - 1.5米安全距离)
-            const boundaryZ = 30.5; // 前后边界 (64/2 - 1.5米安全距离)
+            const boundaryZ = 34.5; // 前后边界 (72/2 - 1.5米安全距离)
             
             // 检查是否撞到墙边界
             if (position.x > boundaryX || position.x < -boundaryX ||
@@ -1199,8 +1190,8 @@ const GallerySection = ({ language = 'en' }) => {
                         });
                         
                         const lightBox = new THREE.Mesh(lightBoxGeometry, lightBoxMaterial);
-                        // 位置：入口中心 (x=0, y=3是墙体中心高度, z=32是前墙位置)
-                        lightBox.position.set(0, 3, 32 - lightBoxDepth/2);
+                        // 位置：入口中心 (x=0, y=3是墙体中心高度, z=36是前墙位置)
+                        lightBox.position.set(0, 3, 36 - lightBoxDepth/2);
                         scene.add(lightBox);
                         
                         // Create lightbox display with gallery-vertical-0 image
@@ -1230,7 +1221,7 @@ const GallerySection = ({ language = 'en' }) => {
                             
                             const adPlane = new THREE.Mesh(adGeometry, defaultMaterial);
                             // 将广告贴在灯箱内表面，旋转180度让图片朝向美术馆内部
-                            adPlane.position.set(0, 3, 32 - lightBoxDepth - 0.02); // 贴在灯箱内表面
+                            adPlane.position.set(0, 3, 36 - lightBoxDepth - 0.02); // 贴在灯箱内表面
                             adPlane.rotation.y = Math.PI; // 旋转180度，让图片正确朝向室内
                             adPlane.name = 'LightboxGallery';
                             
@@ -1278,7 +1269,7 @@ const GallerySection = ({ language = 'en' }) => {
                         
                         // 🚀 性能优化：减少背光源数量，只保留必要的照明
                         const backLightSources = [
-                            { pos: [0, 3, 32 - lightBoxDepth - 0.8], intensity: 1.8 }     // 只保留一个主背光源
+                            { pos: [0, 3, 36 - lightBoxDepth - 0.8], intensity: 1.8 }     // 只保留一个主背光源
                         ];
                         
                         backLightSources.forEach(light => {
