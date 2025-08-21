@@ -24,6 +24,11 @@ const ProjectGeoViewer = ({ isOpen, onClose, language = 'en' }) => {
   const markersRef = useRef([]);
   const clusterGroupRef = useRef(null);
   const customControlsRef = useRef(null);
+  
+  // 添加状态管理用于记录popup打开前的地图状态
+  const previousMapStateRef = useRef(null);
+  const currentPopupRef = useRef(null);
+  
   const { getThemeColors } = useTheme();
   const themeColors = getThemeColors();
   
@@ -57,6 +62,32 @@ const ProjectGeoViewer = ({ isOpen, onClose, language = 'en' }) => {
     }
     return field || '';
   }, [language]);
+
+  // 保存当前地图状态
+  const saveMapState = useCallback(() => {
+    if (!mapInstanceRef.current) return;
+    
+    previousMapStateRef.current = {
+      center: mapInstanceRef.current.getCenter(),
+      zoom: mapInstanceRef.current.getZoom()
+    };
+  }, []);
+
+  // 恢复到之前的地图状态
+  const restoreMapState = useCallback(() => {
+    if (!mapInstanceRef.current || !previousMapStateRef.current) return;
+    
+    const { center, zoom } = previousMapStateRef.current;
+    
+    // 使用flyTo进行平滑过渡回到之前的状态
+    mapInstanceRef.current.flyTo(center, zoom, {
+      animate: true,
+      duration: 1.2 // 稍微快一点的动画
+    });
+    
+    // 清除保存的状态
+    previousMapStateRef.current = null;
+  }, []);
 
   // 计算所有项目的中心点
   const calculateCentroid = useCallback((locations) => {
@@ -479,7 +510,7 @@ const ProjectGeoViewer = ({ isOpen, onClose, language = 'en' }) => {
         
         // 绑定弹窗 - 调整为2倍宽度
         const popupContent = createPopupContent(project);
-        marker.bindPopup(popupContent, {
+        const popup = marker.bindPopup(popupContent, {
           maxWidth: 800,
           minWidth: 560,
           className: 'custom-popup dark-popup',
@@ -490,12 +521,31 @@ const ProjectGeoViewer = ({ isOpen, onClose, language = 'en' }) => {
           autoPan: true,             // 自动平移地图以显示弹窗
           autoPanPadding: [20, 20],  // 平移时的边距
           offset: [0, -25],          // 重新调整偏移量，让弹窗跟随marker
+        }).getPopup();
+
+        // 为popup添加额外的关闭事件监听
+        popup.on('remove', function() {
+          // 如果这是当前记录的popup被移除，则恢复地图状态
+          if (currentPopupRef.current === popup) {
+            setTimeout(() => {
+              restoreMapState();
+            }, 200); // 稍微延迟以确保popup完全关闭
+            
+            // 清除当前popup引用
+            currentPopupRef.current = null;
+          }
         });
 
         // 添加事件监听器
         marker.on('click', function(e) {
           // 阻止事件冒泡到地图
           L.DomEvent.stopPropagation(e);
+          
+          // 保存当前地图状态（在飞行到marker之前）
+          saveMapState();
+          
+          // 记录当前打开的popup
+          currentPopupRef.current = popup;
           
           // 打开弹窗
           marker.openPopup();
@@ -504,6 +554,19 @@ const ProjectGeoViewer = ({ isOpen, onClose, language = 'en' }) => {
           setTimeout(() => {
             flyToMarker(project.coordinates);
           }, 100);
+        });
+
+        // 监听popup关闭事件（保留作为备用）
+        marker.on('popupclose', function() {
+          // 如果这是当前记录的popup关闭，则恢复地图状态
+          if (currentPopupRef.current === popup) {
+            setTimeout(() => {
+              restoreMapState();
+            }, 200); // 稍微延迟以确保popup完全关闭
+            
+            // 清除当前popup引用
+            currentPopupRef.current = null;
+          }
         });
 
         // 添加悬停效果 - 通过JavaScript控制，更稳定
@@ -665,6 +728,10 @@ const ProjectGeoViewer = ({ isOpen, onClose, language = 'en' }) => {
     // 清理函数
     return () => {
       if (!isOpen && mapInstanceRef.current) {
+        // 清理状态引用
+        previousMapStateRef.current = null;
+        currentPopupRef.current = null;
+        
         // 清理聚类组
         if (clusterGroupRef.current) {
           clusterGroupRef.current.clearLayers();
@@ -683,7 +750,7 @@ const ProjectGeoViewer = ({ isOpen, onClose, language = 'en' }) => {
         clusterGroupRef.current = null;
       }
     };
-  }, [isOpen, projects, typeColors, createCustomClusterIcon, createCustomMarkerIcon, createPopupContent, calculateCentroid, flyToMarker, themeColors, getBilingualText, createCustomControls]);
+  }, [isOpen, projects, typeColors, createCustomClusterIcon, createCustomMarkerIcon, createPopupContent, calculateCentroid, flyToMarker, themeColors, getBilingualText, createCustomControls, saveMapState, restoreMapState]);
 
   // ESC键关闭和滚动控制
   useEffect(() => {

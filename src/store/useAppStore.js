@@ -887,7 +887,7 @@ export const useAppStore = create(
           },
           "img": ["/realibox/official/official.01.jpg", "/realibox/official/official.02.jpg", "/realibox/official/official.03.jpg"]
         },
-                {
+        {
           "type": "Front End",
           "title": "Front End Developer",
           "name": "Realibox 3D Editor",
@@ -1137,7 +1137,7 @@ export const useAppStore = create(
       locations: [
         {
           "type": "work",
-          "name": "Software Engineer",
+          "name": "Orchard Sampling Scheduler",
           "client": "Zespri International",
           "coordinates": [-37.7866, 176.4416],
           "location": "Bay of Plenty, New Zealand",
@@ -1147,7 +1147,7 @@ export const useAppStore = create(
         },
         {
           "type": "work",
-          "name": "Software Engineer",
+          "name": "3D Saas Platform",
           "client": "Realibox",
           "coordinates": [22.9951158, 113.3335372],
           "location": "Guangzhou, China",
@@ -1157,25 +1157,25 @@ export const useAppStore = create(
         },
         {
           "type": "work",
-          "name": "Frontend Developer",
+          "name": "Interactive 360° Virtual Tour Application",
           "client": "Chongqing Nuclear Stone Technology",
           "coordinates": [29.5638, 106.5505],
           "location": "Chongqing, China",
           "year": "2020-2021",
           "link": "",
-          "img": "/stone.jpg"
+          "img": "/vr/htfxj.jpg"
         },
         {
           "type": "project",
-          "name": "Full Stack Developer",
-          "client": "Real-time Air Quality Index Publish Platform",
+          "name": "Real-time Air Quality Index Publish Platform",
+          "client": "Enshi Environmental Agency",
           "coordinates": [30.311395, 109.4795951],
           "location": "Enshi, Hubei, China",
           "year": "2020",
           "links": {
             "live": "https://aqi.eseemc.cn/"
           },
-          "img": ["/aqi.jpg", "AQI1.webp", "AQI2.webp", "AQI3.jpg", "AQI4.jpg", "AQI5.jpg"]
+          "img": "/aqi/aqi06.jpg"
         },
         {
           "type": "education",
@@ -1185,7 +1185,7 @@ export const useAppStore = create(
           "location": "Christchurch, New Zealand",
           "year": "2024-2025",
           "link": "https://www.canterbury.ac.nz",
-          "img": ["uc-ds-all.jpg", "/hua_presentation.jpg"]
+          "img": "uc-ds-all.jpg",
         },
         {
           "type": "education",
@@ -1195,7 +1195,7 @@ export const useAppStore = create(
           "location": "Dunedin, New Zealand",
           "year": "2017-2021",
           "link": "https://www.op.ac.nz",
-          "img": ["awared-best-programmer.jpeg", "awared-excellence.jpeg"]
+          "img": "awared-best-programmer.jpeg",
         },
         {
           "type": "project",
@@ -1205,7 +1205,7 @@ export const useAppStore = create(
           "location": "Liupanshui, Guizhou, China",
           "year": "2020-2021",
           "link": "",
-          "img": "/changpingli.jpg"
+          "img": "/vr/changpingli.jpg"
         },
         {
           "type": "project",
@@ -1215,7 +1215,7 @@ export const useAppStore = create(
           "location": "Liupanshui, Guizhou, China",
           "year": "2020-2021",
           "link": "",
-          "img": "/dalincheng.jpg"
+          "img": "/vr/dalincheng.jpg"
         },
         {
           "type": "project",
@@ -1225,7 +1225,7 @@ export const useAppStore = create(
           "location": "Enshi, Hubei, China",
           "year": "2020-2021",
           "link": "",
-          "img": "/fhjy.jpg"
+          "img": "/vr/fhjy.jpg"
         },
         {
           "type": "project",
@@ -1235,7 +1235,7 @@ export const useAppStore = create(
           "location": "Bijie, Guizhou, China",
           "year": "2020-2021",
           "link": "",
-          "img": "/gyyh.jpg"
+          "img": "/vr/gyyh.jpg"
         },
         {
           "type": "project",
@@ -1245,7 +1245,7 @@ export const useAppStore = create(
           "location": "Langfang, Hebei, China",
           "year": "2020-2021",
           "link": "",
-          "img": "/htfxj.jpg"
+          "img": "/vr/htfxj.jpg"
         },
         {
           "type": "project",
@@ -1255,7 +1255,7 @@ export const useAppStore = create(
           "location": "Enshi, Hubei, China",
           "year": "2020-2021",
           "link": "",
-          "img": "/jhhy.jpg"
+          "img": "/vr/jhhy.jpg"
         },
         {
           "type": "project",
@@ -1265,7 +1265,7 @@ export const useAppStore = create(
           "location": "Bijie, Guizhou, China",
           "year": "2020-2021",
           "link": "",
-          "img": "/jlw.jpg"
+          "img": "/vr/jlw.jpg"
         },
         {
           "type": "project",
@@ -1275,7 +1275,7 @@ export const useAppStore = create(
           "location": "Zunyi, Guizhou, China",
           "year": "2020-2021",
           "link": "",
-          "img": "/jnyp.jpg"
+          "img": "/vr/jnyp.jpg"
         },
         {
           "type": "project",
@@ -1285,7 +1285,7 @@ export const useAppStore = create(
           "location": "Tongren, Guizhou, China",
           "year": "2020-2021",
           "link": "",
-          "img": "/jxmm.jpg"
+          "img": "/vr/jxmm.jpg"
         },
         {
           "type": "project",
@@ -1295,7 +1295,7 @@ export const useAppStore = create(
           "location": "Jinsha, Guizhou, China",
           "year": "2020-2021",
           "link": "",
-          "img": "/jsjxmm.jpg"
+          "img": "/vr/jsjxmm.jpg"
         },
         {
           "type": "project",
@@ -1305,7 +1305,7 @@ export const useAppStore = create(
           "location": "Liupanshui, Guizhou, China",
           "year": "2020-2021",
           "link": "",
-          "img": "/pzf.jpg"
+          "img": "/vr/pzf.jpg"
         },
         {
           "type": "project",
@@ -1315,7 +1315,7 @@ export const useAppStore = create(
           "location": "Huozhou, Shanxi, China",
           "year": "2020-2021",
           "link": "",
-          "img": "/tf.jpg"
+          "img": "/vr/tf.jpg"
         },
         {
           "type": "project",
@@ -1325,7 +1325,7 @@ export const useAppStore = create(
           "location": "Zaozhuang, Shandong, China",
           "year": "2020-2021",
           "link": "",
-          "img": "/tsyhy.jpg"
+          "img": "/vr/tsyhy.jpg"
         },
         {
           "type": "project",
@@ -1335,7 +1335,7 @@ export const useAppStore = create(
           "location": "Liping, Guizhou, China",
           "year": "2020-2021",
           "link": "",
-          "img": "/wjsf.jpg"
+          "img": "/vr/wjsf.jpg"
         },
         {
           "type": "project",
@@ -1345,7 +1345,7 @@ export const useAppStore = create(
           "location": "Enshi，Hubei, China",
           "year": "2020-2021",
           "link": "",
-          "img": "/xcsd.jpg"
+          "img": "/vr/xcsd.jpg"
         },
         {
           "type": "project",
@@ -1355,7 +1355,7 @@ export const useAppStore = create(
           "location": "Langfang, Hebei, China",
           "year": "2020-2021",
           "link": "",
-          "img": "/ybhf.jpg"
+          "img": "/vr/ybhf.jpg"
         },
         {
           "type": "project",
@@ -1365,7 +1365,7 @@ export const useAppStore = create(
           "location": "Enshi, Hubei, China",
           "year": "2020-2021",
           "link": "",
-          "img": "/ysxc.jpg"
+          "img": "/vr/ysxc.jpg"
         },
         {
           "type": "project",
@@ -1375,7 +1375,7 @@ export const useAppStore = create(
           "location": "Zunyi, Guizhou, China",
           "year": "2020-2021",
           "link": "",
-          "img": "/zyyc.jpg"
+          "img": "/vr/zyyc.jpg"
         },
         {
           "type": "project",
@@ -1385,7 +1385,7 @@ export const useAppStore = create(
           "location": "Lichuan, Hubei, China",
           "year": "2019",
           "link": "http://tenglongdong.net.cn/",
-          "img": "/tld.jpg"
+          "img": "/website/tenglongdong.jpg"
         },
         {
           "type": "project",
@@ -1415,7 +1415,7 @@ export const useAppStore = create(
           "location": "Enshi, Hubei, China",
           "year": "2019",
           "link": "https://www.es9e.cn/",
-          "img": "/es9e.jpg"
+          "img": "/website/es9e.jpg"
         },
         {
           "type": "project",
@@ -1425,7 +1425,17 @@ export const useAppStore = create(
           "location": "Dunedin, New Zealand",
           "year": "2019",
           "link": "https://github.com/aemooooon/FitsGo",
-          "img": ["/fitsgo.gif", "fitsgo-team.jpg"]
+          "img": "/fitsgo/fitsgo.02.png"
+        },
+        {
+          "type": "project",
+          "name": "Travel Assistant",
+          "client": "Mobile App",
+          "coordinates": [-45.8710403,170.4855276],
+          "location": "Dunedin, New Zealand",
+          "year": "2019",
+          "link": "https://github.com/aemooooon/travel-assistant",
+          "img": "/travelassistant/ta02.jpg"
         },
         {
           "type": "project",
@@ -1435,17 +1445,17 @@ export const useAppStore = create(
           "location": "Christchurch, New Zealand",
           "year": "2024",
           "link": "https://github.com/aemooooon/DATA472-Individual-Project-Submission",
-          "img": ["/data472/472.png", "/data472/af01.jpg", "/data472/datapipeline.png", "/data472/FuelPriceData.jpg", "/data472/GasStationData.jpg", "/data472/ProjectManagement.jpg", "/data472/services.png", "/data472/v1.gif", "/data472/v2.gif", "/data472/", "/data472/WebApiResponse.jpg",]
+          "img": "/data472/v1.gif",
         },
         {
           "type": "activity",
-          "name": "Assisted IT Meetups",
-          "client": "CITANZ CHCH Volunteer",
+          "name": "CITANZ CHCH Events",
+          "client": "Chinese IT Association New Zealand",
           "coordinates": [-43.5828903, 172.5695089],
           "location": "Halswell Library, Christchurch",
           "year": "2024-2025",
           "link": "https://www.cita.org.nz/",
-          "img": ["cita-02.jpg", "cita-01.jpg", "cita-04.jpg", "cita-03.jpg", "cita-05.jpg"]
+          "img": "/citanz/cita-04.5.jpg"
         },
         {
           "type": "activity",
@@ -1455,7 +1465,7 @@ export const useAppStore = create(
           "location": "University of Canterbury",
           "year": "2024",
           "link": "https://www.cita.org.nz/",
-          "img": ["/UC_F4.001.jpeg", "/UC_F4.002.jpeg", "f4.jpg"]
+          "img": "/f4/f4.jpg"
         }
       ],
 
