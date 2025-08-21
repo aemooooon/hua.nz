@@ -1469,125 +1469,53 @@ export const useAppStore = create(
         }
       ],
 
-      // Gallery数据配置 - 使用真实照片数据 (17张图片，每面墙6张，共12张在主墙，其余5张在其他位置)
+      // Gallery数据配置 - 重新安排摆放位置 (22张图片：1张灯箱 + 5张竖向墙 + 16张横向墙)
       gallery: [
+        // 灯箱位置 (Special Lightbox Position)
         {
-          id: 'gallery_1',
+          id: 'gallery_lightbox',
           type: 'image',
-          src: '/gallery/dataengineering.jpeg',
-          thumbnail: '/gallery/dataengineering.jpeg',
+          src: '/gallery/gallery-vertical-0.jpg',
+          thumbnail: '/gallery/gallery-vertical-0.jpg',
           title: {
-            en: 'Data Engineering',
-            zh: '数据工程'
+            en: 'Featured Showcase',
+            zh: '精选展示'
           },
           description: {
-            en: 'Professional data engineering visualization',
-            zh: '专业数据工程可视化'
+            en: 'Special lightbox display piece',
+            zh: '特殊灯箱展示作品'
           },
-          date: '2025-08-11',
-          tags: ['data', 'engineering', 'technology']
+          date: '2025-08-22',
+          tags: ['lightbox', 'featured', 'special'],
+          orientation: 'vertical',
+          position: 'lightbox',
+          wall: 'lightbox'
         },
+        // 竖向墙展示 (32米墙，5张图片)
         {
-          id: 'gallery_2',
+          id: 'gallery_vertical_1',
           type: 'image',
-          src: '/gallery/f4.jpg',
-          thumbnail: '/gallery/f4.jpg',
+          src: '/gallery/gallery-vertical-1.jpg',
+          thumbnail: '/gallery/gallery-vertical-1.jpg',
           title: {
-            en: 'Project F4',
-            zh: 'F4 项目'
+            en: 'Portrait Excellence',
+            zh: '肖像卓越'
           },
           description: {
-            en: 'Advanced project development showcase',
-            zh: '高级项目开发展示'
+            en: 'Professional portrait photography excellence',
+            zh: '专业肖像摄影卓越表现'
           },
-          date: '2025-08-11',
-          tags: ['project', 'development', 'showcase']
+          date: '2025-08-22',
+          tags: ['portrait', 'excellence', 'professional'],
+          orientation: 'vertical',
+          position: 'wall',
+          wall: 'vertical_wall_32m'
         },
         {
-          id: 'gallery_3',
+          id: 'gallery_vertical_2',
           type: 'image',
-          src: '/gallery/realibox-01.jpeg',
-          thumbnail: '/gallery/realibox-01.jpeg',
-          title: {
-            en: 'Realibox Innovation',
-            zh: 'Realibox 创新'
-          },
-          description: {
-            en: 'Innovative technology solution presentation',
-            zh: '创新技术解决方案展示'
-          },
-          date: '2025-08-11',
-          tags: ['innovation', 'technology', 'solution']
-        },
-        {
-          id: 'gallery_4',
-          type: 'image',
-          src: '/gallery/WechatIMG485.jpg',
-          thumbnail: '/gallery/WechatIMG485.jpg',
-          title: {
-            en: 'Landscape Vista',
-            zh: '风景远眺'
-          },
-          description: {
-            en: 'Breathtaking natural landscape view',
-            zh: '令人叹为观止的自然风景'
-          },
-          date: '2025-08-11',
-          tags: ['landscape', 'nature', 'vista']
-        },
-        {
-          id: 'gallery_5',
-          type: 'image',
-          src: '/gallery/Image_2025-08-11_001936_130.jpg',
-          thumbnail: '/gallery/Image_2025-08-11_001936_130.jpg',
-          title: {
-            en: 'Creative Composition',
-            zh: '创意构图'
-          },
-          description: {
-            en: 'Artistic creative visual composition',
-            zh: '艺术创意视觉构图'
-          },
-          date: '2025-08-11',
-          tags: ['creative', 'composition', 'artistic']
-        },
-        {
-          id: 'gallery_6',
-          type: 'image',
-          src: '/gallery/Image_2025-08-11_002010_271.jpg',
-          thumbnail: '/gallery/Image_2025-08-11_002010_271.jpg',
-          title: {
-            en: 'Design Elements',
-            zh: '设计元素'
-          },
-          description: {
-            en: 'Fundamental design elements showcase',
-            zh: '基本设计元素展示'
-          },
-          date: '2025-08-11',
-          tags: ['design', 'elements', 'fundamental']
-        },
-        {
-          id: 'gallery_7',
-          type: 'image',
-          src: '/gallery/Image_2025-08-11_002019_688.jpg',
-          thumbnail: '/gallery/Image_2025-08-11_002019_688.jpg',
-          title: {
-            en: 'Color Theory',
-            zh: '色彩理论'
-          },
-          description: {
-            en: 'Practical color theory demonstration',
-            zh: '实用色彩理论演示'
-          },
-          date: '2025-08-11',
-          tags: ['color', 'theory', 'demonstration']
-        },
-        {
-          id: 'gallery_8',
-          type: 'image',
-          src: '/gallery/Image_2025-08-11_154055_640.jpg',
-          thumbnail: '/gallery/Image_2025-08-11_154055_640.jpg',
+          src: '/gallery/gallery-vertical-2.jpg',
+          thumbnail: '/gallery/gallery-vertical-2.jpg',
           title: {
             en: 'Artistic Vision',
             zh: '艺术视野'
@@ -1596,14 +1524,17 @@ export const useAppStore = create(
             en: 'Contemporary artistic vision exploration',
             zh: '当代艺术视野探索'
           },
-          date: '2025-08-11',
-          tags: ['artistic', 'vision', 'contemporary']
+          date: '2025-08-22',
+          tags: ['artistic', 'vision', 'contemporary'],
+          orientation: 'vertical',
+          position: 'wall',
+          wall: 'vertical_wall_32m'
         },
         {
-          id: 'gallery_9',
+          id: 'gallery_vertical_3',
           type: 'image',
-          src: '/gallery/Image_2025-08-11_154130_992.jpg',
-          thumbnail: '/gallery/Image_2025-08-11_154130_992.jpg',
+          src: '/gallery/gallery-vertical-3.jpg',
+          thumbnail: '/gallery/gallery-vertical-3.jpg',
           title: {
             en: 'Visual Harmony',
             zh: '视觉和谐'
@@ -1612,14 +1543,17 @@ export const useAppStore = create(
             en: 'Perfect visual harmony in composition',
             zh: '构图中的完美视觉和谐'
           },
-          date: '2025-08-11',
-          tags: ['visual', 'harmony', 'composition']
+          date: '2025-08-22',
+          tags: ['visual', 'harmony', 'composition'],
+          orientation: 'vertical',
+          position: 'wall',
+          wall: 'vertical_wall_32m'
         },
         {
-          id: 'gallery_10',
+          id: 'gallery_vertical_4',
           type: 'image',
-          src: '/gallery/hua.nz.1.png',
-          thumbnail: '/gallery/hua.nz.1.png',
+          src: '/gallery/gallery-vertical-4.jpg',
+          thumbnail: '/gallery/gallery-vertical-4.jpg',
           title: {
             en: 'Creative Expression',
             zh: '创意表达'
@@ -1628,14 +1562,17 @@ export const useAppStore = create(
             en: 'Innovative creative expression in digital art',
             zh: '数字艺术中的创新创意表达'
           },
-          date: '2025-08-11',
-          tags: ['creative', 'expression', 'digital']
+          date: '2025-08-22',
+          tags: ['creative', 'expression', 'digital'],
+          orientation: 'vertical',
+          position: 'wall',
+          wall: 'vertical_wall_32m'
         },
         {
-          id: 'gallery_11',
+          id: 'gallery_vertical_5',
           type: 'image',
-          src: '/gallery/Image_2025-08-11_154149_254.jpg',
-          thumbnail: '/gallery/Image_2025-08-11_154149_254.jpg',
+          src: '/gallery/gallery-vertical-5.jpg',
+          thumbnail: '/gallery/gallery-vertical-5.jpg',
           title: {
             en: 'Modern Aesthetics',
             zh: '现代美学'
@@ -1644,14 +1581,123 @@ export const useAppStore = create(
             en: 'Modern aesthetic principles demonstration',
             zh: '现代美学原理演示'
           },
-          date: '2025-08-11',
-          tags: ['modern', 'aesthetics', 'principles']
+          date: '2025-08-22',
+          tags: ['modern', 'aesthetics', 'principles'],
+          orientation: 'vertical',
+          position: 'wall',
+          wall: 'vertical_wall_32m'
+        },
+        // 横向墙展示 (64米墙，16张图片，可能上下2层)
+        {
+          id: 'gallery_horizontal_1',
+          type: 'image',
+          src: '/gallery/gallery-horizontal-1.jpg',
+          thumbnail: '/gallery/gallery-horizontal-1.jpg',
+          title: {
+            en: 'Landscape Panorama 1',
+            zh: '全景风光 1'
+          },
+          description: {
+            en: 'Wide panoramic view capturing natural beauty',
+            zh: '捕捉自然美景的宽幅全景视图'
+          },
+          date: '2025-08-22',
+          tags: ['landscape', 'panorama', 'nature'],
+          orientation: 'horizontal',
+          position: 'wall',
+          wall: 'horizontal_wall_64m',
+          layer: 'upper',
+          gridPosition: { x: 1, y: 1 }
         },
         {
-          id: 'gallery_12',
+          id: 'gallery_horizontal_2',
           type: 'image',
-          src: '/gallery/Image_2025-08-11_154154_737.jpg',
-          thumbnail: '/gallery/Image_2025-08-11_154154_737.jpg',
+          src: '/gallery/gallery-horizontal-2.jpg',
+          thumbnail: '/gallery/gallery-horizontal-2.jpg',
+          title: {
+            en: 'Landscape Panorama 2',
+            zh: '全景风光 2'
+          },
+          description: {
+            en: 'Contemporary artistic vision exploration',
+            zh: '当代艺术视野探索'
+          },
+          date: '2025-08-22',
+          tags: ['artistic', 'vision', 'contemporary'],
+          orientation: 'horizontal',
+          position: 'wall',
+          wall: 'horizontal_wall_64m',
+          layer: 'upper',
+          gridPosition: { x: 2, y: 1 }
+        },
+        {
+          id: 'gallery_horizontal_3',
+          type: 'image',
+          src: '/gallery/gallery-horizontal-3.jpg',
+          thumbnail: '/gallery/gallery-horizontal-3.jpg',
+          title: {
+            en: 'Visual Harmony',
+            zh: '视觉和谐'
+          },
+          description: {
+            en: 'Perfect visual harmony in composition',
+            zh: '构图中的完美视觉和谐'
+          },
+          date: '2025-08-22',
+          tags: ['visual', 'harmony', 'composition'],
+          orientation: 'horizontal',
+          position: 'wall',
+          wall: 'horizontal_wall_64m',
+          layer: 'upper',
+          gridPosition: { x: 3, y: 1 }
+        },
+        {
+          id: 'gallery_horizontal_4',
+          type: 'image',
+          src: '/gallery/gallery-horizontal-4.jpg',
+          thumbnail: '/gallery/gallery-horizontal-4.jpg',
+          title: {
+            en: 'Creative Expression',
+            zh: '创意表达'
+          },
+          description: {
+            en: 'Innovative creative expression in digital art',
+            zh: '数字艺术中的创新创意表达'
+          },
+          date: '2025-08-22',
+          tags: ['creative', 'expression', 'digital'],
+          orientation: 'horizontal',
+          position: 'wall',
+          wall: 'horizontal_wall_64m',
+          layer: 'upper',
+          gridPosition: { x: 4, y: 1 }
+        },
+        {
+          id: 'gallery_horizontal_5',
+          type: 'image',
+          src: '/gallery/gallery-horizontal-5.jpg',
+          thumbnail: '/gallery/gallery-horizontal-5.jpg',
+          title: {
+            en: 'Modern Aesthetics',
+            zh: '现代美学'
+          },
+          description: {
+            en: 'Modern aesthetic principles demonstration',
+            zh: '现代美学原理演示'
+          },
+          date: '2025-08-22',
+          tags: ['modern', 'aesthetics', 'principles'],
+          orientation: 'horizontal',
+          position: 'wall',
+          wall: 'horizontal_wall_64m',
+          layer: 'upper',
+          gridPosition: { x: 5, y: 1 }
+        },
+        {
+          id: 'gallery_horizontal_6',
+          type: 'image',
+          src: '/gallery/gallery-horizontal-6.jpg',
+          thumbnail: '/gallery/gallery-horizontal-6.jpg',
           title: {
             en: 'Pattern Innovation',
             zh: '图案创新'
@@ -1660,14 +1706,19 @@ export const useAppStore = create(
             en: 'Innovative pattern design exploration',
             zh: '创新图案设计探索'
           },
-          date: '2025-08-11',
-          tags: ['pattern', 'innovation', 'design']
+          date: '2025-08-22',
+          tags: ['pattern', 'innovation', 'design'],
+          orientation: 'horizontal',
+          position: 'wall',
+          wall: 'horizontal_wall_64m',
+          layer: 'upper',
+          gridPosition: { x: 6, y: 1 }
         },
         {
-          id: 'gallery_13',
+          id: 'gallery_horizontal_7',
           type: 'image',
-          src: '/gallery/Image_2025-08-11_154159_687.jpg',
-          thumbnail: '/gallery/Image_2025-08-11_154159_687.jpg',
+          src: '/gallery/gallery-horizontal-7.jpg',
+          thumbnail: '/gallery/gallery-horizontal-7.jpg',
           title: {
             en: 'Digital Artistry',
             zh: '数字艺术性'
@@ -1676,14 +1727,19 @@ export const useAppStore = create(
             en: 'Advanced digital artistry techniques',
             zh: '先进的数字艺术技巧'
           },
-          date: '2025-08-11',
-          tags: ['digital', 'artistry', 'techniques']
+          date: '2025-08-22',
+          tags: ['digital', 'artistry', 'techniques'],
+          orientation: 'horizontal',
+          position: 'wall',
+          wall: 'horizontal_wall_64m',
+          layer: 'upper',
+          gridPosition: { x: 7, y: 1 }
         },
         {
-          id: 'gallery_14',
+          id: 'gallery_horizontal_8',
           type: 'image',
-          src: '/gallery/Image_2025-08-11_154210_322.jpg',
-          thumbnail: '/gallery/Image_2025-08-11_154210_322.jpg',
+          src: '/gallery/gallery-horizontal-8.jpg',
+          thumbnail: '/gallery/gallery-horizontal-8.jpg',
           title: {
             en: 'Visual Synthesis',
             zh: '视觉合成'
@@ -1692,14 +1748,19 @@ export const useAppStore = create(
             en: 'Complex visual synthesis and composition',
             zh: '复杂的视觉合成与构图'
           },
-          date: '2025-08-11',
-          tags: ['visual', 'synthesis', 'composition']
+          date: '2025-08-22',
+          tags: ['visual', 'synthesis', 'composition'],
+          orientation: 'horizontal',
+          position: 'wall',
+          wall: 'horizontal_wall_64m',
+          layer: 'upper',
+          gridPosition: { x: 8, y: 1 }
         },
         {
-          id: 'gallery_15',
+          id: 'gallery_horizontal_9',
           type: 'image',
-          src: '/gallery/Image_2025-08-11_154217_372.jpg',
-          thumbnail: '/gallery/Image_2025-08-11_154217_372.jpg',
+          src: '/gallery/gallery-horizontal-9.jpg',
+          thumbnail: '/gallery/gallery-horizontal-9.jpg',
           title: {
             en: 'Abstract Beauty',
             zh: '抽象之美'
@@ -1708,14 +1769,19 @@ export const useAppStore = create(
             en: 'Pure abstract beauty in visual form',
             zh: '纯粹的视觉抽象之美'
           },
-          date: '2025-08-11',
-          tags: ['abstract', 'beauty', 'visual']
+          date: '2025-08-22',
+          tags: ['abstract', 'beauty', 'visual'],
+          orientation: 'horizontal',
+          position: 'wall',
+          wall: 'horizontal_wall_64m',
+          layer: 'lower',
+          gridPosition: { x: 1, y: 2 }
         },
         {
-          id: 'gallery_16',
+          id: 'gallery_horizontal_10',
           type: 'image',
-          src: '/gallery/Image_2025-08-11_154236_734.jpg',
-          thumbnail: '/gallery/Image_2025-08-11_154236_734.jpg',
+          src: '/gallery/gallery-horizontal-10.jpg',
+          thumbnail: '/gallery/gallery-horizontal-10.jpg',
           title: {
             en: 'Geometric Perfection',
             zh: '几何完美'
@@ -1724,14 +1790,19 @@ export const useAppStore = create(
             en: 'Perfect geometric patterns and structures',
             zh: '完美的几何图案与结构'
           },
-          date: '2025-08-11',
-          tags: ['geometric', 'perfection', 'patterns']
+          date: '2025-08-22',
+          tags: ['geometric', 'perfection', 'patterns'],
+          orientation: 'horizontal',
+          position: 'wall',
+          wall: 'horizontal_wall_64m',
+          layer: 'lower',
+          gridPosition: { x: 2, y: 2 }
         },
         {
-          id: 'gallery_17',
+          id: 'gallery_horizontal_11',
           type: 'image',
-          src: '/gallery/Image_2025-08-11_154240_669.jpg',
-          thumbnail: '/gallery/Image_2025-08-11_154240_669.jpg',
+          src: '/gallery/gallery-horizontal-11.jpg',
+          thumbnail: '/gallery/gallery-horizontal-11.jpg',
           title: {
             en: 'Artistic Mastery',
             zh: '艺术精通'
@@ -1740,8 +1811,118 @@ export const useAppStore = create(
             en: 'Demonstration of complete artistic mastery',
             zh: '完整艺术精通的演示'
           },
-          date: '2025-08-11',
-          tags: ['artistic', 'mastery', 'demonstration']
+          date: '2025-08-22',
+          tags: ['artistic', 'mastery', 'demonstration'],
+          orientation: 'horizontal',
+          position: 'wall',
+          wall: 'horizontal_wall_64m',
+          layer: 'lower',
+          gridPosition: { x: 3, y: 2 }
+        },
+        {
+          id: 'gallery_horizontal_12',
+          type: 'image',
+          src: '/gallery/gallery-horizontal-12.jpg',
+          thumbnail: '/gallery/gallery-horizontal-12.jpg',
+          title: {
+            en: 'Technical Excellence',
+            zh: '技术卓越'
+          },
+          description: {
+            en: 'Superior technical execution and precision',
+            zh: '卓越的技术执行与精确度'
+          },
+          date: '2025-08-22',
+          tags: ['technical', 'excellence', 'precision'],
+          orientation: 'horizontal',
+          position: 'wall',
+          wall: 'horizontal_wall_64m',
+          layer: 'lower',
+          gridPosition: { x: 4, y: 2 }
+        },
+        {
+          id: 'gallery_horizontal_13',
+          type: 'image',
+          src: '/gallery/gallery-horizontal-13.jpg',
+          thumbnail: '/gallery/gallery-horizontal-13.jpg',
+          title: {
+            en: 'Design Innovation',
+            zh: '设计创新'
+          },
+          description: {
+            en: 'Breakthrough design innovation concepts',
+            zh: '突破性设计创新理念'
+          },
+          date: '2025-08-22',
+          tags: ['design', 'innovation', 'breakthrough'],
+          orientation: 'horizontal',
+          position: 'wall',
+          wall: 'horizontal_wall_64m',
+          layer: 'lower',
+          gridPosition: { x: 5, y: 2 }
+        },
+        {
+          id: 'gallery_horizontal_14',
+          type: 'image',
+          src: '/gallery/gallery-horizontal-14.jpeg',
+          thumbnail: '/gallery/gallery-horizontal-14.jpeg',
+          title: {
+            en: 'Visual Impact',
+            zh: '视觉冲击'
+          },
+          description: {
+            en: 'Strong visual impact and emotional resonance',
+            zh: '强烈的视觉冲击与情感共鸣'
+          },
+          date: '2025-08-22',
+          tags: ['visual', 'impact', 'emotion'],
+          orientation: 'horizontal',
+          position: 'wall',
+          wall: 'horizontal_wall_64m',
+          layer: 'lower',
+          gridPosition: { x: 6, y: 2 }
+        },
+        {
+          id: 'gallery_horizontal_15',
+          type: 'image',
+          src: '/gallery/gallery-horizontal-15.jpg',
+          thumbnail: '/gallery/gallery-horizontal-15.jpg',
+          title: {
+            en: 'Portfolio Culmination',
+            zh: '作品集巅峰'
+          },
+          description: {
+            en: 'The culmination of artistic and technical journey',
+            zh: '艺术与技术旅程的巅峰之作'
+          },
+          date: '2025-08-22',
+          tags: ['portfolio', 'culmination', 'journey'],
+          orientation: 'horizontal',
+          position: 'wall',
+          wall: 'horizontal_wall_64m',
+          layer: 'lower',
+          gridPosition: { x: 7, y: 2 }
+        },
+        {
+          id: 'gallery_horizontal_16',
+          type: 'image',
+          src: '/gallery/gallery-horizontal-16.jpg',
+          thumbnail: '/gallery/gallery-horizontal-16.jpg',
+          title: {
+            en: 'Final Masterpiece',
+            zh: '终极杰作'
+          },
+          description: {
+            en: 'The final masterpiece completing the gallery collection',
+            zh: '完成画廊收藏的终极杰作'
+          },
+          date: '2025-08-22',
+          tags: ['masterpiece', 'final', 'completion'],
+          orientation: 'horizontal',
+          position: 'wall',
+          wall: 'horizontal_wall_64m',
+          layer: 'lower',
+          gridPosition: { x: 8, y: 2 }
         }
       ],
 
