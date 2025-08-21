@@ -477,15 +477,52 @@ const ProjectDetailNew = ({ project = null, isOpen, onClose }) => {
                   {language === 'zh' ? '项目描述' : 'Project Description'}
                 </h3>
                 
-                <p 
-                  className="text-theme-text-secondary leading-relaxed text-lg relative z-10"
-                  style={{ 
-                    fontFamily: "'Lora', serif",
-                    lineHeight: '1.8'
-                  }}
-                >
-                  {getProjectDescription(project, language)}
-                </p>
+                <div className="relative z-10">
+                  {(() => {
+                    const description = getProjectDescription(project, language);
+                    
+                    // 如果描述是数组，渲染多个段落
+                    if (Array.isArray(description)) {
+                      return (
+                        <div className="space-y-6">
+                          {description.map((paragraph, index) => (
+                            <p 
+                              key={index}
+                              className="text-theme-text-secondary leading-relaxed text-lg"
+                              style={{ 
+                                fontFamily: "'Lora', serif",
+                                lineHeight: '1.8',
+                                textAlign: 'justify',
+                                textJustify: 'inter-word',
+                                hyphens: 'auto',
+                                wordBreak: 'break-word'
+                              }}
+                            >
+                              {paragraph}
+                            </p>
+                          ))}
+                        </div>
+                      );
+                    }
+                    
+                    // 如果描述是字符串，渲染单个段落
+                    return (
+                      <p 
+                        className="text-theme-text-secondary leading-relaxed text-lg"
+                        style={{ 
+                          fontFamily: "'Lora', serif",
+                          lineHeight: '1.8',
+                          textAlign: 'justify',
+                          textJustify: 'inter-word',
+                          hyphens: 'auto',
+                          wordBreak: 'break-word'
+                        }}
+                      >
+                        {description}
+                      </p>
+                    );
+                  })()}
+                </div>
               </div>
             </div>
 

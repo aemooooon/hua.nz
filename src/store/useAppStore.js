@@ -862,8 +862,24 @@ export const useAppStore = create(
           "name": "Orchard Sampling Scheduler",
           "company": "Zespri International",
           "description": {
-            "en": "Developed a comprehensive orchard sampling optimization system for New Zealand's leading kiwifruit company. Built robust ETL pipelines using Python to process and integrate diverse agricultural datasets including orchard locations, fruit quality metrics, and sampling schedules. Created an interactive GIS-based web application with real-time data visualization, enabling efficient sampling route optimization and quality assessment workflows. The system significantly improved sampling efficiency by 30% through intelligent spatial analysis and automated scheduling algorithms, supporting Zespri's commitment to delivering premium kiwifruit to global markets. Implemented using modern web technologies including React frontend, Node.js backend, PostgreSQL database, and integrated mapping services for seamless user experience.",
-            "zh": "为新西兰领先的奇异果公司开发了综合性果园采样优化系统。使用Python构建强大的ETL数据管道，处理和集成包括果园位置、果实质量指标和采样计划在内的多样化农业数据集。创建了具有实时数据可视化功能的交互式GIS网络应用程序，实现高效的采样路线优化和质量评估工作流程。该系统通过智能空间分析和自动化调度算法将采样效率显著提高了30%，支持Zespri向全球市场提供优质奇异果的承诺。使用现代网络技术实现，包括React前端、Node.js后端、PostgreSQL数据库，以及集成的地图服务以提供无缝的用户体验。"
+            "en": [
+              "This project involved the end-to-end design and implementation of an orchard sampling optimization platform for Zespri International, New Zealand’s leading kiwifruit company. The primary goal was to create a system capable of scheduling and optimizing sampling tasks for hundreds of orchards across the Bay of Plenty region, while addressing challenges of time constraints, geographic distribution, and efficiency in field operations.",
+              "From a technical standpoint, the system was designed with a modern full-stack architecture. The frontend was built with React and TailwindCSS, providing a responsive, intuitive interface for managers to interact with orchard data and adjust schedules dynamically. For mapping and geospatial visualization, Leaflet and Folium were integrated to enable interactive exploration of orchard locations and routes, while OpenRouteService (with a locally deployed instance) powered multi-waypoint route optimization.",
+              "The backend was developed using Flask, exposing RESTful APIs to handle data processing, business logic, and communication with the frontend. A lightweight SQLite database was chosen to ensure portability and offline usability, enabling the system to function even in rural areas with limited connectivity. ETL pipelines were developed in Python to process diverse agricultural datasets, including orchard GPS coordinates, sampling windows, and priority rules. These pipelines automated the transformation of raw datasets into optimized scheduling inputs.",
+              "At the algorithmic level, the project tackled a variant of the Travelling Salesman Problem (TSP). Pre-computed pairwise distance matrices (generated via OpenRouteService) served as the foundation for optimization. Multiple TSP algorithms were evaluated for their balance of efficiency, scalability, and explainability, ensuring that the methodology could be communicated clearly to both technical and non-technical stakeholders. This data-driven approach was critical, given the project’s research orientation as part of a Master of Applied Data Science.",
+              "The system incorporated best practices not only in code but also in process. Agile-inspired iteration cycles guided development, with regular feedback loops from the client to validate usability and responsiveness. CI/CD pipelines were configured via GitHub Actions to automate deployment to an Azure VM, ensuring a reliable and reproducible release process. Containerization with Docker was used for environment consistency, while Nginx was deployed as a reverse proxy for secure hosting.",
+              "Beyond technical implementation, the project emphasized architectural clarity and trade-off analysis. Decisions such as choosing SQLite over heavier databases, deploying OpenRouteService locally for offline reliability, and designing an interface tailored to field managers’ workflows all reflected a thoughtful, context-driven approach. The result was not only a functional product but also a research contribution, demonstrating how data science and software engineering can be combined to address real-world agricultural challenges.",
+              "Ultimately, the Orchard Sampling Scheduler improved efficiency by enabling intelligent workload allocation, minimizing travel times, and aligning sampling tasks with operational constraints. It stands as both a professional-grade software system and a demonstration of applying algorithms, geospatial analysis, and system design principles to practical, industry-scale problems."
+            ],
+            "zh": [
+              "本项目是为新西兰领先的奇异果企业 Zespri International 设计与实现的一套果园采样优化平台，旨在解决 Bay of Plenty 地区数百个果园的采样调度问题。系统的核心目标是应对时间窗口、地理分布与作业效率等多重挑战，在保障果实品质评估的同时提高整体采样效率。",
+              "在技术架构上，平台采用现代全栈方案构建。前端基于 React 与 TailwindCSS，实现了响应式、直观的交互界面，便于管理人员实时查看果园数据与动态调整任务。地图与地理可视化方面，系统集成了 Leaflet 与 Folium，以支持果园分布与路线的交互式展示，同时结合本地部署的 OpenRouteService 实现多点路径优化。",
+              "后端采用 Flask 构建 RESTful API，负责数据处理、业务逻辑与前端交互。数据库选择轻量级 SQLite，以确保系统的可移植性与离线可用性，适用于乡村地区的弱网环境。Python 编写的 ETL 数据管道用于处理多样化的农业数据集，包括果园坐标、采样时间窗口与优先级规则，实现了从原始数据到优化调度输入的全自动转换。",
+              "在算法层面，项目研究并实现了旅行商问题 (TSP) 的变体。通过 OpenRouteService 预计算的两两距离矩阵作为优化基础，比较并选取了多种 TSP 算法，以平衡效率、可扩展性与可解释性，确保方法论既科学可靠又便于行业用户理解。作为应用数据科学硕士的研究性项目，这种数据驱动的思路尤为关键。",
+              "项目在代码与过程上都注重最佳实践。开发过程采用敏捷式迭代，与客户保持定期反馈循环，以确保系统的易用性与实际契合度。CI/CD 管道基于 GitHub Actions 构建，自动化部署至 Azure VM，实现了稳定可重复的上线流程。Docker 容器化确保了环境一致性，Nginx 则作为反向代理提供安全的服务托管。",
+              "除技术实现外，本项目还强调架构清晰度与取舍分析。例如：选择 SQLite 而非重量级数据库以提升便携性，在本地部署 OpenRouteService 保证离线可用性，以及针对田间管理者需求定制交互界面，这些都体现了以场景为导向的工程判断。成果不仅是一套可投入使用的系统，更是一份研究探索，展现了数据科学与软件工程结合解决农业行业实际问题的可能性。",
+              "最终，该果园采样调度平台通过智能化任务分配、出行时间最小化和调度自动化，使采样效率显著提升。它既是一款专业级的软件系统，也是一份将算法、地理空间分析与系统设计应用于产业实践的案例。"
+            ]
           },
           "coordinates": [-37.7866, 176.4416],
           "location": "Bay of Plenty, New Zealand",
@@ -871,7 +887,12 @@ export const useAppStore = create(
           "links": {
             "official": "https://www.zespri.com"
           },
-          "img": ["/zespri/zespri-ors.jpg", "/zespri/zespri_poster.png", "/zespri/zespri.1.jpg", "/zespri/zespri.2.jpg"]
+          "img": [
+            "/zespri/zespri-ors.jpg",
+            "/zespri/zespri_poster.png",
+            "/zespri/zespri.1.jpg",
+            "/zespri/zespri.2.jpg"
+          ]
         },
         {
           "type": "Front End",
@@ -1431,7 +1452,7 @@ export const useAppStore = create(
           "type": "project",
           "name": "Travel Assistant",
           "client": "Mobile App",
-          "coordinates": [-45.8710403,170.4855276],
+          "coordinates": [-45.8710403, 170.4855276],
           "location": "Dunedin, New Zealand",
           "year": "2019",
           "link": "https://github.com/aemooooon/travel-assistant",
@@ -1801,11 +1822,13 @@ export const useAppStore = create(
         return contentConfig[language]?.projects || contentConfig['en'].projects;
       },
 
-      // 获取项目描述（支持多语言）
+      // 获取项目描述（支持多语言和多段落）
       getProjectDescription: (project, language) => {
         if (!project?.description) return '';
         if (typeof project.description === 'object' && project.description !== null) {
-          return project.description[language] || project.description.en || project.description.zh || '';
+          const description = project.description[language] || project.description.en || project.description.zh || '';
+          // 如果是数组，返回数组；如果是字符串，返回字符串
+          return description;
         }
         return project.description;
       },
