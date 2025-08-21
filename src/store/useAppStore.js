@@ -844,8 +844,22 @@ export const useAppStore = create(
           "name": "Corridor of Light and Shadow",
           "company": "Hua Wang",
           "description": {
-            "en": "A sophisticated personal portfolio website built with cutting-edge web technologies to showcase professional experience and technical expertise. Developed using React 18 with modern hooks, Vite for optimized build performance, and Zustand for efficient state management. Features an immersive 3D animated cube opening sequence using GSAP timeline animations, dynamic theme switching system with CSS custom properties, and multilingual support (English/Chinese) with persistent user preferences. The site includes interactive background effects, smooth section navigation with scroll animations, responsive design optimized for all devices, and comprehensive project showcases with detailed modal views. Implements modern development practices including component-based architecture, custom hooks for business logic, and optimized performance with code splitting and lazy loading.",
-            "zh": "一个使用前沿网络技术构建的精致个人作品集网站，用于展示专业经验和技术专长。使用React 18和现代hooks开发，Vite优化构建性能，Zustand进行高效状态管理。特色功能包括使用GSAP时间轴动画的沉浸式3D立方体开场序列、使用CSS自定义属性的动态主题切换系统，以及支持持久化用户偏好的多语言支持（英文/中文）。网站包含交互式背景效果、带滚动动画的平滑区块导航、针对所有设备优化的响应式设计，以及带有详细模态视图的综合项目展示。实现了现代开发实践，包括基于组件的架构、用于业务逻辑的自定义hooks，以及通过代码分割和懒加载优化的性能。"
+            "en": [
+              "As I actively pursue web development opportunities and prepare for technical interviews, I created this personal portfolio to dynamically showcase my skills and demonstrate my expertise in modern web development. This immersive digital experience serves as a living testament to my capabilities, presenting both my professional journey and technical mastery through interactive storytelling and cutting-edge implementation.",
+              "The application leverages React 18 with modern hooks architecture, utilizing useState, useEffect, useCallback, and useMemo for efficient state management and component optimization. Vite serves as the build tool with custom configuration for ES modules, tree-shaking, and optimized chunk splitting. Advanced state management is implemented through Zustand with persistence middleware, featuring centralized store patterns, reactive state updates, and immutable state transformations for predictable data flow. Comprehensive internationalization (i18n) system supports English and Chinese with dynamic language switching, persistent user preferences, and culturally appropriate content adaptation.",
+              "The standout feature is an immersive 3D animated cube opening sequence powered by GSAP timeline animations and Three.js WebGL rendering. Advanced WebGL performance optimization includes geometry instancing, texture atlasing, and efficient memory management to maintain 60fps across devices. Multiple dynamic themes are supported through a sophisticated CSS custom properties system with runtime switching, CSS-in-JS integration, and blend mode effects for visual harmony.",
+              "Complex SPA architecture employs custom routing logic with section-based navigation, implementing smooth scrolling algorithms with intersection observers and momentum-based transitions. Advanced scroll management includes scroll hijacking, directional detection, and synchronized animation systems. The intelligent cursor system features context-aware hover effects, directional tracking, and smooth interpolation between interaction states using custom mouse tracking algorithms. Comprehensive responsive design ensures optimal user experience across desktop, tablet, and mobile devices with fluid layouts, adaptive typography scaling, and touch-optimized interactions.",
+              "Performance optimization includes strategic code splitting with React.lazy and dynamic imports, WebGL resource pooling, texture compression, and efficient animation frame management. The application implements comprehensive error boundaries, progressive enhancement patterns, and accessibility features including ARIA labels, keyboard navigation support, and semantic HTML structure. Advanced CSS techniques include mix-blend-mode compositions, backdrop-filter effects, and GPU-accelerated animations.",
+              "The project showcases modern development workflows including ESLint and Prettier integration, component-driven development with atomic design principles, and comprehensive DevOps practices. Automated CI/CD pipeline is implemented through GitHub Actions, featuring automated testing, code quality checks, and seamless deployment to GitHub Pages with zero-downtime releases. The architecture demonstrates clean separation of concerns with custom hooks abstraction, utility-first CSS methodology, and maintainable code patterns suitable for enterprise-scale applications."
+            ],
+            "zh": [
+              "在我积极寻找web开发机会并为技术面试做准备的过程中，我创建了这个个人作品集来动态展示我的技能，并展现我在现代web开发方面的专业能力。这个沉浸式数字体验作为我能力的生动证明，通过交互式叙述和前沿技术实现，展现了我的职业历程和技术精通。",
+              "应用程序采用React 18现代hooks架构，利用useState、useEffect、useCallback和useMemo实现高效的状态管理和组件优化。Vite作为构建工具，配置了ES模块、树摇优化和优化的代码块分割。高级状态管理通过Zustand持久化中间件实现，具有集中式存储模式、响应式状态更新和不可变状态转换，确保可预测的数据流。全面的国际化(i18n)系统支持中英文动态语言切换、持久化用户偏好和文化适应性内容调整。",
+              "突出特色是由GSAP时间轴动画和Three.js WebGL渲染驱动的沉浸式3D立方体开场序列。先进的WebGL性能优化包括几何体实例化、纹理图集和高效内存管理，在各种设备上保持60fps。通过复杂的CSS自定义属性系统支持多种动态主题，具有运行时切换、CSS-in-JS集成和用于视觉和谐的混合模式效果。",
+              "复杂的SPA架构采用基于章节导航的自定义路由逻辑，实现带有交叉观察器和基于动量转换的平滑滚动算法。高级滚动管理包括滚动劫持、方向检测和同步动画系统。智能光标系统具有上下文感知的悬停效果、方向跟踪，以及使用自定义鼠标跟踪算法在交互状态间的平滑插值。全面的响应式设计确保在桌面、平板和移动设备上的最佳用户体验，具有流式布局、自适应字体缩放和触控优化交互。",
+              "性能优化包括使用React.lazy和动态导入的策略性代码分割、WebGL资源池、纹理压缩和高效的动画帧管理。应用程序实现了全面的错误边界、渐进增强模式和无障碍功能，包括ARIA标签、键盘导航支持和语义HTML结构。高级CSS技术包括混合模式合成、背景滤镜效果和GPU加速动画。",
+              "项目展示了现代开发工作流程，包括ESLint和Prettier集成、基于原子设计原则的组件驱动开发和全面的DevOps实践。通过GitHub Actions实现自动化CI/CD流水线，具有自动化测试、代码质量检查和零停机部署到GitHub Pages的无缝发布。架构展示了关注点的清晰分离，具有自定义hooks抽象、实用优先的CSS方法论和适合企业级应用程序的可维护代码模式。"
+            ]
           },
           "coordinates": [-43.5224316, 172.5943064],
           "location": "Christchurch, New Zealand",
@@ -854,7 +868,7 @@ export const useAppStore = create(
             "live": "https://www.hua.nz/",
             "github": "https://github.com/aemooooon/hua.nz"
           },
-          "img": ["/hua.nz/hua.nz.1.png", "/hua.nz/hua.nz.2.jpg", "/hua.nz/hua.nz.3.jpg", "/hua.nz/hua.nz.4.jpg"]
+          "img": ["/hua.nz/hua.nz.1.png", "/hua.nz/hua.nz.2.jpg", "/hua.nz/hua.nz.3.jpg", "/hua.nz/hua.nz.4.jpg", "/hua.nz/hua.nz.5.jpg", "/hua.nz/hua.nz.6.jpg", "/hua.nz/hua.nz.7.jpg", "/hua.nz/hua.nz.8.jpg", "/hua.nz/hua.nz.9.jpg"]
         },
         {
           "type": "Full Stack",
@@ -899,12 +913,29 @@ export const useAppStore = create(
           "title": "Front End Developer",
           "name": "Realibox Portal",
           "company": "Realibox",
-          "description": "Developed and maintained the central hub for Realibox’s 3D assets, using React with a WebGL-based library for the frontend and Node.js/Python for the backend. Implemented CI/CD pipelines using GitLab for code integration and deployment. Worked in an Agile environment, collaborating closely with PMs, QAs, and Designers to ensure feature delivery aligned with requirements.",
+          "description": {
+            "en": [
+              "As a Senior Frontend Developer at Realibox, I led the development of the official website and marketing portal for a cutting-edge 3D cloud collaboration platform. This enterprise-level project showcased advanced frontend architecture and served as the primary marketing gateway for Realibox's comprehensive 3D design ecosystem, targeting professional designers, architects, and enterprise clients across multiple industries.",
+              "The application was built with Next.js 12 featuring server-side rendering (SSR) for optimal SEO performance and lightning-fast page loads. Implemented sophisticated device detection and adaptive rendering, providing separate optimized experiences for desktop and mobile clients through dynamic component loading. Advanced state management was achieved using MobX with reactive patterns, enabling real-time UI updates and efficient cross-component data synchronization across complex user workflows.",
+              "Architected a sophisticated multi-theme CSS system using CSS modules, LESS preprocessor, and runtime theme switching capabilities. Implemented advanced responsive design patterns supporting seamless transitions between desktop and mobile layouts with fluid typography scaling, touch-optimized interactions, and adaptive navigation structures. The design system featured custom CSS blend modes, GPU-accelerated animations, and sophisticated visual effects that enhanced user engagement while maintaining optimal performance.",
+              "Complex single-page application (SPA) architecture employed custom routing logic with smooth section-based navigation, implementing intersection observers for scroll-triggered animations and dynamic content loading. Advanced scroll management included momentum-based transitions, directional detection, and synchronized animation sequences that created an immersive storytelling experience. Integrated Swiper.js for touch-enabled carousels and interactive content presentation.",
+              "Performance optimization strategies included strategic code splitting with dynamic imports, image optimization supporting WebP and modern formats, lazy loading implementations, and efficient bundle management. Implemented comprehensive error boundaries, progressive loading states, and robust exception handling. Advanced DevOps practices included GitLab CI/CD pipeline automation with multi-environment deployments, automated testing workflows, and zero-downtime production releases.",
+              "The project demonstrated enterprise-scale frontend development capabilities including component-driven architecture with atomic design principles, comprehensive TypeScript integration, and maintainable code patterns suitable for large development teams. Collaborated extensively with UX/UI designers, product managers, and backend engineers in an Agile environment, ensuring pixel-perfect implementation and seamless API integration for dynamic content management."
+            ],
+            "zh": [
+              "作为Realibox的高级前端开发工程师，我主导开发了前沿3D云协作平台的官方网站和营销门户。这个企业级项目展示了先进的前端架构，作为Realibox综合3D设计生态系统的主要营销门户，面向多个行业的专业设计师、建筑师和企业客户。",
+              "应用程序使用Next.js 12构建，具有服务器端渲染(SSR)功能，实现最佳SEO性能和闪电般的页面加载速度。实现了复杂的设备检测和自适应渲染，通过动态组件加载为桌面和移动客户端提供单独优化的体验。使用MobX的响应式模式实现高级状态管理，在复杂用户工作流程中实现实时UI更新和高效的跨组件数据同步。",
+              "架构了复杂的多主题CSS系统，使用CSS模块、LESS预处理器和运行时主题切换功能。实现了先进的响应式设计模式，支持桌面和移动布局之间的无缝转换，具有流式字体缩放、触控优化交互和自适应导航结构。设计系统具有自定义CSS混合模式、GPU加速动画和复杂视觉效果，在保持最佳性能的同时增强用户参与度。",
+              "复杂的单页应用程序(SPA)架构采用自定义路由逻辑和平滑的基于章节的导航，实现交叉观察器进行滚动触发动画和动态内容加载。高级滚动管理包括基于动量的转换、方向检测和同步动画序列，创造沉浸式叙述体验。集成Swiper.js实现触控轮播和交互式内容展示。",
+              "性能优化策略包括使用动态导入的策略性代码分割、支持WebP和现代格式的图像优化、懒加载实现和高效的包管理。实现了全面的错误边界、渐进加载状态和健壮的异常处理。先进的DevOps实践包括GitLab CI/CD流水线自动化、多环境部署、自动化测试工作流程和零停机生产发布。",
+              "项目展示了企业级前端开发能力，包括基于原子设计原则的组件驱动架构、全面的TypeScript集成，以及适合大型开发团队的可维护代码模式。在敏捷环境中与UX/UI设计师、产品经理和后端工程师广泛协作，确保像素完美的实现和动态内容管理的无缝API集成。"
+            ]
+          },
           "coordinates": [22.9951158, 113.3335372],
           "location": "Guangzhou, China",
           "year": "2021-2023",
           "links": {
-            "live": "https://hub.realibox.com/",
+            "live": "https://www.realibox.com/",
           },
           "img": ["/realibox/official/official.01.jpg", "/realibox/official/official.02.jpg", "/realibox/official/official.03.jpg"]
         },

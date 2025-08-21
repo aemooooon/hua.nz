@@ -207,7 +207,7 @@ const ProjectDetailNew = ({ project = null, isOpen, onClose }) => {
                   )}
                 </div>
               </div>
-              <p className="text-theme-text-secondary text-sm mb-3">{subProject.description}</p>
+              <p className="text-slate-200 text-sm mb-3" style={{ color: '#e2e8f0' }}>{subProject.description}</p>
               {subProject.features && (
                 <div className="flex flex-wrap gap-2">
                   {subProject.features.map((feature, featureIndex) => (
@@ -468,11 +468,14 @@ const ProjectDetailNew = ({ project = null, isOpen, onClose }) => {
             
             {/* Project Description */}
             <div>
-              <div className="group bg-gradient-to-br from-theme-surface/20 to-transparent p-8 rounded-2xl border border-theme-border/10 backdrop-blur-md shadow-xl hover:shadow-2xl hover:shadow-theme-primary/10 transition-all duration-500 relative overflow-hidden">
-                {/* Light effect overlay */}
-                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent opacity-0 group-hover:opacity-100 pointer-events-none transform -skew-x-12 translate-x-[-200%] group-hover:translate-x-[200%] transition-all duration-1000"></div>
+              <div className="group bg-gradient-to-br from-slate-50/8 via-white/6 to-slate-100/8 p-8 rounded-2xl border border-white/10 backdrop-blur-md shadow-xl hover:shadow-2xl hover:shadow-theme-primary/10 transition-all duration-500 relative overflow-hidden">
+                {/* 柔和的光效覆盖层 - 降低强度 */}
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/3 to-transparent opacity-0 group-hover:opacity-100 pointer-events-none transform -skew-x-12 translate-x-[-200%] group-hover:translate-x-[200%] transition-all duration-1000"></div>
                 
-                <h3 className="text-2xl font-bold text-theme-text-primary mb-6 flex items-center gap-3 relative z-10">
+                {/* 添加柔和的内部光晕 */}
+                <div className="absolute inset-0 bg-gradient-to-br from-theme-primary/5 via-transparent to-theme-secondary/5 rounded-2xl"></div>
+                
+                <h3 className="text-2xl font-bold text-white mb-6 flex items-center gap-3 relative z-10">
                   <div className="w-1 h-8 bg-gradient-to-b from-theme-primary to-theme-secondary rounded-full"></div>
                   {language === 'zh' ? '项目描述' : 'Project Description'}
                 </h3>
@@ -488,14 +491,15 @@ const ProjectDetailNew = ({ project = null, isOpen, onClose }) => {
                           {description.map((paragraph, index) => (
                             <p 
                               key={index}
-                              className="text-theme-text-secondary leading-relaxed text-lg"
+                              className="text-slate-200 leading-relaxed text-lg"
                               style={{ 
                                 fontFamily: "'Lora', serif",
                                 lineHeight: '1.8',
                                 textAlign: 'justify',
                                 textJustify: 'inter-word',
                                 hyphens: 'auto',
-                                wordBreak: 'break-word'
+                                wordBreak: 'break-word',
+                                color: '#e2e8f0' // 柔和的浅灰白色
                               }}
                             >
                               {paragraph}
@@ -508,14 +512,15 @@ const ProjectDetailNew = ({ project = null, isOpen, onClose }) => {
                     // 如果描述是字符串，渲染单个段落
                     return (
                       <p 
-                        className="text-theme-text-secondary leading-relaxed text-lg"
+                        className="text-slate-200 leading-relaxed text-lg"
                         style={{ 
                           fontFamily: "'Lora', serif",
                           lineHeight: '1.8',
                           textAlign: 'justify',
                           textJustify: 'inter-word',
                           hyphens: 'auto',
-                          wordBreak: 'break-word'
+                          wordBreak: 'break-word',
+                          color: '#e2e8f0' // 柔和的浅灰白色
                         }}
                       >
                         {description}
