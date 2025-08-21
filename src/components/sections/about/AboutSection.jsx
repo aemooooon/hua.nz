@@ -203,30 +203,81 @@ const AboutSection = ({ language = 'en' }) => {
                                         </div>
                                     </div>
                                     
-                                    {paragraphs.map((paragraph, index) => (
-                                        <p 
-                                            key={index} 
-                                            className="text-base lg:text-lg leading-relaxed programmer-text-white" 
-                                        >
-                                            {paragraph}
-                                        </p>
-                                    ))}
-                                
-                                {/* Resume 链接 */}
-                                <div className="resume-section flex items-center justify-end space-x-4">
-                                    <a
-                                        href="/Hua_Wang_Full_Stack_Developer.pdf" 
-                                        target="_blank" 
-                                        rel="noopener noreferrer"
-                                        className="theme-button font-medium rounded-lg transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-theme-primary/50 backdrop-blur-sm bg-theme-surface border border-theme-border-neutral text-theme-text-primary hover:bg-theme-surface-elevated px-4 py-2 text-base hover:shadow-lg inline-flex items-center justify-center"
-                                        style={{ 
-                                            fontFamily: 'Figtree, sans-serif', 
-                                            fontWeight: '500'
-                                        }}
-                                    >
-                                        {language === 'en' ? 'Resume' : '简历'}
-                                    </a>
-                                </div>
+                                    {paragraphs.map((paragraph, index) => {
+                                        // 检测是否包含 "trade-off" 并智能插入Resume链接
+                                        const containsTradeOff = paragraph.includes('trade-off');
+                                        
+                                        if (containsTradeOff) {
+                                            // 将段落按 "trade-off" 分割
+                                            const parts = paragraph.split('trade-off');
+                                            
+                                            return (
+                                                <p 
+                                                    key={index} 
+                                                    className="text-base lg:text-lg leading-relaxed programmer-text-white" 
+                                                    style={{
+                                                        textAlign: 'justify',
+                                                        textJustify: 'inter-word',
+                                                        hyphens: 'auto',
+                                                        wordBreak: 'break-word'
+                                                    }}
+                                                >
+                                                    {parts[0]}trade-off.{' '}
+                                                    {/* 在trade-off后面插入Resume链接 */}
+                                                    <span className="inline-block">
+                                                        <a
+                                                            href="/Hua_Wang_Full_Stack_Developer.pdf" 
+                                                            target="_blank" 
+                                                            rel="noopener noreferrer"
+                                                            className="inline-flex items-center text-cyan-400 hover:text-cyan-300 transition-all duration-300 group"
+                                                            style={{ 
+                                                                fontFamily: 'Figtree, sans-serif', 
+                                                                fontWeight: '500',
+                                                                textDecoration: 'none'
+                                                            }}
+                                                        >
+                                                            <span className="relative">
+                                                                {language === 'en' ? 'Resume' : '简历'}
+                                                                {/* Hover下划线效果 */}
+                                                                <span 
+                                                                    className="absolute bottom-0 left-0 w-0 h-0.5 bg-cyan-400 transition-all duration-300 group-hover:w-full"
+                                                                    style={{
+                                                                        boxShadow: '0 0 4px rgba(34, 211, 238, 0.6)'
+                                                                    }}
+                                                                ></span>
+                                                            </span>
+                                                            {/* 省略号图标 */}
+                                                            <span 
+                                                                className="ml-1 transition-all duration-300"
+                                                                style={{
+                                                                    filter: 'drop-shadow(0 0 3px rgba(34, 211, 238, 0.5))',
+                                                                    fontSize: '0.9em'
+                                                                }}
+                                                            >
+                                                                ...
+                                                            </span>
+                                                        </a>
+                                                    </span>
+                                                </p>
+                                            );
+                                        } else {
+                                            // 正常段落，不包含trade-off
+                                            return (
+                                                <p 
+                                                    key={index} 
+                                                    className="text-base lg:text-lg leading-relaxed programmer-text-white" 
+                                                    style={{
+                                                        textAlign: 'justify',
+                                                        textJustify: 'inter-word',
+                                                        hyphens: 'auto',
+                                                        wordBreak: 'break-word'
+                                                    }}
+                                                >
+                                                    {paragraph}
+                                                </p>
+                                            );
+                                        }
+                                    })}
                             </div>
                             </div>
                         </div>

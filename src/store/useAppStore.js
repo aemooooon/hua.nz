@@ -80,9 +80,9 @@ const contentConfig = {
           content: {
             greeting: "Kia ora, I'm Hua Wang",
             paragraphs: [
-              "I am a versatile full-stack developer with expertise in computer science, computer graphics, and data science, building and integrating interactive web applications, data pipelines and visualisation dashboards.",
-              "I have experience with modern frontend frameworks such as React, Next.js, and TypeScript, as well as working with libraries such as Three.js and ECharts. On the backend side, I am skilled in developing RESTful APIs and data-driven apps using Java, Python, Node.js, and C# ASP.NET.",
-              "I have also been working with containerised environments (Docker, Kubernetes), GitHub Actions, GitLab CI/CD pipelines, and cloud platforms such as AWS and Azure."
+              "I am a full-stack developer with over a decade of experience, from early work with PHP to today’s modern React ecosystems. My journey spans enterprise websites, CMS platforms, internal systems, and data-driven apps, enriched by a passion for computer graphics, where I blend shaders, lighting, and generative effects into the web.",
+              "What drives me is the process: turning scattered user stories into clarity, navigating complexity with an agnostic mindset toward languages and frameworks, and building solutions that balance logic with creativity. To me, code is not just function but also expression, where design, implementation, and narrative converge.",
+              "Beyond frontend and backend development, I explore DevOps, containerization, and cloud platforms, while my Master’s in Data Science deepens my grasp of algorithms and data pipelines. To me, development is about seeking order in chaos and finding innovation in every trade-off."
             ]
           }
         },
@@ -437,9 +437,10 @@ const contentConfig = {
           content: {
             greeting: "你好，我是王华",
             paragraphs: [
-              "吾乃通贯全栈之开发者，精研电脑之术、图形之学、数据之道，善构交互之网页、数据之渠、观象之台。",
-              "前端诸艺，如React、Next.js、TypeScript，皆所娴习；Three.js、ECharts之属，亦能运使自如。后端之道，RESTful API、数据之应用，Java、Python、Node.js、C# ASP.NET，皆可驾驭。容器之技，若Docker、Kubernetes；自动化之道，如GitHub Actions、GitLab CI/CD；云端之台，AWS、Azure，亦所涉猎。",
-              "博采众长，融会贯通，以成数字之巧，应万物之需。"
+              "夫天地演数，阴阳化爻，臣以一介码农，躬耕于比特之野十载有余。初习PHP古法，今研React新道，历经诸侯之网站，掌CMS之枢机，筑内廷之系统，驭数据于方寸。然臣心向星辰，每涉图形之术，便穷Shader之变，究光影之妙，合生成之艺于万维网中，此皆臣技之所寄也。",
+              "臣闻《易》云：“形而上者谓之道，形而下者谓之器。”臣之所驱，正在道器相融：散落之用户故事，臣析为清明；纷杂之技术桎梏，臣破以无执之心。语言框架，不过器物；逻辑创造，方见精神。是故代码非止于功用，亦载文心，融设计、实现与叙事于一炉，犹《诗》之兴观群怨，皆可托于数行之间。",
+              "臣虽主营前后二端，然未尝忘怀DevOps之策、容器之术与云之平台。更兼修数据科学之硕业，深研算法之微、管道之幽。盖《道德经》有言：“图难于其易，为大于其细”，臣每日所行，皆在混沌中求秩序，于权衡处创新篇——此乃臣平生之志也。",
+              "今效诸葛出师之表，托心于代码，寄志于云端，惟愿以技术立命，以创造安身，虽世变时移，此心不易。"
             ]
           }
         },
