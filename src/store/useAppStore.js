@@ -968,7 +968,7 @@ export const useAppStore = create(
           "links": {
             "live": "https://hub.realibox.com/",
           },
-          "img": ["/realibox/editor/editor.01.jpg", "/realibox/editor/editor.02.jpg", "/realibox/editor/editor.03.jpg", "/realibox/editor/editor.04.jpg", "/realibox/editor/editor.05.jpg", "/realibox/editor/editor.06.jpg"]
+          "img": ["/realibox/editor/editor.01.jpg", "/realibox/editor/editor.02.jpg", "/realibox/editor/editor.03.jpg", "/realibox/editor/realibox.00.jpg", "/realibox/editor/editor.04.jpg", "/realibox/editor/editor.05.jpg", "/realibox/editor/editor.06.jpg"]
         },
         {
           "type": "Full Stack",
