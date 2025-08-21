@@ -125,7 +125,7 @@ const GallerySection = ({ language = 'en' }) => {
             const floorDepth = 72;  // 前后深度72米（从64米扩展）
             const floorGeometry = new THREE.PlaneGeometry(floorWidth, floorDepth);
             
-            // 创建现代美术馆抛光混凝土地板纹理
+            // 创建现代美术馆抛光混凝土地板纹理 - 黑色高级版
             const createPolishedConcreteFloor = () => {
                 const canvas = document.createElement('canvas');
                 const canvasSize = 1024; // 提高分辨率获得更好的纹理
@@ -133,14 +133,14 @@ const GallerySection = ({ language = 'en' }) => {
                 canvas.height = canvasSize;
                 const ctx = canvas.getContext('2d');
 
-                // 基础混凝土颜色 - 浅灰色调
-                const baseColor = '#e8e8e8';
+                // 基础混凝土颜色 - 深黑色调（高级美术馆风格）
+                const baseColor = '#1a1a1a';
                 const accentColors = [
-                    '#f0f0f0', // 更浅的灰
-                    '#e0e0e0', // 中浅灰  
-                    '#dcdcdc', // 银灰色
-                    '#f5f5f5', // 烟白色
-                    '#efefef', // 淡灰色
+                    '#262626', // 深灰
+                    '#2a2a2a', // 中深灰  
+                    '#1e1e1e', // 极深灰
+                    '#333333', // 炭灰色
+                    '#2d2d2d', // 石墨色
                 ];
 
                 // 填充基础颜色
@@ -164,7 +164,7 @@ const GallerySection = ({ language = 'en' }) => {
 
                 // 添加混凝土裂纹和纹路
                 ctx.globalAlpha = 0.15;
-                ctx.strokeStyle = '#d0d0d0';
+                ctx.strokeStyle = '#404040';
                 ctx.lineWidth = 1;
                 
                 for (let i = 0; i < 50; i++) {
@@ -182,25 +182,25 @@ const GallerySection = ({ language = 'en' }) => {
                     ctx.stroke();
                 }
 
-                // 添加微妙的光泽效果
+                // 添加微妙的光泽效果（黑色抛光混凝土的反光特性）
                 const gradient = ctx.createRadialGradient(
                     canvasSize/2, canvasSize/2, 0,
                     canvasSize/2, canvasSize/2, canvasSize/2
                 );
-                gradient.addColorStop(0, 'rgba(255, 255, 255, 0.1)');
-                gradient.addColorStop(0.5, 'rgba(255, 255, 255, 0.05)');
-                gradient.addColorStop(1, 'rgba(255, 255, 255, 0)');
+                gradient.addColorStop(0, 'rgba(80, 80, 80, 0.15)');
+                gradient.addColorStop(0.5, 'rgba(60, 60, 60, 0.08)');
+                gradient.addColorStop(1, 'rgba(40, 40, 40, 0.02)');
                 
                 ctx.globalAlpha = 1;
                 ctx.fillStyle = gradient;
                 ctx.fillRect(0, 0, canvasSize, canvasSize);
 
                 // 添加一些主题色的微妙点缀（非常少量）
-                ctx.globalAlpha = 0.08;
-                for (let i = 0; i < 20; i++) {
+                ctx.globalAlpha = 0.06;
+                for (let i = 0; i < 15; i++) {
                     const x = Math.random() * canvasSize;
                     const y = Math.random() * canvasSize;
-                    const size = Math.random() * 3 + 1;
+                    const size = Math.random() * 2 + 1;
                     
                     ctx.fillStyle = '#00ffaa';
                     ctx.beginPath();
@@ -220,10 +220,10 @@ const GallerySection = ({ language = 'en' }) => {
             const floorTexture = createPolishedConcreteFloor();
             const floorMaterial = new THREE.MeshStandardMaterial({ 
                 map: floorTexture,
-                color: 0xffffff,       // 白色基调，让纹理颜色更准确
-                metalness: 0.1,        // 轻微金属质感
-                roughness: 0.6,        // 木质应有的粗糙度
-                envMapIntensity: 0.8   // 适度环境映射
+                color: 0x1a1a1a,       // 深黑色基调，匹配纹理
+                metalness: 0.05,       // 轻微金属质感（抛光混凝土特性）
+                roughness: 0.3,        // 降低粗糙度，体现抛光效果
+                envMapIntensity: 1.2   // 增强环境映射，体现黑色抛光面的反射特性
             });
             const floor = new THREE.Mesh(floorGeometry, floorMaterial);
             floor.rotation.x = -Math.PI / 2;
@@ -1223,8 +1223,8 @@ const GallerySection = ({ language = 'en' }) => {
                                 color: 0x4444ff,           // 蓝色占位
                                 emissive: 0x222244,        // 蓝色自发光
                                 emissiveIntensity: 0.3,    
-                                transparent: false,        // 关闭透明度提升性能
-                                opacity: 1.0,              
+                                transparent: true,         // 开启透明度让背光透出
+                                opacity: 0.61,             // 设置透明度为0.95，让灯箱光线透出
                                 side: THREE.FrontSide      // 单面渲染提升性能
                             });
                             
@@ -1249,8 +1249,8 @@ const GallerySection = ({ language = 'en' }) => {
                                         map: texture,
                                         emissive: 0x222222,        // 适度自发光模拟背光效果
                                         emissiveIntensity: 0.25,   
-                                        transparent: false,        // 关闭透明度提升性能
-                                        opacity: 1.0,              
+                                        transparent: true,         // 开启透明度让背光透出
+                                        opacity: 0.61,             // 设置透明度为0.95，让灯箱光线透出
                                         side: THREE.FrontSide,     // 单面渲染提升性能
                                         // 使用LambertMaterial替代StandardMaterial，计算更简单
                                     });
