@@ -1014,60 +1014,7 @@ export const useAppStore = create(
           "coordinates": [30.2888597, 109.4846285],
           "location": "Chongqing, China",
           "year": "2020-2021",
-          "img": ["/vr/fhjy.jpg", "/vr/changpingli.jpg", "/vr/dalincheng.jpg", "/vr/gyyh.jpg", "/vr/htfxj.jpg", "/vr/jhhy.jpg", "/vr/jlw.jpg", "/vr/jxmm.jpg", "/vr/jsjxmm.jpg", "/vr/pzf.jpg", "/vr/tf.jpg", "/vr/wjsf.jpg", "/vr/xcsd.jpg", "/vr/ybhf.jpg", "/vr/ysxc.jpg", "/vr/zyyc.jpg", "/vr/tsyhy.jpg"],
-          "tech": ["JavaScript", "WebGL", "3D Libraries", "HTML5", "CSS3", "Responsive Design"],
-          "stats": {
-            "projects": 18,
-            "locations": "8 provinces",
-            "clients": "12 real estate developers"
-          },
-          "projects": [
-            {
-              "name": "Changpingli VR Tour",
-              "nameZh": "常平里虚拟看房",
-              "description": "Interactive 360° virtual tour for luxury residential development featuring multiple building views and interior spaces.",
-              "links": {
-                "live": ""
-              },
-              "img": "/vr/changpingli.jpg"
-            },
-            {
-              "name": "Dalincheng Virtual Experience",
-              "nameZh": "大林城虚拟体验",
-              "description": "Comprehensive virtual tour system with interactive hotspots and seamless scene transitions for residential complex.",
-              "links": {
-                "live": ""
-              },
-              "img": "/vr/dalincheng.jpg"
-            },
-            {
-              "name": "Guanyin Lakeside VR",
-              "nameZh": "观音湖畔虚拟现实",
-              "description": "Premium lakeside property virtual tour with outdoor landscape and interior showcase capabilities.",
-              "links": {
-                "live": ""
-              },
-              "img": "/vr/gyyh.jpg"
-            },
-            {
-              "name": "Huatian International",
-              "nameZh": "华天国际",
-              "description": "High-end commercial and residential complex virtual tour with advanced navigation features.",
-              "links": {
-                "live": ""
-              },
-              "img": "/vr/htfxj.jpg"
-            },
-            {
-              "name": "Jinhai Bay Villa",
-              "nameZh": "金海湾别墅",
-              "description": "Luxury villa development virtual tour featuring detailed room-by-room exploration and exterior views.",
-              "links": {
-                "live": ""
-              },
-              "img": "/vr/jhhy.jpg"
-            }
-          ]
+          "img": ["/vr/fhjy.jpg", "/vr/changpingli.jpg", "/vr/dalincheng.jpg", "/vr/gyyh.jpg", "/vr/htfxj.jpg", "/vr/jhhy.jpg", "/vr/jlw.jpg", "/vr/jxmm.jpg", "/vr/jsjxmm.jpg", "/vr/pzf.jpg", "/vr/tf.jpg", "/vr/wjsf.jpg", "/vr/xcsd.jpg", "/vr/ybhf.jpg", "/vr/ysxc.jpg", "/vr/zyyc.jpg", "/vr/tsyhy.jpg"]
         },
         {
           "type": "Website",
@@ -1082,53 +1029,7 @@ export const useAppStore = create(
           "location": "Enshi, Hubei, China",
           "year": "2019",
           "link": "https://www.es9e.cn/",
-          "img": ["/website/tenglongdong.jpg", "/website/enshitusicheng01.jpg", "/website/enshitusicheng02.jpg", "/website/yangshegnhefeng.jpg", "/website/es9e.jpg", "/website/enshizhoubowuguan.jpg", "/website/enshizhousheyingjiaxiehui.jpg"],
-          "tech": ["CMS Platform", "PHP", "MySQL", "HTML5", "CSS3", "JavaScript", "Responsive Design", "Apache", "Linux"],
-          "stats": {
-            "clients": "6+ organizations",
-            "sectors": "Healthcare, Tourism, Government, Corporate",
-            "features": "Custom CMS, Database Design, Responsive UI",
-            "uptime": "99.8%",
-            "pages": "200+ pages total"
-          },
-          "projects": [
-            {
-              "name": "Enshi Central Hospital",
-              "nameZh": "恩施州中心医院",
-              "description": "Comprehensive healthcare website with patient information management, appointment booking system, and medical department showcase. Implemented complex database structure for patient records and integrated with hospital management systems. Features include online registration, doctor profiles, medical news, and health education resources.",
-              "links": {
-                "official": "https://www.es9e.cn/"
-              },
-              "img": "/es9e.jpg",
-              "features": ["Patient Management", "Online Appointments", "Medical Departments", "News System", "Health Education", "Doctor Profiles"]
-            },
-            {
-              "name": "Tenglong Cave Official Website",
-              "nameZh": "腾龙洞官方网站",
-              "description": "Tourism attraction website featuring virtual tours, visitor information, booking system, and multilingual support. Integrated with payment gateways and visitor management systems. Includes interactive maps, weather information, and cultural heritage content.",
-              "links": {
-                "official": "http://tenglongdong.net.cn/"
-              },
-              "img": "/tld.jpg",
-              "features": ["Virtual Tours", "Online Booking", "Multilingual Support", "Payment Integration", "Interactive Maps", "Weather Info"]
-            },
-            {
-              "name": "Badong Tourism Bureau",
-              "nameZh": "巴东县旅游局",
-              "description": "Government tourism portal showcasing local attractions, travel guides, cultural information, and tourism statistics. Built with content management system for easy updates by bureau staff. Features comprehensive destination guides and event management system.",
-              "links": {},
-              "img": "",
-              "features": ["Tourism Information", "Cultural Heritage", "Travel Guides", "Event Management", "Statistics Dashboard", "Photo Gallery"]
-            },
-            {
-              "name": "Jinguo Tea Corporate Site",
-              "nameZh": "金果茶叶企业网站",
-              "description": "Corporate website for tea manufacturer featuring product catalog, company history, quality certifications, and e-commerce integration. Included inventory management and order processing systems with real-time stock updates and customer portal.",
-              "links": {},
-              "img": "",
-              "features": ["Product Catalog", "E-commerce", "Quality Certificates", "Order Management", "Inventory System", "Customer Portal"]
-            }
-          ]
+          "img": ["/website/tenglongdong.jpg", "/website/enshitusicheng01.jpg", "/website/enshitusicheng02.jpg", "/website/yangshegnhefeng.jpg", "/website/es9e.jpg", "/website/enshizhoubowuguan.jpg", "/website/enshizhousheyingjiaxiehui.jpg"]
         },
         {
           "type": "Mobile Apps",
@@ -1228,7 +1129,7 @@ export const useAppStore = create(
           "links": {
             "official": "https://aihackathon.nz/ai-hackathon-2024/"
           },
-          "img": ["/f4/f4.3.jpeg", "/f4/f4.jpg", "/f4/f4.1.jpg", "/f4/f4.2.jpg", "/f4/f4.4.jpeg", "/f4/f4.5.jpg"]
+          "img": ["/f4/f4.3.jpeg", "/f4/f4.jpg", "/f4/f4.1.jpg", "/f4/f4.2.jpg", "/f4/f4.4.jpeg", "/f4/f4.5.jpg", "/f4/f4.6.jpg"]
         }
       ],
 

@@ -5,6 +5,7 @@ import { useAppStore } from '../../../store/useAppStore';
 import { usePhotoSwipe } from '../../../hooks/usePhotoSwipe';
 import GlowDivider from '../../ui/GlowDivider';
 import CornerCloseButton from '../../ui/CornerCloseButton';
+import WordCloud from './WordCloud';
 import './ProjectDetail.css';
 
 // 简单的图标组件
@@ -14,6 +15,30 @@ const ExternalLink = ({ className = "w-4 h-4" }) => (
   </svg>
 );
 ExternalLink.propTypes = { className: PropTypes.string };
+
+const EyeIcon = ({ className = "w-6 h-6" }) => (
+  <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+  </svg>
+);
+EyeIcon.propTypes = { className: PropTypes.string };
+
+// 备选图标 - 文档图标
+const DocumentTextIcon = ({ className = "w-6 h-6" }) => (
+  <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+  </svg>
+);
+DocumentTextIcon.propTypes = { className: PropTypes.string };
+
+// 备选图标 - 信息图标
+const InformationCircleIcon = ({ className = "w-6 h-6" }) => (
+  <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+  </svg>
+);
+InformationCircleIcon.propTypes = { className: PropTypes.string };
 
 const ProjectDetailNew = ({ project = null, isOpen, onClose }) => {
   const { language, getProjectsText, getProjectDescription } = useAppStore();
@@ -81,8 +106,6 @@ const ProjectDetailNew = ({ project = null, isOpen, onClose }) => {
       document.body.style.height = '';
     };
   }, [isOpen]);
-
-
 
   // ESC键关闭模态框
   useEffect(() => {
@@ -229,23 +252,18 @@ const ProjectDetailNew = ({ project = null, isOpen, onClose }) => {
 
   return createPortal(
     <div className="fixed inset-0 z-[99999] bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900" style={{ cursor: 'default' }}>
-      {/* 项目详情页关闭按钮 - 使用通用CornerCloseButton组件 
-          配置说明：
-          - 恢复到之前调试好的大圆形效果
-          - 红色圆形背景完全包围X图标区域
-          - 白色图标确保在深色背景上的可见性 */}
+      {/* 项目详情页关闭按钮 - 使用通用CornerCloseButton组件 */}
       <CornerCloseButton 
         onClick={onClose}
         ariaLabel={projectText.detail.closeModal}
-        // 项目详情页专用配置 - 使用主题色背景
-        iconSize="w-16 h-16"              // 大号图标
-        iconColor="text-white"            // 纯白色图标
-        iconHoverColor="text-white"       // hover保持白色
-        circleColor="bg-theme-primary"    // 主题色背景圆
-        circleSize="w-80 h-80"            // 大圆形，完全包围X区域
-        strokeWidth={1.5}                 // 稍细的线条，更优雅
-        animationDuration="duration-500"  // 流畅的动画时长
-        position={{ top: 'top-8', right: 'right-8' }} // 稍微调整位置适配大圆形
+        iconSize="w-16 h-16"
+        iconColor="text-white"
+        iconHoverColor="text-white"
+        circleColor="bg-theme-primary"
+        circleSize="w-80 h-80"
+        strokeWidth={1.5}
+        animationDuration="duration-500"
+        position={{ top: 'top-8', right: 'right-8' }}
       />
 
       {/* Content */}
@@ -292,7 +310,7 @@ const ProjectDetailNew = ({ project = null, isOpen, onClose }) => {
               </div>
             )}
 
-                {/* Multiple Images - Main Image + Thumbnails */}
+            {/* Multiple Images - Main Image + Thumbnails */}
             {hasMultipleImages && (
               <div className="space-y-4">
                 
@@ -312,7 +330,9 @@ const ProjectDetailNew = ({ project = null, isOpen, onClose }) => {
                         animation: 'fadeInImage 0.6s ease-in-out'
                       }}
                     />
-                  </div>                  {/* Gallery indicator */}
+                  </div>
+                  
+                  {/* Gallery indicator */}
                   <div className="absolute top-6 right-6 bg-black/50 backdrop-blur-md rounded-full px-4 py-2 text-white text-sm font-medium z-20">
                     <div className="flex items-center gap-2">
                       <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -372,55 +392,26 @@ const ProjectDetailNew = ({ project = null, isOpen, onClose }) => {
           {/* Quick Info Sidebar */}
           <div className="lg:col-span-1 space-y-6">
             
-            {/* Essential Info Card */}
+            {/* Project Insights Title */}
+            <h3 className="text-lg font-semibold text-theme-text-primary flex items-center gap-2">
+              <svg className="w-5 h-5 text-theme-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+              </svg>
+              {language === 'zh' ? 'Insights' : 'Insights'}
+            </h3>
+            
+            {/* Word Cloud Card */}
             <div className="group bg-gradient-to-br from-theme-surface/30 to-theme-surface/10 p-6 rounded-2xl border border-theme-border/20 backdrop-blur-md shadow-xl hover:shadow-2xl hover:shadow-theme-primary/10 transition-all duration-500 relative overflow-hidden">
               {/* Light effect overlay */}
               <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent opacity-0 group-hover:opacity-100 pointer-events-none transform -skew-x-12 translate-x-[-200%] group-hover:translate-x-[200%] transition-all duration-1000"></div>
               
-              <h3 className="text-lg font-semibold text-theme-text-primary mb-4 flex items-center gap-2 relative z-10">
-                <svg className="w-5 h-5 text-theme-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                {language === 'zh' ? '项目信息' : 'Project Info'}
-              </h3>
-              
-              <div className="space-y-4 relative z-10">
-                {project.company && (
-                  <div>
-                    <div className="text-sm text-theme-text-secondary/60 uppercase tracking-wider font-medium mb-1">
-                      {language === 'zh' ? '客户' : 'Client'}
-                    </div>
-                    <div className="text-theme-primary font-semibold">{project.company}</div>
-                  </div>
-                )}
-                
-                <div>
-                  <div className="text-sm text-theme-text-secondary/60 uppercase tracking-wider font-medium mb-1">
-                    {language === 'zh' ? '年份' : 'Year'}
-                  </div>
-                  <div className="text-theme-text-primary font-semibold">{project.year}</div>
-                </div>
-                
-                {project.location && (
-                  <div>
-                    <div className="text-sm text-theme-text-secondary/60 uppercase tracking-wider font-medium mb-1">
-                      {language === 'zh' ? '地点' : 'Location'}
-                    </div>
-                    <div className="text-theme-text-primary font-semibold">{project.location}</div>
-                  </div>
-                )}
-                
-                <div>
-                  <div className="text-sm text-theme-text-secondary/60 uppercase tracking-wider font-medium mb-1">
-                    {language === 'zh' ? '类型' : 'Type'}
-                  </div>
-                  <div className="text-theme-secondary font-semibold">
-                    {project.tags && Array.isArray(project.tags) 
-                      ? project.tags.join(', ') 
-                      : project.type
-                    }
-                  </div>
-                </div>
+              {/* D3.js Word Cloud */}
+              <div className="relative z-10">
+                <WordCloud 
+                  project={project}
+                  getProjectDescription={getProjectDescription}
+                  className="w-full"
+                />
               </div>
             </div>
 
@@ -434,7 +425,7 @@ const ProjectDetailNew = ({ project = null, isOpen, onClose }) => {
                   <svg className="w-5 h-5 text-theme-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
                   </svg>
-                  {language === 'zh' ? '项目链接' : 'Project Links'}
+                  {language === 'zh' ? 'Links' : 'Links'}
                 </h3>
                 
                 {/* Live Demo */}
@@ -471,19 +462,21 @@ const ProjectDetailNew = ({ project = null, isOpen, onClose }) => {
           {/* Main Content */}
           <div className="lg:col-span-2 space-y-8">
             
-            {/* Project Description */}
+            {/* Overview Section */}
             <div>
+              {/* Overview Title */}
+              <h3 className="text-2xl font-bold text-white mb-6 flex items-center gap-3">
+                <EyeIcon className="w-7 h-7 text-theme-primary" />
+                {language === 'zh' ? '项目概览' : 'Overview'}
+              </h3>
+              
+              {/* Project Description Card */}
               <div className="group bg-gradient-to-br from-slate-50/8 via-white/6 to-slate-100/8 p-8 rounded-2xl border border-white/10 backdrop-blur-md shadow-xl hover:shadow-2xl hover:shadow-theme-primary/10 transition-all duration-500 relative overflow-hidden">
                 {/* 柔和的光效覆盖层 - 降低强度 */}
                 <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/3 to-transparent opacity-0 group-hover:opacity-100 pointer-events-none transform -skew-x-12 translate-x-[-200%] group-hover:translate-x-[200%] transition-all duration-1000"></div>
                 
                 {/* 添加柔和的内部光晕 */}
                 <div className="absolute inset-0 bg-gradient-to-br from-theme-primary/5 via-transparent to-theme-secondary/5 rounded-2xl"></div>
-                
-                <h3 className="text-2xl font-bold text-white mb-6 flex items-center gap-3 relative z-10">
-                  <div className="w-1 h-8 bg-gradient-to-b from-theme-primary to-theme-secondary rounded-full"></div>
-                  {language === 'zh' ? '项目描述' : 'Project Description'}
-                </h3>
                 
                 <div className="relative z-10">
                   {(() => {
