@@ -715,14 +715,34 @@ const GallerySection = ({ language = 'en' }) => {
 
             // 🎨 智能画作聚光灯系统（优化色彩保真度和亮度感知）
             const createPaintingSpotlight = (paintingMesh) => {
-                // 使用暖白色光源，保护照片色彩不被冲淡
-                const spotLight = new THREE.SpotLight(0xfff8e1, 1.5, 15, Math.PI / 6, 0.15, 1.0); // 暖白色 + 降低基础亮度
                 const position = paintingMesh.position;
                 const rotation = paintingMesh.rotation;
                 
+                // 判断是否为竖式画作（前后墙的画作）
+                const isVerticalPainting = Math.abs(rotation.y) < 0.1 || Math.abs(rotation.y - Math.PI) < 0.1;
+                
+                // 根据画作类型设置不同的射灯参数
+                let spotlightAngle, penumbra, distance, lightHeightOffset;
+                if (isVerticalPainting) {
+                    // 竖式画作：适中的射灯，确保完全覆盖画作
+                    spotlightAngle = Math.PI / 9;   // 20度角（从15度调整到20度）
+                    penumbra = 0.08;               // 稍微柔和一些边缘
+                    distance = 12;                 // 保持照射距离
+                    lightHeightOffset = 6.0;       // 射灯高度偏移（比画作高6米）
+                } else {
+                    // 横式画作：保持原有参数
+                    spotlightAngle = Math.PI / 6;   // 30度角（保持原有）
+                    penumbra = 0.15;               // 原有边缘柔和度
+                    distance = 15;                 // 原有照射距离
+                    lightHeightOffset = 3.5;       // 原有高度偏移
+                }
+                
+                // 使用暖白色光源，保护照片色彩不被冲淡
+                const spotLight = new THREE.SpotLight(0xfff8e1, 1.5, distance, spotlightAngle, penumbra, 1.0);
+                
                 // 根据画作朝向和高度计算射灯位置
                 let lightPos = new THREE.Vector3();
-                const lightHeight = Math.max(7.0, position.y + 3.5); // 动态调整光源高度，至少比画作高3.5米
+                const lightHeight = Math.max(7.0, position.y + lightHeightOffset); // 使用动态高度偏移
                 const offset = 1.8;
                 
                 if (Math.abs(rotation.y) < 0.1) { // 后墙
@@ -1155,7 +1175,8 @@ const GallerySection = ({ language = 'en' }) => {
                     }
                 };
 
-                // 设置平衡性能的美术馆光照系统
+                // 设置平衡性能的美术馆光照系统 (暂时注释掉，测试纯聚光灯效果)
+                /*
                 const setupBasicLighting = (scene) => {
                     // 增强环境光 - 提升美术馆整体亮度
                     const ambientLight = new THREE.AmbientLight(0x606060, 1.2); // 提升亮度和色温
@@ -1181,6 +1202,7 @@ const GallerySection = ({ language = 'en' }) => {
                     
                     return [ambientLight, mainLight, fillLight];
                 };
+                */
 
                 const addArtisticElements = (scene) => {
                     // 创建完全填充入口的墙面发光区域（灯箱）- 更新为新尺寸，增加广告功能
@@ -1352,7 +1374,8 @@ const GallerySection = ({ language = 'en' }) => {
                     return characterLights;
                 };
 
-                setupBasicLighting(scene);
+                // 暂时移除环境照明系统，测试纯聚光灯效果
+                // setupBasicLighting(scene);
 
                 // 添加艺术元素（包括灯箱广告）
                 addArtisticElements(scene);
