@@ -942,9 +942,26 @@ export const useAppStore = create(
         {
           "type": "Front End",
           "title": "Front End Developer",
-          "name": "Realibox 3D Editor",
+          "name": "Realibox Hub & 3D Editor",
           "company": "Realibox",
-          "description": "Developed and maintained the central hub for Realibox’s 3D assets, using React with a WebGL-based library for the frontend and Node.js/Python for the backend. Implemented CI/CD pipelines using GitLab for code integration and deployment. Worked in an Agile environment, collaborating closely with PMs, QAs, and Designers to ensure feature delivery aligned with requirements.",
+          "description": {
+            "en": [
+              "As a Senior Frontend Developer at Realibox, I architected and developed a comprehensive cloud-based 3D design platform comprising five interconnected microservice repositories. This sophisticated system provided professional designers and enterprises with advanced 3D modeling, rendering, and collaboration capabilities through a modular, scalable architecture that demonstrated mastery of modern web development and distributed system design.",
+              "The platform was built using cutting-edge technologies including React 18, Vite as the build tool for lightning-fast development experience, and MobX 6 for reactive state management across complex application workflows. Implemented comprehensive TypeScript integration throughout all microservices, ensuring type safety and maintainable code architecture. The system utilized advanced WebGL-based 3D rendering engines with custom canvas implementations for real-time 3D scene manipulation and high-performance visualization.",
+              "Architected a sophisticated microservice ecosystem with five specialized repositories: designhub-accounts-web for user authentication and account management, designhub-common-core containing shared utilities and business logic, designhub-common-ui housing reusable UI components, designhub-hub-web serving as the main platform dashboard, and ishot-editor-web providing the core 3D editing capabilities. Each service was designed with clear separation of concerns and robust API integrations.",
+              "The core 3D editor featured advanced WebGL rendering capabilities with real-time scene manipulation, material editing systems, collaborative editing features, and cloud-based project synchronization. Implemented sophisticated state management using MobX stores for editor, scene, render, material, and user management. The system supported complex 3D workflows including model importing, texture management, lighting control, and high-quality rendering pipelines with performance optimization for handling large 3D assets.",
+              "Implemented comprehensive DevOps practices including automated CI/CD pipelines using GitLab, multi-environment deployment strategies, and advanced package management with pnpm workspaces and Turbo for efficient monorepo operations. Utilized Changesets for version management and automated npm package publishing to private registries. The system featured robust error handling, comprehensive testing with Vitest and Cypress, and progressive loading strategies for optimal user experience.",
+              "The project demonstrated enterprise-scale frontend development capabilities including component-driven architecture with atomic design principles, advanced internationalization support, theme management systems, and accessibility features. Collaborated extensively with backend engineers, 3D graphics specialists, and product teams in an Agile environment, ensuring seamless integration of complex 3D workflows with intuitive user interfaces and robust cloud infrastructure."
+            ],
+            "zh": [
+              "作为Realibox的高级前端开发工程师，我架构并开发了一个全面的云端3D设计平台，包含五个相互连接的微服务代码库。这个复杂的系统为专业设计师和企业提供了先进的3D建模、渲染和协作功能，通过模块化、可扩展的架构展示了现代web开发和分布式系统设计的精通。",
+              "平台采用前沿技术构建，包括React 18、Vite作为构建工具提供闪电般的开发体验，以及MobX 6用于复杂应用程序工作流程的响应式状态管理。在所有微服务中实现了全面的TypeScript集成，确保类型安全和可维护的代码架构。系统利用先进的基于WebGL的3D渲染引擎和自定义canvas实现，实现实时3D场景操作和高性能可视化。",
+              "架构了复杂的微服务生态系统，包含五个专门的代码库：designhub-accounts-web用于用户认证和账户管理，designhub-common-core包含共享工具和业务逻辑，designhub-common-ui存放可重用UI组件，designhub-hub-web作为主要平台仪表板，ishot-editor-web提供核心3D编辑功能。每个服务都设计了清晰的关注点分离和健壮的API集成。",
+              "核心3D编辑器具有先进的WebGL渲染功能，包括实时场景操作、材质编辑系统、协作编辑功能和云端项目同步。使用MobX存储实现了复杂的状态管理，包括编辑器、场景、渲染、材质和用户管理。系统支持复杂的3D工作流程，包括模型导入、纹理管理、光照控制和高质量渲染管道，并对处理大型3D资产进行了性能优化。",
+              "实现了全面的DevOps实践，包括使用GitLab的自动化CI/CD流水线、多环境部署策略，以及使用pnpm工作空间和Turbo进行高效monorepo操作的先进包管理。利用Changesets进行版本管理和自动化npm包发布到私有注册表。系统具有健壮的错误处理、使用Vitest和Cypress的全面测试，以及用于最佳用户体验的渐进加载策略。",
+              "项目展示了企业级前端开发能力，包括基于原子设计原则的组件驱动架构、先进的国际化支持、主题管理系统和无障碍功能。在敏捷环境中与后端工程师、3D图形专家和产品团队广泛协作，确保复杂3D工作流程与直观用户界面和健壮云基础设施的无缝集成。"
+            ]
+          },
           "coordinates": [22.9951158, 113.3335372],
           "location": "Guangzhou, China",
           "year": "2021-2023",
