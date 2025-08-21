@@ -31,11 +31,20 @@ const ProjectSection = ({ language }) => {
     // 获取所有项目数据
     const projects = getAllProjects();
 
-    // 按项目的 type 字段分组
+    // 按项目的 type 或 tags 字段分组
     const projectsByCategory = projects.reduce((acc, project) => {
-        const category = project.type || 'Other';
-        if (!acc[category]) acc[category] = [];
-        acc[category].push(project);
+        // 如果项目有 tags 数组，则为每个 tag 都创建分组
+        if (project.tags && Array.isArray(project.tags)) {
+            project.tags.forEach(tag => {
+                if (!acc[tag]) acc[tag] = [];
+                acc[tag].push(project);
+            });
+        } else {
+            // 兼容原有的 type 字段
+            const category = project.type || 'Other';
+            if (!acc[category]) acc[category] = [];
+            acc[category].push(project);
+        }
         return acc;
     }, {});
 
@@ -55,49 +64,74 @@ const ProjectSection = ({ language }) => {
     const getCategoryStyle = (category) => {
         const styles = {
             'Full Stack': {
-                bg: 'bg-theme-bg-white-10',
-                text: 'text-theme-primary',
-                border: 'border-theme-primary/30 hover:border-theme-primary/50'
+                bg: 'bg-blue-500/10',
+                text: 'text-blue-400',
+                border: 'border-blue-500/30 hover:border-blue-500/50'
             },
             'Modern Frontend': {
-                bg: 'bg-theme-bg-white-10',
-                text: 'text-theme-secondary',
-                border: 'border-theme-secondary/30 hover:border-theme-secondary/50'
+                bg: 'bg-purple-500/10',
+                text: 'text-purple-400',
+                border: 'border-purple-500/30 hover:border-purple-500/50'
             },
             'Frontend': {
-                bg: 'bg-theme-bg-white-10',
-                text: 'text-theme-secondary',
-                border: 'border-theme-secondary/30 hover:border-theme-secondary/50'
+                bg: 'bg-purple-500/10',
+                text: 'text-purple-400',
+                border: 'border-purple-500/30 hover:border-purple-500/50'
+            },
+            'Front End': {
+                bg: 'bg-purple-500/10',
+                text: 'text-purple-400',
+                border: 'border-purple-500/30 hover:border-purple-500/50'
             },
             'VR/360°': {
-                bg: 'bg-theme-bg-white-10',
-                text: 'text-theme-accent',
-                border: 'border-theme-accent/30 hover:border-theme-accent/50'
+                bg: 'bg-pink-500/10',
+                text: 'text-pink-400',
+                border: 'border-pink-500/30 hover:border-pink-500/50'
+            },
+            'WebGL': {
+                bg: 'bg-pink-500/10',
+                text: 'text-pink-400',
+                border: 'border-pink-500/30 hover:border-pink-500/50'
             },
             'Website Development': {
-                bg: 'bg-theme-bg-white-10',
-                text: 'text-theme-text-white-80',
-                border: 'border-theme-text-white-50 hover:border-theme-text-white-70'
+                bg: 'bg-cyan-500/10',
+                text: 'text-cyan-400',
+                border: 'border-cyan-500/30 hover:border-cyan-500/50'
+            },
+            'Website': {
+                bg: 'bg-cyan-500/10',
+                text: 'text-cyan-400',
+                border: 'border-cyan-500/30 hover:border-cyan-500/50'
             },
             'Web Development': {
-                bg: 'bg-theme-bg-white-10',
-                text: 'text-theme-primary',
-                border: 'border-theme-primary/30 hover:border-theme-primary/50'
+                bg: 'bg-blue-500/10',
+                text: 'text-blue-400',
+                border: 'border-blue-500/30 hover:border-blue-500/50'
             },
             'Mobile App': {
-                bg: 'bg-theme-bg-white-10',
-                text: 'text-theme-secondary',
-                border: 'border-theme-secondary/30 hover:border-theme-secondary/50'
+                bg: 'bg-green-500/10',
+                text: 'text-green-400',
+                border: 'border-green-500/30 hover:border-green-500/50'
+            },
+            'Mobile Apps': {
+                bg: 'bg-green-500/10',
+                text: 'text-green-400',
+                border: 'border-green-500/30 hover:border-green-500/50'
             },
             'Data Science': {
-                bg: 'bg-theme-bg-white-10',
-                text: 'text-theme-accent',
-                border: 'border-theme-accent/30 hover:border-theme-accent/50'
+                bg: 'bg-orange-500/10',
+                text: 'text-orange-400',
+                border: 'border-orange-500/30 hover:border-orange-500/50'
             },
-            'activity': {
-                bg: 'bg-theme-bg-white-10',
-                text: 'text-theme-text-white-90',
-                border: 'border-theme-text-white-50 hover:border-theme-text-white-70'
+            'Data Engineer': {
+                bg: 'bg-emerald-500/10',
+                text: 'text-emerald-400',
+                border: 'border-emerald-500/30 hover:border-emerald-500/50'
+            },
+            'Activity': {
+                bg: 'bg-yellow-500/10',
+                text: 'text-yellow-400',
+                border: 'border-yellow-500/30 hover:border-yellow-500/50'
             },
             'Other': {
                 bg: 'bg-theme-bg-white-10',
@@ -151,7 +185,7 @@ const ProjectSection = ({ language }) => {
                         <div className="flex flex-wrap gap-3 md:gap-4 justify-center items-center">
                             {/* All 按钮 */}
                             <button
-                                className={`category-filter-btn bg-theme-bg-white-10 text-theme-text-white-90 border-theme-text-white-50 hover:border-theme-text-white-70 ${activeFilter === 'all' ? 'active' : ''}`}
+                                className={`category-filter-btn ${activeFilter === 'all' ? 'active' : ''} bg-theme-bg-white-10 text-theme-text-white-90 border-theme-text-white-50 hover:border-theme-text-white-70`}
                                 onClick={() => setActiveFilter('all')}
                             >
                                 All
@@ -210,7 +244,10 @@ const ProjectSection = ({ language }) => {
                                 )}
                                 {/* 状态标签 - 左上角 */}
                                 <div className="project-category-badge">
-                                    {project.type || 'Other'}
+                                    {project.tags && Array.isArray(project.tags) 
+                                        ? project.tags.join(', ') 
+                                        : (project.type || 'Other')
+                                    }
                                 </div>
                                 {/* 年份标签 - 右上角 */}
                                 <div className={`project-status-badge ${getStatusColor(project.year)}`}>

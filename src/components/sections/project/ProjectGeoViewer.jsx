@@ -417,7 +417,7 @@ const ProjectGeoViewer = ({ isOpen, onClose, language = 'en' }) => {
               font-weight: 700;
               text-transform: capitalize;
               box-shadow: 0 4px 8px rgba(0,0,0,0.3);
-            ">${project.type}</span>
+            ">${project.tags && Array.isArray(project.tags) ? project.tags.join(', ') : project.type}</span>
             ${project.year ? `<span style="color: #9ca3af; font-size: 12px; font-weight: 600; background: #374151; padding: 4px 8px; border-radius: 12px;">${project.year}</span>` : ''}
           </div>
           

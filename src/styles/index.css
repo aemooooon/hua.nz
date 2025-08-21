@@ -1146,9 +1146,7 @@ body {
     font-size: 0.875rem;
     font-weight: 600;
     text-align: center;
-    border: 1px solid var(--theme-text-white-20);
-    background: var(--theme-bg-white-5);
-    color: var(--theme-text-white-80);
+    border: 1px solid;
     -webkit-backdrop-filter: blur(12px);
     backdrop-filter: blur(12px);
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -1160,16 +1158,10 @@ body {
 }
 
 .category-filter-btn:hover {
-    border-color: var(--theme-text-white-40);
-    background: var(--theme-bg-white-10);
-    color: var(--theme-text-white-95);
     transform: translateY(-1px);
 }
 
 .category-filter-btn.active {
-    border-color: var(--theme-primary);
-    background: var(--theme-bg-primary-10);
-    color: var(--theme-primary);
     box-shadow: 0 0 20px var(--theme-shadow-primary-30);
 }
 

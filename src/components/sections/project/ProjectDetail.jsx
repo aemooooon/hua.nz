@@ -414,7 +414,12 @@ const ProjectDetailNew = ({ project = null, isOpen, onClose }) => {
                   <div className="text-sm text-theme-text-secondary/60 uppercase tracking-wider font-medium mb-1">
                     {language === 'zh' ? '类型' : 'Type'}
                   </div>
-                  <div className="text-theme-secondary font-semibold">{project.type}</div>
+                  <div className="text-theme-secondary font-semibold">
+                    {project.tags && Array.isArray(project.tags) 
+                      ? project.tags.join(', ') 
+                      : project.type
+                    }
+                  </div>
                 </div>
               </div>
             </div>
