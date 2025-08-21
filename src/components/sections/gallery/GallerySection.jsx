@@ -559,7 +559,16 @@ const GallerySection = ({ language = 'en' }) => {
                     });
                     
                     setTimeout(() => {
-                        createPaintingSpotlight(paintingWithFrame);
+                        // 只为前后墙的画作和72米墙下层画作创建射灯
+                        const shouldCreateSpotlight = 
+                            wallType === 'backWall' || 
+                            wallType === 'frontWall' || 
+                            (wallType === 'rightWall' && imageData.item.layer === 'lower') ||
+                            (wallType === 'leftWall' && imageData.item.layer === 'lower');
+                            
+                        if (shouldCreateSpotlight) {
+                            createPaintingSpotlight(paintingWithFrame);
+                        }
                     }, 100);
                     
                     const imageSrc = item.src || item.thumbnail;
