@@ -7,6 +7,7 @@ import CircularLoadingIndicator from '../../ui/CircularLoadingIndicator';
 import GalleryMobile from './GalleryMobile';
 import RectAreaLightingSystem from '../../lighting/RectAreaLightingSystem';
 import { LightCubeSystem } from '../../lighting/LightCubeSystem';
+import { IESSpotlightSystem } from '../../lighting/IESSpotlightSystem';
 
 /**
  * Interactive 3D Gallery Component - "Corridor of Light and Shadow" 
@@ -100,6 +101,7 @@ const GallerySection = ({ language = 'en' }) => {
     const paintingMeshesRef = useRef([]); // Painting meshes for collision detection
     const rectAreaLightingRef = useRef(null); // RectAreaLighting system reference
     const lightCubeSystemRef = useRef(null); // Light cube system reference
+    const iesSpotlightSystemRef = useRef(null); // IES spotlight system reference
     
     // Animation and loading management
     const introAnimationRef = useRef(null);
@@ -563,9 +565,8 @@ const GallerySection = ({ language = 'en' }) => {
                     });
                     
                     setTimeout(() => {
-                        // 只为前后墙的画作和72米墙下层画作创建射灯
+                        // 只为前墙和72米墙下层画作创建射灯（移除后墙射灯）
                         const shouldCreateSpotlight = 
-                            wallType === 'backWall' || 
                             wallType === 'frontWall' || 
                             (wallType === 'rightWall' && imageData.item.layer === 'lower') ||
                             (wallType === 'leftWall' && imageData.item.layer === 'lower');
@@ -1157,27 +1158,58 @@ const GallerySection = ({ language = 'en' }) => {
                 container.appendChild(renderer.domElement);
                 rendererRef.current = renderer;
 
-                // 创建第一人称控制器
-                const controls = new PointerLockControls(camera, renderer.domElement);
+                // 创建第一人称控制器 - 修复Pointer Lock API错误
+                let controls;
+                try {
+                    // 确保document是可用的且不在iframe中
+                    if (document && document.body && document.documentElement && 
+                        window.self === window.top && 
+                        'requestPointerLock' in document.body) {
+                        controls = new PointerLockControls(camera, document.body);
+                    } else {
+                        // 降级：使用renderer.domElement但不启用pointer lock
+                        controls = new PointerLockControls(camera, renderer.domElement);
+                        console.warn('Pointer Lock API not available, using fallback mode');
+                    }
+                } catch (error) {
+                    console.warn('PointerLockControls initialization failed:', error);
+                    // 创建一个简化的控制器
+                    controls = new PointerLockControls(camera, renderer.domElement);
+                }
+                
                 scene.add(controls.getObject());
                 controlsRef.current = controls;
 
-                // 控制器事件
-                controls.addEventListener('lock', () => {
-                    setIsPointerLocked(true);
-                });
-                controls.addEventListener('unlock', () => {
-                    setIsPointerLocked(false);
-                });
+                // 控制器事件 - 添加错误处理
+                try {
+                    controls.addEventListener('lock', () => {
+                        setIsPointerLocked(true);
+                    });
+                    controls.addEventListener('unlock', () => {
+                        setIsPointerLocked(false);
+                    });
+                } catch (error) {
+                    console.warn('PointerLockControls event setup failed:', error);
+                }
                 
-                // 禁用控制器的默认点击事件，等待动画完成后再启用
-                const originalConnect = controls.connect;
-                controls.connect.__original = originalConnect; // 保存原始方法
-                controls.connect = () => {
-                    if (isIntroAnimationComplete) {
-                        originalConnect.call(controls);
+                // 禁用控制器的默认点击事件，等待动画完成后再启用 - 添加错误处理
+                try {
+                    const originalConnect = controls.connect;
+                    if (originalConnect) {
+                        controls.connect.__original = originalConnect; // 保存原始方法
+                        controls.connect = () => {
+                            if (isIntroAnimationComplete) {
+                                try {
+                                    originalConnect.call(controls);
+                                } catch (connectError) {
+                                    console.warn('PointerLockControls connect failed:', connectError);
+                                }
+                            }
+                        };
                     }
-                };
+                } catch (error) {
+                    console.warn('PointerLockControls connect override failed:', error);
+                }
 
                 // 设置平衡性能的美术馆光照系统 (暂时注释掉，测试纯聚光灯效果)
                 /*
@@ -1220,8 +1252,8 @@ const GallerySection = ({ language = 'en' }) => {
                         const lightBoxGeometry = new THREE.BoxGeometry(entranceWidth, entranceHeight, lightBoxDepth);
                         const lightBoxMaterial = new THREE.MeshStandardMaterial({
                             color: 0xffffff,        // 纯白色
-                            emissive: 0xffffff,     // 自发光白色
-                            emissiveIntensity: 2.0   // 增强自发光强度，减少对外部光源依赖
+                            emissive: 0x000000,     // 移除自发光
+                            emissiveIntensity: 0.0   // 自发光强度设为0
                         });
                         
                         const lightBox = new THREE.Mesh(lightBoxGeometry, lightBoxMaterial);
@@ -1247,8 +1279,8 @@ const GallerySection = ({ language = 'en' }) => {
                             // 🚀 性能优化的默认占位材质
                             const defaultMaterial = new THREE.MeshLambertMaterial({
                                 color: 0x4444ff,           // 蓝色占位
-                                emissive: 0x222244,        // 蓝色自发光
-                                emissiveIntensity: 0.3,    
+                                emissive: 0x000000,        // 移除自发光
+                                emissiveIntensity: 0.0,    // 自发光强度设为0
                                 transparent: true,         // 开启透明度让背光透出
                                 opacity: 0.61,             // 设置透明度为0.95，让灯箱光线透出
                                 side: THREE.FrontSide      // 单面渲染提升性能
@@ -1273,8 +1305,8 @@ const GallerySection = ({ language = 'en' }) => {
                                     // 🚀 性能优化的灯箱展示材质
                                     const lightboxMaterial = new THREE.MeshLambertMaterial({
                                         map: texture,
-                                        emissive: 0x222222,        // 适度自发光模拟背光效果
-                                        emissiveIntensity: 0.25,   
+                                        emissive: 0x000000,        // 移除自发光
+                                        emissiveIntensity: 0.0,   // 自发光强度设为0
                                         transparent: true,         // 开启透明度让背光透出
                                         opacity: 0.61,             // 设置透明度为0.95，让灯箱光线透出
                                         side: THREE.FrontSide,     // 单面渲染提升性能
@@ -1302,19 +1334,19 @@ const GallerySection = ({ language = 'en' }) => {
                         const lightboxDisplay = createLightboxDisplay();
                         // Lightbox display created successfully
                         
-                        // 🚀 性能优化：减少背光源数量，只保留必要的照明
-                        const backLightSources = [
-                            { pos: [0, 3, 36 - lightBoxDepth - 0.8], intensity: 1.8 }     // 只保留一个主背光源
-                        ];
+                        // 🚀 性能优化：移除lightbox背光源以测试效果
+                        // const backLightSources = [
+                        //     { pos: [0, 3, 36 - lightBoxDepth - 0.8], intensity: 1.8 }     // 主背光源已移除
+                        // ];
                         
-                        backLightSources.forEach(light => {
-                            const backLight = new THREE.PointLight(0xffffee, light.intensity, 12); // 减小照射范围
-                            backLight.position.set(...light.pos);
-                            backLight.decay = 1.8; // 增加衰减，减少计算负担
-                            scene.add(backLight);
-                        });
+                        // backLightSources.forEach(light => {
+                        //     const backLight = new THREE.PointLight(0xffffee, light.intensity, 12);
+                        //     backLight.position.set(...light.pos);
+                        //     backLight.decay = 1.8;
+                        //     scene.add(backLight);
+                        // });
                         
-                        // Add backlight effect for realistic lightbox appearance
+                        // Lightbox backlight effect removed for testing
                         
                         // 移除明显的点光源，只使用灯箱自身发光和广告自发光
                         // 这样就不会看到明显的光点，只有柔和的灯箱亮度
@@ -1451,12 +1483,40 @@ const GallerySection = ({ language = 'en' }) => {
                     }
                 };
                 
+                // 初始化IES聚光灯系统 - 大面积高强度覆盖
+                const initializeIESSpotlights = () => {
+                    try {
+                        // 配置IES聚光灯参数 - 减少到3个避开lightbox墙面
+                        const iesConfig = {
+                            lightCount: 3,               // 减少到3个聚光灯避开lightbox墙面
+                            intensity: 4200,             // 进一步提升强度补偿数量减少
+                            distance: 80,                // 更大照射距离确保3个聚光灯覆盖更多区域
+                            angle: Math.PI / 1.8,        // 100度角更大覆盖以补偿数量减少
+                            penumbra: 0.4,               // 增加柔化范围改善光线混合
+                            enableAnimation: true,       // 启用动画
+                            animationSpeed: 0.3,         // 稍微减慢动画减少计算负荷
+                            showHelpers: false           // 不显示辅助线
+                        };
+                        
+                        // 创建IES聚光灯系统实例
+                        iesSpotlightSystemRef.current = new IESSpotlightSystem(scene, renderer, iesConfig);
+                        
+                        console.log('✨ 3灯位IES聚光灯系统初始化成功 - 避开lightbox墙面');
+                    } catch (error) {
+                        console.warn('⚠️ IES聚光灯系统初始化失败:', error);
+                    }
+                };
+                
                 // 在场景完全设置后初始化RectAreaLighting
                 setTimeout(() => {
                     initializeRectAreaLighting();
                     // 延迟一点初始化光立方体，避免资源竞争
                     setTimeout(() => {
                         initializeLightCubes();
+                        // 再延迟一点初始化大面积IES聚光灯
+                        setTimeout(() => {
+                            initializeIESSpotlights();
+                        }, 200); // 增加延迟确保前面的光源完全加载
                     }, 100);
                 }, 300); // 较短延迟，RectAreaLight不依赖其他光源
 
@@ -1498,6 +1558,12 @@ const GallerySection = ({ language = 'en' }) => {
             if (lightCubeSystemRef.current) {
                 lightCubeSystemRef.current.dispose();
                 lightCubeSystemRef.current = null;
+            }
+            
+            // 清理IES聚光灯系统
+            if (iesSpotlightSystemRef.current) {
+                iesSpotlightSystemRef.current.dispose();
+                iesSpotlightSystemRef.current = null;
             }
             
             // 取消动画循环

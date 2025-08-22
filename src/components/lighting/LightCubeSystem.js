@@ -46,26 +46,26 @@ export class LightCubeSystem {
             
             // 精确位置配置
             // 基于画廊布局：72m长度，lightbox在房间前端
-            // 地面在Y=-2，立方体高度8米，所以Y坐标应该是-2+4=2（底部贴地）
+            // 地面在Y=-2，立方体高度8米/3米，所以Y坐标相应调整
             positions: [
                 // lightbox前左侧立方体：离lightbox墙6米，离72米墙8米
-                { x: -8, y: 2, z: 24 },      // Y=2 (地面-2+高度8米的一半4=2，完全贴地)
+                { x: -8, y: 2, z: 24, height: 8 },      // Y=2 (地面-2+高度8米的一半4=2，完全贴地)
                 
                 // lightbox前右侧立方体：离lightbox墙6米，离72米墙8米  
-                { x: 8, y: 2, z: 24 },       // Y=2 (地面-2+高度8米的一半4=2，完全贴地)
+                { x: 8, y: 2, z: 24, height: 8 },       // Y=2 (地面-2+高度8米的一半4=2，完全贴地)
                 
-                // 默认摄像机背后立方体：摄像机背后12米
-                { x: 0, y: 2, z: -18 }       // Y=2, Z=-12 (摄像机背后12米位置)
+                // 红色柱子：摄像机背后，恢复原始8米高度
+                { x: 0, y: 2, z: -18, height: 8 }    // Y=2 (地面-2+高度8米的一半4=2，完全贴地)
             ],
             
             // 光照参数
             intensity: options.intensity || 20,
             
-            // 简化的颜色方案 - 类似Three.js示例
+            // 颜色方案 - 使用项目主题色系
             colors: [
-                0x0040ff, // 蓝色
-                0x00ff40, // 绿色  
-                0xff4000, // 红色
+                0x00FF88, // si-green主题色 - lightbox前左侧柱子（绿色主题）
+                0x00ffff, // nz-blue主题色 - lightbox前右侧柱子（青色主题）
+                0xff0040, // 鲜红色 - 摄像机背后单独柱子
             ],
             
             // 动画参数
@@ -96,14 +96,14 @@ export class LightCubeSystem {
     createLightCubes() {
         // 使用预定义的精确位置
         this.config.positions.forEach((pos, index) => {
-            this.createSingleLightCube(pos.x, pos.y, pos.z, index);
+            this.createSingleLightCube(pos.x, pos.y, pos.z, index, pos.height);
         });
     }
     
     /**
-     * 创建单个发光立方体 - 精确定位版本
+     * 创建单个发光立方体
      */
-    createSingleLightCube(x, y, z, index) {
+    createSingleLightCube(x, y, z, index, customHeight) {
         const cubeData = {
             position: { x, y, z },
             mesh: null,
@@ -111,11 +111,14 @@ export class LightCubeSystem {
             index: index
         };
         
-        // 创建实际的立方体几何体，使用新的尺寸：宽0.8米 × 高6米 × 深0.8米
+        // 使用自定义高度或默认高度
+        const cubeHeight = customHeight || this.config.cubeHeight;
+        
+        // 创建实际的立方体几何体，支持不同高度
         const geometry = new THREE.BoxGeometry(
-            this.config.cubeWidth,   // 宽度0.8米
-            this.config.cubeHeight,  // 高度6米
-            this.config.cubeDepth    // 深度0.8米
+            this.config.cubeWidth,   // 宽度1.0米
+            cubeHeight,              // 使用自定义高度
+            this.config.cubeDepth    // 深度1.0米
         );
         
         // 使用发光材质，类似Three.js示例
@@ -149,10 +152,10 @@ export class LightCubeSystem {
         const positionDesc = [
             "Lightbox前左侧(离lightbox墙6米,离72米墙8米)",
             "Lightbox前右侧(离lightbox墙6米,离72米墙8米)", 
-            "默认摄像机前方6米处(Z=6位置)"
+            "摄像机背后红色柱子(原始高度)"
         ];
         
-        console.log(`🎯 创建发光立方体 ${index + 1}: ${positionDesc[index]} 位置(${x}, ${y}, ${z}), 尺寸(${this.config.cubeWidth}×${this.config.cubeHeight}×${this.config.cubeDepth}), 地面贴合`);
+        console.log(`🎯 创建发光立方体 ${index + 1}: ${positionDesc[index]} 位置(${x}, ${y}, ${z}), 高度${cubeHeight}米`);
     }
 
     /**
