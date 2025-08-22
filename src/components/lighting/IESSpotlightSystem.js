@@ -95,10 +95,19 @@ export class IESSpotlightSystem {
      * 创建IES聚光灯（如果支持）
      */
     async createSpotlights() {
+        // 尝试动态加载IESSpotLight
+        let IESSpotLight = null;
+        try {
+            const threeStdlib = await import('three-stdlib');
+            IESSpotLight = threeStdlib.IESSpotLight;
+        } catch (error) {
+            console.log('🎯 IESSpotLight不可用:', error.message);
+        }
+
         // 检查是否支持IESSpotLight - 注意这是WebGPU特有的功能
-        if (THREE.IESSpotLight && this.renderer.isWebGPURenderer) {
+        if (IESSpotLight && this.renderer.isWebGPURenderer) {
             console.log('🎯 使用IES聚光灯 (WebGPU)');
-            await this.createIESSpotlights();
+            await this.createIESSpotlights(IESSpotLight);
         } else {
             console.log('🎯 使用标准聚光灯（降级方案）');
             this.createStandardSpotlights();
@@ -108,7 +117,7 @@ export class IESSpotlightSystem {
     /**
      * 创建IES聚光灯
      */
-    async createIESSpotlights() {
+    async createIESSpotlights(IESSpotLight) {
         // 注意：实际的IES文件加载需要服务器上的IES文件
         // 这里先创建基础的IES聚光灯，后续可以添加IES贴图
         
@@ -118,7 +127,7 @@ export class IESSpotlightSystem {
             const color = this.config.colors[i % this.config.colors.length];
             
             // 创建IES聚光灯
-            const spotlight = new THREE.IESSpotLight(color, this.config.intensity);
+            const spotlight = new IESSpotLight(color, this.config.intensity);
             spotlight.position.set(position.x, position.y, position.z);
             spotlight.angle = this.config.angle;
             spotlight.penumbra = this.config.penumbra;
