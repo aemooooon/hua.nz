@@ -1511,24 +1511,48 @@ export const useAppStore = create(
           position: 'wall',
           wall: 'vertical_wall_32m'
         },
+        // {
+        //   id: 'gallery_vertical_2',
+        //   type: 'image',
+        //   src: '/gallery/gallery-vertical-2.jpg',
+        //   thumbnail: '/gallery/gallery-vertical-2.jpg',
+        //   title: {
+        //     en: 'Artistic Vision',
+        //     zh: '艺术视野'
+        //   },
+        //   description: {
+        //     en: 'Contemporary artistic vision exploration',
+        //     zh: '当代艺术视野探索'
+        //   },
+        //   date: '2025-08-22',
+        //   tags: ['artistic', 'vision', 'contemporary'],
+        //   orientation: 'vertical',
+        //   position: 'wall',
+        //   wall: 'vertical_wall_32m'
+        // },
         {
-          id: 'gallery_vertical_2',
-          type: 'image',
-          src: '/gallery/gallery-vertical-2.jpg',
-          thumbnail: '/gallery/gallery-vertical-2.jpg',
+          id: 'gallery_vertical_2_video',
+          type: 'video',
+          src: '/cube-textures/home.mp4',
+          thumbnail: '/cube-textures/home.mp4', // 视频文件作为缩略图
           title: {
-            en: 'Artistic Vision',
-            zh: '艺术视野'
+            en: 'Home Vision',
+            zh: '家园视界'
           },
           description: {
-            en: 'Contemporary artistic vision exploration',
-            zh: '当代艺术视野探索'
+            en: 'Interactive home environment visualization',
+            zh: '交互式家园环境可视化'
           },
           date: '2025-08-22',
-          tags: ['artistic', 'vision', 'contemporary'],
+          tags: ['video', 'home', 'interactive'],
           orientation: 'vertical',
           position: 'wall',
-          wall: 'vertical_wall_32m'
+          wall: 'vertical_wall_32m',
+          // 视频特定配置
+          autoplay: true,
+          loop: true,
+          muted: true, // 默认静音以符合浏览器政策
+          controls: false // 在画廊中不显示控制器
         },
         {
           id: 'gallery_vertical_3',

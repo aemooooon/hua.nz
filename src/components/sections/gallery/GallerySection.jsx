@@ -579,36 +579,76 @@ const GallerySection = ({ language = 'en' }) => {
                     const imageSrc = item.src || item.thumbnail;
                     if (!loadedTextures.has(imageSrc)) {
                         try {
-                            const checkImageExists = (src) => {
-                                return new Promise((resolve, reject) => {
-                                    const img = new Image();
-                                    img.onload = () => resolve(true);
-                                    img.onerror = () => reject(false);
-                                    img.src = src;
+                            // 检查是否为视频类型
+                            if (item.type === 'video') {
+                                // 创建视频元素
+                                const video = document.createElement('video');
+                                video.src = imageSrc;
+                                video.autoplay = item.autoplay || true;
+                                video.loop = item.loop || true;
+                                video.muted = item.muted || true;
+                                video.controls = item.controls || false;
+                                video.crossOrigin = 'anonymous';
+                                video.playsInline = true; // 移动设备支持
+                                
+                                // 等待视频可以播放
+                                await new Promise((resolve, reject) => {
+                                    video.oncanplay = resolve;
+                                    video.onerror = reject;
+                                    video.load(); // 开始加载视频
                                 });
-                            };
+                                
+                                // 创建视频纹理
+                                const videoTexture = new THREE.VideoTexture(video);
+                                videoTexture.generateMipmaps = false;
+                                videoTexture.minFilter = THREE.LinearFilter;
+                                videoTexture.magFilter = THREE.LinearFilter;
+                                videoTexture.colorSpace = THREE.SRGBColorSpace;
+                                
+                                loadedTextures.set(imageSrc, videoTexture);
+                                painting.material.map = videoTexture;
+                                painting.material.color.setHex(0xffffff);
+                                painting.material.needsUpdate = true;
+                                
+                                // 开始播放视频
+                                video.play().catch(err => {
+                                    console.warn('视频自动播放失败，需要用户交互:', err);
+                                });
+                                
+                                console.log(`🎬 加载视频纹理: ${item.title.zh || item.title.en}`);
+                            } else {
+                                // 原有的图片加载逻辑
+                                const checkImageExists = (src) => {
+                                    return new Promise((resolve, reject) => {
+                                        const img = new Image();
+                                        img.onload = () => resolve(true);
+                                        img.onerror = () => reject(false);
+                                        img.src = src;
+                                    });
+                                };
 
-                            await checkImageExists(imageSrc);
-                            
-                            const texture = await new Promise((resolve, reject) => {
-                                textureLoader.load(
-                                    imageSrc,
-                                    resolve,
-                                    undefined,
-                                    reject
-                                );
-                            });
-                            
-                            // 优化纹理设置 - 保证色彩保真度
-                            texture.generateMipmaps = false;
-                            texture.minFilter = THREE.LinearFilter;
-                            texture.magFilter = THREE.LinearFilter;
-                            texture.colorSpace = THREE.SRGBColorSpace; // 确保正确的色彩空间
-                            
-                            loadedTextures.set(imageSrc, texture);
-                            painting.material.map = texture;
-                            painting.material.color.setHex(0xffffff); // 保持纯白，不干扰纹理色彩
-                            painting.material.needsUpdate = true;
+                                await checkImageExists(imageSrc);
+                                
+                                const texture = await new Promise((resolve, reject) => {
+                                    textureLoader.load(
+                                        imageSrc,
+                                        resolve,
+                                        undefined,
+                                        reject
+                                    );
+                                });
+                                
+                                // 优化纹理设置 - 保证色彩保真度
+                                texture.generateMipmaps = false;
+                                texture.minFilter = THREE.LinearFilter;
+                                texture.magFilter = THREE.LinearFilter;
+                                texture.colorSpace = THREE.SRGBColorSpace;
+                                
+                                loadedTextures.set(imageSrc, texture);
+                                painting.material.map = texture;
+                                painting.material.color.setHex(0xffffff);
+                                painting.material.needsUpdate = true;
+                            }
                         } catch {
                             painting.material.color.setHex(0x666666);
                             painting.material.needsUpdate = true;
@@ -1530,6 +1570,13 @@ const GallerySection = ({ language = 'en' }) => {
                     if (controls.isLocked) {
                         updateMovement(delta, controls);
                     }
+                    
+                    // 更新视频纹理（如果有的话）
+                    scene.traverse((object) => {
+                        if (object.material && object.material.map && object.material.map.isVideoTexture) {
+                            object.material.map.needsUpdate = true;
+                        }
+                    });
                     
                     renderer.render(scene, camera);
                 };
