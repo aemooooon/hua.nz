@@ -6,7 +6,7 @@ import { useAppStore } from '../../../store/useAppStore';
 import CircularLoadingIndicator from '../../ui/CircularLoadingIndicator';
 import GalleryMobile from './GalleryMobile';
 import RectAreaLightingSystem from '../../lighting/RectAreaLightingSystem';
-import { LightCubeSystem } from '../../lighting/LightCubeSystem';
+import { LightPillar } from '../../lighting/LightPillar';
 import { IESSpotlightSystem } from '../../lighting/IESSpotlightSystem';
 
 /**
@@ -103,7 +103,7 @@ const GallerySection = ({ language = 'en' }) => {
     const cameraSpotlightRef = useRef(null); // Camera-mounted smart spotlight
     const paintingMeshesRef = useRef([]); // Painting meshes for collision detection
     const rectAreaLightingRef = useRef(null); // RectAreaLighting system reference
-    const lightCubeSystemRef = useRef(null); // Light cube system reference
+    const lightPillarRef = useRef(null); // Light pillar system reference
     const iesSpotlightSystemRef = useRef(null); // IES spotlight system reference
     
     // Animation and loading management
@@ -961,7 +961,7 @@ const GallerySection = ({ language = 'en' }) => {
             updateSmartLighting(camera.position);
         };
 
-        // 简单的边界碰撞检测（更新为新房间尺寸：32×72米）
+        // 简单的边界碰撞检测（更新为新房间尺寸：32×72米）+ 柱子碰撞检测
         const checkCollision = (camera) => {
             const position = camera.position;
             const boundaryX = 14.5; // 左右边界 (32/2 - 1.5米安全距离)
@@ -971,6 +971,27 @@ const GallerySection = ({ language = 'en' }) => {
             if (position.x > boundaryX || position.x < -boundaryX ||
                 position.z > boundaryZ || position.z < -boundaryZ) {
                 return true;
+            }
+            
+            // 🏛️ 柱子碰撞检测
+            const pillarPositions = [
+                { x: -32/3, z: 24, radius: 0.5 },      // 左侧绿色柱子
+                { x: 32/3, z: 24, radius: 0.5 },       // 右侧青色柱子  
+                { x: 0, z: -18, radius: 1.618/2 }      // 红色黄金比例柱子
+            ];
+            
+            const safetyMargin = 0.5; // 0.5米安全距离
+            
+            for (const pillar of pillarPositions) {
+                const distance = Math.sqrt(
+                    Math.pow(position.x - pillar.x, 2) + 
+                    Math.pow(position.z - pillar.z, 2)
+                );
+                
+                // 如果距离小于柱子半径+安全距离，则发生碰撞
+                if (distance < pillar.radius + safetyMargin) {
+                    return true;
+                }
             }
             
             return false;
@@ -1567,12 +1588,12 @@ const GallerySection = ({ language = 'en' }) => {
                             showHelpers: false // 不显示辅助线
                         };
                         
-                        // 创建光立方体系统实例
-                        lightCubeSystemRef.current = new LightCubeSystem(scene, cubeConfig);
+                        // 创建光柱系统实例
+                        lightPillarRef.current = new LightPillar(scene, cubeConfig);
                         
-                        console.log('光立方体系统初始化成功');
+                        console.log('光柱系统初始化成功');
                     } catch (error) {
-                        console.warn('光立方体系统初始化失败:', error);
+                        console.warn('光柱系统初始化失败:', error);
                     }
                 };
                 
@@ -1654,10 +1675,10 @@ const GallerySection = ({ language = 'en' }) => {
                 rectAreaLightingRef.current = null;
             }
             
-            // 清理光立方体系统
-            if (lightCubeSystemRef.current) {
-                lightCubeSystemRef.current.dispose();
-                lightCubeSystemRef.current = null;
+            // 清理光柱系统
+            if (lightPillarRef.current) {
+                lightPillarRef.current.dispose();
+                lightPillarRef.current = null;
             }
             
             // 清理IES聚光灯系统
