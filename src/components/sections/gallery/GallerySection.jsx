@@ -5,6 +5,8 @@ import { PointerLockControls } from 'three-stdlib';
 import { useAppStore } from '../../../store/useAppStore';
 import CircularLoadingIndicator from '../../ui/CircularLoadingIndicator';
 import GalleryMobile from './GalleryMobile';
+import RectAreaLightingSystem from '../../lighting/RectAreaLightingSystem';
+import { LightCubeSystem } from '../../lighting/LightCubeSystem';
 
 /**
  * Interactive 3D Gallery Component - "Corridor of Light and Shadow" 
@@ -96,6 +98,8 @@ const GallerySection = ({ language = 'en' }) => {
     const spotlightsRef = useRef([]); // Painting spotlight storage
     const cameraSpotlightRef = useRef(null); // Camera-mounted smart spotlight
     const paintingMeshesRef = useRef([]); // Painting meshes for collision detection
+    const rectAreaLightingRef = useRef(null); // RectAreaLighting system reference
+    const lightCubeSystemRef = useRef(null); // Light cube system reference
     
     // Animation and loading management
     const introAnimationRef = useRef(null);
@@ -908,8 +912,8 @@ const GallerySection = ({ language = 'en' }) => {
                 // 加快亮度变化速度，让用户更容易感知
                 spotlight.intensity = THREE.MathUtils.lerp(spotlight.intensity, intensity, 0.12); // 从0.05提升到0.12
             });
-
-            // 🎯 摄像机智能射灯控制
+            
+            //  摄像机智能射灯控制
             updateCameraSpotlight(cameraPosition);
         };
 
@@ -1386,6 +1390,76 @@ const GallerySection = ({ language = 'en' }) => {
 
                 addTestPaintings(scene, loadingManager);
 
+                // 🎨 初始化RectAreaLighting系统 - 高质量区域光照
+                const initializeRectAreaLighting = () => {
+                    try {
+                        // 配置RectAreaLighting参数
+                        const rectLightConfig = {
+                            intensity: 4, // 适中强度，不压过painting spotlight
+                            colors: [0xff6b6b, 0x4ecdc4, 0x45b7d1, 0xf9ca24], // 柔和色彩
+                            showHelpers: false, // 生产环境关闭辅助线
+                            enableAnimation: true,
+                            animationSpeed: 0.0008, // 缓慢优雅的动画
+                            lightWidth: 8, // 大尺寸光源，营造柔和漫射
+                            lightHeight: 6,
+                            // 画廊专用位置 - 与您的72m x 32m布局适配
+                            positions: [
+                                { x: -30, y: 10, z: 0, rx: 0, ry: Math.PI/2, rz: 0 }, // 左墙中部
+                                { x: 30, y: 10, z: 0, rx: 0, ry: -Math.PI/2, rz: 0 }, // 右墙中部
+                                { x: 0, y: 11.5, z: 30, rx: -Math.PI/3, ry: 0, rz: 0 }, // 前墙天花板斜照
+                                { x: 0, y: 11.5, z: -10, rx: -Math.PI/3, ry: Math.PI, rz: 0 }, // 后墙天花板斜照
+                            ]
+                        };
+                        
+                        // 创建RectAreaLighting实例
+                        rectAreaLightingRef.current = new RectAreaLightingSystem(scene, rectLightConfig);
+                        
+                        // 设置为柔和暖色调预设，配合画廊氛围
+                        rectAreaLightingRef.current.setPreset('soft');
+                        
+                        console.log('RectAreaLighting系统初始化成功');
+                    } catch (error) {
+                        console.warn('RectAreaLighting初始化失败:', error);
+                        // 优雅降级，不影响主要功能
+                    }
+                };
+                
+                // 🎨 初始化光立方体系统 - 房间中心氛围光源
+                const initializeLightCubes = () => {
+                    try {
+                        // 配置光立方体参数
+                        const cubeConfig = {
+                            cubeSize: 2.5, // 立方体尺寸
+                            cubeCount: 3, // 3个立方体
+                            spacing: 10, // 立方体间距
+                            height: 6, // 高度位置
+                            intensity: 2.5, // 较低强度，营造氛围
+                            lightSize: 2, // 光源面积
+                            enableAnimation: true,
+                            animationSpeed: 0.001, // 缓慢动画
+                            showCubeMesh: true, // 显示立方体轮廓
+                            cubeOpacity: 0.05, // 很低的透明度
+                            showHelpers: false // 不显示辅助线
+                        };
+                        
+                        // 创建光立方体系统实例
+                        lightCubeSystemRef.current = new LightCubeSystem(scene, cubeConfig);
+                        
+                        console.log('光立方体系统初始化成功');
+                    } catch (error) {
+                        console.warn('光立方体系统初始化失败:', error);
+                    }
+                };
+                
+                // 在场景完全设置后初始化RectAreaLighting
+                setTimeout(() => {
+                    initializeRectAreaLighting();
+                    // 延迟一点初始化光立方体，避免资源竞争
+                    setTimeout(() => {
+                        initializeLightCubes();
+                    }, 100);
+                }, 300); // 较短延迟，RectAreaLight不依赖其他光源
+
                 // 渲染循环
                 const animate = () => {
                     animationFrameRef.current = requestAnimationFrame(animate);
@@ -1413,6 +1487,18 @@ const GallerySection = ({ language = 'en' }) => {
         initScene();
 
         return () => {
+            
+            // 清理RectAreaLighting系统
+            if (rectAreaLightingRef.current) {
+                rectAreaLightingRef.current.dispose();
+                rectAreaLightingRef.current = null;
+            }
+            
+            // 清理光立方体系统
+            if (lightCubeSystemRef.current) {
+                lightCubeSystemRef.current.dispose();
+                lightCubeSystemRef.current = null;
+            }
             
             // 取消动画循环
             if (animationFrameRef.current) {
@@ -1659,16 +1745,18 @@ const GallerySection = ({ language = 'en' }) => {
 
                     {/* 第一人称模式时的准星 */}
                     {isPointerLocked && (
-                        <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-20">
-                            {/* 中心圆点 - 调大一些 */}
-                            <div className="w-2 h-2 bg-white rounded-full shadow-lg border border-white/30"></div>
-                            {/* 水平线 - 调长一些 */}
-                            <div className="absolute w-6 h-0.5 bg-white/60 rounded shadow-sm"></div>
-                            {/* 垂直线 - 调长一些 */}
-                            <div className="absolute w-0.5 h-6 bg-white/60 rounded shadow-sm"></div>
-                            {/* 外圈指示 - 增加更清晰的轮廓 */}
-                            <div className="absolute w-8 h-8 border border-white/20 rounded-full"></div>
-                        </div>
+                        <>
+                            <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-20">
+                                {/* 中心圆点 - 调大一些 */}
+                                <div className="w-2 h-2 bg-white rounded-full shadow-lg border border-white/30"></div>
+                                {/* 水平线 - 调长一些 */}
+                                <div className="absolute w-6 h-0.5 bg-white/60 rounded shadow-sm"></div>
+                                {/* 垂直线 - 调长一些 */}
+                                <div className="absolute w-0.5 h-6 bg-white/60 rounded shadow-sm"></div>
+                                {/* 外圈指示 - 增加更清晰的轮廓 */}
+                                <div className="absolute w-8 h-8 border border-white/20 rounded-full"></div>
+                            </div>
+                        </>
                     )}
                 </section>
             )}
