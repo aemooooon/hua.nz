@@ -52,6 +52,9 @@ const GallerySection = ({ language = 'en' }) => {
     const isPointerLocked = useAppStore(state => state.isPointerLocked);
     const setIsPointerLocked = useAppStore(state => state.setIsPointerLocked);
     
+    // Simple proximity detection for camera height adjustment
+    const paintingPositionsRef = useRef(new Map()); // Store painting position data for height adjustment
+    
     // Keyboard input state tracking for WASD + Arrow keys
     const keysPressed = useRef({
         w: false,
@@ -564,6 +567,13 @@ const GallerySection = ({ language = 'en' }) => {
                         painting: painting // 存储实际画作网格用于材质更新
                     });
                     
+                    // Store painting position for smart camera height adjustment
+                    paintingPositionsRef.current.set(item.id, {
+                        position: paintingWithFrame.position.clone(),
+                        item: item,
+                        mesh: paintingWithFrame
+                    });
+                    
                     setTimeout(() => {
                         // 只为前墙和72米墙下层画作创建射灯（移除后墙射灯）
                         const shouldCreateSpotlight = 
@@ -701,7 +711,7 @@ const GallerySection = ({ language = 'en' }) => {
             // 🎨 72米墙面精确位置设置函数 - 完美的8画分配
             const getRightWallHardcodedPosition = (item, rightWallImages) => {
                 const rightWallOffset = 15.5;  // 右墙X坐标
-                const paintingCenterHeight = 1.6; // 下层画作高度
+                const paintingCenterHeight = 1.8; // 下层画作高度（从1.6提升到1.8）
                 
                 // 72米墙从 Z=-36 到 Z=36
                 // 8张画需要9个相等间隔：72米÷9 = 8米（完美整数）
@@ -731,7 +741,7 @@ const GallerySection = ({ language = 'en' }) => {
                         .findIndex(img => img.item.id === item.id);
                     return {
                         x: rightWallOffset,
-                        y: paintingCenterHeight + 1.6, // 上层高度
+                        y: paintingCenterHeight + 1.2, // 上层高度（间距从1.6减少到1.2，更紧凑）
                         z: upperPositions[upperIndex] || 0
                     };
                 } else {
@@ -901,8 +911,51 @@ const GallerySection = ({ language = 'en' }) => {
                 camera.position.copy(previousPosition);
             }
             
-            // 确保摄像机高度始终保持在最佳观看水平（上下两层画作中心点：2.4米）
-            camera.position.y = 2.4;
+            // 🎯 智能距离检测与摄像机高度调节系统
+            const checkPaintingProximityAndAdjustHeight = (camera, controls) => {
+                if (!controls.isLocked) return;
+                
+                let closestPainting = null;
+                let minDistance = Infinity;
+                const detectionRadius = 4.0; // 4米检测半径
+                
+                // 遍历所有画作，找到最近的画作
+                paintingPositionsRef.current.forEach((paintingData) => {
+                    const distance = camera.position.distanceTo(paintingData.position);
+                    
+                    if (distance < detectionRadius && distance < minDistance) {
+                        minDistance = distance;
+                        closestPainting = paintingData;
+                    }
+                });
+                
+                if (closestPainting) {
+                    // 🎯 智能高度对齐：摄像机高度对齐到画作中心
+                    const targetHeight = closestPainting.position.y;
+                    const currentHeight = camera.position.y;
+                    const heightDiff = targetHeight - currentHeight;
+                    
+                    // 平滑调节到画作高度
+                    camera.position.y += heightDiff * 0.15; // 快速响应
+                } else {
+                    // 没有靠近的画作，回到默认高度
+                    const defaultHeight = 2.4;
+                    const currentHeight = camera.position.y;
+                    const heightDiff = defaultHeight - currentHeight;
+                    camera.position.y += heightDiff * 0.08; // 缓慢回到默认高度
+                }
+                
+                // 限制高度范围
+                camera.position.y = Math.max(1.2, Math.min(3.5, camera.position.y));
+            };
+            
+            // 智能摄像机高度调节
+            checkPaintingProximityAndAdjustHeight(camera, controls);
+            
+            // 如果不在锁定模式，恢复默认高度
+            if (!controls.isLocked) {
+                camera.position.y = 2.4;
+            }
             
             // 🎨 智能画作照明系统 - 根据距离调整亮度
             updateSmartLighting(camera.position);
@@ -1669,6 +1722,19 @@ const GallerySection = ({ language = 'en' }) => {
     // 按键监听 
     useEffect(() => {
         const handleKeyDown = (event) => {
+            // 如果鼠标已锁定，只允许WASD移动键和ESC键
+            if (controlsRef.current?.isLocked) {
+                const allowedKeys = ['KeyW', 'KeyA', 'KeyS', 'KeyD', 'Escape'];
+                
+                if (!allowedKeys.includes(event.code) && event.key !== 'Escape') {
+                    // 阻止所有其他键盘事件
+                    event.preventDefault();
+                    event.stopPropagation();
+                    console.log('🔒 画廊导航模式：只允许WASD移动和ESC退出');
+                    return;
+                }
+            }
+
             const key = event.code === 'KeyW' ? 'w' :
                        event.code === 'KeyA' ? 'a' :
                        event.code === 'KeyS' ? 's' :
@@ -1686,6 +1752,17 @@ const GallerySection = ({ language = 'en' }) => {
         };
 
         const handleKeyUp = (event) => {
+            // 如果鼠标已锁定，只允许WASD移动键
+            if (controlsRef.current?.isLocked) {
+                const allowedKeys = ['KeyW', 'KeyA', 'KeyS', 'KeyD'];
+                
+                if (!allowedKeys.includes(event.code)) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    return;
+                }
+            }
+
             const key = event.code === 'KeyW' ? 'w' :
                        event.code === 'KeyA' ? 'a' :
                        event.code === 'KeyS' ? 's' :
