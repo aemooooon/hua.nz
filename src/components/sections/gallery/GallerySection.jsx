@@ -6,8 +6,10 @@ import { useAppStore } from '../../../store/useAppStore';
 import CircularLoadingIndicator from '../../ui/CircularLoadingIndicator';
 import GalleryMobile from './GalleryMobile';
 import RectAreaLightingSystem from '../../lighting/RectAreaLightingSystem';
-import { LightPillar } from '../../lighting/LightPillar';
+import { LightPillar } from './lighting/LightPillar';
+import { GalleryTextureManager } from './utils/GalleryTextureManager.js';
 import { IESSpotlightSystem } from '../../lighting/IESSpotlightSystem';
+import textureSystem from '../../../utils/texture';
 
 /**
  * Interactive 3D Gallery Component - "Corridor of Light and Shadow" 
@@ -105,6 +107,7 @@ const GallerySection = ({ language = 'en' }) => {
     const rectAreaLightingRef = useRef(null); // RectAreaLighting system reference
     const lightPillarRef = useRef(null); // Light pillar system reference
     const iesSpotlightSystemRef = useRef(null); // IES spotlight system reference
+    const galleryTextureManagerRef = useRef(null); // Gallery texture manager reference
     
     // Animation and loading management
     const introAnimationRef = useRef(null);
@@ -479,10 +482,17 @@ const GallerySection = ({ language = 'en' }) => {
             };
 
             const createPaintingsAsync = async () => {
+                // 🚫 防止重复创建画作
+                if (scene.children.some(child => child.name && child.name.startsWith('painting_'))) {
+                    console.log('⏭️ 跳过重复创建画作（画作已存在）');
+                    return;
+                }
+                
+                console.log('🎨 开始创建画廊画作...');
+                
                 const imageAnalysis = await analyzeImageDimensions();
                 const wallAssignments = assignPaintingsToWalls(imageAnalysis);
                 
-                const textureLoader = new THREE.TextureLoader(loadingManager || undefined);
                 const loadedTextures = new Map();
 
                 // 创建画作的函数
@@ -558,6 +568,8 @@ const GallerySection = ({ language = 'en' }) => {
                     
                     paintingWithFrame.castShadow = false;
                     paintingWithFrame.receiveShadow = false;
+                    // 🏷️ 添加唯一标识符用于重复检测
+                    paintingWithFrame.name = `painting_${wallType}_${positionIndex}`;
                     scene.add(paintingWithFrame);
                     
                     // 存储画作引用用于摄像机智能射灯检测
@@ -627,26 +639,12 @@ const GallerySection = ({ language = 'en' }) => {
                                 
                                 console.log(`🎬 加载视频纹理: ${item.title.zh || item.title.en}`);
                             } else {
-                                // 原有的图片加载逻辑
-                                const checkImageExists = (src) => {
-                                    return new Promise((resolve, reject) => {
-                                        const img = new Image();
-                                        img.onload = () => resolve(true);
-                                        img.onerror = () => reject(false);
-                                        img.src = src;
-                                    });
-                                };
-
-                                await checkImageExists(imageSrc);
+                                // 提取文件名（去除路径和扩展名）用于纹理系统
+                                const baseName = imageSrc.split('/').pop().replace(/\.(jpg|jpeg|png|webp|avif)$/i, '');
+                                console.log(`🖼️ Gallery纹理加载: ${imageSrc} -> ${baseName}`);
                                 
-                                const texture = await new Promise((resolve, reject) => {
-                                    textureLoader.load(
-                                        imageSrc,
-                                        resolve,
-                                        undefined,
-                                        reject
-                                    );
-                                });
+                                // 使用 textureSystem 加载最优格式 (AVIF > WebP > JPG)
+                                const texture = await textureSystem.loadTexture(baseName);
                                 
                                 // 优化纹理设置 - 保证色彩保真度
                                 texture.generateMipmaps = false;
@@ -690,6 +688,15 @@ const GallerySection = ({ language = 'en' }) => {
                     if (i + 4 < allPaintings.length) {
                         await new Promise(resolve => setTimeout(resolve, 100));
                     }
+                }
+                
+                // 🎯 手动触发加载管理器完成事件（因为我们使用了自定义纹理系统）
+                console.log('🎨 所有画作纹理加载完成，触发加载管理器回调');
+                if (loadingManager && loadingManager.onLoad) {
+                    // 延迟一点确保所有纹理都已经应用到材质上
+                    setTimeout(() => {
+                        loadingManager.onLoad();
+                    }, 200);
                 }
             };
             
@@ -1187,6 +1194,18 @@ const GallerySection = ({ language = 'en' }) => {
         // 初始化Three.js场景
         const initScene = () => {
             try {
+                // 🚫 防止重复初始化（React.StrictMode 在开发模式下会导致双重渲染）
+                if (sceneRef.current || rendererRef.current) {
+                    console.log('⏭️ 跳过重复初始化（场景已存在）');
+                    return;
+                }
+                
+                console.log('🏗️ 开始初始化 Gallery 场景...');
+                
+                // 🏗️ 初始化画廊纹理管理器
+                galleryTextureManagerRef.current = new GalleryTextureManager();
+                console.log('🎨 画廊纹理管理器初始化成功');
+                
                 const loadingManager = new THREE.LoadingManager();
                 loadingManagerRef.current = loadingManager;
                 
@@ -1387,9 +1406,6 @@ const GallerySection = ({ language = 'en' }) => {
                             const lightboxItem = galleryData.find(item => item.position === 'lightbox');
                             const adImagePath = lightboxItem ? (lightboxItem.src || lightboxItem.thumbnail) : '/gallery/gallery-vertical-0.jpg';
                             
-                            // 创建纹理加载器
-                            const textureLoader = new THREE.TextureLoader();
-                            
                             // 🚀 性能优化的默认占位材质
                             const defaultMaterial = new THREE.MeshLambertMaterial({
                                 color: 0x4444ff,           // 蓝色占位
@@ -1410,10 +1426,13 @@ const GallerySection = ({ language = 'en' }) => {
                             scene.add(adPlane);
                             // Begin loading gallery-vertical-0 texture
                             
-                            // 异步加载灯箱展示图片
-                            textureLoader.load(
-                                adImagePath,
-                                (texture) => {
+                            // 异步加载灯箱展示图片，使用 textureSystem 获取最优格式
+                            // 提取文件名（去除路径和扩展名）用于纹理系统
+                            const lightboxBaseName = adImagePath.split('/').pop().replace(/\.(jpg|jpeg|png|webp|avif)$/i, '');
+                            console.log(`💡 Lightbox纹理加载: ${adImagePath} -> ${lightboxBaseName}`);
+                            
+                            textureSystem.loadTexture(lightboxBaseName)
+                                .then((texture) => {
                                     // Gallery-vertical-0 image loaded successfully
                                     
                                     // 🚀 性能优化的灯箱展示材质
@@ -1430,15 +1449,11 @@ const GallerySection = ({ language = 'en' }) => {
                                     // 更新灯箱展示材质
                                     adPlane.material = lightboxMaterial;
                                     // Apply gallery-vertical-0 texture to lightbox plane
-                                },
-                                () => {
-                                    // Loading progress tracked
-                                },
-                                () => {
+                                })
+                                .catch(() => {
                                     // Handle image loading error - keep blue placeholder
-                                    // Placeholder remains active
-                                }
-                            );
+                                    console.warn('Failed to load lightbox texture, keeping placeholder');
+                                });
                             
                             return adPlane;
                         };
@@ -1571,7 +1586,7 @@ const GallerySection = ({ language = 'en' }) => {
                 };
                 
                 // 🎨 初始化光立方体系统 - 房间中心氛围光源
-                const initializeLightCubes = () => {
+                const initializeLightCubes = async () => {
                     try {
                         // 配置光立方体参数
                         const cubeConfig = {
@@ -1588,8 +1603,9 @@ const GallerySection = ({ language = 'en' }) => {
                             showHelpers: false // 不显示辅助线
                         };
                         
-                        // 创建光柱系统实例
-                        lightPillarRef.current = new LightPillar(scene, cubeConfig);
+                        // 创建光柱系统实例并传递gallery数据用于纹理分配
+                        lightPillarRef.current = new LightPillar(scene, cubeConfig, galleryData);
+                        await lightPillarRef.current.init();
                         
                         console.log('光柱系统初始化成功');
                     } catch (error) {
@@ -1625,8 +1641,8 @@ const GallerySection = ({ language = 'en' }) => {
                 setTimeout(() => {
                     initializeRectAreaLighting();
                     // 延迟一点初始化光立方体，避免资源竞争
-                    setTimeout(() => {
-                        initializeLightCubes();
+                    setTimeout(async () => {
+                        await initializeLightCubes();
                         // 再延迟一点初始化大面积IES聚光灯
                         setTimeout(() => {
                             initializeIESSpotlights();
@@ -1737,6 +1753,8 @@ const GallerySection = ({ language = 'en' }) => {
             
             cameraRef.current = null;
             wallsRef.current = null;
+            
+            console.log('🧹 Gallery 组件清理完成');
         };
     }, [galleryData, isIntroAnimationComplete, setIsPointerLocked]);
 

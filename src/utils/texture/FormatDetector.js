@@ -14,6 +14,8 @@ export class FormatDetector {
      * 初始化格式支持检测
      */
     async initializeSupport() {
+        console.log('🔄 开始格式支持检测...');
+        
         const [avifSupport, webpSupport] = await Promise.all([
             this.detectAVIFSupport(),
             this.detectWebPSupport()
@@ -24,7 +26,8 @@ export class FormatDetector {
 
         console.log('🖼️ 图像格式支持检测完成:', {
             avif: avifSupport,
-            webp: webpSupport
+            webp: webpSupport,
+            userAgent: navigator.userAgent.substring(0, 100)
         });
 
         return this.supportCache;
@@ -36,17 +39,30 @@ export class FormatDetector {
      */
     async detectAVIFSupport() {
         try {
+            console.log('🔍 开始AVIF支持检测...');
             // 1x1像素的AVIF图像（Base64编码）
             const avifData = 'data:image/avif;base64,AAAAIGZ0eXBhdmlmAAAAAGF2aWZtaWYxbWlhZk1BMUIAAADybWV0YQAAAAAAAAAoaGRscgAAAAAAAAAAcGljdAAAAAAAAAAAAAAAAGxpYmF2aWYAAAAADnBpdG0AAAAAAAEAAAAeaWxvYwAAAABEAAABAAEAAAABAAABGgAAAB0AAAAoaWluZgAAAAAAAQAAABppbmZlAgAAAAABAABhdjAxQ29sb3IAAAAAamlwcnAAAABLaXBjbwAAABRpc3BlAAAAAAAAAAEAAAABAAAAEHBpeGkAAAAAAwgICAAAAAxhdjFDgQ0MAAAAABNjb2xybmNseAACAAIAAYAAAAAXaXBtYQAAAAAAAAABAAEEAQKDBAAAACVtZGF0EgAKCBgABogQEAwgMg8f8D///8WfhwB8+ErK42A=';
             
             return new Promise((resolve) => {
                 const img = new Image();
-                img.onload = () => resolve(true);
-                img.onerror = () => resolve(false);
+                img.onload = () => {
+                    console.log('✅ AVIF支持检测: 成功');
+                    resolve(true);
+                };
+                img.onerror = (error) => {
+                    console.log('❌ AVIF支持检测: 失败', error);
+                    resolve(false);
+                };
                 img.src = avifData;
+                
+                // 设置超时以防检测卡住
+                setTimeout(() => {
+                    console.log('⏰ AVIF支持检测: 超时');
+                    resolve(false);
+                }, 3000);
             });
         } catch (error) {
-            console.warn('AVIF检测异常:', error);
+            console.warn('❌ AVIF检测异常:', error);
             return false;
         }
     }
@@ -95,13 +111,20 @@ export class FormatDetector {
     async getBestFormat() {
         await this.initializationPromise;
         
-        if (this.supportCache.get('avif')) {
-            return 'avif';
-        } else if (this.supportCache.get('webp')) {
-            return 'webp';
+        const avifSupport = this.supportCache.get('avif');
+        const webpSupport = this.supportCache.get('webp');
+        
+        let selectedFormat;
+        if (avifSupport) {
+            selectedFormat = 'avif';
+        } else if (webpSupport) {
+            selectedFormat = 'webp';
         } else {
-            return 'jpg'; // 默认回退格式
+            selectedFormat = 'jpg'; // 默认回退格式
         }
+        
+        console.log(`🎯 选择最佳格式: ${selectedFormat.toUpperCase()} (AVIF支持: ${avifSupport}, WebP支持: ${webpSupport})`);
+        return selectedFormat;
     }
 
     /**

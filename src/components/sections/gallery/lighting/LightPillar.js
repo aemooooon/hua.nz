@@ -5,10 +5,37 @@
  */
 
 import * as THREE from 'three';
+import textureSystem from '../../../../utils/texture';
 
 export class LightPillar {
-    constructor(scene, options = {}) {
+    /**
+     * 从gallery数据生成圆柱体位置配置
+     * @param {Array} galleryData - Gallery图片数据数组
+     * @returns {Array} 位置配置数组
+     */
+    generatePositionsFromGallery(galleryData) {
+        // 暂时不使用动态生成，使用原来的固定配置
+        return null; // 返回null使用默认配置
+    }
+    
+    /**
+     * 从图片路径提取基础名称
+     * @param {string} imagePath - 图片路径 (/gallery/gallery-horizontal-1.jpg)
+     * @returns {string} 基础名称 (gallery-horizontal-1)
+     */
+    extractBaseName(imagePath) {
+        if (!imagePath) return null;
+        
+        // 从路径中提取文件名，去掉扩展名
+        const fileName = imagePath.split('/').pop();
+        const baseName = fileName.replace(/\.(jpg|jpeg|png|webp|avif)$/i, '');
+        
+        return baseName;
+    }
+    
+    constructor(scene, options = {}, galleryData = []) {
         this.scene = scene;
+        this.galleryData = galleryData;
         this.lightCylinders = [];
         this.animationId = null;
         this.textureLoader = new THREE.TextureLoader();
@@ -37,6 +64,7 @@ export class LightPillar {
             // 材质选项
             enableTexture: options.enableTexture !== false, // 默认启用贴图功能
             textureUrl: options.textureUrl || null,
+            textureDelay: options.textureDelay || 1000,   // 纹理延迟加载时间（毫秒）- 临时减少为1秒方便测试
             baseColor: options.baseColor || 0xff0040,
             
             // 发光效果选项
@@ -44,14 +72,14 @@ export class LightPillar {
             glowIntensity: options.glowIntensity || 0.7,
             emissiveIntensity: options.emissiveIntensity || 0.3,
             
-            // 位置配置 - 圆柱体版本
+            // 位置配置 - 恢复原来的简单配置
             positions: [
                 // lightbox前左侧圆柱：32米墙的1/3位置 (-32/3 ≈ -10.67米)
                 { 
                     x: -5, 
                     z: 24, 
                     color: 0x00FF88,  // si-green主题色
-                    textureUrl: null   // 可以为每个柱子单独设置贴图
+                    textureBaseName: null   // 无贴图
                 },
                 
                 // lightbox前右侧圆柱：32米墙的2/3位置 (32/3 ≈ 10.67米)
@@ -59,17 +87,17 @@ export class LightPillar {
                     x: 5, 
                     z: 24, 
                     color: 0x00ffff,  // nz-blue主题色
-                    textureUrl: null
+                    textureBaseName: null   // 无贴图
                 },
                 
-                // 红色圆柱：摄像机背后，更换为gallery-horizontal-16.jpg，优化贴图比例直径
+                // 红色圆柱：摄像机背后，只有这个有贴图
                 { 
                     x: 0, 
                     z: -18, 
                     color: 0xff0040,  // 鲜红色
-                    textureUrl: '/gallery/gallery-horizontal-11.jpg',  // 更换为horizontal-16
-                    radius: 1.618,  // 直径2.2米，半径1.1米（优化贴图3783×5411比例）
-                    rotationY: Math.PI / 1.5  // 柱子绕Y轴旋转180度，避免接缝正对摄像机
+                    textureBaseName: 'gallery-horizontal-11',  // 只有这个有贴图
+                    radius: 1.618,  // 直径2.2米，半径1.1米
+                    rotationY: Math.PI / 1.5  // 柱子绕Y轴旋转180度
                 }
             ],
             
@@ -92,18 +120,35 @@ export class LightPillar {
         
         this.clock = new THREE.Clock();
         this.lightCubes = this.lightCylinders; // 向后兼容
-        this.init();
+        // 注意：不在构造函数中调用init，而是让调用者显式调用
     }
 
     /**
      * 初始化光圆柱体系统
      */
-    init() {
+    async init() {
         console.log('🏛️ 初始化发光圆柱体系统（从地板到天花板）...');
+        
+        // 预加载所有需要的纹理
+        await this.preloadTextures();
+        
+        // 同步创建所有圆柱体（纹理将延迟加载）
         this.createLightCylinders();
         
         if (this.config.enableAnimation) {
             this.startAnimation();
+        }
+    }
+
+    /**
+     * 预加载所有纹理
+     */
+    async preloadTextures() {
+        try {
+            // 暂时跳过预加载，使用按需加载策略
+            console.log('⏩ 跳过纹理预加载，使用按需加载策略');
+        } catch (error) {
+            console.warn('⚠️ 纹理预加载失败，将使用原始路径:', error);
         }
     }
     
@@ -115,12 +160,13 @@ export class LightPillar {
     }
     
     /**
-     * 创建所有发光圆柱体
+     * 创建所有发光圆柱体（同步，延迟加载纹理）
      */
     createLightCylinders() {
         this.config.positions.forEach((pos, index) => {
             this.createSingleLightCylinder(pos, index);
         });
+        console.log(`✅ 所有 ${this.config.positions.length} 个发光圆柱体创建完成（纹理将延迟加载）`);
     }
     
     /**
@@ -131,7 +177,7 @@ export class LightPillar {
             x: x,
             z: z,
             color: this.config.colors[index] || this.config.baseColor,
-            textureUrl: null
+            textureBaseName: null
         };
         this.createSingleLightCylinder(posConfig, index);
     }
@@ -159,7 +205,7 @@ export class LightPillar {
             this.config.heightSegments       // 高度分段
         );
         
-        // 创建材质
+        // 创建材质（现在支持延迟纹理加载）
         const material = this.createCylinderMaterial(posConfig, index);
         
         // 创建网格 - 调整位置确保视觉上从地板到天花板（但稍微短一点）
@@ -213,11 +259,11 @@ export class LightPillar {
     }
     
     /**
-     * 创建圆柱体材质（支持贴图）
+     * 创建圆柱体材质（支持延迟纹理加载）
      */
     createCylinderMaterial(posConfig, index) {
         const baseColor = posConfig.color || this.config.baseColor;
-        const textureUrl = posConfig.textureUrl || this.config.textureUrl;
+        const textureBaseName = posConfig.textureBaseName || this.config.textureBaseName;
         
         let materialOptions = {
             transparent: true,
@@ -225,45 +271,40 @@ export class LightPillar {
             side: THREE.DoubleSide
         };
         
-        // 如果有贴图，加载贴图
-        if (textureUrl && this.config.enableTexture) {
-            console.log(`🖼️ 为圆柱体 ${index + 1} 加载贴图: ${textureUrl}`);
-            
-            const texture = this.textureLoader.load(
-                textureUrl,
-                (texture) => {
-                    console.log(`✅ 贴图加载成功: ${textureUrl}`);
-                    // 设置贴图包装模式
-                    texture.wrapS = THREE.RepeatWrapping;
-                    texture.wrapT = THREE.RepeatWrapping;
+        // 创建基础材质（纯色）
+        materialOptions = {
+            ...materialOptions,
+            color: baseColor,
+            emissive: new THREE.Color(baseColor).multiplyScalar(this.config.emissiveIntensity),
+        };
+        
+        const material = new THREE.MeshStandardMaterial(materialOptions);
+        
+        // 如果有纹理基础名称，延迟加载纹理避免闪烁
+        if (textureBaseName && this.config.enableTexture) {
+            setTimeout(async () => {
+                try {
+                    console.log(`🖼️ 延迟加载圆柱体 ${index + 1} 的纹理: ${textureBaseName}`);
+                    
+                    const texture = await this.loadGalleryTexture(textureBaseName);
+                    
                     // 调整贴图重复次数 - 适合gallery图片显示
-                    texture.repeat.set(1, 1); // 保持原图比例，不重复（适合展示gallery图片）
-                },
-                undefined,
-                (error) => {
-                    console.error(`❌ 贴图加载失败: ${textureUrl}`, error);
+                    texture.repeat.set(1, 1); // 保持原图比例，不重复
+                    
+                    // 更新材质纹理
+                    material.map = texture;
+                    material.color = new THREE.Color(1, 1, 1); // 白色底色，让贴图原色显示
+                    material.needsUpdate = true;
+                    
+                    console.log(`✅ 圆柱体 ${index + 1} 纹理加载完成: ${textureBaseName}`);
+                } catch (error) {
+                    console.warn(`❌ 圆柱体 ${index + 1} 纹理加载失败: ${textureBaseName}`, error);
+                    // 保持纯色材质
                 }
-            );
-            
-            // 使用带贴图的标准材质（保持照明功能）
-            materialOptions = {
-                ...materialOptions,
-                map: texture,
-                color: new THREE.Color(1, 1, 1), // 白色底色，让贴图原色显示
-                emissive: new THREE.Color(baseColor).multiplyScalar(this.config.emissiveIntensity), // 发光效果
-            };
-            
-            return new THREE.MeshStandardMaterial(materialOptions);
-        } else {
-            // 无贴图，使用发光材质 - 统一使用MeshStandardMaterial支持emissive
-            materialOptions = {
-                ...materialOptions,
-                color: baseColor,
-                emissive: new THREE.Color(baseColor).multiplyScalar(this.config.emissiveIntensity), // 自发光
-            };
-            
-            return new THREE.MeshStandardMaterial(materialOptions);
+            }, this.config.textureDelay || 2000);
         }
+        
+        return material;
     }
     
     /**
@@ -452,5 +493,47 @@ export class LightPillar {
         
         this.lightCylinders = [];
         console.log('🏛️ 发光圆柱体系统已清理');
+    }
+
+    /**
+     * 获取最佳纹理路径 - 简单直接的fallback实现
+     */
+    getBestTexturePath(originalPath) {
+        if (!originalPath || !originalPath.startsWith('/gallery/')) {
+            return originalPath;
+        }
+
+        const fileName = originalPath.split('/').pop().replace('.jpg', '');
+        
+        // 返回文件名，让材质创建时处理格式fallback
+        return fileName;
+    }
+
+    /**
+     * 使用textureSystem加载gallery纹理（支持AVIF > WebP > JPG自动优选）
+     */
+    async loadGalleryTexture(baseName) {
+        if (!baseName) {
+            throw new Error('基础名称不能为空');
+        }
+        
+        try {
+            console.log(`🖼️ 使用textureSystem加载Gallery纹理: ${baseName}`);
+            
+            // 首先检查格式支持情况
+            const compressionInfo = await textureSystem.getCompressionInfo();
+            console.log(`🎯 当前浏览器支持格式: ${compressionInfo.format} (${compressionInfo.description})`);
+            
+            // 使用textureSystem自动处理格式优先级和目录结构
+            // textureSystem会在gallery/, gallery-avif/, gallery-webp/目录中查找对应文件
+            const texture = await textureSystem.loadTexture(baseName);
+            
+            console.log(`✅ Gallery纹理加载成功: ${baseName}`);
+            return texture;
+            
+        } catch (error) {
+            console.error(`❌ Gallery纹理加载失败: ${baseName}`, error);
+            throw error;
+        }
     }
 }

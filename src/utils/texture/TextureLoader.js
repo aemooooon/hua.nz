@@ -41,19 +41,48 @@ export class TextureLoader {
      * 获取最优的文件路径
      */
     async getOptimalPath(baseName, baseDirectory = 'cube-textures') {
-        const format = await formatDetector.getBestFormat();
+        console.log(`🔍 开始为 ${baseName} 获取最优路径...`);
         
-        const pathMapping = {
-            'avif': `cube-textures-avif/${baseName}.avif`,
-            'webp': `cube-textures-webp/${baseName}.webp`,
-            'jpg': `${baseDirectory}/${baseName}.jpg`
-        };
+        const format = await formatDetector.getBestFormat();
+        console.log(`📋 检测到的最佳格式: ${format.toUpperCase()}`);
+        
+        // 提取文件名（去除路径和扩展名）
+        const fileName = baseName.split('/').pop().replace(/\.(jpg|jpeg|png|webp|avif)$/i, '');
+        
+        // 检测是否为gallery图片（基于文件名前缀）
+        const isGalleryImage = fileName.startsWith('gallery-');
+        
+        console.log(`🔍 TextureLoader: 处理 ${baseName}, 文件名: ${fileName}, 格式: ${format}, 是Gallery图片: ${isGalleryImage}`);
+        
+        let pathMapping;
+        if (isGalleryImage) {
+            // Gallery图片使用gallery目录结构
+            pathMapping = {
+                'avif': `gallery-avif/${fileName}.avif`,
+                'webp': `gallery-webp/${fileName}.webp`,
+                'jpg': `gallery/${fileName}.jpg`
+            };
+            console.log(`📁 使用Gallery目录结构:`, pathMapping);
+        } else {
+            // 其他图片使用cube-textures目录结构
+            pathMapping = {
+                'avif': `cube-textures-avif/${baseName}.avif`,
+                'webp': `cube-textures-webp/${baseName}.webp`,
+                'jpg': `${baseDirectory}/${baseName}.jpg`
+            };
+            console.log(`📁 使用Cube目录结构:`, pathMapping);
+        }
 
-        return {
+        const result = {
             primary: pathMapping[format],
             fallback: pathMapping['jpg'],
-            format
+            format,
+            isGalleryImage
         };
+        
+        console.log(`🎯 选择的路径: 主要=${result.primary}, 备用=${result.fallback}`);
+        
+        return result;
     }
 
     /**
@@ -99,7 +128,9 @@ export class TextureLoader {
         const primaryUrl = `/${primary}`;
         const fallbackUrl = `/${fallback}`;
 
-        console.log(`🔄 加载纹理: ${baseName} (${format.toUpperCase()})`);
+        console.log(`🔄 开始加载纹理: ${baseName}`);
+        console.log(`🎯 优选格式: ${format.toUpperCase()} -> ${primaryUrl}`);
+        console.log(`🔄 备用格式: JPG -> ${fallbackUrl}`);
 
         try {
             // 尝试加载最优格式
@@ -244,15 +275,19 @@ export class TextureLoader {
      * 清理缓存
      */
     clearCache() {
+        console.log(`🧹 清理纹理缓存，共 ${this.cache.size} 个纹理`);
+        
         // 释放WebGL资源
-        this.cache.forEach(texture => {
+        this.cache.forEach((texture, key) => {
             if (texture && texture.dispose) {
                 texture.dispose();
+                console.log(`🗑️ 释放纹理资源: ${key}`);
             }
         });
         
         this.cache.clear();
-        console.log('🧹 纹理缓存已清理');
+        this.loadingPromises.clear();
+        console.log('✅ 纹理缓存已清理');
     }
 
     /**

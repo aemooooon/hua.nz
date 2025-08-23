@@ -13,7 +13,7 @@ const sectionsConfig = [
     name: { en: "Home", zh: "首页" },
     description: { en: "Welcome to my portfolio", zh: "欢迎来到我的个人主页" },
     backgroundEffect: "effectchaos", // Chaos 效果
-    cubeImage: "/hua.jpeg",
+    cubeImage: "/gallery/gallery-horizontal-12.jpg",
     cubeVideo: "/cube-textures/home.mp4", // 立方体视频
   },
   {
@@ -329,12 +329,12 @@ const contentConfig = {
             {
               title: "Academic Excellence & Best Programmer",
               year: "2021",
-              image: "/awared-best-programmer.jpeg"
+              image: "/awared-best-programmer.jpg"
             },
             {
               title: "Excellence in the Bachelor of Information Technology",
               year: "2019",
-              image: "/awared-excellence.jpeg"
+              image: "/awared-excellence.jpg"
             }
           ],
           capstoneProjects: [
@@ -350,7 +350,7 @@ const contentConfig = {
               description: "A Fitness tracker app built with React Native and Firebase, supporting location tracking and workout history.",
               technologies: ["React Native", "Firebase"],
               githubUrl: "https://github.com/aemooooon/fitsgo",
-              image: "/fitsgo/fitsgo.02.png"
+              image: "/fitsgo/fitsgo.02.jpg"
             }
           ]
         }
@@ -687,12 +687,12 @@ const contentConfig = {
             {
               title: "学术卓越与最佳程序员奖",
               year: "2021",
-              image: "/awared-best-programmer.jpeg"
+              image: "/awared-best-programmer.jpg"
             },
             {
               title: "信息技术学士优秀奖",
               year: "2019",
-              image: "/awared-excellence.jpeg"
+              image: "/awared-excellence.jpg"
             }
           ],
           capstoneProjects: [
@@ -708,7 +708,7 @@ const contentConfig = {
               description: "使用React Native和Firebase构建的健身追踪应用，支持位置跟踪和锻炼历史。",
               technologies: ["React Native", "Firebase"],
               githubUrl: "https://github.com/aemooooon/fitsgo",
-              image: "/fitsgo/fitsgo.02.png"
+              image: "/fitsgo/fitsgo.02.jpg"
             }
           ]
         }
@@ -868,7 +868,7 @@ export const useAppStore = create(
             "live": "https://www.hua.nz/",
             "github": "https://github.com/aemooooon/hua.nz"
           },
-          "img": ["/hua.nz/hua.nz.1.png", "/hua.nz/hua.nz.2.jpg", "/hua.nz/hua.nz.3.jpg", "/hua.nz/hua.nz.4.jpg", "/hua.nz/hua.nz.5.jpg", "/hua.nz/hua.nz.6.jpg", "/hua.nz/hua.nz.7.jpg", "/hua.nz/hua.nz.8.jpg", "/hua.nz/hua.nz.9.jpg"]
+          "img": ["/hua.nz/hua.nz.1.jpg", "/hua.nz/hua.nz.2.jpg", "/hua.nz/hua.nz.3.jpg", "/hua.nz/hua.nz.4.jpg", "/hua.nz/hua.nz.5.jpg", "/hua.nz/hua.nz.6.jpg", "/hua.nz/hua.nz.7.jpg", "/hua.nz/hua.nz.8.jpg", "/hua.nz/hua.nz.9.jpg"]
         },
         {
           "type": "Full Stack",
@@ -1000,7 +1000,7 @@ export const useAppStore = create(
           "links": {
             "live": "https://aqi.eseemc.cn/",
           },
-          "img": ["/aqi/aqi01.jpg", "/aqi/aqi02.png", "/aqi/aqi03.png", "/aqi/aqi04.jpg", "/aqi/aqi05.jpg", "/aqi/aqi06.jpg", "/aqi/aqi07.png", "/aqi/aqi08.jpg", "/aqi/aqi09.jpg", "/aqi/aqi10.png", "/aqi/aqi11.png", "/aqi/aqi12.png", "/aqi/aqi13.png"],
+          "img": ["/aqi/aqi01.jpg", "/aqi/aqi02.jpg", "/aqi/aqi03.jpg", "/aqi/aqi04.jpg", "/aqi/aqi05.jpg", "/aqi/aqi06.jpg", "/aqi/aqi07.jpg", "/aqi/aqi08.jpg", "/aqi/aqi09.jpg", "/aqi/aqi10.jpg", "/aqi/aqi11.jpg", "/aqi/aqi12.jpg", "/aqi/aqi13.jpg"],
         },
         {
           "type": "WebGL",
@@ -1046,7 +1046,7 @@ export const useAppStore = create(
           "links": {
             "github": "https://github.com/aemooooon/FitsGo"
           },
-          "img": ["/fitsgo/fitsgo.01.gif", "/fitsgo/fitsgo.02.png", "/fitsgo/fitsgo.03.jpg", "/fitsgo/fitsgo.04.jpg", "/fitsgo/fitsgo.05.jpg", "/fitsgo/fitsgo.06.jpg", "/fitsgo/fitsgo.07.jpg", "/fitsgo/fitsgo.08.jpg", "/fitsgo/fitsgo.09.jpg", "/fitsgo/fitsgo.10.jpg"]
+          "img": ["/fitsgo/fitsgo.01.gif", "/fitsgo/fitsgo.02.jpg", "/fitsgo/fitsgo.03.jpg", "/fitsgo/fitsgo.04.jpg", "/fitsgo/fitsgo.05.jpg", "/fitsgo/fitsgo.06.jpg", "/fitsgo/fitsgo.07.jpg", "/fitsgo/fitsgo.08.jpg", "/fitsgo/fitsgo.09.jpg", "/fitsgo/fitsgo.10.jpg"]
         },
         {
           "type": "Mobile Apps",
@@ -1095,7 +1095,7 @@ export const useAppStore = create(
           "links": {
             "github": "https://github.com/aemooooon/DATA472-Individual-Project-Submission"
           },
-          "img": ["/data472/v1.gif", "/data472/v2.gif", "/data472/472.png", "/data472/af01.jpg", "/data472/datapipeline.png", "/data472/FuelPriceData.jpg", "/data472/GasStationData.jpg", "/data472/ProjectManagement.jpg", "/data472/services.png", "/data472/WebApiResponse.jpg",]
+          "img": ["/data472/v1.gif", "/data472/v2.gif", "/data472/472.jpg", "/data472/af01.jpg", "/data472/datapipeline.jpg", "/data472/FuelPriceData.jpg", "/data472/GasStationData.jpg", "/data472/ProjectManagement.jpg", "/data472/services.jpg", "/data472/WebApiResponse.jpg",]
         },
         {
           "type": "Activity",
@@ -1129,7 +1129,7 @@ export const useAppStore = create(
           "links": {
             "official": "https://aihackathon.nz/ai-hackathon-2024/"
           },
-          "img": ["/f4/f4.3.jpeg", "/f4/f4.jpg", "/f4/f4.1.jpg", "/f4/f4.2.jpg", "/f4/f4.4.jpeg", "/f4/f4.5.jpg", "/f4/f4.6.jpg"]
+          "img": ["/f4/f4.3.jpg", "/f4/f4.jpg", "/f4/f4.1.jpg", "/f4/f4.2.jpg", "/f4/f4.4.jpg", "/f4/f4.5.jpg", "/f4/f4.6.jpg"]
         }
       ],
 
@@ -1195,7 +1195,7 @@ export const useAppStore = create(
           "location": "Dunedin, New Zealand",
           "year": "2017-2021",
           "link": "https://www.op.ac.nz",
-          "img": "awared-best-programmer.jpeg",
+          "img": "awared-best-programmer.jpg",
         },
         {
           "type": "project",
@@ -1425,7 +1425,7 @@ export const useAppStore = create(
           "location": "Dunedin, New Zealand",
           "year": "2019",
           "link": "https://github.com/aemooooon/FitsGo",
-          "img": "/fitsgo/fitsgo.02.png"
+          "img": "/fitsgo/fitsgo.02.jpg"
         },
         {
           "type": "project",
@@ -1888,8 +1888,8 @@ export const useAppStore = create(
         {
           id: 'gallery_horizontal_14',
           type: 'image',
-          src: '/gallery/gallery-horizontal-14.jpeg',
-          thumbnail: '/gallery/gallery-horizontal-14.jpeg',
+          src: '/gallery/gallery-horizontal-14.jpg',
+          thumbnail: '/gallery/gallery-horizontal-14.jpg',
           title: {
             en: 'Visual Impact',
             zh: '视觉冲击'
