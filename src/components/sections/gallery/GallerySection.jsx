@@ -1552,12 +1552,16 @@ const GallerySection = ({ language = 'en' }) => {
                         const entranceHeight = 12; // 入口高度与墙体高度一致
                         const lightBoxDepth = 0.4;  // 灯箱厚度
                         
-                        // 创建填充整个入口的发光面
+                        // 创建填充整个入口的发光面 - 使用黑色金属LED荧幕边框材质
                         const lightBoxGeometry = new THREE.BoxGeometry(entranceWidth, entranceHeight, lightBoxDepth);
-                        const lightBoxMaterial = new THREE.MeshStandardMaterial({
-                            color: 0xffffff,        // 纯白色
-                            emissive: 0x000000,     // 移除自发光
-                            emissiveIntensity: 0.0   // 自发光强度设为0
+                        const lightBoxMaterial = new THREE.MeshPhysicalMaterial({
+                            color: 0x1a1a1a,        // 黑色金属底色，与画框一致
+                            metalness: 0.9,         // 高金属度
+                            roughness: 0.1,         // 低粗糙度，光滑表面
+                            clearcoat: 0.5,         // 清漆层
+                            clearcoatRoughness: 0.05, // 清漆粗糙度
+                            emissive: 0x333333,     // LED边框自发光
+                            emissiveIntensity: 0.15  // 适中的发光强度，营造LED荧幕边框效果
                         });
                         
                         const lightBox = new THREE.Mesh(lightBoxGeometry, lightBoxMaterial);
@@ -1567,15 +1571,16 @@ const GallerySection = ({ language = 'en' }) => {
                         
                         // Create lightbox display with video or image option
                         const createLightboxDisplay = () => {
-                            // Display dimensions - matching entrance size
+                            // Display dimensions - matching entrance size (视频填满整个入口)
                             const adWidth = 11;    // 11m width, matching entrance width
                             const adHeight = 9;    // 9m height, matching entrance height
                             
+                            // 使用完整尺寸创建视频平面，让黑色lightbox墙体作为天然边框
                             const adGeometry = new THREE.PlaneGeometry(adWidth, adHeight);
                             
                             // 💻 Lightbox 媒体配置 - 可根据需要切换显示模式
                             // 🎬 视频模式：自动播放、循环播放、黑色背景营造荧幕效果
-                            //    📐 自动保持视频原始宽高比，不满的地方用黑色填充
+                            //    🖼️ 黑色lightbox墙体作为天然LED荧幕边框
                             // 🖼️ 图片模式：静态图片展示，保持灯箱发光效果
                             const lightboxConfig = {
                                 useVideo: true,  // 🎬 默认使用视频，设置为 false 切换到图片模式
@@ -1620,6 +1625,8 @@ const GallerySection = ({ language = 'en' }) => {
                             
                             // Position advertisement plane at lightbox inner surface
                             scene.add(adPlane);
+                            
+
                             
                             // 🎬 加载媒体内容
                             if (lightboxConfig.useVideo) {
@@ -1723,13 +1730,14 @@ const GallerySection = ({ language = 'en' }) => {
                                     });
                             }
                             
-                            return adPlane;
+                            return { screen: adPlane };
                         };
                         
                         // 创建灯箱展示 (同步调用)
                         // Initialize lightbox display creation with video/image support
                         const lightboxDisplay = createLightboxDisplay();
                         // Lightbox display created successfully with video capability
+                        console.log('🖼️ Lightbox屏幕创建完成', lightboxDisplay);
                         
                         // 🚀 性能优化：移除lightbox背光源以测试效果
                         // const backLightSources = [
@@ -1753,7 +1761,11 @@ const GallerySection = ({ language = 'en' }) => {
                     
                     const lightboxData = createWallLightBox();
                     
-                    return { wallLightBox: lightboxData.lightBox, lightboxDisplay: lightboxData.lightboxDisplay };
+                    return { 
+                        wallLightBox: lightboxData.lightBox, 
+                        lightboxDisplay: lightboxData.lightboxDisplay.screen,
+                        ledFrame: lightboxData.lightboxDisplay.frame 
+                    };
                 };
 
                 const createWangCharacterLights = () => {
@@ -1810,8 +1822,9 @@ const GallerySection = ({ language = 'en' }) => {
                 // 暂时移除环境照明系统，测试纯聚光灯效果
                 // setupBasicLighting(scene);
 
-                // 添加艺术元素（包括灯箱广告）
-                addArtisticElements(scene);
+                // 添加艺术元素（包括灯箱广告和LED边框）
+                const artisticElements = addArtisticElements(scene);
+                console.log('🎨 艺术元素创建完成:', artisticElements);
 
                 createWangCharacterLights();
 
