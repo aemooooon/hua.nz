@@ -5,7 +5,7 @@ import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.j
 import { useAppStore } from '../../../store/useAppStore';
 import { gsap } from 'gsap';
 import { debounce } from 'lodash';
-import textureSystem from '../../../utils/texture';
+import textureSystem from '../../../utils/texture/index';
 import webglResourceManager from '../../../utils/WebGLResourceManager';
 import { useTheme } from '../../../hooks/useTheme';
 
@@ -26,6 +26,7 @@ const HeroCube = ({
     const cubeRotationOffsetRef = useRef({ x: 0, y: 0, z: 0 });
     const lastFrameTimeRef = useRef(performance.now());
     const hasBeenDraggedRef = useRef(false); // 跟踪是否已被用户拖拽过
+    const preloadedTexturesRef = useRef(null); // 存储预加载的纹理结果
     
     const { getContent } = useAppStore();
     const content = getContent();
@@ -87,29 +88,35 @@ const HeroCube = ({
         ];
     }, [content.navigation]);
 
-    // 预加载所有纹理资源
+    // 预加载所有纹理资源 - 使用新的统一纹理系统
     useEffect(() => {
         const preloadTextures = async () => {
             try {
-                // 显示格式检测信息
-                const compressionInfo = await textureSystem.getCompressionInfo();
-                console.log(`🎯 智能纹理系统: ${compressionInfo.format} (${compressionInfo.description})`);
+                console.log('🚀 开始Hero Cube纹理预加载...');
                 
-                // 收集需要预加载的纹理名称
-                const textureNames = faces
-                    .filter(face => face.texture)
-                    .map(face => face.texture);
+                // 使用新的Hero Cube专用API进行一次性加载
+                const result = await textureSystem.loadHeroCubeTextures(faces);
                 
-                if (textureNames.length > 0) {
-                    // 使用新的纹理系统预加载
-                    await textureSystem.preloadTextures(textureNames, {
-                        onProgress: (progress, loaded, total) => {
-                            console.log(`📦 纹理预加载进度: ${loaded}/${total} (${Math.round(progress * 100)}%)`);
-                        }
-                    });
+                console.log(`✅ Hero Cube纹理加载完成!`);
+                console.log(`  - 图片纹理: ${result.textures.size}`);
+                console.log(`  - 视频纹理: ${result.videos.size}`);
+                console.log(`  - 错误数量: ${result.errors.length}`);
+                
+                if (result.errors.length > 0) {
+                    console.warn('⚠️ 部分纹理加载失败:', result.errors);
                 }
                 
+                // 将结果存储到ref中供后续使用
+                preloadedTexturesRef.current = result;
+                
+                // 调试信息：检查视频纹理
+                console.log('🔍 调试预加载结果:');
+                console.log('  - 纹理Map键:', Array.from(result.textures.keys()));
+                console.log('  - 视频Map键:', Array.from(result.videos.keys()));
+                console.log('  - faces配置:', faces.map(f => ({ name: f.name, hasVideo: !!f.video, hasTexture: !!f.texture })));
+                
                 setTexturesReady(true);
+                
             } catch (error) {
                 console.warn('纹理预加载部分失败，继续渲染:', error);
                 setTexturesReady(true);
@@ -343,7 +350,7 @@ const HeroCube = ({
             // 索引5: 背面 (Z-) - Projects面
             faces.find(f => f.name === 'projects')
         ].map((face) => {
-            // 如果是视频贴图，直接创建视频纹理
+            // 如果是视频贴图，使用预加载的视频纹理或创建新的
             if (face.video) {
                 const fallbackTexture = createCheckerboardTexture(256);
                 
@@ -354,70 +361,116 @@ const HeroCube = ({
                     side: THREE.FrontSide // 只渲染正面，提升性能
                 });
                 
-                // 创建新的视频元素，确保每次都有一个新的实例
-                const video = document.createElement('video');
-                video.src = face.video;
-                video.crossOrigin = 'anonymous';
-                video.loop = true;
-                video.muted = true;
-                video.autoplay = true;
-                video.playsInline = true;
-                video.preload = 'metadata';
-                
-                const setupVideoTexture = () => {
-                    try {
-                        const videoTexture = new THREE.VideoTexture(video);
-                        videoTexture.minFilter = THREE.LinearFilter; // 视频纹理不能使用mipmap
-                        videoTexture.magFilter = THREE.LinearFilter;
-                        videoTexture.format = THREE.RGBAFormat;
-                        videoTexture.generateMipmaps = false; // 视频纹理禁用mipmap
-                        videoTexture.flipY = false;
-                        videoTexture.colorSpace = THREE.SRGBColorSpace;
-                        
-                        if (material.map && material.map !== fallbackTexture) {
-                            material.map.dispose();
-                        }
-                        material.map = videoTexture;
-                        material.needsUpdate = true;
-                        
-                        // 确保视频开始播放
-                        video.play().catch(error => {
-                            console.warn('Video autoplay failed:', error);
+                // 检查是否有预加载的视频纹理
+                if (preloadedTexturesRef.current?.videos.has(face.name)) {
+                    const preloadedVideoTexture = preloadedTexturesRef.current.videos.get(face.name);
+                    material.map = preloadedVideoTexture;
+                    material.needsUpdate = true;
+                    console.log(`✅ 使用预加载视频纹理: ${face.name}`);
+                    
+                    // 检查视频状态
+                    if (preloadedVideoTexture.image) {
+                        const video = preloadedVideoTexture.image;
+                        console.log(`🎬 视频状态: ${face.name}`, {
+                            paused: video.paused,
+                            currentTime: video.currentTime,
+                            duration: video.duration,
+                            readyState: video.readyState,
+                            networkState: video.networkState
                         });
-                    } catch (error) {
-                        console.warn('Failed to create video texture:', error);
-                        // 保持使用fallback纹理
+                        
+                        // 确保视频在播放
+                        if (video.paused) {
+                            video.play().catch(err => console.warn('视频自动播放失败:', err));
+                        }
+                        
+                        // 添加用户交互启动播放的监听器
+                        const tryPlayOnUserInteraction = () => {
+                            if (video.paused) {
+                                video.play().then(() => {
+                                    console.log(`🎬 用户交互后视频开始播放: ${face.name}`);
+                                    // 移除监听器
+                                    document.removeEventListener('click', tryPlayOnUserInteraction);
+                                    document.removeEventListener('touchstart', tryPlayOnUserInteraction);
+                                }).catch(err => console.warn('用户交互后视频播放失败:', err));
+                            }
+                        };
+                        
+                        // 如果视频暂停，添加用户交互监听器
+                        if (video.paused) {
+                            document.addEventListener('click', tryPlayOnUserInteraction, { once: true });
+                            document.addEventListener('touchstart', tryPlayOnUserInteraction, { once: true });
+                        }
                     }
-                };
-                
-                // 多个事件监听确保视频正确加载
-                video.addEventListener('loadeddata', () => {
-                    setupVideoTexture();
-                });
-                
-                video.addEventListener('canplay', () => {
-                    setupVideoTexture();
-                });
-                
-                video.addEventListener('loadedmetadata', () => {
-                    // 视频元数据加载完成，可以尝试播放
-                    video.play().catch(() => {
-                        // 忽略自动播放失败
+                } else {
+                    // 如果没有预加载，创建新的视频纹理
+                    console.warn(`⚠️ 预加载视频纹理不可用，创建新的: ${face.name}`);
+                    
+                    // 创建新的视频元素，确保每次都有一个新的实例
+                    const video = document.createElement('video');
+                    video.src = face.video;
+                    video.crossOrigin = 'anonymous';
+                    video.loop = true;
+                    video.muted = true;
+                    video.autoplay = true;
+                    video.playsInline = true;
+                    video.preload = 'metadata';
+                    
+                    const setupVideoTexture = () => {
+                        try {
+                            const videoTexture = new THREE.VideoTexture(video);
+                            videoTexture.minFilter = THREE.LinearFilter; // 视频纹理不能使用mipmap
+                            videoTexture.magFilter = THREE.LinearFilter;
+                            videoTexture.format = THREE.RGBAFormat;
+                            videoTexture.generateMipmaps = false; // 视频纹理禁用mipmap
+                            videoTexture.flipY = true; // 修复：让人物正向显示
+                            videoTexture.colorSpace = THREE.SRGBColorSpace;
+                            
+                            if (material.map && material.map !== fallbackTexture) {
+                                material.map.dispose();
+                            }
+                            material.map = videoTexture;
+                            material.needsUpdate = true;
+                            
+                            // 确保视频开始播放
+                            video.play().catch(error => {
+                                console.warn('Video autoplay failed:', error);
+                            });
+                        } catch (error) {
+                            console.warn('Failed to create video texture:', error);
+                            // 保持使用fallback纹理
+                        }
+                    };
+                    
+                    // 多个事件监听确保视频正确加载
+                    video.addEventListener('loadeddata', () => {
+                        setupVideoTexture();
                     });
-                });
-                
-                video.addEventListener('error', (error) => {
-                    console.warn('Video loading error, using fallback texture:', error);
-                    // 保持使用fallback纹理
-                });
-                
-                // 立即尝试加载视频
-                video.load();
+                    
+                    video.addEventListener('canplay', () => {
+                        setupVideoTexture();
+                    });
+                    
+                    video.addEventListener('loadedmetadata', () => {
+                        // 视频元数据加载完成，可以尝试播放
+                        video.play().catch(() => {
+                            // 忽略自动播放失败
+                        });
+                    });
+                    
+                    video.addEventListener('error', (error) => {
+                        console.warn('Video loading error, using fallback texture:', error);
+                        // 保持使用fallback纹理
+                    });
+                    
+                    // 立即尝试加载视频
+                    video.load();
+                }
                 
                 return material;
             }
             
-            // 如果是图片贴图，使用新的纹理系统
+            // 如果是图片贴图，使用预加载的纹理
             if (face.texture) {
                 // 先创建带fallback的材质
                 const fallbackTexture = createCheckerboardTexture(256);
@@ -428,17 +481,34 @@ const HeroCube = ({
                     side: THREE.FrontSide
                 });
                 
-                // 异步加载实际纹理
-                (async () => {
-                    try {
-                        const texture = await textureSystem.loadTexture(face.texture);
-                        material.map = texture;
-                        material.needsUpdate = true;
-                    } catch (error) {
-                        console.warn(`加载纹理失败: ${face.texture}`, error);
-                        // 保持使用fallback纹理
-                    }
-                })();
+                // 使用预加载的纹理（如果可用）
+                if (preloadedTexturesRef.current?.textures.has(face.texture)) {
+                    const preloadedTexture = preloadedTexturesRef.current.textures.get(face.texture);
+                    material.map = preloadedTexture;
+                    material.needsUpdate = true;
+                    console.log(`✅ 使用预加载纹理: ${face.texture}`);
+                } else {
+                    // 如果预加载失败，使用统一的纹理系统异步加载
+                    console.warn(`⚠️ 预加载纹理不可用，使用统一系统异步加载: ${face.texture}`);
+                    (async () => {
+                        try {
+                            const result = await textureSystem.loadSceneTextures('hero-cube', {
+                                textures: [face.texture]
+                            });
+                            if (result.textures.has(face.texture)) {
+                                const texture = result.textures.get(face.texture);
+                                material.map = texture;
+                                material.needsUpdate = true;
+                                console.log(`✅ 单独加载Cube纹理成功: ${face.texture}`);
+                            } else {
+                                throw new Error(`纹理未找到: ${face.texture}`);
+                            }
+                        } catch (error) {
+                            console.warn(`加载纹理失败: ${face.texture}`, error);
+                            // 保持使用fallback纹理
+                        }
+                    })();
+                }
                 
                 return material;
             }
@@ -887,6 +957,16 @@ const HeroCube = ({
                 mouseVelocityRef.current.x *= 0.92;
                 mouseVelocityRef.current.y *= 0.92;
             }
+            
+            // 🎬 关键：更新所有视频纹理
+            cube.children.forEach(face => {
+                if (face.material && face.material.map && face.material.map.image && face.material.map.image.tagName === 'VIDEO') {
+                    const video = face.material.map.image;
+                    if (!video.paused && video.readyState >= 2) {
+                        face.material.map.needsUpdate = true;
+                    }
+                }
+            });
             
             renderer.render(scene, camera);
         };

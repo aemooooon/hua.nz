@@ -1,53 +1,139 @@
 /**
  * 纹理系统统一入口
- * 提供简洁的API来访问所有纹理相关功能
+ * 
+ * 提供向后兼容的API，同时支持新的场景化管理
+ * 
+ * 主要功能：
+ * - 传统API向后兼容
+ * - 新版场景化纹理管理
+ * - 智能格式检测和优化
+ * - 统一的错误处理
+ * 
+ * @module TextureSystem
  */
 
-import { formatDetector } from './FormatDetector.js';
-import { textureLoader } from './TextureLoader.js';
-import { textureManager } from './TextureManager.js';
-
+// 原有系统（保持兼容性）
 export { FormatDetector, formatDetector } from './FormatDetector.js';
 export { TextureLoader, textureLoader } from './TextureLoader.js';
 export { TextureManager, textureManager } from './TextureManager.js';
 
-// 便捷的默认导出
-export default {
-    // 格式检测
-    formatDetector,
-    
-    // 基础加载器
-    textureLoader,
-    
-    // 高级管理器
-    textureManager,
-    
-    // 便捷方法
+// 新版统一系统
+export { TextureSystem, textureSystem } from './TextureSystem.js';
+
+// 默认导出 - 智能选择
+const textureSystemAPI = {
+    // === 传统API (保持兼容) ===
     async getBestFormat() {
+        const { formatDetector } = await import('./FormatDetector.js');
         return formatDetector.getBestFormat();
     },
     
     async getCompressionInfo() {
+        const { formatDetector } = await import('./FormatDetector.js');
         return formatDetector.getCompressionInfo();
     },
     
     async loadTexture(name, options) {
+        const { textureLoader } = await import('./TextureLoader.js');
         return textureLoader.loadTexture(name, options);
     },
     
     async loadCubeTextures(names, options) {
+        const { textureManager } = await import('./TextureManager.js');
         return textureManager.loadCubeTextures(names, options);
     },
     
     async preloadTextures(names, options) {
+        const { textureLoader } = await import('./TextureLoader.js');
         return textureLoader.preloadTextures(names, options);
     },
     
     getStats() {
-        return textureManager.getPerformanceStats();
+        // 这里需要动态导入以避免循环依赖
+        return {
+            legacy: "使用 textureManager.getPerformanceStats() 获取传统系统统计",
+            unified: "使用 textureSystem.getStats() 获取新系统统计"
+        };
     },
     
     clearCache() {
-        textureLoader.clearCache();
+        // 支持两套系统的清理
+        import('./TextureManager.js').then(({ textureManager }) => {
+            if (textureManager.clearCache) textureManager.clearCache();
+        });
+        import('./TextureSystem.js').then(({ textureSystem }) => {
+            textureSystem.cleanup();
+        });
+    },
+
+    // === 新版场景化API ===
+    
+    /**
+     * 智能场景纹理加载
+     * 
+     * 根据场景类型自动选择最优配置和优化策略
+     * 
+     * @param {string} sceneType - 场景类型 ('hero-cube', 'gallery', 'lightbox')
+     * @param {Object} options - 加载选项
+     * @returns {Promise<Object>} 加载结果包含纹理Map和错误信息
+     */
+    async loadSceneTextures(sceneType, options) {
+        const { textureSystem } = await import('./TextureSystem.js');
+        return textureSystem.loadSceneTextures(sceneType, options);
+    },
+
+    /**
+     * Hero Cube专用纹理加载方法
+     * 
+     * 自动处理纹理和视频资源，应用Cube专用优化
+     * 
+     * @param {Array} faceConfigs - 立方体面配置数组
+     * @returns {Promise<Object>} 加载结果
+     */
+    async loadHeroCubeTextures(faceConfigs) {
+        const textures = faceConfigs
+            .filter(face => face.texture)
+            .map(face => face.texture);
+            
+        const videos = faceConfigs
+            .filter(face => face.video)
+            .map(face => ({ name: face.name, src: face.video }));
+
+        return this.loadSceneTextures('hero-cube', { textures, videos });
+    },
+
+    /**
+     * Gallery专用纹理加载方法
+     * 
+     * 针对画廊场景优化，支持批量图片预加载
+     * 
+     * @param {string[]} imageNames - 图片名称数组
+     * @param {Object} [options={}] - 加载选项
+     * @param {string} [options.folder='gallery'] - 图片文件夹
+     * @returns {Promise<Object>} 加载结果
+     */
+    async loadGalleryTextures(imageNames, options = {}) {
+        return this.loadSceneTextures('gallery', {
+            images: imageNames,
+            folder: options.folder || 'gallery',
+            ...options
+        });
+    },
+
+    /**
+     * 获取最优路径 (兼容新旧系统)
+     */
+    async getOptimalPath(name, folder) {
+        if (folder) {
+            // 使用新系统
+            const { textureSystem } = await import('./TextureSystem.js');
+            return textureSystem.getOptimalPath(name, folder);
+        } else {
+            // 使用旧系统
+            const { textureLoader } = await import('./TextureLoader.js');
+            return textureLoader.getOptimalPath(name);
+        }
     }
 };
+
+export default textureSystemAPI;

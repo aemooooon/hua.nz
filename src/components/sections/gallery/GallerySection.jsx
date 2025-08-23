@@ -7,9 +7,8 @@ import CircularLoadingIndicator from '../../ui/CircularLoadingIndicator';
 import GalleryMobile from './GalleryMobile';
 import RectAreaLightingSystem from './lighting/RectAreaLightingSystem.js';
 import { PillarLightSystem } from './lighting/PillarLightSystem.js';
-import { GalleryTextureManager } from './utils/GalleryTextureManager.js';
 import { IESSpotlightSystem } from './lighting/IESSpotlightSystem.js';
-import textureSystem from '../../../utils/texture';
+import textureSystem from '../../../utils/texture/index';
 
 /**
  * Interactive 3D Gallery Component - "Corridor of Light and Shadow" 
@@ -107,7 +106,7 @@ const GallerySection = ({ language = 'en' }) => {
     const rectAreaLightingRef = useRef(null); // RectAreaLighting system reference
     const pillarLightRef = useRef(null); // Light pillar system reference
     const iesSpotlightSystemRef = useRef(null); // IES spotlight system reference
-    const galleryTextureManagerRef = useRef(null); // Gallery texture manager reference
+    const galleryTextureManagerRef = useRef(null); // 预加载的纹理缓存引用
     
     // Animation and loading management
     const introAnimationRef = useRef(null);
@@ -599,7 +598,52 @@ const GallerySection = ({ language = 'en' }) => {
                     }, 100);
                     
                     const imageSrc = item.src || item.thumbnail;
-                    if (!loadedTextures.has(imageSrc)) {
+                    
+                    // 提取文件名用于查找预加载纹理
+                    const baseName = imageSrc.split('/').pop().replace(/\.(jpg|jpeg|png|webp|avif)$/i, '');
+                    
+                    // 优先使用预加载的纹理
+                    console.log(`🔍 查找纹理 - item.id: ${item.id}, 预加载纹理数量: ${galleryTextureManagerRef.current?.textures.size || 0}`);
+                    console.log(`🔍 预加载纹理keys:`, Array.from(galleryTextureManagerRef.current?.textures.keys() || []));
+                    
+                    // 检查图片纹理缓存
+                    if (galleryTextureManagerRef.current?.textures.has(item.id)) {
+                        const preloadedTexture = galleryTextureManagerRef.current.textures.get(item.id);
+                        painting.material.map = preloadedTexture;
+                        painting.material.color.setHex(0xffffff);
+                        painting.material.needsUpdate = true;
+                        console.log(`✅ 使用预加载Gallery纹理: ${item.id}`);
+                    }
+                    // 检查视频纹理缓存
+                    else if (galleryTextureManagerRef.current?.videos.has(item.id)) {
+                        const preloadedVideoTexture = galleryTextureManagerRef.current.videos.get(item.id);
+                        painting.material.map = preloadedVideoTexture;
+                        painting.material.color.setHex(0xffffff);
+                        painting.material.needsUpdate = true;
+                        console.log(`✅ 使用预加载视频纹理: ${item.id}`);
+                        
+                        // 确保视频播放
+                        if (preloadedVideoTexture.image) {
+                            const video = preloadedVideoTexture.image;
+                            if (video.paused) {
+                                video.play().catch(err => {
+                                    console.warn('Gallery视频自动播放失败，添加用户交互监听:', err);
+                                    
+                                    // 添加用户交互启动播放
+                                    const tryPlayOnUserInteraction = () => {
+                                        if (video.paused) {
+                                            video.play().then(() => {
+                                                console.log(`🎬 Gallery视频用户交互后开始播放: ${item.id}`);
+                                            }).catch(e => console.warn('用户交互后播放失败:', e));
+                                        }
+                                    };
+                                    
+                                    document.addEventListener('click', tryPlayOnUserInteraction, { once: true });
+                                    document.addEventListener('touchstart', tryPlayOnUserInteraction, { once: true });
+                                });
+                            }
+                        }
+                    } else if (!loadedTextures.has(imageSrc)) {
                         try {
                             // 检查是否为视频类型
                             if (item.type === 'video') {
@@ -625,6 +669,7 @@ const GallerySection = ({ language = 'en' }) => {
                                 videoTexture.generateMipmaps = false;
                                 videoTexture.minFilter = THREE.LinearFilter;
                                 videoTexture.magFilter = THREE.LinearFilter;
+                                videoTexture.flipY = true; // 修复：让视频正向显示
                                 videoTexture.colorSpace = THREE.SRGBColorSpace;
                                 
                                 loadedTextures.set(imageSrc, videoTexture);
@@ -639,25 +684,36 @@ const GallerySection = ({ language = 'en' }) => {
                                 
                                 console.log(`🎬 加载视频纹理: ${item.title.zh || item.title.en}`);
                             } else {
-                                // 提取文件名（去除路径和扩展名）用于纹理系统
-                                const baseName = imageSrc.split('/').pop().replace(/\.(jpg|jpeg|png|webp|avif)$/i, '');
-                                console.log(`🖼️ Gallery纹理加载: ${imageSrc} -> ${baseName}`);
+                                // 🚫 避免重复加载：直接使用统一的格式映射纹理
+                                let mappedFileName;
+                                if (item.id === 'gallery_lightbox') {
+                                    // 对于lightbox，使用其实际的src文件名
+                                    mappedFileName = item.src.split('/').pop().replace(/\.(jpg|jpeg|png|webp|avif)$/i, '');
+                                } else {
+                                    // 其他项目使用标准的id转换
+                                    mappedFileName = item.id.replace(/_/g, '-');
+                                }
+                                console.log(`⚠️ 预加载纹理不可用，尝试单独加载: ${item.id} -> ${mappedFileName}`);
                                 
-                                // 使用 textureSystem 加载最优格式 (AVIF > WebP > JPG)
-                                const texture = await textureSystem.loadTexture(baseName);
+                                // 使用新的Gallery场景纹理加载 - 确保格式一致
+                                const result = await textureSystem.loadSceneTextures('gallery', {
+                                    images: [mappedFileName],
+                                    folder: 'gallery'
+                                });
                                 
-                                // 优化纹理设置 - 保证色彩保真度
-                                texture.generateMipmaps = false;
-                                texture.minFilter = THREE.LinearFilter;
-                                texture.magFilter = THREE.LinearFilter;
-                                texture.colorSpace = THREE.SRGBColorSpace;
-                                
-                                loadedTextures.set(imageSrc, texture);
-                                painting.material.map = texture;
-                                painting.material.color.setHex(0xffffff);
-                                painting.material.needsUpdate = true;
+                                if (result.textures.has(mappedFileName)) {
+                                    const texture = result.textures.get(mappedFileName);
+                                    loadedTextures.set(imageSrc, texture);
+                                    painting.material.map = texture;
+                                    painting.material.color.setHex(0xffffff);
+                                    painting.material.needsUpdate = true;
+                                    console.log(`✅ 单独加载Gallery纹理成功: ${mappedFileName}`);
+                                } else {
+                                    throw new Error(`纹理加载失败: ${mappedFileName}`);
+                                }
                             }
-                        } catch {
+                        } catch (error) {
+                            console.warn(`Gallery纹理加载失败: ${baseName}`, error);
                             painting.material.color.setHex(0x666666);
                             painting.material.needsUpdate = true;
                         }
@@ -1191,25 +1247,127 @@ const GallerySection = ({ language = 'en' }) => {
             animateCamera();
         };
         
-        // 初始化Three.js场景
-        const initScene = () => {
+        // 初始化Three.js场景 - 异步版本
+        const initScene = async () => {
             try {
-                // 🚫 防止重复初始化（React.StrictMode 在开发模式下会导致双重渲染）
+                // 防止重复初始化（React.StrictMode 在开发模式下会导致双重渲染）
                 if (sceneRef.current || rendererRef.current) {
-                    console.log('⏭️ 跳过重复初始化（场景已存在）');
                     return;
                 }
                 
-                console.log('🏗️ 开始初始化 Gallery 场景...');
-                
-                // 🏗️ 初始化画廊纹理管理器
-                galleryTextureManagerRef.current = new GalleryTextureManager();
-                console.log('🎨 画廊纹理管理器初始化成功');
-                
+                // � 预加载画廊纹理 - 使用新的统一纹理系统
                 const loadingManager = new THREE.LoadingManager();
                 loadingManagerRef.current = loadingManager;
                 
-                loadingManager.onLoad = () => {
+                // 预加载画廊纹理 - 使用新的统一纹理系统
+                let texturesPreloaded = false;
+                
+                const preloadGalleryTextures = async () => {
+                    try {
+                        // 分离图片和视频
+                        const imageItems = [];
+                        const videoItems = [];
+                        
+                        galleryData.slice(0, 12).forEach(item => {
+                            // 对于gallery_lightbox，使用其实际的src文件名
+                            let fileName;
+                            if (item.id === 'gallery_lightbox') {
+                                // 从src路径中提取文件名
+                                fileName = item.src.split('/').pop().replace(/\.(jpg|jpeg|png|webp|avif)$/i, '');
+                            } else {
+                                // 其他项目使用标准的id转换
+                                fileName = item.id.replace(/_/g, '-');
+                            }
+                            
+                            if (item.type === 'video') {
+                                // 视频项目
+                                videoItems.push({
+                                    id: item.id,
+                                    fileName: fileName,
+                                    src: item.src
+                                });
+                            } else {
+                                // 图片项目
+                                imageItems.push({
+                                    id: item.id,
+                                    fileName: fileName
+                                });
+                            }
+                        });
+                        
+                        console.log('🎨 开始预加载Gallery纹理...', { 
+                            images: imageItems.length, 
+                            videos: videoItems.length 
+                        });
+                        
+                        const textureResult = await textureSystem.loadSceneTextures('gallery', {
+                            images: imageItems.map(img => img.fileName),
+                            videos: videoItems.map(video => ({
+                                name: video.fileName,
+                                src: video.src
+                            })),
+                            folder: 'gallery',
+                            onProgress: (progress, loaded, total) => {
+                                console.log(`📦 Gallery纹理加载进度: ${loaded}/${total} (${Math.round(progress * 100)}%)`);
+                            }
+                        });
+                        
+                        // 重新映射纹理，使用原始ID作为key
+                        const mappedTextures = new Map();
+                        const mappedVideos = new Map();
+                        
+                        // 映射图片纹理
+                        imageItems.forEach(({ id, fileName }) => {
+                            if (textureResult.textures.has(fileName)) {
+                                mappedTextures.set(id, textureResult.textures.get(fileName));
+                            }
+                        });
+                        
+                        // 映射视频纹理
+                        videoItems.forEach(({ id, fileName }) => {
+                            if (textureResult.videos.has(fileName)) {
+                                mappedVideos.set(id, textureResult.videos.get(fileName));
+                            }
+                        });
+                        
+                        // 存储预加载结果（保持原来的结构但使用映射后的纹理）
+                        galleryTextureManagerRef.current = {
+                            textures: mappedTextures,
+                            videos: mappedVideos,
+                            errors: textureResult.errors
+                        };
+                        console.log(`✅ Gallery纹理预加载完成: ${textureResult.textures.size}张图片, ${textureResult.videos.size}个视频`);
+                        
+                        if (textureResult.errors.length > 0) {
+                            console.warn('⚠️ 部分Gallery纹理加载失败:', textureResult.errors);
+                        }
+                        
+                        texturesPreloaded = true;
+                        
+                        // 如果场景已经加载完成且纹理也加载完成，启动动画
+                        if (sceneLoadingComplete && texturesPreloaded) {
+                            startIntroAnimationSafely();
+                        }
+                        
+                    } catch (error) {
+                        console.warn('Gallery纹理预加载失败，使用fallback:', error);
+                        galleryTextureManagerRef.current = { 
+                            textures: new Map(), 
+                            videos: new Map(), 
+                            errors: [] 
+                        };
+                        texturesPreloaded = true;
+                        
+                        if (sceneLoadingComplete) {
+                            startIntroAnimationSafely();
+                        }
+                    }
+                };
+                
+                let sceneLoadingComplete = false;
+                
+                // 安全启动动画的函数
+                const startIntroAnimationSafely = () => {
                     requestAnimationFrame(() => {
                         if (rendererRef.current && sceneRef.current && cameraRef.current) {
                             rendererRef.current.render(sceneRef.current, cameraRef.current);
@@ -1227,7 +1385,20 @@ const GallerySection = ({ language = 'en' }) => {
                     });
                 };
                 
+                loadingManager.onLoad = () => {
+                    console.log('🎭 THREE.js场景加载完成');
+                    sceneLoadingComplete = true;
+                    
+                    // 如果纹理也已经预加载完成，启动动画
+                    if (texturesPreloaded) {
+                        startIntroAnimationSafely();
+                    }
+                };
+                
                 loadingManager.onError = () => {};
+                
+                // 开始异步预加载纹理
+                preloadGalleryTextures();
                 
                 const scene = new THREE.Scene();
                 scene.background = new THREE.Color(0x1a1a1a);
@@ -1681,7 +1852,11 @@ const GallerySection = ({ language = 'en' }) => {
             }
         };
 
-        initScene();
+        // 异步初始化场景
+        initScene().catch(error => {
+            console.error('Gallery场景初始化失败:', error);
+            setIsLoading(false);
+        });
 
         return () => {
             
