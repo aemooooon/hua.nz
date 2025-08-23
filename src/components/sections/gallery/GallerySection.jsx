@@ -1860,22 +1860,34 @@ const GallerySection = ({ language = 'en' }) => {
 
         return () => {
             
+            // 🔥 关键修复：强制解锁指针锁定，清理状态
+            if (controlsRef.current?.isLocked) {
+                console.log('🔓 Gallery组件卸载时强制解锁指针');
+                controlsRef.current.unlock();
+            }
+            
+            // 强制重置store中的指针锁定状态
+            setIsPointerLocked(false);
+            
             // 清理RectAreaLighting系统
             if (rectAreaLightingRef.current) {
                 rectAreaLightingRef.current.dispose();
                 rectAreaLightingRef.current = null;
+                console.log(' 🧹 RectAreaLighting系统已清理');
             }
             
             // 清理光柱系统
             if (pillarLightRef.current) {
                 pillarLightRef.current.dispose();
                 pillarLightRef.current = null;
+                console.log(' 🏛️ 发光圆柱体系统已清理');
             }
             
             // 清理IES聚光灯系统
             if (iesSpotlightSystemRef.current) {
                 iesSpotlightSystemRef.current.dispose();
                 iesSpotlightSystemRef.current = null;
+                console.log(' 🧹 IES聚光灯系统已清理');
             }
             
             // 取消动画循环
@@ -1886,8 +1898,13 @@ const GallerySection = ({ language = 'en' }) => {
             
             // 清理控制器
             if (controlsRef.current) {
+                // 确保彻底解锁
+                if (controlsRef.current.isLocked) {
+                    controlsRef.current.unlock();
+                }
                 controlsRef.current.dispose();
                 controlsRef.current = null;
+                console.log(' 🎮 Gallery控制器已清理');
             }
             
             // 清理场景中的所有资源
@@ -1933,6 +1950,38 @@ const GallerySection = ({ language = 'en' }) => {
         };
     }, [galleryData, isIntroAnimationComplete, setIsPointerLocked]);
 
+    // 🔥 新增：全局指针锁定状态监控和清理
+    useEffect(() => {
+        const handlePointerLockChange = () => {
+            // 检查实际的浏览器指针锁定状态
+            const isActuallyLocked = document.pointerLockElement !== null;
+            
+            if (!isActuallyLocked && controlsRef.current?.isLocked) {
+                console.log('🔓 检测到指针锁定状态不一致，强制同步状态');
+                // 同步three.js控制器状态
+                if (controlsRef.current) {
+                    controlsRef.current.disconnect();
+                    setTimeout(() => {
+                        if (controlsRef.current) {
+                            controlsRef.current.connect();
+                        }
+                    }, 100);
+                }
+                // 同步store状态
+                setIsPointerLocked(false);
+            }
+        };
+
+        // 监听浏览器的指针锁定状态变化
+        document.addEventListener('pointerlockchange', handlePointerLockChange);
+        document.addEventListener('pointerlockerror', handlePointerLockChange);
+
+        return () => {
+            document.removeEventListener('pointerlockchange', handlePointerLockChange);
+            document.removeEventListener('pointerlockerror', handlePointerLockChange);
+        };
+    }, [setIsPointerLocked]);
+
     // 按键监听 
     useEffect(() => {
         const handleKeyDown = (event) => {
@@ -1961,6 +2010,7 @@ const GallerySection = ({ language = 'en' }) => {
             
             // ESC 键解锁指针
             if (event.key === 'Escape' && controlsRef.current?.isLocked) {
+                console.log('🔓 ESC键解锁指针');
                 controlsRef.current.unlock();
             }
         };

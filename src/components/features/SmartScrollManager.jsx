@@ -554,6 +554,12 @@ const SmartScrollManager = () => {
 
     // 键盘事件处理
     const handleKeyDown = useCallback((event) => {
+        // 🔥 关键修复：如果指针被锁定，阻止所有导航键盘事件
+        if (isPointerLocked) {
+            console.log('🔒 指针锁定模式下阻止键盘导航:', event.key);
+            return; // 直接返回，不处理任何键盘导航
+        }
+        
         if (isScrolling || isProjectModalOpen) return;
         
         const container = contentRef.current;
@@ -639,7 +645,7 @@ const SmartScrollManager = () => {
                 break;
             }
         }
-    }, [isScrolling, isProjectModalOpen, scrollMode, isContentOverflowing, isHomePage, currentSection, sections.length, navigateNext, navigatePrev, navigateToSection]);
+    }, [isScrolling, isProjectModalOpen, isPointerLocked, scrollMode, isContentOverflowing, isHomePage, currentSection, sections.length, navigateNext, navigatePrev, navigateToSection]);
 
     // 监听section变化，重置滚动状态
     useEffect(() => {
