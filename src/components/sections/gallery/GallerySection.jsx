@@ -1575,6 +1575,7 @@ const GallerySection = ({ language = 'en' }) => {
                             
                             // 💻 Lightbox 媒体配置 - 可根据需要切换显示模式
                             // 🎬 视频模式：自动播放、循环播放、黑色背景营造荧幕效果
+                            //    📐 自动保持视频原始宽高比，不满的地方用黑色填充
                             // 🖼️ 图片模式：静态图片展示，保持灯箱发光效果
                             const lightboxConfig = {
                                 useVideo: true,  // 🎬 默认使用视频，设置为 false 切换到图片模式
@@ -1645,13 +1646,12 @@ const GallerySection = ({ language = 'en' }) => {
                                         videoTexture.flipY = true; // 确保视频方向正确
                                         videoTexture.colorSpace = THREE.SRGBColorSpace;
                                         
-                                        // 🎬 视频模式：黑色背景 + 视频纹理
+                                        // 🎬 简化视频模式：直接使用视频纹理，暂时不做宽高比调整
                                         const videoMaterial = new THREE.MeshLambertMaterial({
                                             map: videoTexture,
                                             emissive: 0x000000,        // 无自发光
                                             emissiveIntensity: 0.0,    // 自发光强度设为0
-                                            transparent: true,         // 开启透明度
-                                            opacity: 1.0,              // 完全不透明让视频清晰显示
+                                            transparent: false,        // 关闭透明度
                                             side: THREE.FrontSide,     // 单面渲染提升性能
                                         });
                                         
