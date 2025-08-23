@@ -484,6 +484,14 @@ const HeroCube = ({
                 // 使用预加载的纹理（如果可用）
                 if (preloadedTexturesRef.current?.textures.has(face.texture)) {
                     const preloadedTexture = preloadedTexturesRef.current.textures.get(face.texture);
+                    
+                    // 🔄 为education纹理添加Y轴翻转功能
+                    if (face.texture === 'education') {
+                        preloadedTexture.flipY = true;
+                        preloadedTexture.needsUpdate = true;
+                        console.log(`🔄 为${face.texture}纹理启用Y轴翻转`);
+                    }
+                    
                     material.map = preloadedTexture;
                     material.needsUpdate = true;
                     console.log(`✅ 使用预加载纹理: ${face.texture}`);
@@ -497,6 +505,14 @@ const HeroCube = ({
                             });
                             if (result.textures.has(face.texture)) {
                                 const texture = result.textures.get(face.texture);
+                                
+                                // 🔄 为education纹理添加Y轴翻转功能
+                                if (face.texture === 'education') {
+                                    texture.flipY = true;
+                                    texture.needsUpdate = true;
+                                    console.log(`🔄 异步加载时为${face.texture}纹理启用Y轴翻转`);
+                                }
+                                
                                 material.map = texture;
                                 material.needsUpdate = true;
                                 console.log(`✅ 单独加载Cube纹理成功: ${face.texture}`);
