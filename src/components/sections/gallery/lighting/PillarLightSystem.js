@@ -78,7 +78,7 @@ export class PillarLightSystem {
                 { 
                     x: -5, 
                     z: 24, 
-                    color: 0x00FF88,  // si-green主题色
+                    color: 0x00ffff,  // nz-blue主题色（原青色，现在给左侧柱子）
                     textureBaseName: null   // 无贴图
                 },
                 
@@ -86,15 +86,15 @@ export class PillarLightSystem {
                 { 
                     x: 5, 
                     z: 24, 
-                    color: 0x00ffff,  // nz-blue主题色
+                    color: 0xff0040,  // 鲜红色（原红色，现在给右侧柱子）
                     textureBaseName: null   // 无贴图
                 },
                 
-                // 红色圆柱：摄像机背后，只有这个有贴图
+                // 绿色圆柱：摄像机背后，只有这个有贴图
                 { 
                     x: 0, 
                     z: -18, 
-                    color: 0xff0040,  // 鲜红色
+                    color: 0x00FF88,  // si-green主题色（原绿色，现在给背后柱子）
                     textureBaseName: 'gallery-horizontal-11',  // 只有这个有贴图
                     radius: 1.618,  // 直径2.2米，半径1.1米
                     rotationY: Math.PI / 1.5  // 柱子绕Y轴旋转180度
@@ -112,9 +112,9 @@ export class PillarLightSystem {
             
             // 兼容旧版本的颜色配置
             colors: [
-                0x00FF88, // si-green主题色 - lightbox前左侧柱子（绿色主题）
-                0x00ffff, // nz-blue主题色 - lightbox前右侧柱子（青色主题）
-                0xff0040, // 鲜红色 - 摄像机背后单独柱子
+                0x00ffff, // nz-blue主题色 - lightbox前左侧柱子（现在是青色）
+                0xff0040, // 鲜红色 - lightbox前右侧柱子（现在是红色）
+                0x00FF88, // si-green主题色 - 摄像机背后单独柱子（现在是绿色）
             ]
         };
         
@@ -245,9 +245,9 @@ export class PillarLightSystem {
         this.lightCylinders.push(cylinderData);
         
         const positionDesc = [
-            "Lightbox前左侧柱子(32米墙的1/3位置，约-10.67米)",
-            "Lightbox前右侧柱子(32米墙的2/3位置，约10.67米)", 
-            "摄像机背后红色柱子(从地板到天花板，黄金比例直径)"
+            "Lightbox前左侧柱子(32米墙的1/3位置，约-10.67米) - 青色主题",
+            "Lightbox前右侧柱子(32米墙的2/3位置，约10.67米) - 红色主题", 
+            "摄像机背后绿色柱子(从地板到天花板，黄金比例直径) - 绿色主题"
         ];
         
         console.log(`🏛️ 创建发光圆柱体 ${index + 1}: ${positionDesc[index]} 位置(${posConfig.x}, ${centerY}, ${posConfig.z}), 高度${this.config.height}米, 半径${cylinderRadius}米, 直径${(cylinderRadius * 2).toFixed(3)}米`);

@@ -1565,7 +1565,7 @@ const GallerySection = ({ language = 'en' }) => {
                         lightBox.position.set(0, 3, 36 - lightBoxDepth/2);
                         scene.add(lightBox);
                         
-                        // Create lightbox display with gallery-vertical-0 image
+                        // Create lightbox display with video or image option
                         const createLightboxDisplay = () => {
                             // Display dimensions - matching entrance size
                             const adWidth = 11;    // 11m width, matching entrance width
@@ -1573,19 +1573,43 @@ const GallerySection = ({ language = 'en' }) => {
                             
                             const adGeometry = new THREE.PlaneGeometry(adWidth, adHeight);
                             
-                            // Get lightbox image from store data
-                            const lightboxItem = galleryData.find(item => item.position === 'lightbox');
-                            const adImagePath = lightboxItem ? (lightboxItem.src || lightboxItem.thumbnail) : '/gallery/gallery-vertical-0.jpg';
+                            // 💻 Lightbox 媒体配置 - 可根据需要切换显示模式
+                            // 🎬 视频模式：自动播放、循环播放、黑色背景营造荧幕效果
+                            // 🖼️ 图片模式：静态图片展示，保持灯箱发光效果
+                            const lightboxConfig = {
+                                useVideo: true,  // 🎬 默认使用视频，设置为 false 切换到图片模式
+                                videoPath: '/ui-test.mp4',  // 与 hero cube 相同的视频文件
+                                imagePath: '/gallery/gallery-vertical-0.jpg'  // 备用图片路径，当 useVideo=false 时使用
+                            };
                             
-                            // 🚀 性能优化的默认占位材质
-                            const defaultMaterial = new THREE.MeshLambertMaterial({
-                                color: 0x4444ff,           // 蓝色占位
-                                emissive: 0x000000,        // 移除自发光
-                                emissiveIntensity: 0.0,    // 自发光强度设为0
-                                transparent: true,         // 开启透明度让背光透出
-                                opacity: 0.61,             // 设置透明度为0.95，让灯箱光线透出
-                                side: THREE.FrontSide      // 单面渲染提升性能
-                            });
+                            // Get lightbox image from store data (fallback)
+                            const lightboxItem = galleryData.find(item => item.position === 'lightbox');
+                            const adImagePath = lightboxItem ? (lightboxItem.src || lightboxItem.thumbnail) : lightboxConfig.imagePath;
+                            
+                            // 🚀 根据配置选择材质类型
+                            let defaultMaterial;
+                            
+                            if (lightboxConfig.useVideo) {
+                                // 🎬 视频模式：黑色背景营造荧幕感觉
+                                defaultMaterial = new THREE.MeshLambertMaterial({
+                                    color: 0x000000,           // 黑色背景（荧幕感觉）
+                                    emissive: 0x000000,        // 无自发光
+                                    emissiveIntensity: 0.0,    // 自发光强度设为0
+                                    transparent: true,         // 开启透明度
+                                    opacity: 0.95,             // 高透明度让视频清晰显示
+                                    side: THREE.FrontSide      // 单面渲染提升性能
+                                });
+                            } else {
+                                // �️ 图片模式：保持原来的蓝色占位
+                                defaultMaterial = new THREE.MeshLambertMaterial({
+                                    color: 0x4444ff,           // 蓝色占位
+                                    emissive: 0x000000,        // 移除自发光
+                                    emissiveIntensity: 0.0,    // 自发光强度设为0
+                                    transparent: true,         // 开启透明度让背光透出
+                                    opacity: 0.61,             // 设置透明度，让灯箱光线透出
+                                    side: THREE.FrontSide      // 单面渲染提升性能
+                                });
+                            }
                             
                             const adPlane = new THREE.Mesh(adGeometry, defaultMaterial);
                             // 将广告贴在灯箱内表面，旋转180度让图片朝向美术馆内部
@@ -1595,44 +1619,117 @@ const GallerySection = ({ language = 'en' }) => {
                             
                             // Position advertisement plane at lightbox inner surface
                             scene.add(adPlane);
-                            // Begin loading gallery-vertical-0 texture
                             
-                            // 异步加载灯箱展示图片，使用 textureSystem 获取最优格式
-                            // 提取文件名（去除路径和扩展名）用于纹理系统
-                            const lightboxBaseName = adImagePath.split('/').pop().replace(/\.(jpg|jpeg|png|webp|avif)$/i, '');
-                            console.log(`💡 Lightbox纹理加载: ${adImagePath} -> ${lightboxBaseName}`);
-                            
-                            textureSystem.loadTexture(lightboxBaseName)
-                                .then((texture) => {
-                                    // Gallery-vertical-0 image loaded successfully
-                                    
-                                    // 🚀 性能优化的灯箱展示材质
-                                    const lightboxMaterial = new THREE.MeshLambertMaterial({
-                                        map: texture,
-                                        emissive: 0x000000,        // 移除自发光
-                                        emissiveIntensity: 0.0,   // 自发光强度设为0
-                                        transparent: true,         // 开启透明度让背光透出
-                                        opacity: 0.61,             // 设置透明度为0.95，让灯箱光线透出
-                                        side: THREE.FrontSide,     // 单面渲染提升性能
-                                        // 使用LambertMaterial替代StandardMaterial，计算更简单
+                            // 🎬 加载媒体内容
+                            if (lightboxConfig.useVideo) {
+                                // 加载视频内容
+                                console.log(`🎬 Lightbox视频加载: ${lightboxConfig.videoPath}`);
+                                
+                                // 创建视频元素
+                                const video = document.createElement('video');
+                                video.src = lightboxConfig.videoPath;
+                                video.crossOrigin = 'anonymous';
+                                video.loop = true;          // � 循环播放
+                                video.muted = true;         // 静音（避免自动播放限制）
+                                video.autoplay = true;      // 🎬 自动播放
+                                video.playsInline = true;   // 内联播放（移动设备）
+                                video.preload = 'auto';     // 预加载
+                                
+                                const setupVideoTexture = () => {
+                                    try {
+                                        const videoTexture = new THREE.VideoTexture(video);
+                                        videoTexture.minFilter = THREE.LinearFilter;
+                                        videoTexture.magFilter = THREE.LinearFilter;
+                                        videoTexture.format = THREE.RGBAFormat;
+                                        videoTexture.generateMipmaps = false;
+                                        videoTexture.flipY = true; // 确保视频方向正确
+                                        videoTexture.colorSpace = THREE.SRGBColorSpace;
+                                        
+                                        // 🎬 视频模式：黑色背景 + 视频纹理
+                                        const videoMaterial = new THREE.MeshLambertMaterial({
+                                            map: videoTexture,
+                                            emissive: 0x000000,        // 无自发光
+                                            emissiveIntensity: 0.0,    // 自发光强度设为0
+                                            transparent: true,         // 开启透明度
+                                            opacity: 1.0,              // 完全不透明让视频清晰显示
+                                            side: THREE.FrontSide,     // 单面渲染提升性能
+                                        });
+                                        
+                                        // 更新材质
+                                        adPlane.material.dispose(); // 清理旧材质
+                                        adPlane.material = videoMaterial;
+                                        
+                                        console.log('✅ Lightbox视频纹理设置完成');
+                                        
+                                        // 🎬 确保视频开始播放
+                                        video.play().catch(error => {
+                                            console.warn('Lightbox视频自动播放失败:', error);
+                                        });
+                                        
+                                    } catch (error) {
+                                        console.warn('Lightbox视频纹理创建失败:', error);
+                                        // 保持黑色背景
+                                    }
+                                };
+                                
+                                // 视频事件监听
+                                video.addEventListener('loadeddata', setupVideoTexture);
+                                video.addEventListener('canplay', setupVideoTexture);
+                                video.addEventListener('loadedmetadata', () => {
+                                    video.play().catch(() => {
+                                        console.warn('Lightbox视频元数据加载后播放失败');
                                     });
-                                    
-                                    // 更新灯箱展示材质
-                                    adPlane.material = lightboxMaterial;
-                                    // Apply gallery-vertical-0 texture to lightbox plane
-                                })
-                                .catch(() => {
-                                    // Handle image loading error - keep blue placeholder
-                                    console.warn('Failed to load lightbox texture, keeping placeholder');
                                 });
+                                video.addEventListener('error', (error) => {
+                                    console.warn('Lightbox视频加载错误:', error);
+                                    // 降级到图片模式
+                                    loadImageFallback();
+                                });
+                                
+                                // 开始加载视频
+                                video.load();
+                                
+                            } else {
+                                // 加载图片内容
+                                loadImageFallback();
+                            }
+                            
+                            // 🖼️ 图片加载降级函数
+                            function loadImageFallback() {
+                                console.log(`🖼️ Lightbox图片加载: ${adImagePath}`);
+                                
+                                // 提取文件名（去除路径和扩展名）用于纹理系统
+                                const lightboxBaseName = adImagePath.split('/').pop().replace(/\.(jpg|jpeg|png|webp|avif)$/i, '');
+                                
+                                textureSystem.loadTexture(lightboxBaseName)
+                                    .then((texture) => {
+                                        // 🖼️ 图片模式：正常材质 + 图片纹理
+                                        const imageMaterial = new THREE.MeshLambertMaterial({
+                                            map: texture,
+                                            emissive: 0x000000,        // 移除自发光
+                                            emissiveIntensity: 0.0,   // 自发光强度设为0
+                                            transparent: true,         // 开启透明度让背光透出
+                                            opacity: 0.61,             // 设置透明度，让灯箱光线透出
+                                            side: THREE.FrontSide,     // 单面渲染提升性能
+                                        });
+                                        
+                                        // 更新灯箱展示材质
+                                        adPlane.material.dispose(); // 清理旧材质
+                                        adPlane.material = imageMaterial;
+                                        console.log('✅ Lightbox图片纹理设置完成');
+                                    })
+                                    .catch(() => {
+                                        console.warn('Lightbox图片加载失败，保持占位材质');
+                                    });
+                            }
                             
                             return adPlane;
                         };
                         
-                        // 创建灯箱展示 (同步调用测试)
-                        // Initialize lightbox display creation
+                        // 创建灯箱展示 (同步调用)
+                        // Initialize lightbox display creation with video/image support
                         const lightboxDisplay = createLightboxDisplay();
-                        // Lightbox display created successfully
+                        // Lightbox display created successfully with video capability
                         
                         // 🚀 性能优化：移除lightbox背光源以测试效果
                         // const backLightSources = [
