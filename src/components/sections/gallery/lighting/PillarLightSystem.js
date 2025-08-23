@@ -7,7 +7,7 @@
 import * as THREE from 'three';
 import textureSystem from '../../../../utils/texture';
 
-export class LightPillar {
+export class PillarLightSystem {
     /**
      * 从gallery数据生成圆柱体位置配置
      * @param {Array} galleryData - Gallery图片数据数组

@@ -5,10 +5,10 @@ import { PointerLockControls } from 'three-stdlib';
 import { useAppStore } from '../../../store/useAppStore';
 import CircularLoadingIndicator from '../../ui/CircularLoadingIndicator';
 import GalleryMobile from './GalleryMobile';
-import RectAreaLightingSystem from '../../lighting/RectAreaLightingSystem';
-import { LightPillar } from './lighting/LightPillar';
+import RectAreaLightingSystem from './lighting/RectAreaLightingSystem.js';
+import { PillarLightSystem } from './lighting/PillarLightSystem.js';
 import { GalleryTextureManager } from './utils/GalleryTextureManager.js';
-import { IESSpotlightSystem } from '../../lighting/IESSpotlightSystem';
+import { IESSpotlightSystem } from './lighting/IESSpotlightSystem.js';
 import textureSystem from '../../../utils/texture';
 
 /**
@@ -105,7 +105,7 @@ const GallerySection = ({ language = 'en' }) => {
     const cameraSpotlightRef = useRef(null); // Camera-mounted smart spotlight
     const paintingMeshesRef = useRef([]); // Painting meshes for collision detection
     const rectAreaLightingRef = useRef(null); // RectAreaLighting system reference
-    const lightPillarRef = useRef(null); // Light pillar system reference
+    const pillarLightRef = useRef(null); // Light pillar system reference
     const iesSpotlightSystemRef = useRef(null); // IES spotlight system reference
     const galleryTextureManagerRef = useRef(null); // Gallery texture manager reference
     
@@ -1604,8 +1604,8 @@ const GallerySection = ({ language = 'en' }) => {
                         };
                         
                         // 创建光柱系统实例并传递gallery数据用于纹理分配
-                        lightPillarRef.current = new LightPillar(scene, cubeConfig, galleryData);
-                        await lightPillarRef.current.init();
+                        pillarLightRef.current = new PillarLightSystem(scene, cubeConfig, galleryData);
+                        await pillarLightRef.current.init();
                         
                         console.log('光柱系统初始化成功');
                     } catch (error) {
@@ -1692,9 +1692,9 @@ const GallerySection = ({ language = 'en' }) => {
             }
             
             // 清理光柱系统
-            if (lightPillarRef.current) {
-                lightPillarRef.current.dispose();
-                lightPillarRef.current = null;
+            if (pillarLightRef.current) {
+                pillarLightRef.current.dispose();
+                pillarLightRef.current = null;
             }
             
             // 清理IES聚光灯系统
