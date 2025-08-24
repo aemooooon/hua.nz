@@ -12,15 +12,9 @@
  * @module TextureSystem
  */
 
-// 原有系统（保持兼容性）
-export { FormatDetector, formatDetector } from './FormatDetector.js';
-export { TextureLoader, textureLoader } from './TextureLoader.js';
-export { TextureManager, textureManager } from './TextureManager.js';
+// 纯动态导入版本 - 避免静态和动态导入混用警告
 
-// 新版统一系统
-export { TextureSystem, textureSystem } from './TextureSystem.js';
-
-// 默认导出 - 智能选择
+// 默认导出 - 统一API入口
 const textureSystemAPI = {
     // === 传统API (保持兼容) ===
     async getBestFormat() {
@@ -134,6 +128,27 @@ const textureSystemAPI = {
             return textureLoader.getOptimalPath(name);
         }
     }
+};
+
+// 导出各个模块的动态加载器，保持向后兼容
+export const getFormatDetector = async () => {
+    const { formatDetector } = await import('./FormatDetector.js');
+    return formatDetector;
+};
+
+export const getTextureLoader = async () => {
+    const { textureLoader } = await import('./TextureLoader.js');
+    return textureLoader;
+};
+
+export const getTextureManager = async () => {
+    const { textureManager } = await import('./TextureManager.js');
+    return textureManager;
+};
+
+export const getTextureSystem = async () => {
+    const { textureSystem } = await import('./TextureSystem.js');
+    return textureSystem;
 };
 
 export default textureSystemAPI;

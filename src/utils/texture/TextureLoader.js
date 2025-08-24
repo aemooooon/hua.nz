@@ -5,7 +5,6 @@
  */
 
 import * as THREE from 'three';
-import { formatDetector } from './FormatDetector.js';
 
 export class TextureLoader {
     constructor(options = {}) {
@@ -52,6 +51,7 @@ export class TextureLoader {
             };
         }
         
+        const { formatDetector } = await import('./FormatDetector.js');
         const format = await formatDetector.getBestFormat();
         console.log(`📋 检测到的最佳格式: ${format.toUpperCase()}`);
         

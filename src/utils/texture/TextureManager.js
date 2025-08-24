@@ -5,12 +5,11 @@
  */
 
 import * as THREE from 'three';
-import { TextureLoader } from './TextureLoader.js';
-import { formatDetector } from './FormatDetector.js';
 
 export class TextureManager {
     constructor(options = {}) {
-        this.textureLoader = new TextureLoader(options);
+        this.options = options;
+        this.textureLoader = null; // 延迟初始化
         this.preloadQueue = new Map();
         this.loadingQueue = [];
         this.memoryThreshold = options.memoryThreshold || 256; // MB
@@ -28,6 +27,17 @@ export class TextureManager {
 
         // 绑定内存监控
         this._setupMemoryMonitoring();
+    }
+
+    /**
+     * 延迟初始化TextureLoader
+     */
+    async _ensureTextureLoader() {
+        if (!this.textureLoader) {
+            const { TextureLoader } = await import('./TextureLoader.js');
+            this.textureLoader = new TextureLoader(this.options);
+        }
+        return this.textureLoader;
     }
 
     /**
@@ -70,7 +80,8 @@ export class TextureManager {
         }
 
         // 立即预加载
-        return this.textureLoader.preloadTextures(textures, { timeout });
+        const textureLoader = await this._ensureTextureLoader();
+        return textureLoader.preloadTextures(textures, { timeout });
     }
 
     /**
@@ -142,7 +153,8 @@ export class TextureManager {
         const { textureName, resolve, reject } = request;
 
         try {
-            const texture = await this.textureLoader.loadTexture(textureName);
+            const textureLoader = await this._ensureTextureLoader();
+            const texture = await textureLoader.loadTexture(textureName);
             resolve(texture);
         } catch (error) {
             reject(error);
@@ -162,6 +174,7 @@ export class TextureManager {
         console.log(`🎯 开始加载Cube纹理集合: ${textureNames.length}个`);
         
         // 显示格式信息
+        const { formatDetector } = await import('./FormatDetector.js');
         const compressionInfo = await formatDetector.getCompressionInfo();
         console.log(`📊 使用格式: ${compressionInfo.format} (节省: ${compressionInfo.savings}%)`);
 
@@ -271,6 +284,8 @@ export class TextureManager {
      * 检查内存使用情况
      */
     async _checkMemoryUsage() {
+        if (!this.textureLoader) return; // 如果还没初始化，跳过检查
+        
         const stats = this.textureLoader.getCacheStats();
         
         if (stats.memory.mb > this.memoryThreshold) {
@@ -305,7 +320,12 @@ export class TextureManager {
      * 获取性能统计
      */
     getPerformanceStats() {
-        const cacheStats = this.textureLoader.getCacheStats();
+        const cacheStats = this.textureLoader ? this.textureLoader.getCacheStats() : {
+            size: 0,
+            hits: 0,
+            misses: 0,
+            memory: { mb: 0, formatted: '0 MB' }
+        };
         
         return {
             ...this.stats,
@@ -341,7 +361,9 @@ export class TextureManager {
      * 销毁管理器
      */
     dispose() {
-        this.textureLoader.clearCache();
+        if (this.textureLoader) {
+            this.textureLoader.clearCache();
+        }
         this.preloadQueue.clear();
         this.loadingQueue.length = 0;
         this.resetStats();

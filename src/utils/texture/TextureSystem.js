@@ -27,7 +27,6 @@
  */
 
 import * as THREE from 'three';
-import { formatDetector } from './FormatDetector.js';
 
 /**
  * 统一纹理管理系统
@@ -93,6 +92,7 @@ export class TextureSystem {
         }
 
         // 确保格式检测完成
+        const { formatDetector } = await import('./FormatDetector.js');
         await formatDetector.initializationPromise;
         
         // 创建场景管理器
@@ -113,6 +113,7 @@ export class TextureSystem {
             return `/${folder}/${name}`;
         }
         
+        const { formatDetector } = await import('./FormatDetector.js');
         const format = await formatDetector.getBestFormat();
         const fileName = name.replace(/\.(jpg|jpeg|png|webp|avif)$/i, '');
         
@@ -335,6 +336,7 @@ class SceneTextureManager {
                 const basePath = folder || this.config.basePath.replace('/', '');
                 
                 // 使用格式检测器直接获取最优路径
+                const { formatDetector } = await import('./FormatDetector.js');
                 const format = await formatDetector.getBestFormat();
                 const fileName = name.replace(/\.(jpg|jpeg|png|webp|avif)$/i, '');
                 

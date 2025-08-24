@@ -5,7 +5,7 @@
  */
 
 import * as THREE from 'three';
-import textureSystem from '../../../../utils/texture';
+import textureSystemAPI from '../../../../utils/texture/index.js';
 
 export class PillarLightSystem {
     /**
@@ -520,12 +520,12 @@ export class PillarLightSystem {
             console.log(`🖼️ 使用textureSystem加载Gallery纹理: ${baseName}`);
             
             // 首先检查格式支持情况
-            const compressionInfo = await textureSystem.getCompressionInfo();
+            const compressionInfo = await textureSystemAPI.getCompressionInfo();
             console.log(`🎯 当前浏览器支持格式: ${compressionInfo.format} (${compressionInfo.description})`);
             
             // 使用textureSystem自动处理格式优先级和目录结构
             // textureSystem会在gallery/, gallery-avif/, gallery-webp/目录中查找对应文件
-            const texture = await textureSystem.loadTexture(baseName);
+            const texture = await textureSystemAPI.loadTexture(baseName);
             
             console.log(`✅ Gallery纹理加载成功: ${baseName}`);
             return texture;
