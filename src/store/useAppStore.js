@@ -138,6 +138,7 @@ const contentConfig = {
       liveDemo: "Live Demo",
       officialSite: "Official",
       githubRepo: "GitHub",
+      learnMore: "Learn more",
       // 项目详情相关文本
       detail: {
         technologyStack: "Technology Stack",
@@ -148,13 +149,19 @@ const contentConfig = {
       },
       // 项目过滤相关文本
       filter: {
-        allProjects: "All Projects"
+        allProjects: "All Projects",
+        all: "All",
+        other: "Other"
       },
       // 地图相关文本
       map: {
         resetToDefaultView: "Reset to default view",
         closeMap: "Close map",
-        title: "Project Geo Distribution"
+        title: "Project Geo Distribution",
+        zoomIn: "Zoom in",
+        zoomOut: "Zoom out",
+        locateMe: "Locate me",
+        categories: "Categories"
       }
     },
     gallery: {
@@ -519,6 +526,7 @@ const contentConfig = {
       liveDemo: "在线演示",
       officialSite: "官方",
       githubRepo: "源码",
+      learnMore: "了解更多",
       // 项目详情相关文本
       detail: {
         technologyStack: "技术栈",
@@ -529,13 +537,19 @@ const contentConfig = {
       },
       // 项目过滤相关文本
       filter: {
-        allProjects: "全部项目"
+        allProjects: "全部项目",
+        all: "全部",
+        other: "其他"
       },
       // 地图相关文本
       map: {
         resetToDefaultView: "重置到默认视图",
         closeMap: "关闭地图",
-        title: "项目地理分布"
+        title: "项目地理分布",
+        zoomIn: "放大",
+        zoomOut: "缩小",
+        locateMe: "定位我的位置",
+        categories: "项目类别"
       }
     },
     gallery: {

@@ -41,7 +41,7 @@ const ProjectSection = ({ language }) => {
             });
         } else {
             // 兼容原有的 type 字段
-            const category = project.type || 'Other';
+            const category = project.type || projectText.filter.other;
             if (!acc[category]) acc[category] = [];
             acc[category].push(project);
         }
@@ -188,7 +188,7 @@ const ProjectSection = ({ language }) => {
                                 className={`category-filter-btn ${activeFilter === 'all' ? 'active' : ''} bg-theme-bg-white-10 text-theme-text-white-90 border-theme-text-white-50 hover:border-theme-text-white-70`}
                                 onClick={() => setActiveFilter('all')}
                             >
-                                All
+                                {projectText.filter.all}
                             </button>
                             
                             {/* 各个分类按钮 */}
@@ -246,7 +246,7 @@ const ProjectSection = ({ language }) => {
                                 <div className="project-category-badge">
                                     {project.tags && Array.isArray(project.tags) 
                                         ? project.tags.join(', ') 
-                                        : (project.type || 'Other')
+                                        : (project.type || projectText.filter.other)
                                     }
                                 </div>
                                 {/* 年份标签 - 右上角 */}

@@ -252,7 +252,7 @@ const ProjectGeoViewer = ({ isOpen, onClose, language = 'en' }) => {
         
         container.innerHTML = `
           <div class="control-group">
-            <button class="control-btn zoom-in" title="${language === 'en' ? 'Zoom in' : '放大'}">
+            <button class="control-btn zoom-in" title="${projectText.map.zoomIn}">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <circle cx="11" cy="11" r="8"></circle>
                 <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
@@ -260,7 +260,7 @@ const ProjectGeoViewer = ({ isOpen, onClose, language = 'en' }) => {
                 <line x1="8" y1="11" x2="14" y2="11"></line>
               </svg>
             </button>
-            <button class="control-btn zoom-out" title="${language === 'en' ? 'Zoom out' : '缩小'}">
+            <button class="control-btn zoom-out" title="${projectText.map.zoomOut}">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <circle cx="11" cy="11" r="8"></circle>
                 <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
@@ -275,7 +275,7 @@ const ProjectGeoViewer = ({ isOpen, onClose, language = 'en' }) => {
                 <path d="M3 21v-5h5"></path>
               </svg>
             </button>
-            <button class="control-btn locate-user" title="${language === 'en' ? 'Locate me' : '定位我的位置'}">
+            <button class="control-btn locate-user" title="${projectText.map.locateMe}">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <polygon points="3 11 22 2 13 21 11 13 3 11"></polygon>
               </svg>
@@ -377,7 +377,7 @@ const ProjectGeoViewer = ({ isOpen, onClose, language = 'en' }) => {
     customControl.addTo(mapInstanceRef.current);
     customControlsRef.current = customControl;
 
-  }, [language, projects, calculateCentroid, projectText.map.resetToDefaultView]);
+  }, [projects, calculateCentroid, projectText.map.resetToDefaultView, projectText.map.zoomIn, projectText.map.zoomOut, projectText.map.locateMe]);
 
   // 创建项目弹窗内容（深色主题）
   const createPopupContent = useCallback((project) => {
@@ -447,7 +447,7 @@ const ProjectGeoViewer = ({ isOpen, onClose, language = 'en' }) => {
                 border: 1px solid ${themeColors.primary}40;
                 transition: all 0.3s ease;
               " onmouseover="this.style.background='${themeColors.primary}30'; this.style.borderColor='${themeColors.primary}60';" onmouseout="this.style.background='linear-gradient(45deg, ${themeColors.primary}20, transparent)'; this.style.borderColor='${themeColors.primary}40';">
-                ${language === 'en' ? 'Learn more' : '了解更多'}
+                ${language === 'en' ? projectText.learnMore : projectText.learnMore}
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-left: 6px;">
                   <path d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
@@ -457,7 +457,7 @@ const ProjectGeoViewer = ({ isOpen, onClose, language = 'en' }) => {
         </div>
       </div>
     `;
-  }, [getBilingualText, themeColors, language]);
+  }, [getBilingualText, themeColors, language, projectText.learnMore]);
 
   useEffect(() => {
     if (isOpen && mapRef.current && !mapInstanceRef.current) {
@@ -845,7 +845,7 @@ const ProjectGeoViewer = ({ isOpen, onClose, language = 'en' }) => {
         {/* 图例 - 使用地图高对比度样式 */}
         <div className="absolute bottom-4 right-4 map-legend-panel">
           <h4 className="text-sm font-semibold mb-2">
-            {language === 'en' ? 'Categories' : '项目类别'}
+            {projectText.map.categories}
           </h4>
           <div className="space-y-1">
             {Object.entries(typeColors).map(([type, color]) => (
