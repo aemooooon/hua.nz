@@ -20,6 +20,7 @@ import textureSystem from '../../../utils/texture';
 
 const GalleryMobile = ({ language = 'zh' }) => {
   const galleryData = useAppStore((state) => state.getAllGalleryItems());
+  const texts = useAppStore((state) => state.texts);
   const { openPhotoSwipe } = usePhotoSwipe();
   const containerRef = useRef(null);
   const [optimizedImages, setOptimizedImages] = useState(new Map());
@@ -207,16 +208,18 @@ const GalleryMobile = ({ language = 'zh' }) => {
         {/* 标题部分 */}
         <div className="text-center mb-8 px-4">
           <h2 className="text-3xl md:text-4xl font-bold text-theme-text-primary mb-4">
-            {language === 'zh' ? '作品集' : 'Gallery'}
+            {texts[language]?.gallery?.mobile?.title || (language === 'zh' ? '作品集' : 'Gallery')}
           </h2>
           <p className="text-theme-text-secondary max-w-2xl mx-auto leading-relaxed">
-            {language === 'zh' 
-              ? '记录生活中的美好瞬间，每一张照片都承载着独特的故事与回忆。'
-              : 'Capturing beautiful moments in life, each photo carries unique stories and memories.'
+            {texts[language]?.gallery?.mobile?.subtitle || 
+              (language === 'zh' 
+                ? '记录生活中的美好瞬间，每一张照片都承载着独特的故事与回忆。'
+                : 'Capturing beautiful moments in life, each photo carries unique stories and memories.'
+              )
             }
           </p>
           <p className="text-theme-text-secondary/60 text-sm mt-2">
-            {language === 'zh' ? '点击图片查看大图' : 'Tap images to view full size'}
+            {texts[language]?.gallery?.mobile?.tapHint || (language === 'zh' ? '点击图片查看大图' : 'Tap images to view full size')}
           </p>
         </div>
 
@@ -273,14 +276,11 @@ const GalleryMobile = ({ language = 'zh' }) => {
               <div className="inline-flex items-center justify-center space-x-2 text-theme-text-secondary">
                 <div className="w-4 h-4 border-2 border-theme-text-secondary/30 border-t-theme-text-secondary rounded-full animate-spin"></div>
                 <span className="text-sm">
-                  {language === 'zh' ? '加载更多图片...' : 'Loading more images...'}
+                  {texts[language]?.gallery?.mobile?.loadingMore || (language === 'zh' ? '加载更多图片...' : 'Loading more images...')}
                 </span>
               </div>
               <div className="text-xs text-theme-text-secondary/60 mt-2">
-                {language === 'zh' 
-                  ? `已显示 ${visibleCount} / ${safeGalleryData.length} 张图片` 
-                  : `Showing ${visibleCount} / ${safeGalleryData.length} images`
-                }
+                {texts[language]?.gallery?.mobile?.showing || (language === 'zh' ? '已显示' : 'Showing')} {visibleCount} / {safeGalleryData.length} {texts[language]?.gallery?.mobile?.images || (language === 'zh' ? '张图片' : 'images')}
               </div>
             </div>
           )}
@@ -294,10 +294,10 @@ const GalleryMobile = ({ language = 'zh' }) => {
                 </svg>
               </div>
               <div className="text-theme-text-secondary text-lg mb-2">
-                {language === 'zh' ? '暂无图片内容' : 'No gallery items available'}
+                {texts[language]?.gallery?.mobile?.noContent || (language === 'zh' ? '暂无图片内容' : 'No gallery items available')}
               </div>
               <div className="text-theme-text-secondary/60 text-sm">
-                {language === 'zh' ? '请稍后再试' : 'Please try again later'}
+                {texts[language]?.gallery?.mobile?.tryAgain || (language === 'zh' ? '请稍后再试' : 'Please try again later')}
               </div>
             </div>
           )}
@@ -306,10 +306,7 @@ const GalleryMobile = ({ language = 'zh' }) => {
           {galleryItems.length > 0 && (
             <div className="text-center mt-8 pb-16 mb-8">
               <p className="text-theme-text-secondary/60 text-sm">
-                {language === 'zh' 
-                  ? `共 ${galleryItems.length} 张图片 • 点击查看大图` 
-                  : `${galleryItems.length} images • Tap to view full size`
-                }
+                {`${galleryItems.length} ${texts[language]?.gallery?.mobile?.images || (language === 'zh' ? '张图片' : 'images')} • ${texts[language]?.gallery?.mobile?.tapToView || (language === 'zh' ? '点击查看大图' : 'Tap to view full size')}`}
               </p>
               
               {/* 额外的安全距离，确保用户有足够时间完整浏览内容 */}

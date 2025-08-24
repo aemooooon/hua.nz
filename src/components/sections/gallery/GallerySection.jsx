@@ -2220,12 +2220,14 @@ const GallerySection = ({ language = 'en' }) => {
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.732-.833-2.464 0L4.35 16.5c-.77.833.192 2.5 1.732 2.5z" />
                             </svg>
                             <h3 className="text-2xl font-bold text-white mb-2">
-                                {language === 'zh' ? '移动端体验提示' : 'Mobile Experience Notice'}
+                                {texts[language]?.gallery?.mobile?.mobileNotice?.title || (language === 'zh' ? '移动端体验提示' : 'Mobile Experience Notice')}
                             </h3>
                             <p className="text-white/80 leading-relaxed">
-                                {language === 'zh' 
-                                    ? '3D 画廊采用第一人称漫游技术，需要键盘和鼠标操作，移动端体验可能不佳。建议使用桌面设备以获得最佳浏览效果。'
-                                    : 'The 3D gallery uses first-person navigation technology requiring keyboard and mouse controls. For the best experience, Hua recommend using a desktop device.'
+                                {texts[language]?.gallery?.mobile?.mobileNotice?.description || 
+                                    (language === 'zh' 
+                                        ? '3D 画廊采用第一人称漫游技术，需要键盘和鼠标操作，移动端体验可能不佳。建议使用桌面设备以获得最佳浏览效果。'
+                                        : 'The 3D gallery uses first-person navigation technology requiring keyboard and mouse controls. For the best experience, Hua recommend using a desktop device.'
+                                    )
                                 }
                             </p>
                         </div>
@@ -2238,13 +2240,15 @@ const GallerySection = ({ language = 'en' }) => {
                                 }}
                                 className="w-full bg-theme-primary/20 hover:bg-theme-primary/30 text-theme-primary border border-theme-primary/30 hover:border-theme-primary/50 py-3 px-6 rounded-lg transition-all duration-300"
                             >
-                                {language === 'zh' ? '继续浏览图片集' : 'View Image Gallery'}
+                                {texts[language]?.gallery?.mobile?.mobileNotice?.viewGallery || (language === 'zh' ? '继续浏览图片集' : 'View Image Gallery')}
                             </button>
                             
                             <p className="text-white/60 text-sm">
-                                {language === 'zh' 
-                                    ? '或在桌面设备上体验完整的 3D 画廊'
-                                    : 'Or visit on desktop for the full 3D gallery experience'
+                                {texts[language]?.gallery?.mobile?.mobileNotice?.desktopHint || 
+                                    (language === 'zh' 
+                                        ? '或在桌面设备上体验完整的 3D 画廊'
+                                        : 'Or visit on desktop for the full 3D gallery experience'
+                                    )
                                 }
                             </p>
                         </div>
@@ -2254,7 +2258,7 @@ const GallerySection = ({ language = 'en' }) => {
 
             {/* 移动端图片画廊 */}
             {isMobile && showMobileGallery && (
-                <GalleryMobile language={language} texts={texts} />
+                <GalleryMobile language={language} />
             )}
 
             {/* 桌面端3D画廊 */}
@@ -2288,14 +2292,14 @@ const GallerySection = ({ language = 'en' }) => {
                             : 'opacity-0 translate-y-4 pointer-events-none'
                     }`}>
                         <p className="text-lg font-medium mb-3">
-                            {language === 'zh' ? '如何操作？' : 'How to Play?'}
+                            {texts[language]?.gallery?.gallery3D?.instructions?.howToPlay || (language === 'zh' ? '如何操作？' : 'How to Play?')}
                         </p>
                         <div className="space-y-3 text-sm">
                             <p className="flex items-center">
-                                <span className="w-2"></span>{language === 'zh' ? '点击进入长廊' : 'Click to enter the gallery'}
+                                <span className="w-2"></span>{texts[language]?.gallery?.gallery3D?.instructions?.clickToEnter || (language === 'zh' ? '点击进入长廊' : 'Click to enter the gallery')}
                             </p>
                             <p className="flex items-center">
-                                <span className="w-2"></span>{language === 'zh' ? '鼠标 - 环视周围，探索画作' : 'Mouse - Look around and explore'}
+                                <span className="w-2"></span>{texts[language]?.gallery?.gallery3D?.instructions?.mouseControl || (language === 'zh' ? '鼠标 - 环视周围，探索画作' : 'Mouse - Look around and explore')}
                             </p>
                             <p className="flex items-center">
                                 <span className="w-2"></span>
@@ -2305,12 +2309,12 @@ const GallerySection = ({ language = 'en' }) => {
                                     <span className="inline-flex items-center px-1.5 py-0.5 bg-white/20 rounded text-xs font-mono border border-white/30">S</span>
                                     <span className="inline-flex items-center px-1.5 py-0.5 bg-white/20 rounded text-xs font-mono border border-white/30">D</span>
                                 </span>
-                                <span>{language === 'zh' ? '移动穿行长廊' : 'Move through the gallery'}</span>
+                                <span>{texts[language]?.gallery?.gallery3D?.instructions?.keyboardControl || (language === 'zh' ? '移动穿行长廊' : 'Move through the gallery')}</span>
                             </p>
                             <p className="flex items-center">
                                 <span className="w-2"></span>
                                 <span className="inline-flex items-center px-2 py-0.5 mr-2 bg-white/20 rounded text-xs font-mono border border-white/30">ESC</span>
-                                <span>{language === 'zh' ? '退出指针锁定模式' : 'Exit pointer lock mode'}</span>
+                                <span>{texts[language]?.gallery?.gallery3D?.instructions?.escapeControl || (language === 'zh' ? '退出指针锁定模式' : 'Exit pointer lock mode')}</span>
                             </p>
                         </div>
                     </div>

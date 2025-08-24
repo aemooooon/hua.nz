@@ -162,6 +162,24 @@ const contentConfig = {
       subtitle: "Visual journey through my work and experiences",
       description: "A curated collection of visual projects and creative works.",
       viewImage: "View Image",
+      // 移动端画廊配置
+      mobile: {
+        title: "Gallery",
+        subtitle: "Each photo carries unique stories.",
+        tapHint: "Tap images to view full size",
+        loadingMore: "Loading more...",
+        showing: "Showing",
+        images: "images",
+        tapToView: "Tap to view full size",
+        noContent: "No gallery items available",
+        tryAgain: "Please try again later",
+        mobileNotice: {
+          title: "Mobile Experience Notice",
+          description: "The 3D gallery uses first-person navigation technology requiring keyboard and mouse controls. For the best experience, we recommend using a desktop device.",
+          viewGallery: "View Image Gallery",
+          desktopHint: "Or visit on desktop for the full 3D gallery experience"
+        }
+      },
       // 3D Gallery 配置
       gallery3D: {
         title: "Corridor of Light and Shadow",
@@ -169,6 +187,11 @@ const contentConfig = {
         description: "Enter a professionally curated virtual gallery space showcasing visual works in an interactive 3D environment.",
         instructions: {
           clickToStart: "Click to enter the gallery",
+          howToPlay: "How to Play?",
+          clickToEnter: "Click to enter the gallery",
+          mouseControl: "Mouse - Look around and explore",
+          keyboardControl: "Move through the gallery",
+          escapeControl: "Exit pointer lock mode",
           navigation: {
             movement: "Movement Navigation",
             wasd: "WASD / Arrow Keys - Move through the gallery",
@@ -362,7 +385,7 @@ const contentConfig = {
       description: "Get in touch for opportunities, collaborations, or just to say hello.",
       location: "Christchurch, New Zealand",
       emailAddress: "aemooooon@gmail.com",
-      phone: "+64 21 037 0520",
+      phone: "+64 21 *** 0520",
       connectWithMe: "Connect with me",
       lookingForward: "Copyright © 2025 Hua Wang",
       contactMethods: {
@@ -481,10 +504,10 @@ const contentConfig = {
       ]
     },
     projects: {
-      title: "项目集锦",
-      subtitle: "Showcases",
+      title: "累岁所成",
+      subtitle: "列艺斯观",
       bottomSubtitle: "每个项目都代表着独特的挑战和学习之旅",
-      description: "从全栈Web开发到3D沉浸式体验，从计算机科学，计算机图形学，到数据科学 — 探索多样的技术与解决方案。语言无关，平台独立，框架灵活。",
+      description: "从全栈Web开发到3D沉浸式体验，从计算机科学，图形学，到数据科学 — 探索多样的技术与解决方案。",
       viewProject: "查看项目",
       viewAction: "查看",
       technologies: "技术栈",
@@ -520,6 +543,24 @@ const contentConfig = {
       subtitle: "通过视觉展示我的工作和经历",
       description: "精心策划的视觉项目和创意作品集合。",
       viewImage: "查看图片",
+      // 移动端画廊配置
+      mobile: {
+        title: "作品集",
+        subtitle: "记录生活中的美好瞬间，每一张照片都承载着独特的故事与回忆。",
+        tapHint: "点击图片查看大图",
+        loadingMore: "加载更多图片...",
+        showing: "已显示",
+        images: "张图片",
+        tapToView: "点击查看大图",
+        noContent: "暂无图片内容",
+        tryAgain: "请稍后再试",
+        mobileNotice: {
+          title: "移动端体验提示",
+          description: "3D 画廊采用第一人称漫游技术，需要键盘和鼠标操作，移动端体验可能不佳。建议使用桌面设备以获得最佳浏览效果。",
+          viewGallery: "继续浏览图片集",
+          desktopHint: "或在桌面设备上体验完整的 3D 画廊"
+        }
+      },
       // 3D Gallery 配置
       gallery3D: {
         title: "浮生长廊",
@@ -527,6 +568,11 @@ const contentConfig = {
         description: "步入专业策展的虚拟画廊空间，在交互式3D环境中欣赏视觉作品。",
         instructions: {
           clickToStart: "点击进入",
+          howToPlay: "如何操作？",
+          clickToEnter: "点击进入长廊",
+          mouseControl: "鼠标 - 环视周围，探索画作",
+          keyboardControl: "移动穿行长廊",
+          escapeControl: "退出指针锁定模式",
           navigation: {
             movement: "移动导航",
             wasd: "WASD / 方向键 - 在画廊中移动",
@@ -715,7 +761,7 @@ const contentConfig = {
       ]
     },
     contact: {
-      title: "青鸟殷勤，共商鸿猷",
+      title: "青鸟殷勤",
       subtitle: "翘盼汝之玉音！",
       description: "倘蒙垂询，或谋事，或叙契，一函可达。",
       location: "新西兰",
@@ -868,7 +914,7 @@ export const useAppStore = create(
             "live": "https://www.hua.nz/",
             "github": "https://github.com/aemooooon/hua.nz"
           },
-          "img": ["/hua.nz/hua.nz.1.jpg", "/hua.nz/hua.nz.2.jpg", "/hua.nz/hua.nz.3.jpg", "/hua.nz/hua.nz.4.jpg", "/hua.nz/hua.nz.5.jpg", "/hua.nz/hua.nz.6.jpg", "/hua.nz/hua.nz.7.jpg", "/hua.nz/hua.nz.8.jpg", "/hua.nz/hua.nz.9.jpg"]
+          "img": ["/hua.nz/hua.nz.1.jpg", "/hua.nz/hua.nz.2.jpg", "/hua.nz/hua.nz.3.jpg", "/hua.nz/hua.nz.4.jpg", "/hua.nz/hua.nz.5.jpg", "/hua.nz/hua.nz.6.jpg", "/hua.nz/hua.nz.7.jpg", "/hua.nz/hua.nz.8.jpg", "/hua.nz/hua.nz.9.jpg", "/hua.nz/hua.nz.10.jpg"]
         },
         {
           "type": "Full Stack",
