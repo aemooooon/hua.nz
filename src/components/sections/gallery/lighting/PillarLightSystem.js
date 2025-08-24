@@ -10,10 +10,9 @@ import textureSystem from '../../../../utils/texture';
 export class PillarLightSystem {
     /**
      * 从gallery数据生成圆柱体位置配置
-     * @param {Array} galleryData - Gallery图片数据数组
      * @returns {Array} 位置配置数组
      */
-    generatePositionsFromGallery(galleryData) {
+    generatePositionsFromGallery() {
         // 暂时不使用动态生成，使用原来的固定配置
         return null; // 返回null使用默认配置
     }
@@ -74,18 +73,18 @@ export class PillarLightSystem {
             
             // 位置配置 - 恢复原来的简单配置
             positions: [
-                // lightbox前左侧圆柱：32米墙的1/3位置 (-32/3 ≈ -10.67米)
+                // lightbox前左侧圆柱：向房间中心移动6米 (z: 24 -> 18)
                 { 
                     x: -5, 
-                    z: 24, 
+                    z: 18, 
                     color: 0x00ffff,  // nz-blue主题色（原青色，现在给左侧柱子）
                     textureBaseName: null   // 无贴图
                 },
                 
-                // lightbox前右侧圆柱：32米墙的2/3位置 (32/3 ≈ 10.67米)
+                // lightbox前右侧圆柱：向房间中心移动6米 (z: 24 -> 18)
                 { 
                     x: 5, 
-                    z: 24, 
+                    z: 18, 
                     color: 0xff0040,  // 鲜红色（原红色，现在给右侧柱子）
                     textureBaseName: null   // 无贴图
                 },

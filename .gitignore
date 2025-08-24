@@ -25,3 +25,6 @@ dist-ssr
 *.sw?
 
 /3D-art-gallery-threejs
+
+# Build-generated files
+public/precomputed-dimensions.json

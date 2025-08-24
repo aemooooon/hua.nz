@@ -6,6 +6,7 @@
  * 主要特性：
  * - 统一API，支持所有场景 (Hero Cube, Gallery, Lightbox)
  * - 智能格式检测 (AVIF > WebP > JPEG)
+ * - 自动视频文件识别和跳过处理
  * - 场景专用优化器和配置
  * - 完善的错误处理和降级机制
  * - 高效的内存管理和缓存策略
@@ -18,7 +19,7 @@
  * });
  * 
  * @example
- * // Gallery场景
+ * // Gallery场景 - 自动过滤视频文件
  * const galleryTextures = await textureSystem.loadSceneTextures('gallery', {
  *   images: ['painting-1', 'painting-2'],
  *   folder: 'gallery'
@@ -104,9 +105,14 @@ export class TextureSystem {
     }
 
     /**
-     * 获取最优路径 - 支持自定义文件夹
+     * 获取最优路径 - 支持自定义文件夹，自动跳过视频文件
      */
     async getOptimalPath(name, folder = 'cube-textures') {
+        // 检查是否是视频文件，直接返回原路径
+        if (name && name.match(/\.(mp4|webm|mov|avi|mkv)$/i)) {
+            return `/${folder}/${name}`;
+        }
+        
         const format = await formatDetector.getBestFormat();
         const fileName = name.replace(/\.(jpg|jpeg|png|webp|avif)$/i, '');
         

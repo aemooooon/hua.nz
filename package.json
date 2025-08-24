@@ -6,10 +6,11 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "npm run precompute && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "deploy": "gh-pages -d dist --add"
+    "deploy": "gh-pages -d dist --add",
+    "precompute": "node scripts/precompute-image-dimensions.js"
   },
   "dependencies": {
     "d3": "^7.9.0",

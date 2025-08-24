@@ -38,10 +38,19 @@ export class TextureLoader {
     }
 
     /**
-     * 获取最优的文件路径
+     * 获取最优的文件路径，自动跳过视频文件
      */
     async getOptimalPath(baseName, baseDirectory = 'cube-textures') {
         console.log(`🔍 开始为 ${baseName} 获取最优路径...`);
+        
+        // 检查是否是视频文件，直接返回原路径
+        if (baseName && baseName.match(/\.(mp4|webm|mov|avi|mkv)$/i)) {
+            return {
+                primary: `${baseDirectory}/${baseName}`,
+                fallback: `${baseDirectory}/${baseName}`,
+                format: 'video'
+            };
+        }
         
         const format = await formatDetector.getBestFormat();
         console.log(`📋 检测到的最佳格式: ${format.toUpperCase()}`);

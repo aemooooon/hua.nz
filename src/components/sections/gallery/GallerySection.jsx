@@ -397,35 +397,58 @@ const GallerySection = ({ language = 'en' }) => {
             // 下层画作高度：1.6米，上层画作高度：1.6 + 1.6 = 3.2米
             // 最佳观看高度：(1.6 + 3.2) / 2 = 2.4米
 
-            // 首先分析所有图片的长宽比，为智能分配做准备
+            // 📊 分析图片尺寸 - 优先使用预计算数据，降级到动态检测
             const analyzeImageDimensions = async () => {
                 const imageAnalysis = [];
                 for (let i = 0; i < Math.min(galleryData.length, maxPaintings); i++) {
                     const item = galleryData[i];
                     if (item.src || item.thumbnail) {
                         try {
-                            const dimensions = await getImageDimensions(item.src || item.thumbnail);
-                            const aspectRatio = dimensions.width / dimensions.height;
+                            let aspectRatio, dimensions;
+                            
+                            // 🚀 优先使用预计算的尺寸和宽高比
+                            if (item.aspectRatio && item.dimensions) {
+                                aspectRatio = item.aspectRatio;
+                                dimensions = item.dimensions;
+                                console.log(`✅ 使用预计算尺寸: ${item.id} - ${dimensions.width}x${dimensions.height} (${aspectRatio.toFixed(2)})`);
+                            } else {
+                                // 🔄 降级到动态尺寸检测
+                                console.log(`⚠️ 缺少预计算尺寸，动态检测: ${item.id}`);
+                                dimensions = await getImageDimensions(item.src || item.thumbnail);
+                                aspectRatio = dimensions.width / dimensions.height;
+                            }
+                            
                             imageAnalysis.push({
                                 index: i,
                                 item: item,
                                 aspectRatio: aspectRatio,
                                 isPortrait: aspectRatio < 0.8, // 竖版图片
                                 isLandscape: aspectRatio > 1.3,
-                                isSquare: aspectRatio >= 0.8 && aspectRatio <= 1.3
+                                isSquare: aspectRatio >= 0.8 && aspectRatio <= 1.3,
+                                dimensions: dimensions,
+                                isPrecomputed: !!(item.aspectRatio && item.dimensions)
                             });
-                        } catch {
+                        } catch (error) {
+                            console.warn(`❌ 图片尺寸分析失败: ${item.id}`, error);
                             imageAnalysis.push({
                                 index: i,
                                 item: item,
                                 aspectRatio: 1.0,
                                 isPortrait: false,
                                 isLandscape: false,
-                                isSquare: true
+                                isSquare: true,
+                                dimensions: { width: 300, height: 200 },
+                                isPrecomputed: false
                             });
                         }
                     }
                 }
+                
+                // 📊 统计预计算使用情况
+                const precomputedCount = imageAnalysis.filter(item => item.isPrecomputed).length;
+                const totalCount = imageAnalysis.length;
+                console.log(`📊 尺寸分析完成: ${precomputedCount}/${totalCount} 使用预计算数据 (${Math.round(precomputedCount/totalCount*100)}%)`);
+                
                 return imageAnalysis;
             };
 
@@ -757,18 +780,47 @@ const GallerySection = ({ language = 'en' }) => {
             };
             
             // 创建一个函数来异步获取图片尺寸
-            const getImageDimensions = (src) => {
-                return new Promise((resolve) => {
-                    const img = new Image();
-                    img.onload = () => {
-                        resolve({ width: img.width, height: img.height });
-                    };
-                    img.onerror = () => {
-                        // 如果加载失败，返回默认比例
-                        resolve({ width: 300, height: 200 });
-                    };
-                    img.src = src;
-                });
+            // 📐 获取图片尺寸 - 使用纹理系统避免重复加载
+            const getImageDimensions = async (originalSrc) => {
+                try {
+                    // 从原始JPG路径提取文件名
+                    const fileName = originalSrc.split('/').pop().replace(/\.(jpg|jpeg|png|webp|avif)$/i, '');
+                    
+                    // 使用纹理系统获取最优格式的路径
+                    const optimalPath = await textureSystem.getOptimalPath(fileName, 'gallery');
+                    
+                    return new Promise((resolve) => {
+                        const img = new Image();
+                        img.onload = () => {
+                            resolve({ width: img.width, height: img.height });
+                        };
+                        img.onerror = () => {
+                            // 如果最优格式失败，尝试原始JPG路径
+                            const fallbackImg = new Image();
+                            fallbackImg.onload = () => {
+                                resolve({ width: fallbackImg.width, height: fallbackImg.height });
+                            };
+                            fallbackImg.onerror = () => {
+                                // 如果都失败，返回默认比例
+                                resolve({ width: 300, height: 200 });
+                            };
+                            fallbackImg.src = originalSrc;
+                        };
+                        img.src = optimalPath;
+                    });
+                } catch {
+                    // 如果纹理系统失败，回退到原始方法
+                    return new Promise((resolve) => {
+                        const img = new Image();
+                        img.onload = () => {
+                            resolve({ width: img.width, height: img.height });
+                        };
+                        img.onerror = () => {
+                            resolve({ width: 300, height: 200 });
+                        };
+                        img.src = originalSrc;
+                    });
+                }
             };
 
             // 🎨 72米墙面精确位置设置函数 - 完美的8画分配
@@ -1036,11 +1088,11 @@ const GallerySection = ({ language = 'en' }) => {
                 return true;
             }
             
-            // 🏛️ 柱子碰撞检测
+            // 🏛️ 柱子碰撞检测 - 更新位置匹配实际柱子坐标
             const pillarPositions = [
-                { x: -32/3, z: 24, radius: 0.5 },      // 左侧绿色柱子
-                { x: 32/3, z: 24, radius: 0.5 },       // 右侧青色柱子  
-                { x: 0, z: -18, radius: 1.618/2 }      // 红色黄金比例柱子
+                { x: -5, z: 18, radius: 0.5 },         // 左侧青色柱子 (移动到房间中心6米)
+                { x: 5, z: 18, radius: 0.5 },          // 右侧红色柱子 (移动到房间中心6米)
+                { x: 0, z: -18, radius: 1.618/2 }      // 绿色黄金比例柱子（后方，保持不变）
             ];
             
             const safetyMargin = 0.5; // 0.5米安全距离

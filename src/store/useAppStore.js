@@ -1477,6 +1477,8 @@ export const useAppStore = create(
           type: 'image',
           src: '/gallery/gallery-vertical-0.jpg',
           thumbnail: '/gallery/gallery-vertical-0.jpg',
+          dimensions: { width: 800, height: 1200 }, // 预计算尺寸
+          aspectRatio: 0.67, // 预计算宽高比 (竖版)
           title: {
             en: 'Featured Showcase',
             zh: '精选展示'
@@ -1497,6 +1499,8 @@ export const useAppStore = create(
           type: 'image',
           src: '/gallery/gallery-vertical-1.jpg',
           thumbnail: '/gallery/gallery-vertical-1.jpg',
+          dimensions: { width: 800, height: 1200 }, // 预计算尺寸
+          aspectRatio: 0.67, // 预计算宽高比 (竖版)
           title: {
             en: 'Portrait Excellence',
             zh: '肖像卓越'
@@ -1559,6 +1563,8 @@ export const useAppStore = create(
           type: 'image',
           src: '/gallery/gallery-vertical-3.jpg',
           thumbnail: '/gallery/gallery-vertical-3.jpg',
+          dimensions: { width: 800, height: 1200 }, // 预计算尺寸
+          aspectRatio: 0.67, // 预计算宽高比 (竖版)
           title: {
             en: 'Visual Harmony',
             zh: '视觉和谐'
@@ -1617,6 +1623,8 @@ export const useAppStore = create(
           type: 'image',
           src: '/gallery/gallery-horizontal-1.jpg',
           thumbnail: '/gallery/gallery-horizontal-1.jpg',
+          dimensions: { width: 1600, height: 900 }, // 预计算尺寸
+          aspectRatio: 1.78, // 预计算宽高比 (横版 16:9)
           title: {
             en: 'Landscape Panorama 1',
             zh: '全景风光 1'
@@ -1638,6 +1646,8 @@ export const useAppStore = create(
           type: 'image',
           src: '/gallery/gallery-horizontal-2.jpg',
           thumbnail: '/gallery/gallery-horizontal-2.jpg',
+          dimensions: { width: 1600, height: 900 }, // 预计算尺寸
+          aspectRatio: 1.78, // 预计算宽高比 (横版 16:9)
           title: {
             en: 'Landscape Panorama 2',
             zh: '全景风光 2'

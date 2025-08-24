@@ -1,30 +1,141 @@
+/**
+ * 移动端Gallery组件
+ * 
+ * 功能特点：
+ * - 九宫格布局展示画廊图片
+ * - 智能图片格式优化 (AVIF > WebP > JPG)
+ * - 自动过滤视频类型，仅显示图片
+ * - 集成PhotoSwipe全屏查看
+ * - 移动设备优化的触控体验
+ * - 响应式设计和安全区域支持
+ * 
+ * @param {string} language - 界面语言 ('zh' | 'en')
+ */
+
 import PropTypes from 'prop-types';
-import { useRef, useMemo } from 'react';
+import { useRef, useMemo, useState, useEffect } from 'react';
 import { useAppStore } from '../../../store/useAppStore';
 import { usePhotoSwipe } from '../../../hooks/usePhotoSwipe';
+import textureSystem from '../../../utils/texture';
 
 const GalleryMobile = ({ language = 'zh' }) => {
   const galleryData = useAppStore((state) => state.getAllGalleryItems());
   const { openPhotoSwipe } = usePhotoSwipe();
   const containerRef = useRef(null);
+  const [optimizedImages, setOptimizedImages] = useState(new Map());
+  const [visibleCount, setVisibleCount] = useState(9); // 初始显示9张
 
-  // 安全检查：确保 galleryData 存在且是数组
-  const safeGalleryData = useMemo(() => 
-    Array.isArray(galleryData) ? galleryData : [], 
-    [galleryData]
-  );
+  // 数据过滤：移动端Gallery只显示图片，过滤掉视频类型
+  const safeGalleryData = useMemo(() => {
+    if (!Array.isArray(galleryData)) return [];
+    
+    // 移动端只显示图片类型的项目
+    return galleryData.filter(item => item.type !== 'video');
+  }, [galleryData]);
 
-  // 转换数据格式以适配PhotoSwipe
-  const galleryItems = safeGalleryData.map((item, index) => ({
-    id: item.id || index,
-    src: item.src,
-    thumbnail: item.thumbnail || item.src,
-    title: item.title || '',
-    description: item.description || ''
-  }));
+  // 获取最优图片路径的函数
+  const getOptimalImageSrc = async (originalSrc) => {
+    try {
+      if (!originalSrc) return originalSrc;
+      
+      // 跳过视频文件，只处理图片文件
+      if (originalSrc.match(/\.(mp4|webm|mov|avi|mkv)$/i)) {
+        return originalSrc;
+      }
+      
+      // 只对图片文件进行格式优化
+      if (!originalSrc.match(/\.(jpg|jpeg|png|webp|avif)$/i)) {
+        return originalSrc;
+      }
+      
+      // 提取文件名并获取最优路径
+      const fileName = originalSrc.split('/').pop().replace(/\.(jpg|jpeg|png|webp|avif)$/i, '');
+      const optimalPath = await textureSystem.getOptimalPath(fileName, 'gallery');
+      return optimalPath;
+    } catch (error) {
+      console.warn('移动端图片格式优化失败，使用原始路径:', error);
+      return originalSrc;
+    }
+  };
+
+  // 预加载优化图片路径 - 动态加载策略
+  useEffect(() => {
+    const loadOptimizedPaths = async () => {
+      if (safeGalleryData.length === 0) return;
+      
+      // 获取当前需要显示的图片（基于visibleCount）
+      const itemsToOptimize = safeGalleryData.slice(0, visibleCount);
+      
+      // 检查哪些图片还没有优化过
+      const newOptimizations = new Map();
+      for (const item of itemsToOptimize) {
+        if (item.src && !optimizedImages.has(item.id)) {
+          const optimizedSrc = await getOptimalImageSrc(item.src);
+          const optimizedThumbnail = item.thumbnail ? 
+            await getOptimalImageSrc(item.thumbnail) : optimizedSrc;
+          
+          newOptimizations.set(item.id, {
+            src: optimizedSrc,
+            thumbnail: optimizedThumbnail
+          });
+        }
+      }
+      
+      // 只有当有新的优化结果时才更新状态
+      if (newOptimizations.size > 0) {
+        setOptimizedImages(prev => new Map([...prev, ...newOptimizations]));
+      }
+    };
+
+    loadOptimizedPaths();
+  }, [safeGalleryData, visibleCount, optimizedImages]);
+
+  // 滚动监听 - 实现懒加载
+  useEffect(() => {
+    const handleScroll = () => {
+      const container = containerRef.current;
+      if (!container) return;
+      
+      const { scrollTop, scrollHeight, clientHeight } = container;
+      const isNearBottom = scrollTop + clientHeight >= scrollHeight - 200; // 提前200px开始加载
+      
+      if (isNearBottom && visibleCount < safeGalleryData.length) {
+        setVisibleCount(prev => Math.min(prev + 6, safeGalleryData.length)); // 每次加载6张
+      }
+    };
+
+    const container = containerRef.current;
+    if (container) {
+      container.addEventListener('scroll', handleScroll, { passive: true });
+      return () => container.removeEventListener('scroll', handleScroll);
+    }
+  }, [visibleCount, safeGalleryData.length]);
+
+  // 转换数据格式以适配PhotoSwipe，只处理当前可见的图片
+  const galleryItems = safeGalleryData.slice(0, visibleCount).map((item, index) => {
+    const optimized = optimizedImages.get(item.id);
+    return {
+      id: item.id || index,
+      src: optimized?.src || item.src,
+      thumbnail: optimized?.thumbnail || item.thumbnail || item.src,
+      title: item.title || '',
+      description: item.description || ''
+    };
+  });
 
   const handleImageClick = (index) => {
-    openPhotoSwipe(galleryItems, index); // 修复参数顺序：(imageList, index)
+    // 为PhotoSwipe准备完整的图片列表（包括未加载的）
+    const allItems = safeGalleryData.map((item, idx) => {
+      const optimized = optimizedImages.get(item.id);
+      return {
+        id: item.id || idx,
+        src: optimized?.src || item.src,
+        thumbnail: optimized?.thumbnail || item.thumbnail || item.src,
+        title: item.title || '',
+        description: item.description || ''
+      };
+    });
+    openPhotoSwipe(allItems, index);
   };
 
   return (
@@ -111,40 +222,68 @@ const GalleryMobile = ({ language = 'zh' }) => {
 
         <div className="max-w-6xl mx-auto px-4">
           {/* 九宫格网格 - 保持格子大小一致，支持滚动 */}
-          <div className="grid grid-cols-3 gap-2 sm:gap-3 md:gap-4 pb-8">
-            {galleryItems.map((item, index) => (
-              <div
-                key={item.id}
-                onClick={() => handleImageClick(index)}
-                className="group project-card cursor-pointer transform transition-all duration-300 active:scale-95"
-              >
-                {/* 正方形图片容器 - 使用object-fit处理不同比例 */}
-                <div className="relative aspect-square rounded-lg overflow-hidden bg-theme-surface/10">
-                  <img
-                    src={item.thumbnail || item.src}
-                    alt={`Gallery item ${index + 1}`}
-                    className="w-full h-full object-cover"
-                    loading="lazy"
-                    onError={(e) => {
-                      e.target.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9IjQwIiBoZWlnaHQ9IjQwIiBmaWxsPSIjMzMzIj48L3JlY3Q+PC9zdmc+';
-                    }}
-                  />
-                  
-                  {/* 简单的选中指示器 */}
-                  <div className="absolute inset-0 bg-black/20 opacity-0 group-active:opacity-100 transition-opacity duration-200 flex items-center justify-center">
-                    <div className="w-8 h-8 border-2 border-white rounded-full flex items-center justify-center">
-                      <div className="w-2 h-2 bg-white rounded-full"></div>
+          <div className="grid grid-cols-3 gap-2 sm:gap-3 md:gap-4 pb-16">
+            {galleryItems.map((item, index) => {
+              // 获取优化后的图片路径，如果没有则显示加载状态
+              const optimized = optimizedImages.get(item.id);
+              const imageSrc = optimized?.thumbnail || optimized?.src;
+              
+              return (
+                <div
+                  key={item.id}
+                  onClick={() => handleImageClick(index)}
+                  className="group project-card cursor-pointer transform transition-all duration-300 active:scale-95"
+                >
+                  {/* 正方形图片容器 - 使用object-fit处理不同比例 */}
+                  <div className="relative aspect-square rounded-lg overflow-hidden bg-theme-surface/10">
+                    {imageSrc ? (
+                      <img
+                        src={imageSrc}
+                        alt={`Gallery item ${index + 1}`}
+                        className="w-full h-full object-cover"
+                        loading="lazy"
+                        onError={(e) => {
+                          // 如果优化图片加载失败，回退到原始图片
+                          console.warn(`📱 优化图片加载失败，回退到原始图片: ${item.id}`);
+                          e.target.src = item.thumbnail || item.src;
+                        }}
+                      />
+                    ) : (
+                      // 显示加载状态
+                      <div className="w-full h-full flex items-center justify-center bg-theme-surface/20">
+                        <div className="w-8 h-8 border-2 border-theme-text-secondary/30 border-t-theme-text-secondary rounded-full animate-spin"></div>
+                      </div>
+                    )}
+                    
+                    {/* 简单的选中指示器 */}
+                    <div className="absolute inset-0 bg-black/20 opacity-0 group-active:opacity-100 transition-opacity duration-200 flex items-center justify-center">
+                      <div className="w-8 h-8 border-2 border-white rounded-full flex items-center justify-center">
+                        <div className="w-2 h-2 bg-white rounded-full"></div>
+                      </div>
                     </div>
                   </div>
-
-                  {/* 图片序号（可选，小而不显眼） */}
-                  <div className="absolute top-2 right-2 bg-black/50 backdrop-blur-sm rounded-full w-6 h-6 flex items-center justify-center text-white text-xs font-medium">
-                    {index + 1}
-                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
+
+          {/* 加载更多指示器 */}
+          {visibleCount < safeGalleryData.length && (
+            <div className="text-center py-8">
+              <div className="inline-flex items-center justify-center space-x-2 text-theme-text-secondary">
+                <div className="w-4 h-4 border-2 border-theme-text-secondary/30 border-t-theme-text-secondary rounded-full animate-spin"></div>
+                <span className="text-sm">
+                  {language === 'zh' ? '加载更多图片...' : 'Loading more images...'}
+                </span>
+              </div>
+              <div className="text-xs text-theme-text-secondary/60 mt-2">
+                {language === 'zh' 
+                  ? `已显示 ${visibleCount} / ${safeGalleryData.length} 张图片` 
+                  : `Showing ${visibleCount} / ${safeGalleryData.length} images`
+                }
+              </div>
+            </div>
+          )}
 
           {/* 空状态 */}
           {galleryItems.length === 0 && (
@@ -165,13 +304,16 @@ const GalleryMobile = ({ language = 'zh' }) => {
 
           {/* 底部提示信息 */}
           {galleryItems.length > 0 && (
-            <div className="text-center mt-8 py-6">
+            <div className="text-center mt-8 pb-16 mb-8">
               <p className="text-theme-text-secondary/60 text-sm">
                 {language === 'zh' 
                   ? `共 ${galleryItems.length} 张图片 • 点击查看大图` 
                   : `${galleryItems.length} images • Tap to view full size`
                 }
               </p>
+              
+              {/* 额外的安全距离，确保用户有足够时间完整浏览内容 */}
+              <div className="h-20"></div>
             </div>
           )}
         </div>

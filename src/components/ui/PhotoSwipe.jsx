@@ -1,8 +1,23 @@
+/**
+ * PhotoSwipe全屏图片查看器组件
+ * 
+ * 功能特点：
+ * - 支持图片全屏浏览和缩放
+ * - 智能尺寸检测，优先使用预计算维度
+ * - 自动跳过视频文件处理
+ * - 支持图片格式优化加载
+ * - 多语言界面支持
+ * - 触控友好的移动端体验
+ * 
+ * @component
+ */
+
 import { useState, useRef } from 'react';
 import PropTypes from 'prop-types';
 import PhotoSwipeLightbox from 'photoswipe/lightbox';
 import 'photoswipe/style.css';
 import { PhotoSwipeContext, usePhotoSwipe } from '../../hooks/usePhotoSwipe';
+import textureSystem from '../../utils/texture';
 
 // PhotoSwipe Provider Component
 export const PhotoSwipeProvider = ({ children, language = 'en' }) => {
@@ -11,24 +26,82 @@ export const PhotoSwipeProvider = ({ children, language = 'en' }) => {
   const [initialIndex, setInitialIndex] = useState(0);
   const lightboxRef = useRef(null);
 
-  // 获取图片真实尺寸的函数
-  const getImageDimensions = (src) => {
-    return new Promise((resolve) => {
-      const img = new Image();
-      img.onload = () => {
-        resolve({ 
-          width: img.naturalWidth, 
-          height: img.naturalHeight,
-          aspectRatio: img.naturalWidth / img.naturalHeight
-        });
-      };
-      img.onerror = () => {
-        // 如果图片加载失败，使用默认尺寸
-        resolve({ width: 1200, height: 800, aspectRatio: 1.5 });
-      };
-      img.crossOrigin = 'anonymous';
-      img.src = src;
-    });
+  // 获取图片真实尺寸，优先使用预计算维度避免重复加载
+  const getImageDimensions = async (src) => {
+    try {
+      // 跳过视频文件，返回默认视频尺寸
+      if (src && src.match(/\.(mp4|webm|mov|avi|mkv)$/i)) {
+        return { width: 1920, height: 1080, aspectRatio: 16/9 };
+      }
+      
+      // 检查是否可以使用预计算维度
+      if (src && src.includes('/gallery/')) {
+        const fileName = src.split('/').pop().replace(/\.(jpg|jpeg|png|webp|avif)$/i, '');
+        
+        try {
+          const response = await fetch('/precomputed-dimensions.json');
+          const precomputed = await response.json();
+          if (precomputed.gallery && precomputed.gallery[fileName]) {
+            const dims = precomputed.gallery[fileName];
+            return {
+              width: dims.width,
+              height: dims.height,
+              aspectRatio: dims.aspectRatio
+            };
+          }
+        } catch {
+          // 预计算维度加载失败，继续使用图片检测
+        }
+      }
+      
+      // 使用优化格式进行尺寸检测
+      let imageSrc = src;
+      
+      if (src && src.includes('/gallery/') && src.endsWith('.jpg')) {
+        const fileName = src.split('/').pop().replace(/\.(jpg|jpeg|png|webp|avif)$/i, '');
+        try {
+          const optimalPath = await textureSystem.getOptimalPath(fileName, 'gallery');
+          imageSrc = optimalPath;
+        } catch {
+          // 格式优化失败，使用原始路径
+        }
+      }
+      
+      return new Promise((resolve) => {
+        const img = new Image();
+        img.onload = () => {
+          resolve({ 
+            width: img.naturalWidth, 
+            height: img.naturalHeight,
+            aspectRatio: img.naturalWidth / img.naturalHeight
+          });
+        };
+        img.onerror = () => {
+          // 如果优化格式失败，尝试原始路径
+          if (imageSrc !== src) {
+            const fallbackImg = new Image();
+            fallbackImg.onload = () => {
+              resolve({ 
+                width: fallbackImg.naturalWidth, 
+                height: fallbackImg.naturalHeight,
+                aspectRatio: fallbackImg.naturalWidth / fallbackImg.naturalHeight
+              });
+            };
+            fallbackImg.onerror = () => {
+              resolve({ width: 1200, height: 800, aspectRatio: 1.5 });
+            };
+            fallbackImg.crossOrigin = 'anonymous';
+            fallbackImg.src = src;
+          } else {
+            resolve({ width: 1200, height: 800, aspectRatio: 1.5 });
+          }
+        };
+        img.crossOrigin = 'anonymous';
+        img.src = imageSrc;
+      });
+    } catch {
+      return { width: 1200, height: 800, aspectRatio: 1.5 };
+    }
   };
 
   // 打开PhotoSwipe
