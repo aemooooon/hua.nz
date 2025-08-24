@@ -1,0 +1,222 @@
+{
+  "gallery-horizontal-1": {
+    "filename": "gallery-horizontal-1",
+    "originalPath": "/gallery/gallery-horizontal-1.jpg",
+    "dimensions": {
+      "width": 1600,
+      "height": 900
+    },
+    "aspectRatio": 1.78,
+    "orientation": "horizontal"
+  },
+  "gallery-horizontal-10": {
+    "filename": "gallery-horizontal-10",
+    "originalPath": "/gallery/gallery-horizontal-10.jpg",
+    "dimensions": {
+      "width": 1600,
+      "height": 900
+    },
+    "aspectRatio": 1.78,
+    "orientation": "horizontal"
+  },
+  "gallery-horizontal-11": {
+    "filename": "gallery-horizontal-11",
+    "originalPath": "/gallery/gallery-horizontal-11.jpg",
+    "dimensions": {
+      "width": 1600,
+      "height": 900
+    },
+    "aspectRatio": 1.78,
+    "orientation": "horizontal"
+  },
+  "gallery-horizontal-12": {
+    "filename": "gallery-horizontal-12",
+    "originalPath": "/gallery/gallery-horizontal-12.jpg",
+    "dimensions": {
+      "width": 1600,
+      "height": 900
+    },
+    "aspectRatio": 1.78,
+    "orientation": "horizontal"
+  },
+  "gallery-horizontal-13": {
+    "filename": "gallery-horizontal-13",
+    "originalPath": "/gallery/gallery-horizontal-13.jpg",
+    "dimensions": {
+      "width": 1600,
+      "height": 900
+    },
+    "aspectRatio": 1.78,
+    "orientation": "horizontal"
+  },
+  "gallery-horizontal-14": {
+    "filename": "gallery-horizontal-14",
+    "originalPath": "/gallery/gallery-horizontal-14.jpg",
+    "dimensions": {
+      "width": 1600,
+      "height": 900
+    },
+    "aspectRatio": 1.78,
+    "orientation": "horizontal"
+  },
+  "gallery-horizontal-15": {
+    "filename": "gallery-horizontal-15",
+    "originalPath": "/gallery/gallery-horizontal-15.jpg",
+    "dimensions": {
+      "width": 1600,
+      "height": 900
+    },
+    "aspectRatio": 1.78,
+    "orientation": "horizontal"
+  },
+  "gallery-horizontal-16": {
+    "filename": "gallery-horizontal-16",
+    "originalPath": "/gallery/gallery-horizontal-16.jpg",
+    "dimensions": {
+      "width": 1600,
+      "height": 900
+    },
+    "aspectRatio": 1.78,
+    "orientation": "horizontal"
+  },
+  "gallery-horizontal-2": {
+    "filename": "gallery-horizontal-2",
+    "originalPath": "/gallery/gallery-horizontal-2.jpg",
+    "dimensions": {
+      "width": 1600,
+      "height": 900
+    },
+    "aspectRatio": 1.78,
+    "orientation": "horizontal"
+  },
+  "gallery-horizontal-3": {
+    "filename": "gallery-horizontal-3",
+    "originalPath": "/gallery/gallery-horizontal-3.jpg",
+    "dimensions": {
+      "width": 1600,
+      "height": 900
+    },
+    "aspectRatio": 1.78,
+    "orientation": "horizontal"
+  },
+  "gallery-horizontal-4": {
+    "filename": "gallery-horizontal-4",
+    "originalPath": "/gallery/gallery-horizontal-4.jpg",
+    "dimensions": {
+      "width": 1600,
+      "height": 900
+    },
+    "aspectRatio": 1.78,
+    "orientation": "horizontal"
+  },
+  "gallery-horizontal-5": {
+    "filename": "gallery-horizontal-5",
+    "originalPath": "/gallery/gallery-horizontal-5.jpg",
+    "dimensions": {
+      "width": 1600,
+      "height": 900
+    },
+    "aspectRatio": 1.78,
+    "orientation": "horizontal"
+  },
+  "gallery-horizontal-6": {
+    "filename": "gallery-horizontal-6",
+    "originalPath": "/gallery/gallery-horizontal-6.jpg",
+    "dimensions": {
+      "width": 1600,
+      "height": 900
+    },
+    "aspectRatio": 1.78,
+    "orientation": "horizontal"
+  },
+  "gallery-horizontal-7": {
+    "filename": "gallery-horizontal-7",
+    "originalPath": "/gallery/gallery-horizontal-7.jpg",
+    "dimensions": {
+      "width": 1600,
+      "height": 900
+    },
+    "aspectRatio": 1.78,
+    "orientation": "horizontal"
+  },
+  "gallery-horizontal-8": {
+    "filename": "gallery-horizontal-8",
+    "originalPath": "/gallery/gallery-horizontal-8.jpg",
+    "dimensions": {
+      "width": 1600,
+      "height": 900
+    },
+    "aspectRatio": 1.78,
+    "orientation": "horizontal"
+  },
+  "gallery-horizontal-9": {
+    "filename": "gallery-horizontal-9",
+    "originalPath": "/gallery/gallery-horizontal-9.jpg",
+    "dimensions": {
+      "width": 1600,
+      "height": 900
+    },
+    "aspectRatio": 1.78,
+    "orientation": "horizontal"
+  },
+  "gallery-vertical-0": {
+    "filename": "gallery-vertical-0",
+    "originalPath": "/gallery/gallery-vertical-0.jpg",
+    "dimensions": {
+      "width": 800,
+      "height": 1200
+    },
+    "aspectRatio": 0.67,
+    "orientation": "vertical"
+  },
+  "gallery-vertical-1": {
+    "filename": "gallery-vertical-1",
+    "originalPath": "/gallery/gallery-vertical-1.jpg",
+    "dimensions": {
+      "width": 800,
+      "height": 1200
+    },
+    "aspectRatio": 0.67,
+    "orientation": "vertical"
+  },
+  "gallery-vertical-2": {
+    "filename": "gallery-vertical-2",
+    "originalPath": "/gallery/gallery-vertical-2.jpg",
+    "dimensions": {
+      "width": 800,
+      "height": 1200
+    },
+    "aspectRatio": 0.67,
+    "orientation": "vertical"
+  },
+  "gallery-vertical-3": {
+    "filename": "gallery-vertical-3",
+    "originalPath": "/gallery/gallery-vertical-3.jpg",
+    "dimensions": {
+      "width": 800,
+      "height": 1200
+    },
+    "aspectRatio": 0.67,
+    "orientation": "vertical"
+  },
+  "gallery-vertical-4": {
+    "filename": "gallery-vertical-4",
+    "originalPath": "/gallery/gallery-vertical-4.jpg",
+    "dimensions": {
+      "width": 800,
+      "height": 1200
+    },
+    "aspectRatio": 0.67,
+    "orientation": "vertical"
+  },
+  "gallery-vertical-5": {
+    "filename": "gallery-vertical-5",
+    "originalPath": "/gallery/gallery-vertical-5.jpg",
+    "dimensions": {
+      "width": 800,
+      "height": 1200
+    },
+    "aspectRatio": 0.67,
+    "orientation": "vertical"
+  }
+}
