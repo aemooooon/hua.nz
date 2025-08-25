@@ -39,11 +39,9 @@
  * - 缓存优化: 避免重复检测，提升响应速度
  */
 
-import { FormatDetector } from '../texture/FormatDetector.js';
-
 export class ImageOptimizer {
     constructor() {
-        this.formatDetector = new FormatDetector();
+        this.formatDetector = null;
         this.isInitialized = false;
         this.supportedFormats = new Map();
         this.initializationPromise = this.initialize();
@@ -55,6 +53,9 @@ export class ImageOptimizer {
      */
     async initialize() {
         try {
+            // 动态导入FormatDetector以支持代码分割
+            const { FormatDetector } = await import('../texture/FormatDetector.js');
+            this.formatDetector = new FormatDetector();
             await this.formatDetector.initializationPromise;
             this.supportedFormats = this.formatDetector.supportCache;
             this.isInitialized = true;
