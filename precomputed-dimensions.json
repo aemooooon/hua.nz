@@ -218,5 +218,15 @@
     },
     "aspectRatio": 0.67,
     "orientation": "vertical"
+  },
+  "hua_presentation": {
+    "filename": "hua_presentation",
+    "originalPath": "/gallery/hua_presentation.jpg",
+    "dimensions": {
+      "width": 1000,
+      "height": 1000
+    },
+    "aspectRatio": 1,
+    "orientation": "square"
   }
 }
