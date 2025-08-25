@@ -776,7 +776,7 @@ const contentConfig = {
     },
     contact: {
       title: "青鸟殷勤",
-      subtitle: "翘盼汝之玉音！",
+      subtitle: "翘盼汝之玉音",
       description: "倘蒙垂询，或谋事，或叙契，一函可达。",
       location: "新西兰",
       emailAddress: "aemooooon@gmail.com",
