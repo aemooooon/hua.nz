@@ -1,7 +1,22 @@
 /**
- * 图像格式检测器
- * 检测浏览器对现代图像格式的支持（AVIF, WebP）
- * 使用行业标准的检测方法确保准确性
+ * FormatDetector - 现代图像格式支持检测器
+ * 
+ * 功能特性：
+ * - 精确检测浏览器对AVIF、WebP格式的支持能力
+ * - 使用行业标准的Canvas 2D API检测方法
+ * - 异步并行检测，提升初始化速度
+ * - 结果缓存机制，避免重复检测
+ * - 跨平台兼容性，支持所有主流浏览器
+ * 
+ * 检测原理：
+ * - AVIF：通过toDataURL('image/avif')测试浏览器编码能力
+ * - WebP：使用1x1像素的WebP base64数据测试解码能力
+ * - 缓存：检测结果存储在Map中，提升后续查询性能
+ * 
+ * 使用场景：
+ * - 图片优化系统的前置检测
+ * - 自适应图片格式选择
+ * - 性能优化决策依据
  */
 
 export class FormatDetector {
@@ -12,10 +27,9 @@ export class FormatDetector {
 
     /**
      * 初始化格式支持检测
+     * 并行检测AVIF和WebP支持，提升检测效率
      */
     async initializeSupport() {
-        console.log('🔄 开始格式支持检测...');
-        
         const [avifSupport, webpSupport] = await Promise.all([
             this.detectAVIFSupport(),
             this.detectWebPSupport()
@@ -23,12 +37,6 @@ export class FormatDetector {
 
         this.supportCache.set('avif', avifSupport);
         this.supportCache.set('webp', webpSupport);
-
-        console.log('🖼️ 图像格式支持检测完成:', {
-            avif: avifSupport,
-            webp: webpSupport,
-            userAgent: navigator.userAgent.substring(0, 100)
-        });
 
         return this.supportCache;
     }

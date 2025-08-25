@@ -2,6 +2,7 @@ import PropTypes from 'prop-types';
 import { useAppStore } from '../../../store/useAppStore';
 import GlowDivider from '../../ui/GlowDivider';
 import { ThemeTitle, ThemeSubtitle, ThemeDescription } from '../../ui/ThemeComponents';
+import OptimizedImage from '../../ui/OptimizedImage';
 import './ContactSection.css';
 
 const ContactSection = ({ language }) => {
@@ -179,7 +180,7 @@ const ContactSection = ({ language }) => {
                                         
                                         {/* 二维码图片 - 四周等距间距 */}
                                         <div className="flex justify-center mb-4 p-4">
-                                            <img 
+                                            <OptimizedImage 
                                                 src={wechatInfo.qrCode} 
                                                 alt="WeChat QR Code"
                                                 className="w-32 h-32 object-cover rounded-lg"

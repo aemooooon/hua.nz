@@ -237,7 +237,7 @@ const contentConfig = {
           institution: "University of Canterbury",
           location: "Christchurch, New Zealand",
           period: "Feb 2024 - Feb 2025",
-          logo: "/unicanterburylogo.png",
+          logo: "/education/unicanterburylogo.png",
           gpa: "A average",
           totalCredits: 180,
           courses: [
@@ -284,7 +284,7 @@ const contentConfig = {
               description: "A blockchain-based virtual pet dApp on Secret Network. Built a CosmWasm smart contract using Rust and a React frontend.",
               technologies: ["Rust", "CosmWasm", "React", "Secret Network"],
               githubUrl: "https://github.com/aemooooon/digital-pet",
-              image: "/digitalpet.jpg"
+              image: "/education/digitalpet.jpg"
             },
             {
               name: "ECAN Data Pipeline",
@@ -302,7 +302,7 @@ const contentConfig = {
           institution: "Otago Polytechnic",
           location: "Dunedin, New Zealand",
           period: "July 2017 - June 2021",
-          logo: "/otago-polytechnic-vertical-blue.svg",
+          logo: "/education/otago-polytechnic-vertical-blue.svg",
           gpa: "A average",
           totalCredits: 360,
           courses: [
@@ -364,7 +364,7 @@ const contentConfig = {
             {
               title: "Excellence in the Bachelor of Information Technology",
               year: "2019",
-              image: "/awared-excellence.jpg"
+              image: "/education/awared-excellence.jpg"
             }
           ],
           capstoneProjects: [
@@ -451,7 +451,7 @@ const contentConfig = {
     home: {
       name: "王华",
       title: "全栈工程师",
-      slogan: "观混沌之纷，立秩序之象；守中庸之衡，启创新之变……"
+      slogan: "驭混沌而立秩序；执中庸以启新象。"
     },
     about: {
       title: "关于我",
@@ -467,10 +467,10 @@ const contentConfig = {
           content: {
             greeting: "你好，我是王华",
             paragraphs: [
-              "夫天地演数，阴阳化爻，臣以一介码农，躬耕于比特之野十载有余。初习PHP古法，今研React新道，历经诸侯之网站，掌CMS之枢机，筑内廷之系统，驭数据于方寸。然臣心向星辰，每涉图形之术，便穷Shader之变，究光影之妙，合生成之艺于万维网中，此皆臣技之所寄也。",
-              "臣闻《易》云：“形而上者谓之道，形而下者谓之器。”臣之所驱，正在道器相融：散落之用户故事，臣析为清明；纷杂之技术桎梏，臣破以无执之心。语言框架，不过器物；逻辑创造，方见精神。是故代码非止于功用，亦载文心，融设计、实现与叙事于一炉，犹《诗》之兴观群怨，皆可托于数行之间。",
-              "臣虽主营前后二端，然未尝忘怀DevOps之策、容器之术与云之平台。更兼修数据科学之硕业，深研算法之微、管道之幽。盖《道德经》有言：“图难于其易，为大于其细”，臣每日所行，皆在混沌中求秩序，于权衡处创新篇——此乃臣平生之志也。",
-              "今效诸葛出师之表，托心于代码，寄志于云端，惟愿以技术立命，以创造安身，虽世变时移，此心不易。"
+              "夫天地演数，阴阳化爻，臣以一介码农，躬耕于比特之野十载有余。初习jQuery古法，今研React新道，历经诸侯之网站，掌CMS之枢机，筑内廷之系统，驭数据于方寸。然臣心向星辰，醉心图形之域，每有涉猎，必穷Shader之变，究光影之妙，合生成之艺于万维网中，此臣技之所寄也。",
+              "臣闻《易》云：“形而上者谓之道，形而下者谓之器。”臣之所驱，正在道器相融：散落之用户故事，臣析为清明；纷杂之技术桎梏，臣以无执之心破之。盖语言框架，不过器物；逻辑创造，方见精神。是故代码非止于功用，亦载文心，融设计、实现与叙事于一炉，犹《诗》之兴观群怨，皆可托于数行之间。",
+              "臣虽主营前后二端，然未尝忘怀运维之策、容器之术与云之平台。更修数据科学之硕学，深研算法之精微，管道之纤畅。诚如《道德经》所言：“图难于其易，为大于其细”，臣每日所行，皆在混沌中求秩序，于权衡处创新篇——此乃臣平生之志也。",
+              "今托心于代码，寄志于云端，惟愿以技术立命，以创造安身，虽世变时移，此心不易。"
             ]
           }
         },
@@ -625,7 +625,7 @@ const contentConfig = {
           institution: "坎特伯雷大学",
           location: "基督城",
           period: "2024年2月 - 2025年2月",
-          logo: "/unicanterburylogo.png",
+          logo: "/education/unicanterburylogo.png",
           gpa: "A",
           totalCredits: 180,
           courses: [
@@ -665,21 +665,21 @@ const contentConfig = {
               description: "使用Rust（后端）和React与Tauri（前端）构建的P2P文件共享和消息应用。集成libp2p进行去中心化网络。",
               technologies: ["Rust", "React", "Tauri", "libp2p"],
               githubUrl: "https://github.com/aemooooon/swapbytes",
-              image: "/swapbytes.jpg"
+              image: "/education/swapbytes.jpg"
             },
             {
               name: "数字宠物",
               description: "基于Secret Network的区块链虚拟宠物dApp。使用Rust构建CosmWasm智能合约，React前端。",
               technologies: ["Rust", "CosmWasm", "React", "Secret Network"],
               githubUrl: "https://github.com/aemooooon/digital-pet",
-              image: "/digitalpet.jpg"
+              image: "/education/digitalpet.jpg"
             },
             {
               name: "坎特伯雷环境部数据管线",
               description: "协作式云端自动化系统，用于从17个不同来源收集和处理环境数据。",
               technologies: ["Apache Airflow", "Python", "GraphQL", "AWS"],
               githubUrl: "https://github.com/aemooooon/DATA472-Individual-Project-Submission",
-              image: "/ecan.jpg"
+              image: "/education/ecan.jpg"
             }
           ]
         },
@@ -690,7 +690,7 @@ const contentConfig = {
           institution: "奥塔哥理工学院",
           location: "达尼丁",
           period: "2017年7月 - 2021年6月",
-          logo: "/otago-polytechnic-vertical-blue.svg",
+          logo: "/education/otago-polytechnic-vertical-blue.svg",
           gpa: "A",
           totalCredits: 360,
           courses: [
@@ -752,7 +752,7 @@ const contentConfig = {
             {
               title: "信息技术学士优秀奖",
               year: "2019",
-              image: "/awared-excellence.jpg"
+              image: "/education/awared-excellence.jpg"
             }
           ],
           capstoneProjects: [
@@ -899,9 +899,18 @@ export const useAppStore = create(
       // 项目数据 for card view
       projects: [
         {
-          "type": "Front End",
-          "title": "Front End Developer",
-          "name": "Corridor of Light and Shadow",
+          "type": {
+            "en": "Front End",
+            "zh": "前端开发"
+          },
+          "title": {
+            "en": "Front End Developer",
+            "zh": "前端开发工程师"
+          },
+          "name": {
+            "en": "Corridor of Light and Shadow",
+            "zh": "浮生长廊"
+          },
           "company": "Hua Wang",
           "description": {
             "en": [
@@ -931,9 +940,18 @@ export const useAppStore = create(
           "img": ["/hua.nz/hua.nz.1.jpg", "/hua.nz/hua.nz.2.jpg", "/hua.nz/hua.nz.3.jpg", "/hua.nz/hua.nz.4.jpg", "/hua.nz/hua.nz.5.jpg", "/hua.nz/hua.nz.6.jpg", "/hua.nz/hua.nz.7.jpg", "/hua.nz/hua.nz.8.jpg", "/hua.nz/hua.nz.9.jpg", "/hua.nz/hua.nz.10.jpg"]
         },
         {
-          "type": "Full Stack",
-          "title": "Full Stack Developer",
-          "name": "Orchard Sampling Scheduler",
+          "type": {
+            "en": "Full Stack",
+            "zh": "全栈开发"
+          },
+          "title": {
+            "en": "Full Stack Developer",
+            "zh": "全栈开发工程师"
+          },
+          "name": {
+            "en": "Orchard Sampling Scheduler",
+            "zh": "果园采样调度系统"
+          },
           "company": "Zespri International",
           "description": {
             "en": [
@@ -946,7 +964,7 @@ export const useAppStore = create(
               "Ultimately, the Orchard Sampling Scheduler improved efficiency by enabling intelligent workload allocation, minimizing travel times, and aligning sampling tasks with operational constraints. It stands as both a professional-grade software system and a demonstration of applying algorithms, geospatial analysis, and system design principles to practical, industry-scale problems."
             ],
             "zh": [
-              "本项目是为新西兰领先的奇异果企业 Zespri International 设计与实现的一套果园采样优化平台，旨在解决 Bay of Plenty 地区数百个果园的采样调度问题。系统的核心目标是应对时间窗口、地理分布与作业效率等多重挑战，在保障果实品质评估的同时提高整体采样效率。",
+              "本项目是为新西兰领先的奇异果企业佳沛（Zespri International）设计与实现的一套果园采样优化平台，旨在解决丰盛湾地区数百个果园的采样调度问题。系统的核心目标是应对时间窗口、地理分布与作业效率等多重挑战，在保障果实品质评估的同时提高整体采样效率。",
               "在技术架构上，平台采用现代全栈方案构建。前端基于 React 与 TailwindCSS，实现了响应式、直观的交互界面，便于管理人员实时查看果园数据与动态调整任务。地图与地理可视化方面，系统集成了 Leaflet 与 Folium，以支持果园分布与路线的交互式展示，同时结合本地部署的 OpenRouteService 实现多点路径优化。",
               "后端采用 Flask 构建 RESTful API，负责数据处理、业务逻辑与前端交互。数据库选择轻量级 SQLite，以确保系统的可移植性与离线可用性，适用于乡村地区的弱网环境。Python 编写的 ETL 数据管道用于处理多样化的农业数据集，包括果园坐标、采样时间窗口与优先级规则，实现了从原始数据到优化调度输入的全自动转换。",
               "在算法层面，项目研究并实现了旅行商问题 (TSP) 的变体。通过 OpenRouteService 预计算的两两距离矩阵作为优化基础，比较并选取了多种 TSP 算法，以平衡效率、可扩展性与可解释性，确保方法论既科学可靠又便于行业用户理解。作为应用数据科学硕士的研究性项目，这种数据驱动的思路尤为关键。",
@@ -969,9 +987,18 @@ export const useAppStore = create(
           ]
         },
         {
-          "type": "Front End",
-          "title": "Front End Developer",
-          "name": "Realibox Portal",
+          "type": {
+            "en": "Front End",
+            "zh": "前端开发"
+          },
+          "title": {
+            "en": "Front End Developer",
+            "zh": "前端开发工程师"
+          },
+          "name": {
+            "en": "Realibox Portal",
+            "zh": "引力波官方门户"
+          },
           "company": "Realibox",
           "description": {
             "en": [
@@ -1000,9 +1027,18 @@ export const useAppStore = create(
           "img": ["/realibox/official/official.01.jpg", "/realibox/official/official.02.jpg", "/realibox/official/official.03.jpg"]
         },
         {
-          "type": "Front End",
-          "title": "Front End Developer",
-          "name": "Realibox Hub & 3D Editor",
+          "type": {
+            "en": "Front End",
+            "zh": "前端开发"
+          },
+          "title": {
+            "en": "Front End Developer",
+            "zh": "前端开发工程师"
+          },
+          "name": {
+            "en": "Realibox Hub & 3D Editor",
+            "zh": "引力波3D编辑器"
+          },
           "company": "Realibox",
           "description": {
             "en": [
@@ -1014,7 +1050,7 @@ export const useAppStore = create(
               "The project demonstrated enterprise-scale frontend development capabilities including component-driven architecture with atomic design principles, advanced internationalization support, theme management systems, and accessibility features. Collaborated extensively with backend engineers, 3D graphics specialists, and product teams in an Agile environment, ensuring seamless integration of complex 3D workflows with intuitive user interfaces and robust cloud infrastructure."
             ],
             "zh": [
-              "作为Realibox的高级前端开发工程师，我架构并开发了一个全面的云端3D设计平台，包含五个相互连接的微服务代码库。这个复杂的系统为专业设计师和企业提供了先进的3D建模、渲染和协作功能，通过模块化、可扩展的架构展示了现代web开发和分布式系统设计的精通。",
+              "作为Realibox的高级前端开发工程师，我参与架构并开发了一个全面的云端3D设计平台，包含五个相互连接的微服务代码库。这个复杂的系统为专业设计师和企业提供了先进的3D建模、渲染和协作功能，通过模块化、可扩展的架构展示了现代web开发和分布式系统设计的精通。",
               "平台采用前沿技术构建，包括React 18、Vite作为构建工具提供闪电般的开发体验，以及MobX 6用于复杂应用程序工作流程的响应式状态管理。在所有微服务中实现了全面的TypeScript集成，确保类型安全和可维护的代码架构。系统利用先进的基于WebGL的3D渲染引擎和自定义canvas实现，实现实时3D场景操作和高性能可视化。",
               "架构了复杂的微服务生态系统，包含五个专门的代码库：designhub-accounts-web用于用户认证和账户管理，designhub-common-core包含共享工具和业务逻辑，designhub-common-ui存放可重用UI组件，designhub-hub-web作为主要平台仪表板，ishot-editor-web提供核心3D编辑功能。每个服务都设计了清晰的关注点分离和健壮的API集成。",
               "核心3D编辑器具有先进的WebGL渲染功能，包括实时场景操作、材质编辑系统、协作编辑功能和云端项目同步。使用MobX存储实现了复杂的状态管理，包括编辑器、场景、渲染、材质和用户管理。系统支持复杂的3D工作流程，包括模型导入、纹理管理、光照控制和高质量渲染管道，并对处理大型3D资产进行了性能优化。",
@@ -1031,10 +1067,19 @@ export const useAppStore = create(
           "img": ["/realibox/editor/editor.01.jpg", "/realibox/editor/editor.02.jpg", "/realibox/editor/editor.03.jpg", "/realibox/editor/realibox.00.jpg", "/realibox/editor/editor.04.jpg", "/realibox/editor/editor.05.jpg", "/realibox/editor/editor.06.jpg"]
         },
         {
-          "type": "Full Stack",
-          "tags": ["Full Stack", "Data Engineer"],
-          "title": "Full Stack Developer",
-          "name": "Real-time AQI Platform",
+          "type": {
+            "en": "Full Stack",
+            "zh": "全栈开发"
+          },
+          "tags": ["Data Engineer"],
+          "title": {
+            "en": "Full Stack Developer",
+            "zh": "全栈开发工程师"
+          },
+          "name": {
+            "en": "Real-time AQI Platform",
+            "zh": "实时空气质量发布（大数据）平台"
+          },
           "company": "Enshi Environmental Agency",
           "description": {
             "en": [
@@ -1063,9 +1108,18 @@ export const useAppStore = create(
           "img": ["/aqi/aqi01.jpg", "/aqi/aqi02.jpg", "/aqi/aqi03.jpg", "/aqi/aqi04.jpg", "/aqi/aqi05.jpg", "/aqi/aqi06.jpg", "/aqi/aqi07.jpg", "/aqi/aqi08.jpg", "/aqi/aqi09.jpg", "/aqi/aqi10.jpg", "/aqi/aqi11.jpg", "/aqi/aqi12.jpg", "/aqi/aqi13.jpg"],
         },
         {
-          "type": "WebGL",
-          "title": "Interactive 360° Virtual Tour Platform",
-          "name": "Real Estate VR Collections",
+          "type": {
+            "en": "WebGL",
+            "zh": "WebGL开发"
+          },
+          "title": {
+            "en": "Interactive 360° Virtual Tour Platform",
+            "zh": "交互式360°虚拟漫游平台"
+          },
+          "name": {
+            "en": "Real Estate VR Collections",
+            "zh": "房地产VR作品集"
+          },
           "company": "Neuclear Stone Digital",
           "description": {
             "en": "During a 2-year contract period with Neuclear Stone Digital, a specialized 3D animation studio focused on architectural and interior design visualization, I developed comprehensive web-based virtual reality solutions for real estate marketing. As the lead web developer, I transformed their high-quality 3D renderings and HDR imagery into interactive, cross-platform virtual tour experiences accessible across all devices and browsers. Working closely with their design team, I converted Photoshop mockups into responsive HTML/CSS interfaces and integrated WebGL technology to showcase immersive 3D environments including residential apartments, luxury interiors, commercial buildings, and entire residential complexes. The platform features sophisticated 3D scene navigation with multiple camera positions, allowing users to explore different rooms and areas through intuitive click-based interactions. I implemented interactive hotspot systems with contextual popup information, seamless scene transitions, and dynamic viewpoint switching capabilities. Each virtual tour includes social media integration with API connectivity for sharing functionality, complete with JWT token authentication for secure access. The technical implementation encompasses responsive design principles ensuring optimal performance across desktop, tablet, and mobile devices, with specialized mobile features including click-to-call functionality and integrated navigation services. Additional multimedia capabilities include background music integration, video playback systems, and comprehensive cross-browser compatibility testing. All applications were deployed and maintained on Alibaba Cloud EC2 servers with custom domain configurations. Throughout this engagement, I successfully delivered 17+ individual virtual tour projects spanning multiple provinces across China, establishing a scalable development framework that significantly enhanced the company's service offerings and client engagement capabilities.",
@@ -1077,9 +1131,18 @@ export const useAppStore = create(
           "img": ["/vr/fhjy.jpg", "/vr/changpingli.jpg", "/vr/dalincheng.jpg", "/vr/gyyh.jpg", "/vr/htfxj.jpg", "/vr/jhhy.jpg", "/vr/jlw.jpg", "/vr/jxmm.jpg", "/vr/jsjxmm.jpg", "/vr/pzf.jpg", "/vr/tf.jpg", "/vr/wjsf.jpg", "/vr/xcsd.jpg", "/vr/ybhf.jpg", "/vr/ysxc.jpg", "/vr/zyyc.jpg", "/vr/tsyhy.jpg"]
         },
         {
-          "type": "Website",
-          "title": "Corporate Website Development Platform",
-          "name": "Enterprises Portal Collections",
+          "type": {
+            "en": "Website",
+            "zh": "网站开发"
+          },
+          "title": {
+            "en": "Corporate Website Development Platform",
+            "zh": "企业网站开发平台"
+          },
+          "name": {
+            "en": "Enterprises Portal Collections",
+            "zh": "企业门户作品集"
+          },
           "company": "Day Digital",
           "description": {
             "en": "Comprehensive enterprise web development solution encompassing both public-facing corporate websites and sophisticated internal business systems across diverse industries. Working with Day Digital, I developed multi-faceted web applications serving government agencies, healthcare institutions, tourism bureaus, and private enterprises throughout the project lifecycle. The portfolio spans from traditional corporate websites built with CMS platforms to complex internal enterprise systems utilizing ASP.NET and PHP technologies. For healthcare sector clients, I implemented specialized systems including patient health examination report query platforms with secure database integration, comprehensive appointment scheduling systems with real-time availability management, and patient portal interfaces. Corporate clients received tailored internal office management systems featuring employee workflow automation, document management, and inter-departmental communication tools. Additionally, I developed specialized applications including auction platforms for numismatic collections with bidding mechanisms and payment gateway integration, and construction engineering measurement data query systems with GPS coordinate mapping and project tracking capabilities. Each project required custom database architecture design, responsive UI implementation from design mockups, user authentication and authorization systems, and comprehensive deployment management across multiple production servers. The technical implementation involved extensive work with content management systems, database optimization, API integrations, and cross-platform compatibility ensuring seamless operation across desktop and mobile environments. All systems included administrative dashboards, data export capabilities, and robust security measures including role-based access control and data encryption protocols.",
@@ -1092,9 +1155,18 @@ export const useAppStore = create(
           "img": ["/website/tenglongdong.jpg", "/website/enshitusicheng01.jpg", "/website/enshitusicheng02.jpg", "/website/yangshegnhefeng.jpg", "/website/es9e.jpg", "/website/enshizhoubowuguan.jpg", "/website/enshizhousheyingjiaxiehui.jpg"]
         },
         {
-          "type": "Mobile Apps",
-          "title": "FitsGo",
-          "name": "FitsGo",
+          "type": {
+            "en": "Mobile Apps",
+            "zh": "移动应用"
+          },
+          "title": {
+            "en": "FitsGo",
+            "zh": "FitsGo"
+          },
+          "name": {
+            "en": "FitsGo",
+            "zh": "FitsGo 健身追踪"
+          },
           "company": "Otago Polytechnic",
           "description": {
             "en": "A comprehensive fitness tracking mobile application designed to encourage people to start exercising by providing interactive map-based workout experiences. Built as a cross-platform app using React Native and Firebase, FitsGo allows users to select exercise routes from nearby points of interest, track their workouts (running, walking, cycling) with real-time GPS monitoring, and earn badges for visiting locations. Features include user authentication, profile management with weight/age tracking, real-time calorie calculation based on MET values, workout history with detailed statistics, and social elements for future friend connectivity and weekly challenges.",
@@ -1109,9 +1181,18 @@ export const useAppStore = create(
           "img": ["/fitsgo/fitsgo.01.gif", "/fitsgo/fitsgo.02.jpg", "/fitsgo/fitsgo.03.jpg", "/fitsgo/fitsgo.04.jpg", "/fitsgo/fitsgo.05.jpg", "/fitsgo/fitsgo.06.jpg", "/fitsgo/fitsgo.07.jpg", "/fitsgo/fitsgo.08.jpg", "/fitsgo/fitsgo.09.jpg", "/fitsgo/fitsgo.10.jpg"]
         },
         {
-          "type": "Mobile Apps",
-          "title": "Travel Assistant",
-          "name": "Travel Assistant",
+          "type": {
+            "en": "Mobile Apps",
+            "zh": "移动应用"
+          },
+          "title": {
+            "en": "Travel Assistant",
+            "zh": "旅行助手"
+          },
+          "name": {
+            "en": "Travel Assistant",
+            "zh": "智能旅行助手"
+          },
           "company": "Otago Polytechnic",
           "description": {
             "en": "An Android-based travel companion application built with Kotlin and Room Database, designed to help travelers explore unfamiliar countries with confidence. The app features interactive Google Maps integration with clustered location markers, country selection dropdown, real-time location services, and multilingual phrase translation using Yandex API. Built using modern Android architecture components including ViewModel, LiveData, Coroutines, and View/Data Binding, with comprehensive documentation generated using Dokka and UI testing implemented with Espresso. The application provides curated lists of top-rated attractions and landmarks for each country, complete with coordinates and detailed information.",
@@ -1126,10 +1207,19 @@ export const useAppStore = create(
           "img": ["/travelassistant/ta01.jpg", "/travelassistant/ta02.jpg", "/travelassistant/ta03.jpg", "/travelassistant/ta04.jpg", "/travelassistant/ta05.jpg", "/travelassistant/ta06.jpg", "/travelassistant/ta07.jpg", "/travelassistant/ta08.jpg"]
         },
         {
-          "type": "Full Stack",
-          "tags": ["Full Stack", "Data Engineer"],
-          "title": "ECAN Data Pipeline",
-          "name": "ECAN Data Pipeline",
+          "type": {
+            "en": "Full Stack",
+            "zh": "全栈开发"
+          },
+          "tags": ["Data Engineer"],
+          "title": {
+            "en": "ECAN Data Pipeline",
+            "zh": "ECAN数据管道"
+          },
+          "name": {
+            "en": "ECAN Data Pipeline",
+            "zh": "坎特伯雷环境数据管道"
+          },
           "company": "University of Canterbury",
           "description": {
             "en": [
@@ -1158,10 +1248,19 @@ export const useAppStore = create(
           "img": ["/data472/v1.gif", "/data472/v2.gif", "/data472/472.jpg", "/data472/af01.jpg", "/data472/datapipeline.jpg", "/data472/FuelPriceData.jpg", "/data472/GasStationData.jpg", "/data472/ProjectManagement.jpg", "/data472/services.jpg", "/data472/WebApiResponse.jpg",]
         },
         {
-          "type": "Activity",
-          "title": "Assisted IT Meetups",
+          "type": {
+            "en": "Activity",
+            "zh": "社区活动"
+          },
+          "title": {
+            "en": "Assisted IT Meetups",
+            "zh": "协会志愿者"
+          },
           "company": "CITANZ",
-          "name": "CITANZ CHCH Events",
+          "name": {
+            "en": "CITANZ CHCH Events",
+            "zh": "CITANZ基督城活动"
+          },
           "description": {
             "en": "Active volunteer contributor to CITANZ (Chinese Information Technology Association of New Zealand) Christchurch chapter, facilitating monthly IT community meetups that bring together professionals, students, and technology enthusiasts. Serve as both speaker and engaged listener, sharing technical expertise on software development, data engineering, and emerging technologies while learning from diverse industry perspectives. Actively mentor newcomers to the tech industry, providing guidance on career development, technical skills, and industry best practices. Foster collaborative learning environments through organizing workshops, panel discussions, and networking sessions that strengthen the local tech community. Contribute to knowledge exchange initiatives by facilitating discussions on current technology trends, helping members solve technical challenges, and connecting professionals across different specializations. This volunteer work exemplifies the spirit of giving back to the community while continuously growing through peer learning and mentorship opportunities.",
             "zh": "作为新西兰计算机和信息技术协会(CITANZ)基督城分会的积极志愿者，协助举办月度IT社区聚会，汇聚专业人士、学生和技术爱好者。既担任演讲者又是积极的倾听者，分享软件开发、数据工程和新兴技术方面的专业知识，同时从多元化的行业视角中学习。积极指导技术行业新人，在职业发展、技术技能和行业最佳实践方面提供指导。通过组织研讨会、小组讨论和网络交流会，营造协作学习环境，加强本地技术社区建设。通过促进当前技术趋势讨论、帮助成员解决技术挑战、连接不同专业领域的专业人士，为知识交流倡议做出贡献。这项志愿工作体现了回馈社区的精神，同时通过同伴学习和导师机会持续成长。"
@@ -1175,9 +1274,18 @@ export const useAppStore = create(
           "img": ["/citanz/cita-00.jpg", "/citanz/cita-01.jpg", "/citanz/cita-02.jpg", "/citanz/cita-03.jpg", "/citanz/cita-04.jpg", "/citanz/cita-04.5.jpg", "/citanz/cita-05.jpg", "/citanz/cita-06.jpg", "/citanz/cita-07.jpg", "/citanz/cita-08.jpg", "/citanz/cita-09.jpg"]
         },
         {
-          "type": "Activity",
-          "title": "Save Kiwi",
-          "name": "AI Hackathon 2024",
+          "type": {
+            "en": "Activity",
+            "zh": "社区活动"
+          },
+          "title": {
+            "en": "Save Kiwi",
+            "zh": "拯救奇异鸟"
+          },
+          "name": {
+            "en": "AI Hackathon 2024",
+            "zh": "2024年AI黑客松"
+          },
           "company": "University of Canterbury",
           "description": {
             "en": "Design an AI solution to help existing organizations improve maintenance and analysis efficiency to better protect kiwi birds. It uses advanced tech to protect kiwi birds by combining smart cages, edge computing, and cloud analytics. Smart cages with RGB cameras monitor wildlife, while edge computing processes images in real-time using a vision-transformer model. This model distinguishes between kiwi birds, predators, and non-threatening animals. Predators are captured; others are released. Data is sent to a cloud platform for monitoring and alerts, enabling quick conservation responses.",
@@ -1245,7 +1353,7 @@ export const useAppStore = create(
           "location": "Christchurch, New Zealand",
           "year": "2024-2025",
           "link": "https://www.canterbury.ac.nz",
-          "img": "uc-ds-all.jpg",
+          "img": "/education/uc-ds-all.jpg",
         },
         {
           "type": "education",
@@ -1255,7 +1363,7 @@ export const useAppStore = create(
           "location": "Dunedin, New Zealand",
           "year": "2017-2021",
           "link": "https://www.op.ac.nz",
-          "img": "awared-best-programmer.jpg",
+          "img": "/education/awared-best-programmer.jpg",
         },
         {
           "type": "project",

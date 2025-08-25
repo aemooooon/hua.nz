@@ -288,9 +288,113 @@ async function preloadTexture(url, options = {}) {
 - 不要在UI组件中包含业务逻辑
 - 不要忘记更新导入路径
 
+## 🖼️ 图片优化最佳实践
+
+### 📋 优化策略
+
+本项目采用智能图片优化系统，自动提供最佳格式和性能：
+
+#### 🎯 格式优先级
+1. **AVIF** - 现代浏览器，最高压缩率 (节省50-90%文件大小)
+2. **WebP** - 广泛支持，良好压缩率 (节省25-50%文件大小)  
+3. **JPEG** - 通用格式，100%兼容性
+
+#### 📁 文件结构规范
+```text
+public/
+├── image.jpg          # 原始图片
+├── image.avif         # AVIF优化版本
+├── image.webp         # WebP优化版本
+├── folder/
+│   └── image.jpg      # 文件夹内原始图片
+├── folder-avif/
+│   └── image.avif     # 对应AVIF版本
+└── folder-webp/
+    └── image.webp     # 对应WebP版本
+```
+
+### 🛠️ 使用方法
+
+#### ✅ 推荐 - 使用OptimizedImage组件
+```jsx
+import OptimizedImage from '../ui/OptimizedImage';
+
+// 自动优化
+<OptimizedImage 
+  src="/gallery/photo.jpg" 
+  alt="照片"
+  className="w-full h-auto"
+  loading="lazy"
+/>
+
+// 可选配置
+<OptimizedImage 
+  src="/avatar.jpg"
+  alt="头像"
+  enableAvif={true}
+  enableWebp={true}
+  onLoad={() => console.log('加载完成')}
+/>
+```
+
+#### 🔧 高级用法 - 使用Hooks
+```jsx
+import { useOptimizedImage } from '../hooks/useOptimizedImage';
+
+function CustomImage({ src }) {
+  const { optimizedPath, isLoading } = useOptimizedImage(src);
+  
+  return (
+    <img 
+      src={optimizedPath} 
+      style={{ opacity: isLoading ? 0.5 : 1 }}
+    />
+  );
+}
+```
+
+### 📝 转换命令参考
+
+#### AVIF转换 (高质量)
+```bash
+ffmpeg -i input.jpg -c:v libaom-av1 -crf 23 -b:v 0 output.avif
+```
+
+#### WebP转换 (高质量)  
+```bash
+ffmpeg -i input.jpg -c:v libwebp -quality 95 output.webp
+```
+
+#### 批量转换示例
+```bash
+# 转换为AVIF
+for file in *.jpg; do
+  ffmpeg -i "$file" -c:v libaom-av1 -crf 23 -b:v 0 "${file%.jpg}.avif"
+done
+
+# 转换为WebP
+for file in *.jpg; do
+  ffmpeg -i "$file" -c:v libwebp -quality 95 "${file%.jpg}.webp"
+done
+```
+
+### ⚠️ 注意事项
+
+#### Do's ✅
+- 对所有静态图片使用OptimizedImage组件
+- 保持文件夹命名一致性 (folder → folder-avif, folder-webp)
+- 使用适当的图片质量参数 (AVIF: CRF 23, WebP: Quality 95)
+- 为图片添加有意义的alt属性
+
+#### Don'ts ❌
+- 不要直接使用`<img>`标签加载静态图片
+- 不要忽略图片格式优化
+- 不要使用过高的质量参数导致文件过大
+- 不要忘记为移动端优化图片尺寸
+
 ---
 
-**更新日期**: 2024年8月
+**更新日期**: 2025年8月
 **维护者**: 开发团队
 
 此规范会根据项目发展不断完善，请在修改代码结构时参考此文档。

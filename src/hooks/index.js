@@ -1,2 +1,2 @@
 export { default as useDeveloperPanel } from './useDeveloperPanel';
-export { default as useImagePreloader } from './useImagePreloader';
+export { useOptimizedImage, useOptimizedImages, useImagePreloader } from './useOptimizedImage';

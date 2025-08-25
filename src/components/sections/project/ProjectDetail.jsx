@@ -5,6 +5,7 @@ import { useAppStore } from '../../../store/useAppStore';
 import { usePhotoSwipe } from '../../../hooks/usePhotoSwipe';
 import GlowDivider from '../../ui/GlowDivider';
 import CornerCloseButton from '../../ui/CornerCloseButton';
+import OptimizedImage from '../../ui/OptimizedImage';
 import WordCloud from './WordCloud';
 import './ProjectDetail.css';
 
@@ -47,6 +48,16 @@ const ProjectDetailNew = ({ project = null, isOpen, onClose }) => {
 
   // 获取当前语言的项目文本
   const projectText = getProjectsText();
+
+  // 工具函数：获取多语言字段值
+  const getLocalizedValue = (field) => {
+    if (!field) return '';
+    if (typeof field === 'string') return field;
+    if (typeof field === 'object') {
+      return field[language] || field.en || field.zh || '';
+    }
+    return '';
+  };
 
   // 每次打开新项目时重置图片索引
   useEffect(() => {
@@ -129,7 +140,7 @@ const ProjectDetailNew = ({ project = null, isOpen, onClose }) => {
   // 准备 PhotoSwipe 图片数据
   const photoSwipeItems = images.map((img, index) => ({
     src: img,
-    title: `${language === 'en' ? project.name : (project.nameZh || project.name)} - ${index + 1}`,
+    title: `${getLocalizedValue(project.name)} - ${index + 1}`,
     width: 1200,
     height: 800,
   }));
@@ -213,7 +224,7 @@ const ProjectDetailNew = ({ project = null, isOpen, onClose }) => {
             <div key={index} className="bg-gradient-to-br from-theme-secondary/10 to-theme-primary/5 p-4 rounded-lg border border-theme-secondary/20">
               <div className="flex items-start justify-between mb-2">
                 <h4 className="text-theme-text-primary font-semibold">
-                  {language === 'en' ? subProject.name : (subProject.nameZh || subProject.name)}
+                  {getLocalizedValue(subProject.name)}
                 </h4>
                 <div className="flex gap-2">
                   {subProject.links?.live && (
@@ -272,7 +283,7 @@ const ProjectDetailNew = ({ project = null, isOpen, onClose }) => {
         {/* Header - Project Name */}
         <div className="text-center mb-12 pt-20 md:pt-12 lg:pt-16">
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-theme-text-primary leading-tight mb-6">
-            {language === 'en' ? project.name : (project.nameZh || project.name)}
+            {getLocalizedValue(project.name)}
           </h1>
           <GlowDivider className="mx-auto mb-8" width="w-full max-w-4xl" />
           <div className="text-xl md:text-2xl text-theme-text-white-70 font-light italic">
@@ -288,9 +299,9 @@ const ProjectDetailNew = ({ project = null, isOpen, onClose }) => {
             {!hasMultipleImages && (
               <div className="relative group">
                 <div className="aspect-[16/10] md:aspect-[16/9] lg:aspect-[21/9] overflow-hidden rounded-2xl shadow-2xl">
-                  <img
+                  <OptimizedImage
                     src={images[0]}
-                    alt={language === 'en' ? project.name : (project.nameZh || project.name)}
+                    alt={getLocalizedValue(project.name)}
                     className="w-full h-full object-cover cursor-pointer transition-all duration-700 group-hover:scale-105"
                     onClick={() => handleMainImageClick(0)}
                     onError={(e) => {
@@ -317,9 +328,9 @@ const ProjectDetailNew = ({ project = null, isOpen, onClose }) => {
                 {/* Main Display Image */}
                 <div className="relative group">
                   <div className="aspect-[16/7] lg:aspect-[21/8] overflow-hidden rounded-2xl shadow-2xl">
-                    <img
+                    <OptimizedImage
                       src={images[activeImageIndex]}
-                      alt={`${language === 'en' ? project.name : (project.nameZh || project.name)} - ${activeImageIndex + 1}`}
+                      alt={`${getLocalizedValue(project.name)} - ${activeImageIndex + 1}`}
                       className="w-full h-full object-cover cursor-pointer transition-all duration-700 ease-in-out opacity-100"
                       onClick={() => handleMainImageClick(activeImageIndex)}
                       onError={(e) => {
@@ -370,9 +381,9 @@ const ProjectDetailNew = ({ project = null, isOpen, onClose }) => {
                       }`}
                       style={{ cursor: 'pointer' }}
                     >
-                      <img
+                      <OptimizedImage
                         src={img}
-                        alt={`${language === 'en' ? project.name : (project.nameZh || project.name)} ${index + 1}`}
+                        alt={`${getLocalizedValue(project.name)} ${index + 1}`}
                         className="w-full h-full object-cover"
                         onError={(e) => {
                           e.target.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAiIGhlaWdodD0iNDgiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9IjgwIiBoZWlnaHQ9IjQ4IiBmaWxsPSIjMzMzIj48L3JlY3Q+PC9zdmc+';

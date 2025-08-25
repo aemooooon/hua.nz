@@ -1,7 +1,6 @@
 import { Suspense, lazy, useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import imageSrc from '../../../data/hua_icon_base64';
-import hoverImageSrc from '../../../assets/images/hua_500w1.jpg';
 import { useAppStore } from '../../../store/useAppStore';
 
 const EffectAvatar = lazy(() => import('../../background/EffectAvatar'));
@@ -128,7 +127,7 @@ const AboutSection = ({ language = 'en' }) => {
                                         </div>
                                     }
                                 >
-                                    <EffectAvatar imageSrc={imageSrc} hoverImageSrc={hoverImageSrc} />
+                                    <EffectAvatar imageSrc={imageSrc} hoverImageSrc="/hua_hover.jpg" />
                                 </Suspense>
                             ) : (
                                 <div className="w-full h-full flex items-center justify-center bg-theme-surface rounded-full">

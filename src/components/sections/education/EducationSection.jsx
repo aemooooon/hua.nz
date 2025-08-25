@@ -2,7 +2,7 @@ import { useState } from "react";
 import PropTypes from "prop-types";
 import { useAppStore } from "../../../store/useAppStore";
 import { ThemeTitle, ThemeSubtitle } from "../../ui/ThemeComponents";
-import GlowDivider from "../../ui/GlowDivider";
+import OptimizedImage from "../../ui/OptimizedImage";
 import "./EducationSection.css";
 
 // 图标组件
@@ -113,7 +113,7 @@ const EducationSection = ({ language }) => {
                                 
                                 {/* logo - 与时间信息底部对齐 */}
                                 <div className="rounded-xl p-4 self-end">
-                                    <img 
+                                    <OptimizedImage 
                                         src={degree.logo}
                                         alt={`${degree.institution} Logo`}
                                         className="w-32 h-32 xl:w-40 xl:h-40 object-contain opacity-90 hover:opacity-100 transition-opacity duration-300"
@@ -142,7 +142,7 @@ const EducationSection = ({ language }) => {
                             {/* 大学标志 */}
                             <div className="flex justify-center">
                                 <div className="rounded-xl p-4">
-                                    <img 
+                                    <OptimizedImage 
                                         src={degree.logo}
                                         alt={`${degree.institution} Logo`}
                                         className="w-24 h-24 sm:w-32 sm:h-32 object-contain opacity-90 hover:opacity-100 transition-opacity duration-300"
@@ -255,17 +255,19 @@ const EducationSection = ({ language }) => {
                                     >
                                         <div
                                             className="relative h-48 sm:h-48 md:h-48 lg:h-36 xl:h-48 rounded-xl overflow-hidden group cursor-pointer"
-                                            style={{
-                                                backgroundImage: `url(${project.image})`,
-                                                backgroundSize: "cover",
-                                                backgroundPosition: "center",
-                                            }}
                                             onClick={() => {
                                                 if (project.githubUrl) {
                                                     window.open(project.githubUrl, '_blank', 'noopener,noreferrer');
                                                 }
                                             }}
                                         >
+                                            {/* 项目图片 */}
+                                            <OptimizedImage
+                                                src={project.image}
+                                                alt={project.name}
+                                                className="w-full h-full object-cover"
+                                            />
+                                            
                                             {/* 图片覆盖层 */}
                                             <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent"></div>
 
@@ -333,12 +335,14 @@ const EducationSection = ({ language }) => {
                                         >
                                             <div
                                                 className="relative h-48 sm:h-48 rounded-xl overflow-hidden group cursor-pointer"
-                                                style={{
-                                                    backgroundImage: `url(${award.image})`,
-                                                    backgroundSize: "cover",
-                                                    backgroundPosition: "center",
-                                                }}
                                             >
+                                                {/* 奖项图片 */}
+                                                <OptimizedImage
+                                                    src={award.image}
+                                                    alt={award.title}
+                                                    className="w-full h-full object-cover"
+                                                />
+                                                
                                                 {/* 图片覆盖层 */}
                                                 <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent"></div>
 

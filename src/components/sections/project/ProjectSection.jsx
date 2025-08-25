@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import ProjectGeoViewer from './ProjectGeoViewer';
 import ProjectDetailNew from './ProjectDetail';
 import GlowDivider from '../../ui/GlowDivider';
+import OptimizedImage from '../../ui/OptimizedImage';
 import useAppStore from '../../../store/useAppStore';
 import { ThemeTitle } from '../../ui/ThemeComponents';
 
@@ -33,15 +34,23 @@ const ProjectSection = ({ language }) => {
 
     // 按项目的 type 或 tags 字段分组
     const projectsByCategory = projects.reduce((acc, project) => {
-        // 如果项目有 tags 数组，则为每个 tag 都创建分组
-        if (project.tags && Array.isArray(project.tags)) {
+        // 优先使用 type 字段进行分类
+        if (project.type) {
+            // 处理多语言类型字段
+            const category = typeof project.type === 'object' 
+                ? project.type[language] || project.type.en 
+                : project.type;
+            if (!acc[category]) acc[category] = [];
+            acc[category].push(project);
+        } else if (project.tags && Array.isArray(project.tags)) {
+            // 只有当没有 type 字段时才使用 tags 进行分组
             project.tags.forEach(tag => {
                 if (!acc[tag]) acc[tag] = [];
                 acc[tag].push(project);
             });
         } else {
-            // 兼容原有的 type 字段
-            const category = project.type || projectText.filter.other;
+            // 都没有的情况下使用默认分类
+            const category = projectText.filter.other;
             if (!acc[category]) acc[category] = [];
             acc[category].push(project);
         }
@@ -133,6 +142,42 @@ const ProjectSection = ({ language }) => {
                 text: 'text-yellow-400',
                 border: 'border-yellow-500/30 hover:border-yellow-500/50'
             },
+            // 中文类型
+            '全栈开发': {
+                bg: 'bg-blue-500/10',
+                text: 'text-blue-400',
+                border: 'border-blue-500/30 hover:border-blue-500/50'
+            },
+            '前端开发': {
+                bg: 'bg-purple-500/10',
+                text: 'text-purple-400',
+                border: 'border-purple-500/30 hover:border-purple-500/50'
+            },
+            'WebGL开发': {
+                bg: 'bg-pink-500/10',
+                text: 'text-pink-400',
+                border: 'border-pink-500/30 hover:border-pink-500/50'
+            },
+            '网站开发': {
+                bg: 'bg-cyan-500/10',
+                text: 'text-cyan-400',
+                border: 'border-cyan-500/30 hover:border-cyan-500/50'
+            },
+            '移动应用': {
+                bg: 'bg-green-500/10',
+                text: 'text-green-400',
+                border: 'border-green-500/30 hover:border-green-500/50'
+            },
+            '社区活动': {
+                bg: 'bg-yellow-500/10',
+                text: 'text-yellow-400',
+                border: 'border-yellow-500/30 hover:border-yellow-500/50'
+            },
+            '活动竞赛': {
+                bg: 'bg-yellow-500/10',
+                text: 'text-yellow-400',
+                border: 'border-yellow-500/30 hover:border-yellow-500/50'
+            },
             'Other': {
                 bg: 'bg-theme-bg-white-10',
                 text: 'text-theme-text-white-70',
@@ -219,9 +264,23 @@ const ProjectSection = ({ language }) => {
                             <div className="project-image-container">
                                 {project.img ? (
                                     Array.isArray(project.img) ? (
-                                        <img src={project.img[0]} alt={project.name || project.title} className="project-image" />
+                                        <OptimizedImage src={project.img[0]} alt={
+                                            project.name 
+                                                ? (typeof project.name === 'object' ? project.name[language] || project.name.en : project.name)
+                                                : (project.title 
+                                                    ? (typeof project.title === 'object' ? project.title[language] || project.title.en : project.title)
+                                                    : ''
+                                                )
+                                        } className="project-image" />
                                     ) : (
-                                        <img src={project.img} alt={project.name || project.title} className="project-image" />
+                                        <OptimizedImage src={project.img} alt={
+                                            project.name 
+                                                ? (typeof project.name === 'object' ? project.name[language] || project.name.en : project.name)
+                                                : (project.title 
+                                                    ? (typeof project.title === 'object' ? project.title[language] || project.title.en : project.title)
+                                                    : ''
+                                                )
+                                        } className="project-image" />
                                     )
                                 ) : (
                                     <div className="w-full h-full flex items-center justify-center text-4xl text-theme-text-white-40 bg-gradient-to-br from-slate-600/20 to-slate-800/20">
@@ -246,7 +305,10 @@ const ProjectSection = ({ language }) => {
                                 <div className="project-category-badge">
                                     {project.tags && Array.isArray(project.tags) 
                                         ? project.tags.join(', ') 
-                                        : (project.type || projectText.filter.other)
+                                        : (project.type 
+                                            ? (typeof project.type === 'object' ? project.type[language] || project.type.en : project.type)
+                                            : projectText.filter.other
+                                        )
                                     }
                                 </div>
                                 {/* 年份标签 - 右上角 */}
@@ -266,7 +328,13 @@ const ProjectSection = ({ language }) => {
                                 
                                 {/* 项目名称 */}
                                 <ThemeTitle level={3} className="project-title leading-snug line-clamp-2">
-                                    {project.name || project.title}
+                                    {project.name 
+                                        ? (typeof project.name === 'object' ? project.name[language] || project.name.en : project.name)
+                                        : (project.title 
+                                            ? (typeof project.title === 'object' ? project.title[language] || project.title.en : project.title)
+                                            : ''
+                                        )
+                                    }
                                 </ThemeTitle>
                                 
                                 {/* 项目统计信息已移除 - 卡片上不显示统计和技术栈信息 */}

@@ -2,18 +2,29 @@ import { useEffect, useRef, useState, useCallback } from "react";
 import PropTypes from "prop-types";
 import { gsap } from "gsap";
 import CircularLoadingIndicator from "../ui/CircularLoadingIndicator";
+import OptimizedImage from "../ui/OptimizedImage";
 import webglResourceManager from "../../utils/WebGLResourceManager";
 
 /**
  * EffectAvatar - 高性能粒子动画头像效果组件
  * 
- * 功能特性：
- * - 使用 Web Worker 处理粒子计算，避免阻塞主线程
- * - GSAP 动画库提供流畅的过渡效果
- * - Canvas 2D 渲染粒子动画
- * - Hover 时显示清晰头像照片
- * - 响应式设计，支持窗口缩放
- * - 内存和资源自动清理
+ * 核心功能：
+ * - 粒子动画系统：Web Worker处理粒子计算，保持60fps流畅性能
+ * - 智能图片优化：自动加载AVIF/WebP格式，提升加载速度
+ * - 交互式体验：hover时显示清晰头像，平滑的动画过渡
+ * - 响应式设计：自适应窗口大小变化，保持最佳显示效果
+ * - 资源管理：自动清理内存和WebGL资源，避免内存泄漏
+ * 
+ * 技术亮点：
+ * - Canvas 2D + Web Worker：分离渲染和计算，提升性能
+ * - GSAP动画引擎：弹性动画效果，增强用户体验
+ * - 图片格式优化：AVIF > WebP > JPEG，最大化压缩效果
+ * - 内存优化：OffscreenCanvas + ImageBitmap高效图片处理
+ * 
+ * 适用场景：
+ * - 个人网站头像展示
+ * - 创意交互界面
+ * - 品牌展示页面
  */
 const EffectAvatar = ({ imageSrc, hoverImageSrc }) => {
     const canvasRef = useRef(null);
@@ -216,6 +227,16 @@ const EffectAvatar = ({ imageSrc, hoverImageSrc }) => {
     const handleMouseEnter = useCallback(() => {
         setIsHovered(true);
         
+        // 控制Canvas淡出
+        const canvas = canvasRef.current;
+        if (canvas) {
+            gsap.to(canvas, {
+                opacity: 0.1,
+                duration: 0.3,
+                ease: "power2.out"
+            });
+        }
+        
         const hoverContainer = hoverImgRef.current?.parentElement;
         if (hoverContainer) {
             // 停止冲突的动画，避免性能浪费
@@ -241,6 +262,19 @@ const EffectAvatar = ({ imageSrc, hoverImageSrc }) => {
 
     // 鼠标离开显示粒子动画（优化版）
     const handleMouseLeave = useCallback(() => {
+        // 立即设置状态，让Canvas开始显示粒子动画
+        setIsHovered(false);
+        
+        // 控制Canvas淡入
+        const canvas = canvasRef.current;
+        if (canvas) {
+            gsap.to(canvas, {
+                opacity: 0.85,
+                duration: 0.5,
+                ease: "power2.out"
+            });
+        }
+        
         const hoverContainer = hoverImgRef.current?.parentElement;
         if (hoverContainer) {
             gsap.killTweensOf(hoverContainer);
@@ -250,7 +284,6 @@ const EffectAvatar = ({ imageSrc, hoverImageSrc }) => {
                 duration: 0.8,
                 ease: "elastic.out",
                 onComplete: () => {
-                    setIsHovered(false);
                     // 鼠标离开时重新触发粒子散开动画
                     setTimeout(animateParticles, 100);
                 }
@@ -314,12 +347,11 @@ const EffectAvatar = ({ imageSrc, hoverImageSrc }) => {
                     top: "50%",
                     left: "50%",
                     transform: "translate(-50%, -30%) scale(1.5)",
-                    opacity: isLoading ? 0 : (isHovered ? 0.1 : 0.85), // 调整不悬停时的透明度从1变为0.85，让雷达扫描能透出
-                    transition: "opacity 0.5s ease",
+                    opacity: isLoading ? 0 : 0.85, // 移除isHovered控制，让GSAP处理
+                    // 移除transition，让GSAP完全控制动画
                     zIndex: 1, // 确保粒子在雷达扫描效果上方，但不会完全挡住
                     // 优化 Canvas 渲染性能
-                    imageRendering: "auto",
-                    willChange: isHovered ? "opacity" : "auto"
+                    imageRendering: "auto"
                 }}
             />
 
@@ -346,7 +378,7 @@ const EffectAvatar = ({ imageSrc, hoverImageSrc }) => {
                     willChange: isHovered ? "opacity, transform" : "auto"
                 }}
             >
-                <img
+                <OptimizedImage
                     ref={hoverImgRef}
                     src={hoverImageSrc}
                     alt="清晰头像"
