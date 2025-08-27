@@ -10,7 +10,8 @@
  * 
  * 支持的图片结构：
  * - 根目录图片：/image.jpg → /image.avif
- * - 文件夹图片：/folder/image.jpg → /folder-avif/image.avif
+ * - 单层文件夹：/folder/image.jpg → /folder-avif/image.avif
+ * - 多层文件夹：/realibox/official/image.jpg → /realibox-avif/official/image.avif
  * 
  * API使用示例：
  * ```javascript
@@ -101,14 +102,14 @@ export class ImageOptimizer {
 
         // 按优先级选择格式：AVIF > WebP > 原始格式
         if (enableAvif && this.supportedFormats.get('avif')) {
-            const avifPath = folder ? `/${folder}-avif/${filename}.avif` : `/${filename}.avif`;
+            const avifPath = this.buildOptimizedPath(folder, filename, 'avif');
             if (await this.checkImageExists(avifPath)) {
                 return avifPath;
             }
         }
 
         if (enableWebp && this.supportedFormats.get('webp')) {
-            const webpPath = folder ? `/${folder}-webp/${filename}.webp` : `/${filename}.webp`;
+            const webpPath = this.buildOptimizedPath(folder, filename, 'webp');
             if (await this.checkImageExists(webpPath)) {
                 return webpPath;
             }
@@ -173,6 +174,37 @@ export class ImageOptimizer {
         } catch (error) {
             console.error('解析图片路径失败:', error);
             return null;
+        }
+    }
+
+    /**
+     * 构建优化格式的图片路径
+     * 支持多层文件夹结构，例如：
+     * - realibox/official/image.jpg → realibox-avif/official/image.avif
+     * - gallery/image.jpg → gallery-avif/image.avif  
+     * - image.jpg → image.avif
+     * @param {string} folder - 文件夹路径
+     * @param {string} filename - 文件名（不含扩展名）
+     * @param {string} format - 目标格式 (avif/webp)
+     * @returns {string} - 优化后的路径
+     */
+    buildOptimizedPath(folder, filename, format) {
+        if (!folder) {
+            // 根目录图片：image.jpg → image.avif
+            return `/${filename}.${format}`;
+        }
+
+        // 多层文件夹处理
+        const folderParts = folder.split('/');
+        const rootFolder = folderParts[0]; // 第一层文件夹，如 'realibox'
+        const subPath = folderParts.slice(1).join('/'); // 子路径，如 'official'
+
+        if (subPath) {
+            // 多层结构：realibox/official/image.jpg → realibox-avif/official/image.avif
+            return `/${rootFolder}-${format}/${subPath}/${filename}.${format}`;
+        } else {
+            // 单层结构：gallery/image.jpg → gallery-avif/image.avif
+            return `/${rootFolder}-${format}/${filename}.${format}`;
         }
     }
 

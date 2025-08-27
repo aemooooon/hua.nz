@@ -277,7 +277,7 @@ const contentConfig = {
               description: "A P2P file-sharing and messaging app built using Rust (backend) and React with Tauri (frontend). Integrated libp2p for decentralised networking.",
               technologies: ["Rust", "React", "Tauri", "libp2p"],
               githubUrl: "https://github.com/aemooooon/swapbytes",
-              image: "/swapbytes.jpg"
+              image: "/education/swapbytes.jpg"
             },
             {
               name: "Digital Pet",
@@ -291,7 +291,7 @@ const contentConfig = {
               description: "A collaborative cloud-based automation system for collecting and processing environmental data from 17 different sources.",
               technologies: ["Apache Airflow", "Python", "GraphQL", "AWS"],
               githubUrl: "https://github.com/aemooooon/DATA472-Individual-Project-Submission",
-              image: "/ecan.jpg"
+              image: "/education/ecan.jpg"
             }
           ]
         },
@@ -359,7 +359,7 @@ const contentConfig = {
             {
               title: "Academic Excellence & Best Programmer",
               year: "2021",
-              image: "/awared-best-programmer.jpg"
+              image: "/education//awared-best-programmer.jpg"
             },
             {
               title: "Excellence in the Bachelor of Information Technology",
@@ -747,7 +747,7 @@ const contentConfig = {
             {
               title: "学术卓越与最佳程序员奖",
               year: "2021",
-              image: "/awared-best-programmer.jpg"
+              image: "/education/awared-best-programmer.jpg"
             },
             {
               title: "信息技术学士优秀奖",

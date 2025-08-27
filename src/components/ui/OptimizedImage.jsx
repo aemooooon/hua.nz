@@ -46,11 +46,11 @@
  * - 自动选择: 确保最佳用户体验
  */
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, forwardRef } from 'react';
 import PropTypes from 'prop-types';
 import imageOptimizer from '../../utils/image/ImageOptimizer.js';
 
-const OptimizedImage = ({ 
+const OptimizedImage = forwardRef(({ 
     src, 
     alt, 
     className = '', 
@@ -60,7 +60,7 @@ const OptimizedImage = ({
     enableAvif = true,
     enableWebp = true,
     ...props 
-}) => {
+}, ref) => {
     // 优化后的图片路径，初始为null避免原始图片的不必要请求
     const [optimizedSrc, setOptimizedSrc] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
@@ -121,6 +121,7 @@ const OptimizedImage = ({
     return (
         optimizedSrc ? (
             <img
+                ref={ref}
                 src={optimizedSrc}
                 alt={alt}
                 className={`${className} ${isLoading ? 'opacity-0' : 'opacity-100'} transition-opacity duration-300`}
@@ -132,13 +133,17 @@ const OptimizedImage = ({
         ) : (
             // 优化过程中的占位符，保持布局稳定
             <div 
+                ref={ref}
                 className={`${className} opacity-0`}
                 {...props}
                 style={{ ...props.style, minHeight: '1px' }}
             />
         )
     );
-};
+});
+
+// 设置显示名称用于调试
+OptimizedImage.displayName = 'OptimizedImage';
 
 OptimizedImage.propTypes = {
     /** 图片源路径 */
