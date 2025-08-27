@@ -212,6 +212,59 @@
   animation-delay: 7s;
 }
 
+/* ========================================
+   LCP优化和字体加载优化
+   ======================================== */
+
+/* 确保标题在字体加载前可见，避免FOIT (Flash of Invisible Text) */
+.font-beauRivage {
+  font-display: swap;
+}
+
+/* 为LCP元素提供初始可见状态 */
+h1.text-theme-text-primary {
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+/* ========================================
+   标准模式动画 - 缺失的关键帧定义
+   ======================================== */
+
+/* 标准模式标题入场动画 - 用于非开场动画模式 */
+@keyframes movieTitleEntrance {
+  0% {
+    transform: translateX(-50%) translateY(-30px) scale(0.9);
+    opacity: 0;
+    filter: blur(2px);
+  }
+  
+  60% {
+    transform: translateX(-50%) translateY(5px) scale(1.02);
+    opacity: 0.8;
+    filter: blur(0.5px);
+  }
+  
+  100% {
+    transform: translateX(-50%) translateY(0) scale(1);
+    opacity: 1;
+    filter: blur(0);
+  }
+}
+
+/* 标准模式口号入场动画 - 用于非开场动画模式 */
+@keyframes sloganEntrance {
+  0% {
+    transform: translateX(-50%) translateY(20px) scale(0.95);
+    opacity: 0;
+  }
+  
+  100% {
+    transform: translateX(-50%) translateY(0) scale(1);
+    opacity: 1;
+  }
+}
+
 /* 立方体的震撼入场动画样式类 */
 .cube-grand-entrance {
   /* 这个类会与Three.js的动画配合 */

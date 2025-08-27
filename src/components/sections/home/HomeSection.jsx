@@ -66,7 +66,7 @@ const HomeSection = ({
             <div className={`absolute top-8 left-1/2 transform -translate-x-1/2 text-center text-white z-50 w-full px-4 ${
                 enableOpeningAnimation ? 'grand-title-entrance' : ''
             }`} style={!enableOpeningAnimation ? {
-                animation: 'movieTitleEntrance 4s ease-out forwards 1s',
+                animation: 'movieTitleEntrance 2s ease-out forwards 0.3s', // 缩短动画时间和延迟
                 animationFillMode: 'both'
             } : {}}>
                 <div className="flex flex-col items-center justify-center w-full relative">
@@ -97,7 +97,7 @@ const HomeSection = ({
             }`} style={{
                 bottom: 'max(4rem, env(safe-area-inset-bottom) + 3rem)', // 使用安全区域，确保在所有设备上都可见
                 ...(!enableOpeningAnimation ? {
-                    animation: 'sloganEntrance 3s ease-out forwards 5s',
+                    animation: 'sloganEntrance 1.5s ease-out forwards 2s', // 缩短动画时间和延迟
                     animationFillMode: 'both'
                 } : {})
             }}>
