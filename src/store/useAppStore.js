@@ -937,7 +937,7 @@ export const useAppStore = create(
             "live": "https://www.hua.nz/",
             "github": "https://github.com/aemooooon/hua.nz"
           },
-          "img": ["/hua.nz/hua.nz.1.jpg", "/hua.nz/hua.nz.2.jpg", "/hua.nz/hua.nz.3.jpg", "/hua.nz/hua.nz.4.jpg", "/hua.nz/hua.nz.5.jpg", "/hua.nz/hua.nz.6.jpg", "/hua.nz/hua.nz.7.jpg", "/hua.nz/hua.nz.8.jpg", "/hua.nz/hua.nz.9.jpg", "/hua.nz/hua.nz.10.jpg"]
+          "img": ["/hua.nz/hua.nz.1.jpg", "/hua.nz/hua.nz.2.jpg", "/hua.nz/hua.nz.3.jpg", "/hua.nz/hua.nz.4.jpg", "/hua.nz/hua.nz.5.jpg", "/hua.nz/hua.nz.6.jpg", "/hua.nz/hua.nz.7.jpg", "/hua.nz/hua.nz.8.jpg", "/hua.nz/hua.nz.9.jpg", "/hua.nz/hua.nz.10.jpg", "/hua.nz/hua.nz.11.jpg", "/hua.nz/hua.nz.12.jpg", "/hua.nz/hua.nz.13.jpg", "/hua.nz/hua.nz.14.jpg", "/hua.nz/hua.nz.15.jpg", "/hua.nz/hua.nz.16.jpg", "/hua.nz/hua.nz.17.jpg" ]
         },
         {
           "type": {

@@ -39,7 +39,6 @@ const SmartScrollManager = () => {
         language,
         enableOpeningAnimation,
         isProjectModalOpen,
-        isPointerLocked
     } = useAppStore();
     
     const containerRef = useRef(null);
@@ -55,9 +54,7 @@ const SmartScrollManager = () => {
     const [previewOffset, setPreviewOffset] = useState(0);
     const [isBouncing, setIsBouncing] = useState(false);
     const [bounceDirection, setBounceDirection] = useState('none');
-    const [showPointerLockWarning, setShowPointerLockWarning] = useState(false);
     const bounceTimerRef = useRef();
-    const pointerLockWarningTimeoutRef = useRef();
     const touchStartRef = useRef({ x: 0, y: 0, time: 0 });
     const touchMoveAccumulatorRef = useRef(0);
     
@@ -92,22 +89,6 @@ const SmartScrollManager = () => {
     const SCROLL_RESET_TIME = 256;
     const PREVIEW_MAX_OFFSET = 80;
 
-    // 触发指针锁定警告
-    const triggerPointerLockWarning = useCallback(() => {
-        console.log('触发指针锁定警告');
-        setShowPointerLockWarning(true);
-        
-        // 清理之前的定时器
-        if (pointerLockWarningTimeoutRef.current) {
-            clearTimeout(pointerLockWarningTimeoutRef.current);
-        }
-        
-        // 设置自动消失定时器
-        pointerLockWarningTimeoutRef.current = setTimeout(() => {
-            console.log('自动关闭警告');
-            setShowPointerLockWarning(false);
-        }, 3000);
-    }, []);
 
     // 触摸事件处理 - 支持移动端滑动翻页
     const handleTouchStart = useCallback((event) => {
@@ -133,15 +114,6 @@ const SmartScrollManager = () => {
         if (Math.abs(deltaX) > Math.abs(deltaY)) return;
         
         touchMoveAccumulatorRef.current = Math.abs(deltaY);
-        
-        // 指针锁定状态处理
-        if (isPointerLocked) {
-            if (touchMoveAccumulatorRef.current >= MOBILE_TOUCH_THRESHOLD) {
-                touchMoveAccumulatorRef.current = 0;
-                triggerPointerLockWarning();
-            }
-            return;
-        }
         
         // 分段滚动模式处理 - 优先处理，确保主页和无内容溢出页面能正常翻页
         if (isHomePage || (!isContentOverflowing && scrollMode === 'slide')) {
@@ -193,8 +165,8 @@ const SmartScrollManager = () => {
             // 如果不在边界，让默认滚动行为继续
             return;
         }
-    }, [isScrolling, isProjectModalOpen, isPointerLocked, scrollMode, isContentOverflowing, isHomePage, 
-        currentSection, sections.length, navigateNext, navigatePrev, triggerPointerLockWarning]);
+    }, [isScrolling, isProjectModalOpen, scrollMode, isContentOverflowing, isHomePage, 
+        currentSection, sections.length, navigateNext, navigatePrev]);
 
     const handleTouchEnd = useCallback(() => {
         touchMoveAccumulatorRef.current = 0;
@@ -405,19 +377,7 @@ const SmartScrollManager = () => {
     const handleWheel = useCallback((event) => {
         const now = Date.now();
         if (isScrolling || isProjectModalOpen) return;
-        
-        // 检查指针锁定状态
-        if (isPointerLocked) {
-            const deltaY = Math.abs(event.deltaY);
-            scrollAccumulatorRef.current += deltaY;
-            
-            // 当滚动累积超过阈值时显示警告
-            if (scrollAccumulatorRef.current >= DESKTOP_SCROLL_THRESHOLD) {
-                scrollAccumulatorRef.current = 0; // 重置累积器
-                triggerPointerLockWarning();
-            }
-            return; // 阻止进一步的滚动处理
-        }
+    
         
         // 内容滚动模式：优先处理内容滚动
         if (scrollMode === 'content' && isContentOverflowing && !isHomePage) {
@@ -549,17 +509,10 @@ const SmartScrollManager = () => {
         }
     }, [isScrolling, isProjectModalOpen, scrollMode, isContentOverflowing, isHomePage, currentSection, sections.length, 
         navigateNext, navigatePrev, currentSectionConfig, isPreviewingScroll, sectionScrollPositions,
-        setSectionScrollPositions, setIsPreviewingScroll, setPreviewOffset, triggerBounceAnimation, handleScrollPreview, triggerPreviewBounceBack, 
-        isPointerLocked, triggerPointerLockWarning]);
+        setSectionScrollPositions, setIsPreviewingScroll, setPreviewOffset, triggerBounceAnimation, handleScrollPreview, triggerPreviewBounceBack]);
 
     // 键盘事件处理
     const handleKeyDown = useCallback((event) => {
-        // 🔥 关键修复：如果指针被锁定，阻止所有导航键盘事件
-        if (isPointerLocked) {
-            console.log('🔒 指针锁定模式下阻止键盘导航:', event.key);
-            return; // 直接返回，不处理任何键盘导航
-        }
-        
         if (isScrolling || isProjectModalOpen) return;
         
         const container = contentRef.current;
@@ -645,7 +598,7 @@ const SmartScrollManager = () => {
                 break;
             }
         }
-    }, [isScrolling, isProjectModalOpen, isPointerLocked, scrollMode, isContentOverflowing, isHomePage, currentSection, sections.length, navigateNext, navigatePrev, navigateToSection]);
+    }, [isScrolling, isProjectModalOpen, scrollMode, isContentOverflowing, isHomePage, currentSection, sections.length, navigateNext, navigatePrev, navigateToSection]);
 
     // 监听section变化，重置滚动状态
     useEffect(() => {
@@ -861,53 +814,6 @@ const SmartScrollManager = () => {
             {/* 过渡遮罩 */}
             {isScrolling && (
                 <div className="fixed inset-0 bg-black/20 z-30 transition-opacity duration-300" />
-            )}
-
-            {/* 指针锁定警告提示 */}
-            {showPointerLockWarning && (
-                <div 
-                    className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50 transition-all duration-300 animate-in fade-in slide-in-from-bottom-4 cursor-pointer"
-                    onClick={() => {
-                        console.log('用户点击关闭警告');
-                        setShowPointerLockWarning(false);
-                        if (pointerLockWarningTimeoutRef.current) {
-                            clearTimeout(pointerLockWarningTimeoutRef.current);
-                        }
-                    }}
-                >
-                    <div className="bg-white/10 backdrop-blur-md rounded-2xl p-6 text-white border border-white/20 max-w-sm text-center shadow-2xl">
-                        {/* 键盘图标 */}
-                        <div className="flex items-center justify-center mb-4">
-                            <svg className="w-8 h-8 text-white/70" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 3h6l-3 2.25M12 5.25V7.5m0 0l3-2.25M12 7.5l-3-2.25M6 18h12a2 2 0 002-2V8a2 2 0 00-2-2H6a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                            </svg>
-                        </div>
-                        
-                        {/* 主提示文字 */}
-                        <div className="text-center mb-4">
-                            <p className="text-xl font-semibold text-white mb-2 leading-relaxed">
-                                {language === 'zh' 
-                                    ? (
-                                        <>
-                                            请先按 <span className="inline-flex items-center px-2 py-1 mx-1 bg-white/20 rounded text-sm font-mono border border-white/30">ESC</span> 键
-                                        </>
-                                    )
-                                    : (
-                                        <>
-                                            Press <span className="inline-flex items-center px-2 py-1 mx-1 bg-white/20 rounded text-sm font-mono border border-white/30">ESC</span> to exit
-                                        </>
-                                    )
-                                }
-                            </p>
-                            <p className="text-sm text-white/70 leading-relaxed">
-                                {language === 'zh' 
-                                    ? '退出长廊后再翻页'
-                                    : 'corridor before navigating'
-                                }
-                            </p>
-                        </div>
-                    </div>
-                </div>
             )}
 
         </div>
