@@ -669,8 +669,9 @@ const HeroCube = ({ enableOpeningAnimation = false, onAnimationComplete, onReady
                     0.5
                 )
 
-                // 阶段2: 电影级6面展示序列 - 修正旋转方向 (2.5-20.5s)
-                // 每个面展示3秒：进入1秒 + 停留2秒
+                // 阶段2: 电影级6面展示序列 - 智能速度曲线控制 (2.5-20.5s)
+                // 每个面展示3秒：快速进入1.5秒(前快后慢) + 快速退出1.5秒(前慢后快)
+                // 核心：通过速度曲线控制实现进入后期和退出前期的特写效果
                 
                 // === 面1: Education面 (底面, Y-, 索引3) - 教育背景 (2.5-5.5s) ===
                 .to(
@@ -679,8 +680,8 @@ const HeroCube = ({ enableOpeningAnimation = false, onAnimationComplete, onReady
                         x: -Math.PI * 0.5, // 修正：底面朝向用户（负旋转）
                         y: 0,
                         z: 0,
-                        duration: 1.0,
-                        ease: "power2.out",
+                        duration: 1.5, // 进入时间：1.5秒，前快后慢
+                        ease: "power3.out", // 强力减速：快速开始，大幅减速结束
                     },
                     2.5
                 )
@@ -689,24 +690,25 @@ const HeroCube = ({ enableOpeningAnimation = false, onAnimationComplete, onReady
                     {
                         x: 0,
                         y: 0,
-                        z: 5, // 修正：从正面观看底面
-                        duration: 1.0,
-                        ease: "power2.out",
+                        z: 5, 
+                        duration: 1.5, // 进入时间：1.5秒，前快后慢
+                        ease: "power3.out", // 与cube旋转同步减速
                         onUpdate: () => camera.lookAt(cube.position),
                     },
                     2.5
                 )
-                // 3.5-5.5s: Education面完整展示 (2秒)
+                // 4.0-5.5s: Education面特写静止时间 (1.5秒)
 
                 // === 面2: About面 (右面, X+, 索引0) - 个人简介 (5.5-8.5s) ===
+                // 退出Education + 进入About的复合动画
                 .to(
                     cube.rotation,
                     {
                         x: 0, // 恢复水平
                         y: Math.PI * 0.5, // 修正：右面朝向用户（正旋转）
-                        z: 0,
-                        duration: 1.0,
-                        ease: "power2.inOut",
+                        z: Math.PI, // 修复：添加180度Z轴旋转，让about图片从倒立改为站立
+                        duration: 1.5, // 退出Education(前慢) + 进入About(后慢)
+                        ease: "power2.inOut", // 慢-快-慢：前期慢(Education特写) + 中期快 + 后期慢(About特写)
                     },
                     5.5
                 )
@@ -715,24 +717,25 @@ const HeroCube = ({ enableOpeningAnimation = false, onAnimationComplete, onReady
                     {
                         x: 0,
                         y: 0,
-                        z: 5, // 保持从正面观看
-                        duration: 1.0,
-                        ease: "power2.inOut",
+                        z: 5,
+                        duration: 1.5, // 与cube旋转同步
+                        ease: "power2.inOut", // 慢-快-慢曲线
                         onUpdate: () => camera.lookAt(cube.position),
                     },
                     5.5
                 )
-                // 6.5-8.5s: About面完整展示 (2秒)
+                // 7.0-8.5s: About面特写静止时间 (1.5秒)
 
                 // === 面3: Projects面 (背面, Z-, 索引5) - 项目作品 (8.5-11.5s) ===
+                // 退出About + 进入Projects的复合动画
                 .to(
                     cube.rotation,
                     {
                         x: 0,
                         y: Math.PI, // 背面朝向用户（180度旋转）
                         z: Math.PI, // 翻转图片显示
-                        duration: 1.0,
-                        ease: "power2.inOut",
+                        duration: 1.5, // 退出About(前慢) + 进入Projects(后慢)
+                        ease: "power2.inOut", // 慢-快-慢：前期慢(About特写) + 中期快 + 后期慢(Projects特写)
                     },
                     8.5
                 )
@@ -742,23 +745,24 @@ const HeroCube = ({ enableOpeningAnimation = false, onAnimationComplete, onReady
                         x: 0,
                         y: 0,
                         z: 5,
-                        duration: 1.0,
-                        ease: "power2.inOut",
+                        duration: 1.5, // 与cube旋转同步
+                        ease: "power2.inOut", // 慢-快-慢曲线
                         onUpdate: () => camera.lookAt(cube.position),
                     },
                     8.5
                 )
-                // 9.5-11.5s: Projects面完整展示 (2秒)
+                // 10.0-11.5s: Projects面特写静止时间 (1.5秒)
 
                 // === 面4: Gallery面 (左面, X-, 索引1) - 作品集 (11.5-14.5s) ===
+                // 退出Projects + 进入Gallery的复合动画
                 .to(
                     cube.rotation,
                     {
                         x: 0,
                         y: -Math.PI * 0.5, // 修正：左面朝向用户（负旋转）
-                        z: 0,
-                        duration: 1.0,
-                        ease: "power2.inOut",
+                        z: Math.PI, // 修复：添加180度Z轴旋转，让gallery图片从倒立改为站立
+                        duration: 1.5, // 退出Projects(前慢) + 进入Gallery(后慢)
+                        ease: "power2.inOut", // 慢-快-慢：前期慢(Projects特写) + 中期快 + 后期慢(Gallery特写)
                     },
                     11.5
                 )
@@ -768,23 +772,24 @@ const HeroCube = ({ enableOpeningAnimation = false, onAnimationComplete, onReady
                         x: 0,
                         y: 0,
                         z: 5,
-                        duration: 1.0,
-                        ease: "power2.inOut",
+                        duration: 1.5, // 与cube旋转同步
+                        ease: "power2.inOut", // 慢-快-慢曲线
                         onUpdate: () => camera.lookAt(cube.position),
                     },
                     11.5
                 )
-                // 12.5-14.5s: Gallery面完整展示 (2秒)
+                // 13.0-14.5s: Gallery面特写静止时间 (1.5秒)
 
                 // === 面5: Home面 (正面, Z+, 索引4) - 首页视频 (14.5-17.5s) ===
+                // 退出Gallery + 进入Home的复合动画
                 .to(
                     cube.rotation,
                     {
                         x: 0,
                         y: 0, // 正面朝向用户（0度）
                         z: 0,
-                        duration: 1.0,
-                        ease: "power2.inOut",
+                        duration: 1.5, // 退出Gallery(前慢) + 进入Home(后慢)
+                        ease: "power2.inOut", // 慢-快-慢：前期慢(Gallery特写) + 中期快 + 后期慢(Home特写)
                     },
                     14.5
                 )
@@ -794,23 +799,24 @@ const HeroCube = ({ enableOpeningAnimation = false, onAnimationComplete, onReady
                         x: 0,
                         y: 0,
                         z: 5,
-                        duration: 1.0,
-                        ease: "power2.inOut",
+                        duration: 1.5, // 与cube旋转同步
+                        ease: "power2.inOut", // 慢-快-慢曲线
                         onUpdate: () => camera.lookAt(cube.position),
                     },
                     14.5
                 )
-                // 15.5-17.5s: Home面完整展示 (2秒)
+                // 16.0-17.5s: Home面特写静止时间 (1.5秒)
 
                 // === 面6: Contact面 (顶面, Y+, 索引2) - 联系方式 (17.5-20.5s) ===
+                // 退出Home + 进入Contact的复合动画
                 .to(
                     cube.rotation,
                     {
                         x: Math.PI * 0.5, // 修正：顶面朝向用户（正旋转）
                         y: 0,
-                        z: 0,
-                        duration: 1.0,
-                        ease: "power2.inOut",
+                        z: Math.PI, // 修复：添加180度Z轴旋转，让contact图片从倒立改为站立
+                        duration: 1.5, // 退出Home(前慢) + 进入Contact(后慢)
+                        ease: "power2.inOut", // 慢-快-慢：前期慢(Home特写) + 中期快 + 后期慢(Contact特写)
                     },
                     17.5
                 )
@@ -820,26 +826,26 @@ const HeroCube = ({ enableOpeningAnimation = false, onAnimationComplete, onReady
                         x: 0,
                         y: 0,
                         z: 5,
-                        duration: 1.0,
-                        ease: "power2.inOut",
+                        duration: 1.5, // 与cube旋转同步
+                        ease: "power2.inOut", // 慢-快-慢曲线
                         onUpdate: () => camera.lookAt(cube.position),
                     },
                     17.5
                 )
-                // 18.5-20.5s: Contact面完整展示 (2秒)
+                // 19.0-20.5s: Contact面特写静止时间 (1.5秒)
 
-                // 平滑过渡：从顶部视角缓慢回到标准位置 (14.5-15.5s)
+                // 平滑过渡：从顶部视角缓慢回到标准位置 (19.0-20.5s) - 与Contact面特写同时进行
                 .to(
                     camera.position,
                     {
                         x: 0,
                         y: 2,
                         z: 6, // 先到中间过渡位置
-                        duration: 0.5,
+                        duration: 0.7,
                         ease: "power2.inOut",
                         onUpdate: () => camera.lookAt(cube.position),
                     },
-                    14.5
+                    19.0 // 在Contact面特写期间开始过渡
                 )
                 .to(
                     camera.position,
@@ -847,11 +853,11 @@ const HeroCube = ({ enableOpeningAnimation = false, onAnimationComplete, onReady
                         x: 0,
                         y: 0,
                         z: 10, // 再到最终标准位置
-                        duration: 0.5,
+                        duration: 0.8,
                         ease: "power2.out",
                         onUpdate: () => camera.lookAt(cube.position),
                     },
-                    15.0
+                    19.7 // 在Contact面特写结束前完成
                 )
 
                 // 阶段3: 戏剧性放大和旋转 - 摄像机进入cube内部 (20.5-22.2s)
