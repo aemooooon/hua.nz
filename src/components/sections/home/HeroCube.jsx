@@ -961,7 +961,7 @@ const HeroCube = ({ enableOpeningAnimation = false, onAnimationComplete, onReady
                     26.7
                 )
 
-                // 第1次弹跳
+                // 第1次弹跳 - 修复时间点
                 .to(
                     cube.scale,
                     {
@@ -971,7 +971,7 @@ const HeroCube = ({ enableOpeningAnimation = false, onAnimationComplete, onReady
                         duration: 0.15,
                         ease: "power2.out",
                     },
-                    22.1
+                    27.1 // 修复：从22.1改为27.1
                 )
                 .to(
                     cube.scale,
@@ -982,10 +982,10 @@ const HeroCube = ({ enableOpeningAnimation = false, onAnimationComplete, onReady
                         duration: 0.2,
                         ease: "bounce.out",
                     },
-                    22.25
+                    27.25 // 修复：从22.25改为27.25
                 )
 
-                // 第2次弹跳
+                // 第2次弹跳 - 修复时间点
                 .to(
                     cube.scale,
                     {
@@ -995,7 +995,7 @@ const HeroCube = ({ enableOpeningAnimation = false, onAnimationComplete, onReady
                         duration: 0.12,
                         ease: "power2.out",
                     },
-                    22.5
+                    27.5 // 修复：从22.5改为27.5
                 )
                 .to(
                     cube.scale,
@@ -1006,10 +1006,10 @@ const HeroCube = ({ enableOpeningAnimation = false, onAnimationComplete, onReady
                         duration: 0.18,
                         ease: "bounce.out",
                     },
-                    22.62
+                    27.62 // 修复：从22.62改为27.62
                 )
 
-                // 第3次弹跳
+                // 第3次弹跳 - 修复时间点
                 .to(
                     cube.scale,
                     {
@@ -1019,7 +1019,7 @@ const HeroCube = ({ enableOpeningAnimation = false, onAnimationComplete, onReady
                         duration: 0.1,
                         ease: "power2.out",
                     },
-                    22.85
+                    27.85 // 修复：从22.85改为27.85
                 )
                 .to(
                     cube.scale,
@@ -1030,7 +1030,7 @@ const HeroCube = ({ enableOpeningAnimation = false, onAnimationComplete, onReady
                         duration: 0.25,
                         ease: "elastic.out(1.2, 0.4)",
                     },
-                    22.95
+                    27.95 // 修复：从22.95改为27.95
                 );
         } else {
             // 普通显示 - 设置默认角度
