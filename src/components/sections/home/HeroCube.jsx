@@ -660,9 +660,9 @@ const HeroCube = ({ enableOpeningAnimation = false, onAnimationComplete, onReady
                 .to(
                     cube.scale,
                     {
-                        x: 1.5,
-                        y: 1.5,
-                        z: 1.5,
+                        x: 1.2, // 修复：从1.3减小到1.2
+                        y: 1.2,
+                        z: 1.2,
                         duration: 2.0,
                         ease: "back.out(1.7)",
                     },
@@ -812,9 +812,9 @@ const HeroCube = ({ enableOpeningAnimation = false, onAnimationComplete, onReady
                 .to(
                     cube.rotation,
                     {
-                        x: Math.PI * 0.5, // 修复：顶面朝向用户应该是正旋转（与底面相反）
+                        x: Math.PI * 0.5, // 顶面朝向用户（正旋转）
                         y: 0,
-                        z: 0, // 先测试不旋转Z轴
+                        z: 0, // 调试：先不旋转Z轴，看看默认方向
                         duration: 0.5, // 缩短旋转时间，确保Contact面能及时显示
                         ease: "power2.out", // 使用快速完成的缓动，确保旋转快速到位
                     },
@@ -832,20 +832,20 @@ const HeroCube = ({ enableOpeningAnimation = false, onAnimationComplete, onReady
                     },
                     17.5
                 )
-                // 18.0-20.5s: Contact面特写静止时间 (2.5秒) - 修复：使用正确的顶面角度
+                // 18.0-22.0s: Contact面特写静止时间 (4.0秒) - 延长展示时间
 
-                // 平滑过渡：从顶部视角缓慢回到标准位置 (19.5-20.5s) - 与Contact面特写后期同时进行
+                // 平滑过渡：从顶部视角缓慢回到标准位置 (20.5-22.0s) - 与Contact面特写后期同时进行
                 .to(
                     camera.position,
                     {
                         x: 0,
                         y: 2,
                         z: 6, // 先到中间过渡位置
-                        duration: 0.5,
+                        duration: 0.7,
                         ease: "power2.inOut",
                         onUpdate: () => camera.lookAt(cube.position),
                     },
-                    19.5 // 修复：延后开始，让Contact面有更长的展示时间
+                    20.5 // 在Contact面展示后期开始过渡
                 )
                 .to(
                     camera.position,
@@ -853,14 +853,14 @@ const HeroCube = ({ enableOpeningAnimation = false, onAnimationComplete, onReady
                         x: 0,
                         y: 0,
                         z: 10, // 再到最终标准位置
-                        duration: 0.5,
+                        duration: 0.8,
                         ease: "power2.out",
                         onUpdate: () => camera.lookAt(cube.position),
                     },
-                    20.0 // 修复：相应调整，确保在戏剧性动画开始前完成
+                    21.2 // 在阶段3开始前完成
                 )
 
-                // 阶段3: 戏剧性放大和旋转 - 摄像机进入cube内部 (20.5-22.2s)
+                // 阶段3: 戏剧性放大和旋转 - 摄像机进入cube内部 (22.0-23.7s)
                 .to(
                     cube.scale,
                     {
@@ -870,7 +870,7 @@ const HeroCube = ({ enableOpeningAnimation = false, onAnimationComplete, onReady
                         duration: 1.7,
                         ease: "power3.in",
                     },
-                    20.5
+                    22.0 // 延后开始时间，给Contact面更多展示时间
                 )
                 // 摄像机同时向前移动，进入cube内部
                 .to(
@@ -881,7 +881,7 @@ const HeroCube = ({ enableOpeningAnimation = false, onAnimationComplete, onReady
                         ease: "power3.in",
                         onUpdate: () => camera.lookAt(cube.position),
                     },
-                    20.5
+                    22.0 // 与cube缩放同步
                 )
                 .to(
                     cube.rotation,
@@ -892,31 +892,41 @@ const HeroCube = ({ enableOpeningAnimation = false, onAnimationComplete, onReady
                         duration: 1.7,
                         ease: "power2.out",
                     },
-                    20.5
+                    22.0 // 与其他动画同步
                 )
 
-                // 阶段4: 平滑回缩，对角线旋转开始 (22.2-24.7s)
+                // 阶段4: 平滑回缩，对角线旋转开始 (23.7-26.2s)
                 .to(
                     cube.scale,
                     {
-                        x: 1.2,
-                        y: 1.2,
-                        z: 1.2,
+                        x: 1.1, // 修复：从1.2减小到1.1，确保在摄像机回退过程中cube不会太大
+                        y: 1.1,
+                        z: 1.1,
                         duration: 2.5,
                         ease: "power3.out",
                     },
-                    22.2
+                    23.7 // 相应延后
                 )
-                // 摄像机回退到正常观察距离
+                // 摄像机回退到正常观察距离 - 修复：分步回退，确保cube始终可见
                 .to(
                     camera.position,
                     {
-                        z: 10,
-                        duration: 2.5,
+                        z: 6, // 修复：先回退到中间位置
+                        duration: 1.2,
                         ease: "power2.out",
                         onUpdate: () => camera.lookAt(cube.position),
                     },
-                    22.2
+                    23.7
+                )
+                .to(
+                    camera.position,
+                    {
+                        z: 10, // 修复：再回退到最终位置
+                        duration: 1.3,
+                        ease: "power2.out",
+                        onUpdate: () => camera.lookAt(cube.position),
+                    },
+                    24.9 // 分步进行，确保平滑过渡
                 )
                 .to(
                     cube.rotation,
@@ -927,34 +937,34 @@ const HeroCube = ({ enableOpeningAnimation = false, onAnimationComplete, onReady
                         duration: 2.5,
                         ease: "sine.inOut",
                     },
-                    22.2
+                    23.7
                 )
 
-                // 阶段5: 继续平滑旋转，逐步到位 (24.7-26.7s)
+                // 阶段5: 继续平滑旋转，逐步到位 (26.2-28.2s)
                 .to(
                     cube.scale,
                     {
-                        x: 1.05,
-                        y: 1.05,
-                        z: 1.05,
+                        x: 1.03, // 修复：相应调整，保持比例协调
+                        y: 1.03,
+                        z: 1.03,
                         duration: 2.0,
                         ease: "power2.out",
                     },
-                    24.7
+                    26.2 // 相应延后
                 )
                 .to(
                     cube.rotation,
                     {
-                        x: Math.PI * 0.5,  // 修复：保持Contact面的X角度，不要回到Education面
-                        y: 0,               // 修复：保持Contact面的Y角度
-                        z: Math.PI,         // 修复：保持Contact面的Z角度(图片正立)
+                        x: Math.PI * 0.5,  // 保持Contact面的X角度
+                        y: 0,               // 保持Contact面的Y角度
+                        z: 0,               // 调试：对应Contact面的Z角度
                         duration: 2.0,
                         ease: "power1.inOut",
                     },
-                    24.7
+                    26.2 // 相应延后
                 )
 
-                // 阶段6: 连续3次弹跳 (26.7-29.2s)
+                // 阶段6: 连续3次弹跳 (28.2-30.7s)
                 .to(
                     cube.scale,
                     {
@@ -964,7 +974,7 @@ const HeroCube = ({ enableOpeningAnimation = false, onAnimationComplete, onReady
                         duration: 0.4,
                         ease: "power2.out",
                     },
-                    26.7
+                    28.2 // 相应延后
                 )
 
                 // 第1次弹跳 - 修复时间点
