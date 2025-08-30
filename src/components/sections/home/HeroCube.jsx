@@ -200,9 +200,10 @@ const HeroCube = ({ enableOpeningAnimation = false, onAnimationComplete, onReady
         camera.position.z = 10; // 固定摄像机距离
 
         // 创建渲染器 - 性能优化设置
+        const shouldUseAntialias = window.innerWidth * window.innerHeight < 3840 * 2160; // 仅在4K以下开启抗锯齿 (包含2K)
         const renderer = new THREE.WebGLRenderer({
             alpha: true,
-            antialias: true, // 保持抗锯齿开启
+            antialias: shouldUseAntialias, // 🔥 动态抗锯齿：4K及以上关闭以提升性能
             powerPreference: "high-performance", // 改为高性能模式
             precision: "mediump", // 使用中等精度
             stencil: false,
@@ -212,16 +213,17 @@ const HeroCube = ({ enableOpeningAnimation = false, onAnimationComplete, onReady
 
         // 设置透明背景，让3D背景可见
         renderer.setClearColor(0x000000, 0); // 完全透明背景
-        // 初始设置为全屏尺寸，不依赖canvasSize状态
+        
+        // 设置全分辨率渲染，避免canvas尺寸问题
         renderer.setSize(window.innerWidth, window.innerHeight);
-        // 限制像素比以提升性能
-        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
+        
+        // 🔥 限制像素比：防止高DPI设备过载
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.2)); // 从1.5降至1.2
 
         // 性能优化设置
         renderer.shadowMap.enabled = false;
         renderer.physicallyCorrectLights = false;
         renderer.toneMapping = THREE.NoToneMapping;
-        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5)); // 限制像素比
 
         // 全屏显示设置
         renderer.domElement.style.position = "fixed";
@@ -240,7 +242,7 @@ const HeroCube = ({ enableOpeningAnimation = false, onAnimationComplete, onReady
 
         // 更新渲染器尺寸为全屏
         renderer.setSize(window.innerWidth, window.innerHeight);
-        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.aspect = window.innerWidth / window.innerHeight; // 保持正确的宽高比
         camera.updateProjectionMatrix();
 
         // 设置渲染质量 - 性能优化
@@ -255,6 +257,7 @@ const HeroCube = ({ enableOpeningAnimation = false, onAnimationComplete, onReady
         // 添加resize处理函数，避免重新创建整个WebGL上下文
         const handleCanvasResize = debounce(() => {
             if (renderer && camera) {
+                // 保持全分辨率渲染，避免canvas偏移问题
                 const newWidth = window.innerWidth;
                 const newHeight = window.innerHeight;
 
