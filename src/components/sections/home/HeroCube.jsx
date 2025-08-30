@@ -660,9 +660,9 @@ const HeroCube = ({ enableOpeningAnimation = false, onAnimationComplete, onReady
                 .to(
                     cube.scale,
                     {
-                        x: 1.2, // 修复：从1.3减小到1.2
-                        y: 1.2,
-                        z: 1.2,
+                        x: 1.4, 
+                        y: 1.4,
+                        z: 1.4,
                         duration: 2.0,
                         ease: "back.out(1.7)",
                     },
@@ -799,13 +799,13 @@ const HeroCube = ({ enableOpeningAnimation = false, onAnimationComplete, onReady
                         x: 0,
                         y: 0,
                         z: 5,
-                        duration: 1.5, // 与cube旋转同步
-                        ease: "power2.inOut", // 慢-快-慢曲线
+                        duration: 0.5, // 与cube旋转同步，缩短时间
+                        ease: "power2.out", // 使用相同的缓动
                         onUpdate: () => camera.lookAt(cube.position),
                     },
-                    14.5
+                    17.5
                 )
-                // 16.0-17.5s: Home面特写静止时间 (1.5秒)
+                // 18.0-22.0s: Contact面特写静止时间 (4.0秒) - 延长展示时间
 
                 // === 面6: Contact面 (顶面, Y+, 索引2) - 联系方式 (17.5-20.5s) ===
                 // 退出Home + 进入Contact的复合动画
@@ -813,8 +813,8 @@ const HeroCube = ({ enableOpeningAnimation = false, onAnimationComplete, onReady
                     cube.rotation,
                     {
                         x: Math.PI * 0.5, // 顶面朝向用户（正旋转）
-                        y: 0,
-                        z: 0, // 调试：先不旋转Z轴，看看默认方向
+                        y: Math.PI, // Y轴180度旋转来让Contact图片正立
+                        z: 0,
                         duration: 0.5, // 缩短旋转时间，确保Contact面能及时显示
                         ease: "power2.out", // 使用快速完成的缓动，确保旋转快速到位
                     },
@@ -940,54 +940,43 @@ const HeroCube = ({ enableOpeningAnimation = false, onAnimationComplete, onReady
                     23.7
                 )
 
-                // 阶段5: 继续平滑旋转，逐步到位 (26.2-28.2s)
+                // 阶段5: 平滑回到原位并保持静止 (23.7-25.2s)
                 .to(
                     cube.scale,
                     {
-                        x: 1.03, // 修复：相应调整，保持比例协调
-                        y: 1.03,
-                        z: 1.03,
-                        duration: 2.0,
+                        x: 1, // 直接回到标准大小
+                        y: 1,
+                        z: 1,
+                        duration: 1.5, // 缩短时间
                         ease: "power2.out",
                     },
-                    26.2 // 相应延后
+                    23.7
                 )
                 .to(
                     cube.rotation,
                     {
                         x: Math.PI * 0.5,  // 保持Contact面的X角度
-                        y: 0,               // 保持Contact面的Y角度
-                        z: 0,               // 调试：对应Contact面的Z角度
-                        duration: 2.0,
-                        ease: "power1.inOut",
+                        y: Math.PI,         // 保持Contact面的Y角度（正立）
+                        z: 0,               // 保持Contact面的Z角度
+                        duration: 1.5, // 缩短时间，与scale同步
+                        ease: "power2.out", // 使用相同缓动，确保同时完成
                     },
-                    26.2 // 相应延后
+                    23.7
                 )
 
-                // 阶段6: 连续3次弹跳 (28.2-30.7s)
+                // 25.2s-26.0s: 静止期，cube完全不动，为弹跳做准备
+
+                // 阶段6: 连续3次弹跳 (26.0-27.5s) - cube完全静止后开始
                 .to(
                     cube.scale,
                     {
-                        x: 1,
-                        y: 1,
-                        z: 1,
-                        duration: 0.4,
-                        ease: "power2.out",
-                    },
-                    28.2 // 相应延后
-                )
-
-                // 第1次弹跳 - 修复时间点
-                .to(
-                    cube.scale,
-                    {
-                        x: 1.08,
+                        x: 1.08, // 第1次弹跳直接开始
                         y: 1.08,
                         z: 1.08,
                         duration: 0.15,
                         ease: "power2.out",
                     },
-                    27.1 // 修复：从22.1改为27.1
+                    26.0 // 静止期后开始弹跳
                 )
                 .to(
                     cube.scale,
@@ -998,10 +987,10 @@ const HeroCube = ({ enableOpeningAnimation = false, onAnimationComplete, onReady
                         duration: 0.2,
                         ease: "bounce.out",
                     },
-                    27.25 // 修复：从22.25改为27.25
+                    26.15 // 第1次弹跳回缩
                 )
 
-                // 第2次弹跳 - 修复时间点
+                // 第2次弹跳
                 .to(
                     cube.scale,
                     {
@@ -1011,7 +1000,7 @@ const HeroCube = ({ enableOpeningAnimation = false, onAnimationComplete, onReady
                         duration: 0.12,
                         ease: "power2.out",
                     },
-                    27.5 // 修复：从22.5改为27.5
+                    26.4 // 第1次弹跳完全结束后
                 )
                 .to(
                     cube.scale,
@@ -1022,10 +1011,10 @@ const HeroCube = ({ enableOpeningAnimation = false, onAnimationComplete, onReady
                         duration: 0.18,
                         ease: "bounce.out",
                     },
-                    27.62 // 修复：从22.62改为27.62
+                    26.52 // 第2次弹跳回缩
                 )
 
-                // 第3次弹跳 - 修复时间点
+                // 第3次弹跳
                 .to(
                     cube.scale,
                     {
@@ -1035,7 +1024,7 @@ const HeroCube = ({ enableOpeningAnimation = false, onAnimationComplete, onReady
                         duration: 0.1,
                         ease: "power2.out",
                     },
-                    27.85 // 修复：从22.85改为27.85
+                    26.75 // 第2次弹跳完全结束后
                 )
                 .to(
                     cube.scale,
@@ -1046,7 +1035,7 @@ const HeroCube = ({ enableOpeningAnimation = false, onAnimationComplete, onReady
                         duration: 0.25,
                         ease: "elastic.out(1.2, 0.4)",
                     },
-                    27.95 // 修复：从22.95改为27.95
+                    26.85 // 最终弹跳，27.1s完全结束
                 );
         } else {
             // 普通显示 - 设置默认角度
