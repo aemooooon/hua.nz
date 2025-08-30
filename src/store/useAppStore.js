@@ -157,7 +157,7 @@ const contentConfig = {
       map: {
         resetToDefaultView: "Reset to default view",
         closeMap: "Close map",
-        title: "Project Geo Distribution",
+        title: "Mapping Myself",
         zoomIn: "Zoom in",
         zoomOut: "Zoom out",
         locateMe: "Locate me",
@@ -545,7 +545,7 @@ const contentConfig = {
       map: {
         resetToDefaultView: "重置到默认视图",
         closeMap: "关闭地图",
-        title: "项目地理分布",
+        title: "足迹",
         zoomIn: "放大",
         zoomOut: "缩小",
         locateMe: "定位我的位置",
