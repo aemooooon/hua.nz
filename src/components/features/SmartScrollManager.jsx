@@ -64,7 +64,7 @@ const SmartScrollManager = () => {
         PREVIEW_MAX_OFFSET: 80,       // 预览滚动最大偏移量
         BOUNDARY_THRESHOLD: 50,       // 边界检测阈值
         BOUNCE_MAX_OFFSET: 30,        // 回弹动画最大偏移量
-        LONG_CONTENT_SECTIONS: ["projects", "education", "about", "contact"], // 长内容页面列表
+        LONG_CONTENT_SECTIONS: ["projects", "education", "about", "contact", "gallery"], // 长内容页面列表
     };
 
     // 从配置中解构常用值

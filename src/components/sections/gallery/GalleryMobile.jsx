@@ -24,7 +24,6 @@ const GalleryMobile = ({ language = 'zh' }) => {
   const { openPhotoSwipe } = usePhotoSwipe();
   const containerRef = useRef(null);
   const [optimizedImages, setOptimizedImages] = useState(new Map());
-  const [visibleCount, setVisibleCount] = useState(9); // 初始显示9张
 
   // 数据过滤：移动端Gallery只显示图片，过滤掉视频类型
   const safeGalleryData = useMemo(() => {
@@ -59,17 +58,14 @@ const GalleryMobile = ({ language = 'zh' }) => {
     }
   };
 
-  // 预加载优化图片路径 - 动态加载策略
+  // 预加载优化图片路径 - 加载所有图片
   useEffect(() => {
     const loadOptimizedPaths = async () => {
       if (safeGalleryData.length === 0) return;
       
-      // 获取当前需要显示的图片（基于visibleCount）
-      const itemsToOptimize = safeGalleryData.slice(0, visibleCount);
-      
-      // 检查哪些图片还没有优化过
+      // 一次性加载所有图片的优化路径
       const newOptimizations = new Map();
-      for (const item of itemsToOptimize) {
+      for (const item of safeGalleryData) {
         if (item.src && !optimizedImages.has(item.id)) {
           const optimizedSrc = await getOptimalImageSrc(item.src);
           const optimizedThumbnail = item.thumbnail ? 
@@ -89,31 +85,10 @@ const GalleryMobile = ({ language = 'zh' }) => {
     };
 
     loadOptimizedPaths();
-  }, [safeGalleryData, visibleCount, optimizedImages]);
+  }, [safeGalleryData, optimizedImages]);
 
-  // 滚动监听 - 实现懒加载
-  useEffect(() => {
-    const handleScroll = () => {
-      const container = containerRef.current;
-      if (!container) return;
-      
-      const { scrollTop, scrollHeight, clientHeight } = container;
-      const isNearBottom = scrollTop + clientHeight >= scrollHeight - 200; // 提前200px开始加载
-      
-      if (isNearBottom && visibleCount < safeGalleryData.length) {
-        setVisibleCount(prev => Math.min(prev + 6, safeGalleryData.length)); // 每次加载6张
-      }
-    };
-
-    const container = containerRef.current;
-    if (container) {
-      container.addEventListener('scroll', handleScroll, { passive: true });
-      return () => container.removeEventListener('scroll', handleScroll);
-    }
-  }, [visibleCount, safeGalleryData.length]);
-
-  // 转换数据格式以适配PhotoSwipe，只处理当前可见的图片
-  const galleryItems = safeGalleryData.slice(0, visibleCount).map((item, index) => {
+  // 转换数据格式以适配PhotoSwipe，显示所有图片
+  const galleryItems = safeGalleryData.map((item, index) => {
     const optimized = optimizedImages.get(item.id);
     return {
       id: item.id || index,
@@ -125,18 +100,8 @@ const GalleryMobile = ({ language = 'zh' }) => {
   });
 
   const handleImageClick = (index) => {
-    // 为PhotoSwipe准备完整的图片列表（包括未加载的）
-    const allItems = safeGalleryData.map((item, idx) => {
-      const optimized = optimizedImages.get(item.id);
-      return {
-        id: item.id || idx,
-        src: optimized?.src || item.src,
-        thumbnail: optimized?.thumbnail || item.thumbnail || item.src,
-        title: item.title || '',
-        description: item.description || ''
-      };
-    });
-    openPhotoSwipe(allItems, index);
+    // 直接使用已经准备好的galleryItems
+    openPhotoSwipe(galleryItems, index);
   };
 
   return (
@@ -150,9 +115,9 @@ const GalleryMobile = ({ language = 'zh' }) => {
           overflow-x: hidden;
           overscroll-behavior: none;
           
-          /* iOS 安全区域支持 */
+          /* iOS 安全区域支持 - 优化移动端布局 */
           padding-top: max(1rem, env(safe-area-inset-top));
-          padding-bottom: max(1.5rem, env(safe-area-inset-bottom));
+          padding-bottom: max(2rem, env(safe-area-inset-bottom));
           padding-left: env(safe-area-inset-left);
           padding-right: env(safe-area-inset-right);
           
@@ -205,7 +170,7 @@ const GalleryMobile = ({ language = 'zh' }) => {
         ref={containerRef}
         className="gallery-mobile-container w-full"
       >
-        {/* 标题部分 */}
+        {/* 标题部分 - 使用store中的i18n文案 */}
         <div className="text-center mb-8 px-4">
           <h2 className="text-3xl md:text-4xl font-bold text-theme-text-primary mb-4">
             {texts[language]?.gallery?.mobile?.title || (language === 'zh' ? '作品集' : 'Gallery')}
@@ -214,12 +179,9 @@ const GalleryMobile = ({ language = 'zh' }) => {
             {texts[language]?.gallery?.mobile?.subtitle || 
               (language === 'zh' 
                 ? '记录生活中的美好瞬间，每一张照片都承载着独特的故事与回忆。'
-                : 'Capturing beautiful moments in life, each photo carries unique stories and memories.'
+                : 'Each photo carries unique stories.'
               )
             }
-          </p>
-          <p className="text-theme-text-secondary/60 text-sm mt-2">
-            {texts[language]?.gallery?.mobile?.tapHint || (language === 'zh' ? '点击图片查看大图' : 'Tap images to view full size')}
           </p>
         </div>
 
@@ -270,21 +232,6 @@ const GalleryMobile = ({ language = 'zh' }) => {
             })}
           </div>
 
-          {/* 加载更多指示器 */}
-          {visibleCount < safeGalleryData.length && (
-            <div className="text-center py-8">
-              <div className="inline-flex items-center justify-center space-x-2 text-theme-text-secondary">
-                <div className="w-4 h-4 border-2 border-theme-text-secondary/30 border-t-theme-text-secondary rounded-full animate-spin"></div>
-                <span className="text-sm">
-                  {texts[language]?.gallery?.mobile?.loadingMore || (language === 'zh' ? '加载更多图片...' : 'Loading more images...')}
-                </span>
-              </div>
-              <div className="text-xs text-theme-text-secondary/60 mt-2">
-                {texts[language]?.gallery?.mobile?.showing || (language === 'zh' ? '已显示' : 'Showing')} {visibleCount} / {safeGalleryData.length} {texts[language]?.gallery?.mobile?.images || (language === 'zh' ? '张图片' : 'images')}
-              </div>
-            </div>
-          )}
-
           {/* 空状态 */}
           {galleryItems.length === 0 && (
             <div className="text-center py-16">
@@ -302,17 +249,8 @@ const GalleryMobile = ({ language = 'zh' }) => {
             </div>
           )}
 
-          {/* 底部提示信息 */}
-          {galleryItems.length > 0 && (
-            <div className="text-center mt-8 pb-16 mb-8">
-              <p className="text-theme-text-secondary/60 text-sm">
-                {`${galleryItems.length} ${texts[language]?.gallery?.mobile?.images || (language === 'zh' ? '张图片' : 'images')} • ${texts[language]?.gallery?.mobile?.tapToView || (language === 'zh' ? '点击查看大图' : 'Tap to view full size')}`}
-              </p>
-              
-              {/* 额外的安全距离，确保用户有足够时间完整浏览内容 */}
-              <div className="h-20"></div>
-            </div>
-          )}
+          {/* 移动端专用安全距离 */}
+          <div className="pb-safe-area-inset-bottom" style={{paddingBottom: 'max(2rem, env(safe-area-inset-bottom))'}}></div>
         </div>
       </div>
     </>
