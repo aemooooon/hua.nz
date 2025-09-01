@@ -1231,7 +1231,7 @@ const SmartDirectionalCursor = () => {
                     style={{
                         position: 'fixed',
                         left: cursorPosition.x, // 与光标水平对齐
-                        top: cursorPosition.y - 16, // 在光标上方16px
+                        top: cursorPosition.y - 120, // 在光标上方16px
                         transform: 'translate(-50%, -50%)', // 水平和垂直居中
                         color: themeColors.primary,
                         fontSize: '14px',

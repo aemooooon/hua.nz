@@ -741,9 +741,9 @@ const HeroCube = ({ enableOpeningAnimation = false, onAnimationComplete, onReady
                 .to(
                     cube.scale,
                     {
-                        x: 1.2,
-                        y: 1.2,
-                        z: 1.2, // 放大20%，营造IMAX般的沉浸感
+                        x: 1.4,
+                        y: 1.4,
+                        z: 1.4, // 放大20%，营造IMAX般的沉浸感
                         duration: 0.5, // 快速放大，为后续展示做准备
                         ease: "power2.out", // 强劲开始，平滑结束
                     },
@@ -908,9 +908,8 @@ const HeroCube = ({ enableOpeningAnimation = false, onAnimationComplete, onReady
                         ease: "power2.out", // 修复：使用相同的缓动
                         onUpdate: () => camera.lookAt(cube.position),
                     },
-                    17.5
+                    20.5
                 )
-                // 18.0-22.0s: Contact面特写静止时间 (4.0秒) - 延长展示时间
 
                 // 平滑过渡：从顶部视角缓慢回到标准位置 (20.5-22.0s) - 与Contact面特写后期同时进行
                 .to(
