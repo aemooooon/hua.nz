@@ -116,8 +116,8 @@ const ProjectGeoViewer = ({ isOpen, onClose, language = 'en' }) => {
         return L.divIcon({
             className: 'custom-marker-icon',
             html: `<div class="marker-container" style="
-        width: 32px; 
-        height: 32px; 
+        width: 32px;
+        height: 32px;
         position: relative;
         display: flex;
         align-items: center;
@@ -134,12 +134,12 @@ const ProjectGeoViewer = ({ isOpen, onClose, language = 'en' }) => {
           animation: marker-pulse 2s ease-in-out infinite;
         "></div>
         <div class="marker-core" style="
-          width: 24px; 
-          height: 24px; 
-          background: var(--theme-map-button-bg); 
-          border: 2px solid var(--theme-map-button-border); 
-          border-radius: 50%; 
-          box-shadow: 
+          width: 24px;
+          height: 24px;
+          background: var(--theme-map-button-bg);
+          border: 2px solid var(--theme-map-button-border);
+          border-radius: 50%;
+          box-shadow:
             0 0 0 2px rgba(var(--theme-map-button-glow), 0.8),
             0 4px 12px rgba(0,0,0,0.3),
             inset 0 1px 0 rgba(255,255,255,0.4);
@@ -152,9 +152,9 @@ const ProjectGeoViewer = ({ isOpen, onClose, language = 'en' }) => {
           -webkit-backdrop-filter: blur(4px);
         ">
           <div style="
-            width: 6px; 
-            height: 6px; 
-            background: var(--theme-map-button-text); 
+            width: 6px;
+            height: 6px;
+            background: var(--theme-map-button-text);
             border-radius: 50%;
             box-shadow: 0 0 4px rgba(var(--theme-map-button-glow), 0.8);
           "></div>
@@ -221,7 +221,7 @@ const ProjectGeoViewer = ({ isOpen, onClose, language = 'en' }) => {
           display: flex;
           justify-content: center;
           align-items: center;
-          box-shadow: 
+          box-shadow:
             0 0 0 3px rgba(var(--theme-map-button-glow), 0.8),
             0 8px 25px rgba(0,0,0,0.4),
             inset 0 2px 0 rgba(255,255,255,0.3),
@@ -233,7 +233,7 @@ const ProjectGeoViewer = ({ isOpen, onClose, language = 'en' }) => {
           transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
           backdrop-filter: blur(8px);
           -webkit-backdrop-filter: blur(8px);
-        " onmouseover="this.style.transform='scale(1.1) rotate(5deg)'; this.style.color='var(--theme-map-button-text-hover)'; this.style.borderColor='var(--theme-map-button-border-hover)'; this.style.boxShadow='0 0 0 3px rgba(var(--theme-map-button-glow-intense), 1), 0 12px 35px rgba(0,0,0,0.5), inset 0 2px 0 rgba(255,255,255,0.4)'" 
+        " onmouseover="this.style.transform='scale(1.1) rotate(5deg)'; this.style.color='var(--theme-map-button-text-hover)'; this.style.borderColor='var(--theme-map-button-border-hover)'; this.style.boxShadow='0 0 0 3px rgba(var(--theme-map-button-glow-intense), 1), 0 12px 35px rgba(0,0,0,0.5), inset 0 2px 0 rgba(255,255,255,0.4)'"
            onmouseout="this.style.transform='scale(1) rotate(0deg)'; this.style.color='var(--theme-map-button-text)'; this.style.borderColor='var(--theme-map-button-border)'; this.style.boxShadow='0 0 0 3px rgba(var(--theme-map-button-glow), 0.8), 0 8px 25px rgba(0,0,0,0.4), inset 0 2px 0 rgba(255,255,255,0.3), inset 0 -2px 0 rgba(0,0,0,0.2)'">${childCount}</div>
       </div>`,
             className: 'custom-cluster-icon',
@@ -335,11 +335,11 @@ const ProjectGeoViewer = ({ isOpen, onClose, language = 'en' }) => {
                                     icon: L.divIcon({
                                         className: 'user-location-marker',
                                         html: `<div style="
-                      width: 20px; 
-                      height: 20px; 
-                      background: #3b82f6; 
-                      border: 3px solid white; 
-                      border-radius: 50%; 
+                      width: 20px;
+                      height: 20px;
+                      background: #3b82f6;
+                      border: 3px solid white;
+                      border-radius: 50%;
                       box-shadow: 0 2px 8px rgba(59,130,246,0.4);
                     "></div>`,
                                         iconSize: [26, 26],
@@ -399,12 +399,12 @@ const ProjectGeoViewer = ({ isOpen, onClose, language = 'en' }) => {
 
             return `
       <div style="
-        color: #e5e7eb; 
-        background: linear-gradient(135deg, #1f2937 0%, #111827 100%); 
-        padding: 0; 
-        border-radius: 12px; 
-        width: 100%; 
-        max-width: 100%; 
+        color: #e5e7eb;
+        background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
+        padding: 0;
+        border-radius: 12px;
+        width: 100%;
+        max-width: 100%;
         box-sizing: border-box;
         font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
         border: 1px solid #374151;
@@ -420,24 +420,24 @@ const ProjectGeoViewer = ({ isOpen, onClose, language = 'en' }) => {
         `
                 : ''
         }
-        
+
         <div style="padding: 16px; padding-right: 40px;">
           <div style="display: flex; justify-content: flex-start; align-items: center; margin-bottom: 12px; gap: 12px;">
             <span style="
-              background: linear-gradient(45deg, ${themeColors.primary}, ${themeColors.accent || themeColors.primary}); 
-              color: white; 
-              padding: 6px 14px; 
-              border-radius: 20px; 
-              font-size: 12px; 
+              background: linear-gradient(45deg, ${themeColors.primary}, ${themeColors.accent || themeColors.primary});
+              color: white;
+              padding: 6px 14px;
+              border-radius: 20px;
+              font-size: 12px;
               font-weight: 700;
               text-transform: capitalize;
               box-shadow: 0 4px 8px rgba(0,0,0,0.3);
             ">${project.tags && Array.isArray(project.tags) ? project.tags.join(', ') : getBilingualText(project.type)}</span>
             ${project.year ? `<span style="color: #9ca3af; font-size: 12px; font-weight: 600; background: #374151; padding: 4px 8px; border-radius: 12px;">${project.year}</span>` : ''}
           </div>
-          
+
           <h3 style="margin: 0 0 10px 0; color: #f9fafb; font-size: 16px; font-weight: 700; line-height: 1.3; text-shadow: 0 1px 2px rgba(0,0,0,0.5);">${projectName}</h3>
-          
+
           ${
               projectLocation
                   ? `
@@ -450,17 +450,17 @@ const ProjectGeoViewer = ({ isOpen, onClose, language = 'en' }) => {
           `
                   : ''
           }
-          
+
           ${
               project.link
                   ? `
             <div style="margin-top: 16px; padding-top: 12px; border-top: 1px solid #374151;">
               <a href="${project.link}" target="_blank" rel="noopener noreferrer" style="
-                display: inline-flex; 
-                align-items: center; 
-                color: ${themeColors.primary}; 
-                text-decoration: none; 
-                font-size: 13px; 
+                display: inline-flex;
+                align-items: center;
+                color: ${themeColors.primary};
+                text-decoration: none;
+                font-size: 13px;
                 font-weight: 600;
                 background: linear-gradient(45deg, ${themeColors.primary}20, transparent);
                 padding: 8px 12px;
@@ -670,33 +670,33 @@ const ProjectGeoViewer = ({ isOpen, onClose, language = 'en' }) => {
           padding: 0 !important;
           border: 1px solid #374151 !important;
         }
-        
+
         .dark-popup .leaflet-popup-content {
           margin: 0 !important;
           padding: 0 !important;
         }
-        
+
         /* 重新定位箭头到弹窗中心 */
         .dark-popup .leaflet-popup-tip {
           background: #1f2937 !important;
           border: 1px solid #374151 !important;
           box-shadow: 0 4px 8px rgba(0,0,0,0.4) !important;
         }
-        
+
         /* 关键修复：强制所有弹窗的tip居中 */
         .leaflet-popup-tip {
           left: 50% !important;
           margin-left: -7px !important;
           transform: none !important;
         }
-        
+
         /* 移除之前的复杂tip容器定位 */
-        
+
         /* 覆盖Leaflet的popup整体定位 */
         .leaflet-popup {
           margin-bottom: 20px !important;
         }
-        
+
         /* 关闭按钮 - 基于新的宽度重新定位 */
         .dark-popup .leaflet-popup-close-button {
           color: #9ca3af !important;
@@ -720,7 +720,7 @@ const ProjectGeoViewer = ({ isOpen, onClose, language = 'en' }) => {
           text-decoration: none !important;
           line-height: 1 !important;
         }
-        
+
         .dark-popup .leaflet-popup-close-button:hover {
           color: #ffffff !important;
           background: rgba(220, 38, 38, 0.9) !important;
@@ -728,28 +728,28 @@ const ProjectGeoViewer = ({ isOpen, onClose, language = 'en' }) => {
           transform: scale(1.1) !important;
           box-shadow: 0 4px 12px rgba(220, 38, 38, 0.4) !important;
         }
-        
+
         /* 深色聚类样式 */
         .custom-cluster-icon {
           background: transparent !important;
           border: none !important;
         }
-        
+
         .custom-marker-icon {
           background: transparent !important;
           border: none !important;
         }
-        
+
         /* 地图容器样式 */
         .leaflet-container {
           background: #f8fafc !important;
         }
-        
+
         /* 聚类动画 */
         .marker-cluster {
           transition: all 0.3s ease !important;
         }
-        
+
         .marker-cluster:hover {
           transform: scale(1.05) !important;
         }
