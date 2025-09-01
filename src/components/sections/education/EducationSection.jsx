@@ -299,8 +299,8 @@ const EducationSection = ({ language }) => {
                                             </div>
 
                                             {/* Hover详情显示 - 只显示项目描述，无背景闪光 */}
-                                            <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center p-4">
-                                                <div className="glass-card text-center px-4 py-2">
+                                            <div className="absolute inset-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                                                <div className="glass-card text-center px-4 py-2 w-full h-full flex items-center justify-center">
                                                     <p className="text-theme-text-white-90 text-sm leading-relaxed">
                                                         {project.description}
                                                     </p>
@@ -361,8 +361,8 @@ const EducationSection = ({ language }) => {
                                                 </div>
 
                                                 {/* Hover详情显示 */}
-                                                <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center p-4">
-                                                    <div className="glass-card text-center p-4">
+                                                <div className="absolute inset-3 opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center">
+                                                    <div className="glass-card text-center p-4 w-full h-full flex flex-col items-center justify-center">
                                                         <div className="text-theme-primary text-4xl mb-3">
                                                             🏆
                                                         </div>

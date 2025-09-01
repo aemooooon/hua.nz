@@ -415,11 +415,17 @@
 }
 
 .project-thumbnail-card:hover {
-    transform: translateY(-4px) scale(1.02);
+    box-shadow: 
+        0 10px 25px -5px var(--theme-shadow-primary-20),
+        0 4px 15px -2px var(--theme-shadow-primary-10);
+    border-color: var(--theme-border-white-30);
 }
 
 .project-thumbnail-card.project-hovered {
-    transform: translateY(-6px) scale(1.04);
+    box-shadow: 
+        0 15px 35px -5px var(--theme-shadow-primary-30),
+        0 6px 20px -3px var(--theme-shadow-primary-15);
+    border-color: var(--theme-border-white-40);
 }
 
 .project-thumbnail-card:nth-child(odd) {

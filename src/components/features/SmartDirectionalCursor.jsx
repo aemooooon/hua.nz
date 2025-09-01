@@ -48,6 +48,24 @@ const SmartDirectionalCursor = () => {
     const { getThemeColors } = useTheme();
     const themeColors = getThemeColors();
     
+    // ==================== 应用状态 ====================
+    
+    /** 获取当前section和语言 */
+    const { currentSection, language, getContent } = useAppStore();
+    const content = getContent();
+    
+    /** 检查是否在首页 */
+    const isHomePage = currentSection === 0;
+    
+    /** 获取提示文本 */
+    const getHintText = () => {
+        if (language === 'zh') {
+            return '向下滚动探索更多...';
+        } else {
+            return 'Scroll down to explore...';
+        }
+    };
+    
     // ==================== 状态管理 ====================
     
     /** 光标在屏幕上的实时坐标位置 */
@@ -88,8 +106,8 @@ const SmartDirectionalCursor = () => {
     
     // ==================== 外部状态和引用 ====================
     
-    /** 从全局状态获取当前section索引、所有sections数组和3D模式状态 */
-    const { currentSection, sections, isPointerLocked } = useAppStore();
+    /** 从全局状态获取当前section索引、所有sections数组、3D模式状态、语言和内容 */
+    const { sections, isPointerLocked } = useAppStore();
     
     /** 动画帧的引用，用于性能优化的循环动画 */
     const animationFrameRef = useRef();
@@ -1111,6 +1129,11 @@ const SmartDirectionalCursor = () => {
                     50% { transform: translateY(-4px); }
                 }
                 
+                @keyframes gentle-pulse {
+                    0%, 100% { opacity: 0.6; }
+                    50% { opacity: 1; }
+                }
+                
                 .power-cursor {
                     position: fixed;
                     pointer-events: none; /* 不阻挡鼠标事件 */
@@ -1173,6 +1196,31 @@ const SmartDirectionalCursor = () => {
             >
                 {renderPowerDirectionalIndicator()}
             </div>
+
+            {/* 首页提示文本：仅在桌面端首页显示 */}
+            {isHomePage && direction === 'down' && (
+                <div
+                    style={{
+                        position: 'fixed',
+                        left: cursorPosition.x, // 与光标水平对齐
+                        top: cursorPosition.y - 16, // 在光标上方16px
+                        transform: 'translate(-50%, -50%)', // 水平和垂直居中
+                        color: themeColors.primary,
+                        fontSize: '14px',
+                        fontWeight: '500',
+                        fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+                        opacity: 0.8,
+                        pointerEvents: 'none',
+                        zIndex: 9998,
+                        textShadow: `0 0 8px ${themeColors.primary}40`,
+                        animation: 'gentle-pulse 2s ease-in-out infinite',
+                        whiteSpace: 'nowrap',
+                        userSelect: 'none',
+                    }}
+                >
+                    {getHintText()}
+                </div>
+            )}
         </>
     );
 };
