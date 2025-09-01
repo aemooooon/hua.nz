@@ -1,40 +1,40 @@
 /**
  * useOptimizedImage - 图片优化相关的React Hooks
- * 
+ *
  * 提供多种图片优化的Hook，适用于不同场景：
  * - useOptimizedImage: 单张图片优化
  * - useOptimizedImages: 批量图片优化
  * - useImagePreloader: 图片预加载
- * 
+ *
  * 使用场景：
  * - 需要在Hook中处理图片优化逻辑
  * - 动态图片路径的优化
  * - 批量图片处理
  * - 图片预加载优化
- * 
+ *
  * 注意：对于静态图片，推荐直接使用 OptimizedImage 组件
- * 
+ *
  * 使用示例：
  * ```jsx
  * import { useOptimizedImage, useOptimizedImages } from './hooks/useOptimizedImage';
- * 
+ *
  * // 单张图片优化
  * function Avatar({ userImage }) {
  *   const { optimizedPath, isLoading } = useOptimizedImage(userImage);
- *   
+ *
  *   return (
- *     <img 
- *       src={optimizedPath} 
+ *     <img
+ *       src={optimizedPath}
  *       alt="头像"
  *       style={{ opacity: isLoading ? 0.5 : 1 }}
  *     />
  *   );
  * }
- * 
+ *
  * // 批量图片优化
  * function Gallery({ imageList }) {
  *   const { optimizedPaths, isLoading } = useOptimizedImages(imageList);
- *   
+ *
  *   return (
  *     <div className="gallery">
  *       {optimizedPaths.map((path, index) => (
@@ -43,12 +43,12 @@
  *     </div>
  *   );
  * }
- * 
+ *
  * // 图片预加载
  * function App() {
  *   const criticalImages = ['/hero.jpg', '/banner.jpg'];
  *   const { preloadResults } = useImagePreloader(criticalImages);
- *   
+ *
  *   // 预加载完成后再显示内容
  *   return preloadResults.length > 0 ? <MainContent /> : <Loading />;
  * }
@@ -60,7 +60,7 @@ import imageOptimizer from '../utils/image/ImageOptimizer.js';
 
 /**
  * 单张图片优化 Hook
- * 
+ *
  * @param {string} imagePath - 图片路径
  * @param {Object} options - 优化选项
  * @param {boolean} options.enableAvif - 是否启用AVIF格式 (默认: true)
@@ -85,9 +85,9 @@ export const useOptimizedImage = (imagePath, options = {}) => {
             try {
                 setIsLoading(true);
                 setError(null);
-                
+
                 const optimized = await imageOptimizer.getOptimizedImagePath(imagePath, options);
-                
+
                 if (isMounted) {
                     setOptimizedPath(optimized);
                     setIsLoading(false);
@@ -114,7 +114,7 @@ export const useOptimizedImage = (imagePath, options = {}) => {
 
 /**
  * 批量图片优化 Hook
- * 
+ *
  * @param {string[]} imagePaths - 图片路径数组
  * @param {Object} options - 优化选项
  * @param {boolean} options.enableAvif - 是否启用AVIF格式 (默认: true)
@@ -139,9 +139,9 @@ export const useOptimizedImages = (imagePaths, options = {}) => {
             try {
                 setIsLoading(true);
                 setError(null);
-                
+
                 const optimized = await imageOptimizer.getOptimizedImagePaths(imagePaths, options);
-                
+
                 if (isMounted) {
                     setOptimizedPaths(optimized);
                     setIsLoading(false);
@@ -168,7 +168,7 @@ export const useOptimizedImages = (imagePaths, options = {}) => {
 
 /**
  * 图片预加载 Hook
- * 
+ *
  * @param {string[]} imagePaths - 图片路径数组
  * @param {Object} options - 优化选项
  * @param {boolean} options.enableAvif - 是否启用AVIF格式 (默认: true)
@@ -190,9 +190,9 @@ export const useImagePreloader = (imagePaths, options = {}) => {
 
             try {
                 setIsPreloading(true);
-                
+
                 const results = await imageOptimizer.preloadOptimizedImages(imagePaths, options);
-                
+
                 if (isMounted) {
                     setPreloadResults(results);
                     setIsPreloading(false);

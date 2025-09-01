@@ -40,7 +40,8 @@
 }
 
 @keyframes pulse {
-    0%, 100% {
+    0%,
+    100% {
         opacity: 1;
     }
     50% {
@@ -67,8 +68,8 @@
 }
 
 .scroll-mode-home {
-    -ms-overflow-style: none;  /* IE and Edge */
-    scrollbar-width: none;  /* Firefox */
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
 }
 
 /* 其他页面的滚动条样式 - 仅在内容溢出时显示 */
@@ -89,12 +90,12 @@
         width: 4px;
         opacity: 0.6; /* 移动端默认显示滚动条 */
     }
-    
+
     .scroll-mode-auto::-webkit-scrollbar-thumb {
         background: rgba(255, 255, 255, 0.4);
         border-radius: 2px;
     }
-    
+
     .scroll-mode-auto::-webkit-scrollbar-track {
         background: rgba(0, 0, 0, 0.1);
         border-radius: 2px;
@@ -132,7 +133,8 @@
 }
 
 @keyframes scrollPreviewPulse {
-    0%, 100% {
+    0%,
+    100% {
         opacity: 0.8;
         transform: scale(1);
     }
@@ -180,10 +182,12 @@
 
 /* 滚动阈值指示器 */
 .scroll-threshold-indicator {
-    background: linear-gradient(45deg, 
-        rgba(59, 130, 246, 0.1) 0%, 
-        rgba(147, 51, 234, 0.1) 50%, 
-        rgba(59, 130, 246, 0.1) 100%);
+    background: linear-gradient(
+        45deg,
+        rgba(59, 130, 246, 0.1) 0%,
+        rgba(147, 51, 234, 0.1) 50%,
+        rgba(59, 130, 246, 0.1) 100%
+    );
     -webkit-backdrop-filter: blur(10px);
     backdrop-filter: blur(10px);
     border: 1px solid rgba(255, 255, 255, 0.1);
@@ -191,7 +195,8 @@
 }
 
 @keyframes thresholdGlow {
-    0%, 100% {
+    0%,
+    100% {
         box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
     }
     50% {

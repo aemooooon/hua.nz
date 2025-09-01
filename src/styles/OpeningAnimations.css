@@ -2,125 +2,128 @@
 
 /* 20th Century Fox风格文字动画 */
 @keyframes movieTitleGrandEntrance {
-  0% {
-    transform: translateX(-50%) translateY(-500px) rotateX(90deg) rotateY(-45deg) scale(0.1);
-    opacity: 0;
-  }
-  
-  /* 阶段1: 从远处飞入并旋转 (0-30%) */
-  30% {
-    transform: translateX(-50%) translateY(-100px) rotateX(45deg) rotateY(-15deg) scale(0.5);
-    opacity: 0.3;
-  }
-  
-  /* 阶段2: 中途放大和翻转 (30-60%) */
-  60% {
-    transform: translateX(-50%) translateY(50px) rotateX(-15deg) rotateY(15deg) scale(1.5);
-    opacity: 0.8;
-  }
-  
-  /* 阶段3: 最终落到正确位置 (60-100%) */
-  100% {
-    transform: translateX(-50%) translateY(0) rotateX(0deg) rotateY(0deg) scale(1);
-    opacity: 1;
-  }
+    0% {
+        transform: translateX(-50%) translateY(-500px) rotateX(90deg) rotateY(-45deg) scale(0.1);
+        opacity: 0;
+    }
+
+    /* 阶段1: 从远处飞入并旋转 (0-30%) */
+    30% {
+        transform: translateX(-50%) translateY(-100px) rotateX(45deg) rotateY(-15deg) scale(0.5);
+        opacity: 0.3;
+    }
+
+    /* 阶段2: 中途放大和翻转 (30-60%) */
+    60% {
+        transform: translateX(-50%) translateY(50px) rotateX(-15deg) rotateY(15deg) scale(1.5);
+        opacity: 0.8;
+    }
+
+    /* 阶段3: 最终落到正确位置 (60-100%) */
+    100% {
+        transform: translateX(-50%) translateY(0) rotateX(0deg) rotateY(0deg) scale(1);
+        opacity: 1;
+    }
 }
 
 /* 标题的震撼入场动画 */
 @keyframes titleGrandSlam {
-  0% {
-    transform: translateX(-50%) translateY(-300px) rotateX(75deg) scale(0.2);
-    opacity: 0;
-    filter: blur(10px);
-  }
-  
-  20% {
-    transform: translateX(-50%) translateY(-100px) rotateX(30deg) scale(0.6);
-    opacity: 0.4;
-    filter: blur(5px);
-  }
-  
-  50% {
-    transform: translateX(-50%) translateY(20px) rotateX(-10deg) scale(1.2);
-    opacity: 0.9;
-    filter: blur(2px);
-  }
-  
-  70% {
-    transform: translateX(-50%) translateY(-10px) rotateX(5deg) scale(0.95);
-    opacity: 1;
-    filter: blur(0px);
-  }
-  
-  100% {
-    transform: translateX(-50%) translateY(0) rotateX(0deg) scale(1);
-    opacity: 1;
-    filter: blur(0px);
-  }
+    0% {
+        transform: translateX(-50%) translateY(-300px) rotateX(75deg) scale(0.2);
+        opacity: 0;
+        filter: blur(10px);
+    }
+
+    20% {
+        transform: translateX(-50%) translateY(-100px) rotateX(30deg) scale(0.6);
+        opacity: 0.4;
+        filter: blur(5px);
+    }
+
+    50% {
+        transform: translateX(-50%) translateY(20px) rotateX(-10deg) scale(1.2);
+        opacity: 0.9;
+        filter: blur(2px);
+    }
+
+    70% {
+        transform: translateX(-50%) translateY(-10px) rotateX(5deg) scale(0.95);
+        opacity: 1;
+        filter: blur(0px);
+    }
+
+    100% {
+        transform: translateX(-50%) translateY(0) rotateX(0deg) scale(1);
+        opacity: 1;
+        filter: blur(0px);
+    }
 }
 
 /* 副标题的延迟入场动画 */
 @keyframes subtitleFollowUp {
-  0% {
-    transform: translateX(-50%) translateY(100px) rotateX(-45deg) scale(0.3);
-    opacity: 0;
-  }
-  
-  40% {
-    transform: translateX(-50%) translateY(30px) rotateX(-15deg) scale(0.7);
-    opacity: 0.5;
-  }
-  
-  80% {
-    transform: translateX(-50%) translateY(-5px) rotateX(5deg) scale(1.1);
-    opacity: 0.9;
-  }
-  
-  100% {
-    transform: translateX(-50%) translateY(0) rotateX(0deg) scale(1);
-    opacity: 1;
-  }
+    0% {
+        transform: translateX(-50%) translateY(100px) rotateX(-45deg) scale(0.3);
+        opacity: 0;
+    }
+
+    40% {
+        transform: translateX(-50%) translateY(30px) rotateX(-15deg) scale(0.7);
+        opacity: 0.5;
+    }
+
+    80% {
+        transform: translateX(-50%) translateY(-5px) rotateX(5deg) scale(1.1);
+        opacity: 0.9;
+    }
+
+    100% {
+        transform: translateX(-50%) translateY(0) rotateX(0deg) scale(1);
+        opacity: 1;
+    }
 }
 
 /* 口号的优雅入场 */
 @keyframes sloganMajesticEntrance {
-  0% {
-    transform: translateX(-50%) translateY(200px) scale(0.5);
-    opacity: 0;
-    filter: blur(8px);
-  }
-  
-  30% {
-    transform: translateX(-50%) translateY(50px) scale(0.8);
-    opacity: 0.3;
-    filter: blur(4px);
-  }
-  
-  70% {
-    transform: translateX(-50%) translateY(-10px) scale(1.05);
-    opacity: 0.8;
-    filter: blur(1px);
-  }
-  
-  100% {
-    transform: translateX(-50%) translateY(0) scale(1);
-    opacity: 1;
-    filter: blur(0px);
-  }
+    0% {
+        transform: translateX(-50%) translateY(200px) scale(0.5);
+        opacity: 0;
+        filter: blur(8px);
+    }
+
+    30% {
+        transform: translateX(-50%) translateY(50px) scale(0.8);
+        opacity: 0.3;
+        filter: blur(4px);
+    }
+
+    70% {
+        transform: translateX(-50%) translateY(-10px) scale(1.05);
+        opacity: 0.8;
+        filter: blur(1px);
+    }
+
+    100% {
+        transform: translateX(-50%) translateY(0) scale(1);
+        opacity: 1;
+        filter: blur(0px);
+    }
 }
 
 /* 文字闪烁特效 */
 @keyframes textShimmer {
-  0%, 100% {
-    text-shadow: 0 0 10px rgba(255, 255, 255, 0.3),
-                 0 0 20px rgba(255, 255, 255, 0.2),
-                 0 0 30px rgba(255, 255, 255, 0.1);
-  }
-  50% {
-    text-shadow: 0 0 20px rgba(255, 255, 255, 0.6),
-                 0 0 30px rgba(255, 255, 255, 0.4),
-                 0 0 40px rgba(255, 255, 255, 0.2);
-  }
+    0%,
+    100% {
+        text-shadow:
+            0 0 10px rgba(255, 255, 255, 0.3),
+            0 0 20px rgba(255, 255, 255, 0.2),
+            0 0 30px rgba(255, 255, 255, 0.1);
+    }
+    50% {
+        text-shadow:
+            0 0 20px rgba(255, 255, 255, 0.6),
+            0 0 30px rgba(255, 255, 255, 0.4),
+            0 0 40px rgba(255, 255, 255, 0.2);
+    }
 }
 
 /* ========================================
@@ -129,87 +132,87 @@
 
 /* 标准模式 - 标题入场动画 */
 @keyframes standardTitleEntrance {
-  0% {
-    transform: translateX(-50%) translateY(-50px) scale(0.8);
-    opacity: 0;
-    filter: blur(3px);
-  }
-  
-  50% {
-    transform: translateX(-50%) translateY(10px) scale(1.05);
-    opacity: 0.7;
-    filter: blur(1px);
-  }
-  
-  100% {
-    transform: translateX(-50%) translateY(0) scale(1);
-    opacity: 1;
-    filter: blur(0);
-  }
+    0% {
+        transform: translateX(-50%) translateY(-50px) scale(0.8);
+        opacity: 0;
+        filter: blur(3px);
+    }
+
+    50% {
+        transform: translateX(-50%) translateY(10px) scale(1.05);
+        opacity: 0.7;
+        filter: blur(1px);
+    }
+
+    100% {
+        transform: translateX(-50%) translateY(0) scale(1);
+        opacity: 1;
+        filter: blur(0);
+    }
 }
 
 /* 标准模式 - 副标题入场动画 */
 @keyframes standardSubtitleEntrance {
-  0% {
-    transform: translateY(30px) scale(0.9);
-    opacity: 0;
-  }
-  
-  100% {
-    transform: translateY(0) scale(1);
-    opacity: 1;
-  }
+    0% {
+        transform: translateY(30px) scale(0.9);
+        opacity: 0;
+    }
+
+    100% {
+        transform: translateY(0) scale(1);
+        opacity: 1;
+    }
 }
 
 /* 标准模式 - 口号入场动画 */
 @keyframes standardSloganEntrance {
-  0% {
-    transform: translateX(-50%) translateY(30px) scale(0.95);
-    opacity: 0;
-  }
-  
-  100% {
-    transform: translateX(-50%) translateY(0) scale(1);
-    opacity: 1;
-  }
+    0% {
+        transform: translateX(-50%) translateY(30px) scale(0.95);
+        opacity: 0;
+    }
+
+    100% {
+        transform: translateX(-50%) translateY(0) scale(1);
+        opacity: 1;
+    }
 }
 
 /* 标准模式 - Cube入场动画 */
 @keyframes standardCubeEntrance {
-  0% {
-    transform: scale(0.8) rotateY(180deg);
-    opacity: 0;
-  }
-  
-  100% {
-    transform: scale(1) rotateY(0deg);
-    opacity: 1;
-  }
+    0% {
+        transform: scale(0.8) rotateY(180deg);
+        opacity: 0;
+    }
+
+    100% {
+        transform: scale(1) rotateY(0deg);
+        opacity: 1;
+    }
 }
 
 /* 应用动画的类 - 优化时间配合 */
 .grand-title-entrance {
-  animation: titleGrandSlam 3s ease-out forwards;
-  animation-delay: 0s; /* 立即开始 */
-  animation-fill-mode: both;
+    animation: titleGrandSlam 3s ease-out forwards;
+    animation-delay: 0s; /* 立即开始 */
+    animation-fill-mode: both;
 }
 
 .grand-subtitle-entrance {
-  animation: subtitleFollowUp 2.5s ease-out forwards;
-  animation-delay: 1.8s; /* 文字动画的后半段 */
-  animation-fill-mode: both;
+    animation: subtitleFollowUp 2.5s ease-out forwards;
+    animation-delay: 1.8s; /* 文字动画的后半段 */
+    animation-fill-mode: both;
 }
 
 .grand-slogan-entrance {
-  animation: sloganMajesticEntrance 2s ease-out forwards;
-  animation-delay: 5.5s; /* cube动画完成后 */
-  animation-fill-mode: both;
+    animation: sloganMajesticEntrance 2s ease-out forwards;
+    animation-delay: 5.5s; /* cube动画完成后 */
+    animation-fill-mode: both;
 }
 
 /* 添加闪烁特效到文字 - 延迟到所有动画完成 */
 .shimmer-text {
-  animation: textShimmer 3s ease-in-out infinite;
-  animation-delay: 7s;
+    animation: textShimmer 3s ease-in-out infinite;
+    animation-delay: 7s;
 }
 
 /* ========================================
@@ -218,13 +221,13 @@
 
 /* 确保标题在字体加载前可见，避免FOIT (Flash of Invisible Text) */
 .font-beauRivage {
-  font-display: swap;
+    font-display: swap;
 }
 
 /* 为LCP元素提供初始可见状态 */
 h1.text-theme-text-primary {
-  visibility: visible !important;
-  opacity: 1 !important;
+    visibility: visible !important;
+    opacity: 1 !important;
 }
 
 /* ========================================
@@ -233,83 +236,83 @@ h1.text-theme-text-primary {
 
 /* 标准模式标题入场动画 - 用于非开场动画模式 */
 @keyframes movieTitleEntrance {
-  0% {
-    transform: translateX(-50%) translateY(-30px) scale(0.9);
-    opacity: 0;
-    filter: blur(2px);
-  }
-  
-  60% {
-    transform: translateX(-50%) translateY(5px) scale(1.02);
-    opacity: 0.8;
-    filter: blur(0.5px);
-  }
-  
-  100% {
-    transform: translateX(-50%) translateY(0) scale(1);
-    opacity: 1;
-    filter: blur(0);
-  }
+    0% {
+        transform: translateX(-50%) translateY(-30px) scale(0.9);
+        opacity: 0;
+        filter: blur(2px);
+    }
+
+    60% {
+        transform: translateX(-50%) translateY(5px) scale(1.02);
+        opacity: 0.8;
+        filter: blur(0.5px);
+    }
+
+    100% {
+        transform: translateX(-50%) translateY(0) scale(1);
+        opacity: 1;
+        filter: blur(0);
+    }
 }
 
 /* 标准模式口号入场动画 - 用于非开场动画模式 */
 @keyframes sloganEntrance {
-  0% {
-    transform: translateX(-50%) translateY(20px) scale(0.95);
-    opacity: 0;
-  }
-  
-  100% {
-    transform: translateX(-50%) translateY(0) scale(1);
-    opacity: 1;
-  }
+    0% {
+        transform: translateX(-50%) translateY(20px) scale(0.95);
+        opacity: 0;
+    }
+
+    100% {
+        transform: translateX(-50%) translateY(0) scale(1);
+        opacity: 1;
+    }
 }
 
 /* 立方体的震撼入场动画样式类 */
 .cube-grand-entrance {
-  /* 这个类会与Three.js的动画配合 */
-  transform-style: preserve-3d;
-  perspective: 1000px;
+    /* 这个类会与Three.js的动画配合 */
+    transform-style: preserve-3d;
+    perspective: 1000px;
 }
 
 /* 标准模式的CSS类 */
 .standard-title-entrance {
-  animation: standardTitleEntrance 1.5s ease-out forwards 0.5s;
-  animation-fill-mode: both;
+    animation: standardTitleEntrance 1.5s ease-out forwards 0.5s;
+    animation-fill-mode: both;
 }
 
 .standard-subtitle-entrance {
-  animation: standardSubtitleEntrance 1.2s ease-out forwards 1.8s;
-  animation-fill-mode: both;
+    animation: standardSubtitleEntrance 1.2s ease-out forwards 1.8s;
+    animation-fill-mode: both;
 }
 
 .standard-slogan-entrance {
-  animation: standardSloganEntrance 1s ease-out forwards 2.5s;
-  animation-fill-mode: both;
+    animation: standardSloganEntrance 1s ease-out forwards 2.5s;
+    animation-fill-mode: both;
 }
 
 .cube-standard-entrance {
-  animation: standardCubeEntrance 1.5s ease-out forwards 0.2s;
-  animation-fill-mode: both;
+    animation: standardCubeEntrance 1.5s ease-out forwards 0.2s;
+    animation-fill-mode: both;
 }
 
 /* 响应式调整 */
 @media (max-width: 768px) {
-  @keyframes titleGrandSlam {
-    0% {
-      transform: translateX(-50%) translateY(-200px) rotateX(45deg) scale(0.3);
+    @keyframes titleGrandSlam {
+        0% {
+            transform: translateX(-50%) translateY(-200px) rotateX(45deg) scale(0.3);
+        }
+        100% {
+            transform: translateX(-50%) translateY(0) rotateX(0deg) scale(1);
+        }
     }
-    100% {
-      transform: translateX(-50%) translateY(0) rotateX(0deg) scale(1);
+
+    @keyframes subtitleFollowUp {
+        0% {
+            transform: translateX(-50%) translateY(80px) rotateX(-30deg) scale(0.4);
+        }
+        100% {
+            transform: translateX(-50%) translateY(0) rotateX(0deg) scale(1);
+        }
     }
-  }
-  
-  @keyframes subtitleFollowUp {
-    0% {
-      transform: translateX(-50%) translateY(80px) rotateX(-30deg) scale(0.4);
-    }
-    100% {
-      transform: translateX(-50%) translateY(0) rotateX(0deg) scale(1);
-    }
-  }
 }

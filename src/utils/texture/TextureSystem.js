@@ -1,8 +1,8 @@
 /**
  * 统一纹理管理系统
- * 
+ *
  * 提供场景化纹理管理，支持多种纹理格式自动检测和优化
- * 
+ *
  * 主要特性：
  * - 统一API，支持所有场景 (Hero Cube, Gallery, Lightbox)
  * - 智能格式检测 (AVIF > WebP > JPEG)
@@ -10,14 +10,14 @@
  * - 场景专用优化器和配置
  * - 完善的错误处理和降级机制
  * - 高效的内存管理和缓存策略
- * 
+ *
  * @example
  * // Hero Cube场景
  * const cubeTextures = await textureSystem.loadSceneTextures('hero-cube', {
  *   textures: ['about', 'gallery', 'projects'],
  *   videos: [{ name: 'home', src: '/cube-textures/home.mp4' }]
  * });
- * 
+ *
  * @example
  * // Gallery场景 - 自动过滤视频文件
  * const galleryTextures = await textureSystem.loadSceneTextures('gallery', {
@@ -30,7 +30,7 @@ import * as THREE from 'three';
 
 /**
  * 统一纹理管理系统
- * 
+ *
  * 管理全局纹理缓存、场景管理器和性能统计
  */
 export class TextureSystem {
@@ -45,35 +45,35 @@ export class TextureSystem {
             totalLoads: 0,
             cacheHits: 0,
             memoryUsage: 0,
-            errors: 0
+            errors: 0,
         };
-        
+
         // 预定义场景配置
         this.sceneConfigs = {
             'hero-cube': {
                 optimizer: this.cubeTextureOptimizer.bind(this),
                 basePath: '/cube-textures',
                 formats: ['avif', 'webp', 'jpg'],
-                fallback: this.createCubeFallback.bind(this)
+                fallback: this.createCubeFallback.bind(this),
             },
-            'gallery': {
+            gallery: {
                 optimizer: this.galleryTextureOptimizer.bind(this),
                 basePath: '/gallery',
                 formats: ['avif', 'webp', 'jpg'],
-                fallback: this.createGalleryFallback.bind(this)
+                fallback: this.createGalleryFallback.bind(this),
             },
-            'lightbox': {
+            lightbox: {
                 optimizer: this.lightboxTextureOptimizer.bind(this),
                 basePath: '/gallery',
                 formats: ['avif', 'webp', 'jpg'],
-                fallback: this.createLightboxFallback.bind(this)
-            }
+                fallback: this.createLightboxFallback.bind(this),
+            },
         };
     }
 
     /**
      * 场景纹理加载 - 统一入口
-     * 
+     *
      * @param {string} sceneType - 场景类型 ('hero-cube', 'gallery', 'lightbox')
      * @param {Object} options - 加载选项
      * @param {string[]} [options.textures] - 纹理名称数组
@@ -85,7 +85,7 @@ export class TextureSystem {
      */
     async loadSceneTextures(sceneType, options = {}) {
         console.log(`🎯 加载${sceneType}场景纹理...`);
-        
+
         const config = this.sceneConfigs[sceneType];
         if (!config) {
             throw new Error(`未知场景类型: ${sceneType}`);
@@ -94,12 +94,12 @@ export class TextureSystem {
         // 确保格式检测完成
         const { formatDetector } = await import('./FormatDetector.js');
         await formatDetector.initializationPromise;
-        
+
         // 创建场景管理器
         if (!this.sceneManagers.has(sceneType)) {
             this.sceneManagers.set(sceneType, new SceneTextureManager(sceneType, config));
         }
-        
+
         const manager = this.sceneManagers.get(sceneType);
         return await manager.loadTextures(options);
     }
@@ -112,17 +112,17 @@ export class TextureSystem {
         if (name && name.match(/\.(mp4|webm|mov|avi|mkv)$/i)) {
             return `/${folder}/${name}`;
         }
-        
+
         const { formatDetector } = await import('./FormatDetector.js');
         const format = await formatDetector.getBestFormat();
         const fileName = name.replace(/\.(jpg|jpeg|png|webp|avif)$/i, '');
-        
+
         const pathMap = {
-            'avif': `/${folder}-avif/${fileName}.avif`,
-            'webp': `/${folder}-webp/${fileName}.webp`,
-            'jpg': `/${folder}/${fileName}.jpg`
+            avif: `/${folder}-avif/${fileName}.avif`,
+            webp: `/${folder}-webp/${fileName}.webp`,
+            jpg: `/${folder}/${fileName}.jpg`,
         };
-        
+
         return pathMap[format] || pathMap['jpg'];
     }
 
@@ -173,7 +173,7 @@ export class TextureSystem {
         const canvas = document.createElement('canvas');
         canvas.width = canvas.height = 256;
         const ctx = canvas.getContext('2d');
-        
+
         // 棋盘格纹理
         const size = 32;
         for (let i = 0; i < 8; i++) {
@@ -182,7 +182,7 @@ export class TextureSystem {
                 ctx.fillRect(i * size, j * size, size, size);
             }
         }
-        
+
         const texture = new THREE.CanvasTexture(canvas);
         return this.cubeTextureOptimizer(texture);
     }
@@ -194,20 +194,20 @@ export class TextureSystem {
         const canvas = document.createElement('canvas');
         canvas.width = canvas.height = 512;
         const ctx = canvas.getContext('2d');
-        
+
         // 渐变背景
         const gradient = ctx.createLinearGradient(0, 0, 512, 512);
         gradient.addColorStop(0, '#f0f0f0');
         gradient.addColorStop(1, '#d0d0d0');
         ctx.fillStyle = gradient;
         ctx.fillRect(0, 0, 512, 512);
-        
+
         // 添加"图片加载中"文字
         ctx.fillStyle = '#999';
         ctx.font = '24px Arial';
         ctx.textAlign = 'center';
         ctx.fillText('Loading...', 256, 256);
-        
+
         const texture = new THREE.CanvasTexture(canvas);
         return this.galleryTextureOptimizer(texture);
     }
@@ -219,18 +219,18 @@ export class TextureSystem {
         const canvas = document.createElement('canvas');
         canvas.width = canvas.height = 256;
         const ctx = canvas.getContext('2d');
-        
+
         // 深色背景
         ctx.fillStyle = '#222';
         ctx.fillRect(0, 0, 256, 256);
-        
+
         // 发光效果
         const gradient = ctx.createRadialGradient(128, 128, 0, 128, 128, 128);
         gradient.addColorStop(0, 'rgba(255,255,255,0.8)');
         gradient.addColorStop(1, 'rgba(255,255,255,0)');
         ctx.fillStyle = gradient;
         ctx.fillRect(0, 0, 256, 256);
-        
+
         const texture = new THREE.CanvasTexture(canvas);
         return this.lightboxTextureOptimizer(texture);
     }
@@ -267,7 +267,7 @@ export class TextureSystem {
             global: this.performanceStats,
             scenes: sceneStats,
             totalCacheSize: this.cache.size,
-            totalScenes: this.sceneManagers.size
+            totalScenes: this.sceneManagers.size,
         };
     }
 }
@@ -284,23 +284,17 @@ class SceneTextureManager {
         this.stats = {
             loaded: 0,
             failed: 0,
-            cached: 0
+            cached: 0,
         };
     }
 
     async loadTextures(options = {}) {
-        const {
-            textures = [],
-            videos = [],
-            images = [],
-            folder,
-            onProgress
-        } = options;
+        const { textures = [], videos = [], images = [], folder, onProgress } = options;
 
         const results = {
             textures: new Map(),
             videos: new Map(),
-            errors: []
+            errors: [],
         };
 
         // 处理图片纹理
@@ -331,26 +325,26 @@ class SceneTextureManager {
         const errors = [];
         let loaded = 0;
 
-        const loadPromises = names.map(async (name) => {
+        const loadPromises = names.map(async name => {
             try {
                 const basePath = folder || this.config.basePath.replace('/', '');
-                
+
                 // 使用格式检测器直接获取最优路径
                 const { formatDetector } = await import('./FormatDetector.js');
                 const format = await formatDetector.getBestFormat();
                 const fileName = name.replace(/\.(jpg|jpeg|png|webp|avif)$/i, '');
-                
+
                 const pathMap = {
-                    'avif': `/${basePath}-avif/${fileName}.avif`,
-                    'webp': `/${basePath}-webp/${fileName}.webp`,
-                    'jpg': `/${basePath}/${fileName}.jpg`
+                    avif: `/${basePath}-avif/${fileName}.avif`,
+                    webp: `/${basePath}-webp/${fileName}.webp`,
+                    jpg: `/${basePath}/${fileName}.jpg`,
                 };
-                
+
                 const path = pathMap[format] || pathMap['jpg'];
-                
+
                 const texture = await this.loadSingleTexture(path);
                 const optimized = this.config.optimizer(texture);
-                
+
                 textures.set(name, optimized);
                 this.stats.loaded++;
                 loaded++;
@@ -358,10 +352,9 @@ class SceneTextureManager {
                 if (onProgress) {
                     onProgress(loaded / names.length, loaded, names.length);
                 }
-
             } catch (error) {
                 console.warn(`纹理加载失败: ${name}`, error);
-                
+
                 // 使用回退纹理
                 const fallback = this.config.fallback();
                 textures.set(name, fallback);
@@ -384,11 +377,11 @@ class SceneTextureManager {
         const errors = [];
         let loaded = 0;
 
-        const loadPromises = videos.map(async (videoConfig) => {
+        const loadPromises = videos.map(async videoConfig => {
             try {
                 const { name, src } = videoConfig;
                 const videoTexture = await this.createVideoTexture(src);
-                
+
                 videoTextures.set(name, videoTexture);
                 this.stats.loaded++;
                 loaded++;
@@ -396,7 +389,6 @@ class SceneTextureManager {
                 if (onProgress) {
                     onProgress(loaded / videos.length, loaded, videos.length);
                 }
-
             } catch (error) {
                 console.warn(`视频纹理加载失败: ${videoConfig.name}`, error);
                 errors.push({ name: videoConfig.name, error: error.message });
@@ -416,12 +408,7 @@ class SceneTextureManager {
     async loadSingleTexture(path) {
         return new Promise((resolve, reject) => {
             const loader = new THREE.TextureLoader();
-            loader.load(
-                path,
-                resolve,
-                undefined,
-                reject
-            );
+            loader.load(path, resolve, undefined, reject);
         });
     }
 
@@ -444,17 +431,20 @@ class SceneTextureManager {
                 texture.generateMipmaps = false;
                 texture.flipY = true; // 修复：对于视频纹理，通常需要翻转Y轴
                 texture.colorSpace = THREE.SRGBColorSpace;
-                
+
                 // 添加标识符，方便在渲染循环中识别
                 texture.isVideoTexture = true;
-                
+
                 // 关键：启动视频播放
-                video.play().then(() => {
-                    console.log(`🎬 视频开始播放: ${src}`);
-                }).catch(err => {
-                    console.warn(`⚠️ 视频自动播放失败，需要用户交互: ${src}`, err);
-                });
-                
+                video
+                    .play()
+                    .then(() => {
+                        console.log(`🎬 视频开始播放: ${src}`);
+                    })
+                    .catch(err => {
+                        console.warn(`⚠️ 视频自动播放失败，需要用户交互: ${src}`, err);
+                    });
+
                 resolve(texture);
             };
 
@@ -475,7 +465,7 @@ class SceneTextureManager {
         return {
             ...this.stats,
             textureCount: this.textures.size,
-            videoCount: this.videos.size
+            videoCount: this.videos.size,
         };
     }
 }

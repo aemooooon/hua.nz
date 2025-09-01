@@ -40,7 +40,7 @@ class ImagePreloader {
             // 开始加载图片
             this.loading.add(src);
             const img = new Image();
-            
+
             img.onload = () => {
                 this.loading.delete(src);
                 this.cache.set(src, img);
@@ -68,8 +68,8 @@ class ImagePreloader {
     async preloadImages(srcList, options = {}) {
         const {
             batchSize = 5, // 每批加载5张图片
-            delay = 100,   // 批次间延迟100ms
-            onProgress = null
+            delay = 100, // 批次间延迟100ms
+            onProgress = null,
         } = options;
 
         const results = [];
@@ -79,9 +79,9 @@ class ImagePreloader {
         // 分批加载
         for (let i = 0; i < srcList.length; i += batchSize) {
             const batch = srcList.slice(i, i + batchSize);
-            
+
             // 并行加载当前批次
-            const batchPromises = batch.map(src => 
+            const batchPromises = batch.map(src =>
                 this.preloadImage(src).catch(error => {
                     console.warn('Failed to preload image:', src, error);
                     return null; // 失败时返回null，不阻断整体流程

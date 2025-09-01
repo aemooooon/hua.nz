@@ -6,119 +6,123 @@
 @tailwind utilities;
 
 @layer base {
-  /* Georgia是系统自带字体，无需导入 */
+    /* Georgia是系统自带字体，无需导入 */
 }
 
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: "Poppins", sans-serif;
+    font-family: 'Poppins', sans-serif;
 }
 
 /* 数字使用格鲁吉亚字体 */
 .numeric {
     font-family: Georgia, serif;
-    font-feature-settings: "lnum" 1;
+    font-feature-settings: 'lnum' 1;
 }
 
 /* 自动将数字应用格鲁吉亚字体 */
-.tel, .phone, .number, .progress-number, .percentage {
+.tel,
+.phone,
+.number,
+.progress-number,
+.percentage {
     font-family: Georgia, serif;
 }
 
 /* 主题根变量设置 - 默认占位符值，会被主题类覆盖 */
 :root {
-  /* 默认颜色值 - 会被主题类覆盖 */
-  --theme-primary: #00ffff;            /* 默认蓝色 */
-  --theme-primary-rgb: 0, 255, 255;    /* 默认蓝色RGB */
-  --theme-secondary: #0080ff;          /* 默认次要蓝色 */
-  --theme-secondary-rgb: 0, 128, 255;
-  --theme-accent: #4dd0e1;             /* 默认装饰色 */
-  --theme-background: #0A0A0F;         /* 默认背景 */
-  --theme-surface: rgba(224, 224, 224, 0.05);
-  --theme-surface-elevated: rgba(224, 224, 224, 0.1);
-  
-  /* 默认文字颜色层次 */
-  --theme-text-primary: #FFFFFF;       /* 纯白主标题文字 */
-  --theme-section-title: #FFFFFF;      /* 章节主标题颜色 - 默认白色 */
-  --theme-text-secondary: #E0F2FF;     /* 默认次要文字 */
-  --theme-text-muted: #B0D0FF;         /* 默认描述文字 */
-  --theme-text-subtle: #6B8FCC;        /* 默认静音文字 */
-  
-  /* 通用白色文字层次 - 不随主题变化，适用于所有页面 */
-  --theme-text-white: rgba(255, 255, 255, 1);      /* 纯白色 - 100% */
-  --theme-text-white-90: rgba(255, 255, 255, 0.9);  /* 90% 透明度 - 重要文字 */
-  --theme-text-white-80: rgba(255, 255, 255, 0.8);  /* 80% 透明度 - 主要内容 */
-  --theme-text-white-70: rgba(255, 255, 255, 0.7);  /* 70% 透明度 - 副标题 */
-  --theme-text-white-60: rgba(255, 255, 255, 0.6);  /* 60% 透明度 - 描述文字 */
-  --theme-text-white-50: rgba(255, 255, 255, 0.5);  /* 50% 透明度 - 次要信息 */
-  --theme-text-white-40: rgba(255, 255, 255, 0.4);  /* 40% 透明度 - 占位符 */
-  --theme-text-white-30: rgba(255, 255, 255, 0.3);  /* 30% 透明度 - 微妙提示 */
-  --theme-text-white-20: rgba(255, 255, 255, 0.2);  /* 20% 透明度 - 用于阴影 */
-  --theme-text-white-10: rgba(255, 255, 255, 0.1);  /* 10% 透明度 - 用于阴影 */
-  
-  /* 中性边框颜色系统 - 避免与主题色冲突 */
-  --theme-border-neutral: rgba(255, 255, 255, 0.2);     /* 中性边框 - 增强可见度 */
-  --theme-border-subtle: rgba(255, 255, 255, 0.08);     /* 微妙边框 */
-  --theme-border-emphasis: rgba(255, 255, 255, 0.35);   /* 强调边框 */
-  
-  /* 通用白色边框层次 - 不随主题变化 */
-  --theme-border-white-30: rgba(255, 255, 255, 0.3);    /* 30% 透明度边框 */
-  --theme-border-white-20: rgba(255, 255, 255, 0.2);    /* 20% 透明度边框 */
-  --theme-border-white-15: rgba(255, 255, 255, 0.15);   /* 15% 透明度边框 */
-  --theme-border-white-10: rgba(255, 255, 255, 0.1);    /* 10% 透明度边框 */
-  --theme-border-white-05: rgba(255, 255, 255, 0.05);   /* 5% 透明度边框 */
-  
-  /* 通用白色背景层次 - 用于卡片和表面 */
-  --theme-bg-white-20: rgba(255, 255, 255, 0.2);       /* 20% 透明度背景 */
-  --theme-bg-white-15: rgba(255, 255, 255, 0.15);      /* 15% 透明度背景 */
-  --theme-bg-white-10: rgba(255, 255, 255, 0.1);       /* 10% 透明度背景 */
-  --theme-bg-white-05: rgba(255, 255, 255, 0.05);      /* 5% 透明度背景 */
-  
-  /* 阴影颜色变量 */
-  --theme-shadow-primary-30: rgba(0, 255, 255, 0.3);      /* 主题阴影 30% 透明度 */
-  --theme-shadow-secondary-30: rgba(0, 255, 136, 0.3);    /* 次要主题阴影 30% 透明度 */
-  --theme-shadow-accent-30: rgba(255, 255, 255, 0.3);     /* 强调色阴影 30% 透明度 */
+    /* 默认颜色值 - 会被主题类覆盖 */
+    --theme-primary: #00ffff; /* 默认蓝色 */
+    --theme-primary-rgb: 0, 255, 255; /* 默认蓝色RGB */
+    --theme-secondary: #0080ff; /* 默认次要蓝色 */
+    --theme-secondary-rgb: 0, 128, 255;
+    --theme-accent: #4dd0e1; /* 默认装饰色 */
+    --theme-background: #0a0a0f; /* 默认背景 */
+    --theme-surface: rgba(224, 224, 224, 0.05);
+    --theme-surface-elevated: rgba(224, 224, 224, 0.1);
 
-  /* 背景颜色变量 - 主题色背景 */
-  --theme-bg-primary-10: rgba(0, 255, 255, 0.1);          /* 主题背景 10% 透明度 */
-  --theme-bg-secondary-10: rgba(0, 255, 136, 0.1);        /* 次要主题背景 10% 透明度 */
-  --theme-bg-accent-10: rgba(255, 255, 255, 0.1);         /* 强调色背景 10% 透明度 */
-  
-  --theme-border: #0080ff;
-  --theme-divider: #0080ff;
-  --theme-hover: rgba(0, 128, 255, 0.1);
-  
-  /* 默认按钮颜色层次 */
-  --theme-button: rgba(0, 255, 255, 0.15);
-  --theme-button-primary: rgba(0, 255, 255, 0.8);
-  --theme-button-hover: rgba(0, 255, 255, 0.25);
-  --theme-button-border: rgba(0, 255, 255, 0.6);
-  
-  --theme-loading: #00ffff;
-  --theme-glow: #00ffff;
-  --theme-shadow: rgba(0, 128, 255, 0.5);
-  --theme-cursor: #00ffff;
-  --theme-avatar-glow: #0080ff;
-  --theme-success: #00ff00;
-  --theme-warning: #F59E0B;
-  --theme-error: #EF4444;
-  
-  /* 默认渐变色配置 */
-  --theme-gradient-from: #0080ff;
-  --theme-gradient-via: #00ffff;
-  --theme-gradient-to: #4dd0e1;
-  
-  /* 地图专用高对比度颜色 */
-  --theme-map-button-bg: rgba(0, 0, 0, 0.92);
-  --theme-map-button-bg-hover: rgba(0, 0, 0, 0.98);
-  --theme-map-button-border: #00ffff;
-  --theme-map-button-border-hover: #ffffff;
-  --theme-map-button-text: #00ffff;
-  --theme-map-button-text-hover: #ffffff;
-  --theme-map-button-glow: 0, 255, 255;
-  --theme-map-button-glow-intense: 255, 255, 255;
+    /* 默认文字颜色层次 */
+    --theme-text-primary: #ffffff; /* 纯白主标题文字 */
+    --theme-section-title: #ffffff; /* 章节主标题颜色 - 默认白色 */
+    --theme-text-secondary: #e0f2ff; /* 默认次要文字 */
+    --theme-text-muted: #b0d0ff; /* 默认描述文字 */
+    --theme-text-subtle: #6b8fcc; /* 默认静音文字 */
+
+    /* 通用白色文字层次 - 不随主题变化，适用于所有页面 */
+    --theme-text-white: rgba(255, 255, 255, 1); /* 纯白色 - 100% */
+    --theme-text-white-90: rgba(255, 255, 255, 0.9); /* 90% 透明度 - 重要文字 */
+    --theme-text-white-80: rgba(255, 255, 255, 0.8); /* 80% 透明度 - 主要内容 */
+    --theme-text-white-70: rgba(255, 255, 255, 0.7); /* 70% 透明度 - 副标题 */
+    --theme-text-white-60: rgba(255, 255, 255, 0.6); /* 60% 透明度 - 描述文字 */
+    --theme-text-white-50: rgba(255, 255, 255, 0.5); /* 50% 透明度 - 次要信息 */
+    --theme-text-white-40: rgba(255, 255, 255, 0.4); /* 40% 透明度 - 占位符 */
+    --theme-text-white-30: rgba(255, 255, 255, 0.3); /* 30% 透明度 - 微妙提示 */
+    --theme-text-white-20: rgba(255, 255, 255, 0.2); /* 20% 透明度 - 用于阴影 */
+    --theme-text-white-10: rgba(255, 255, 255, 0.1); /* 10% 透明度 - 用于阴影 */
+
+    /* 中性边框颜色系统 - 避免与主题色冲突 */
+    --theme-border-neutral: rgba(255, 255, 255, 0.2); /* 中性边框 - 增强可见度 */
+    --theme-border-subtle: rgba(255, 255, 255, 0.08); /* 微妙边框 */
+    --theme-border-emphasis: rgba(255, 255, 255, 0.35); /* 强调边框 */
+
+    /* 通用白色边框层次 - 不随主题变化 */
+    --theme-border-white-30: rgba(255, 255, 255, 0.3); /* 30% 透明度边框 */
+    --theme-border-white-20: rgba(255, 255, 255, 0.2); /* 20% 透明度边框 */
+    --theme-border-white-15: rgba(255, 255, 255, 0.15); /* 15% 透明度边框 */
+    --theme-border-white-10: rgba(255, 255, 255, 0.1); /* 10% 透明度边框 */
+    --theme-border-white-05: rgba(255, 255, 255, 0.05); /* 5% 透明度边框 */
+
+    /* 通用白色背景层次 - 用于卡片和表面 */
+    --theme-bg-white-20: rgba(255, 255, 255, 0.2); /* 20% 透明度背景 */
+    --theme-bg-white-15: rgba(255, 255, 255, 0.15); /* 15% 透明度背景 */
+    --theme-bg-white-10: rgba(255, 255, 255, 0.1); /* 10% 透明度背景 */
+    --theme-bg-white-05: rgba(255, 255, 255, 0.05); /* 5% 透明度背景 */
+
+    /* 阴影颜色变量 */
+    --theme-shadow-primary-30: rgba(0, 255, 255, 0.3); /* 主题阴影 30% 透明度 */
+    --theme-shadow-secondary-30: rgba(0, 255, 136, 0.3); /* 次要主题阴影 30% 透明度 */
+    --theme-shadow-accent-30: rgba(255, 255, 255, 0.3); /* 强调色阴影 30% 透明度 */
+
+    /* 背景颜色变量 - 主题色背景 */
+    --theme-bg-primary-10: rgba(0, 255, 255, 0.1); /* 主题背景 10% 透明度 */
+    --theme-bg-secondary-10: rgba(0, 255, 136, 0.1); /* 次要主题背景 10% 透明度 */
+    --theme-bg-accent-10: rgba(255, 255, 255, 0.1); /* 强调色背景 10% 透明度 */
+
+    --theme-border: #0080ff;
+    --theme-divider: #0080ff;
+    --theme-hover: rgba(0, 128, 255, 0.1);
+
+    /* 默认按钮颜色层次 */
+    --theme-button: rgba(0, 255, 255, 0.15);
+    --theme-button-primary: rgba(0, 255, 255, 0.8);
+    --theme-button-hover: rgba(0, 255, 255, 0.25);
+    --theme-button-border: rgba(0, 255, 255, 0.6);
+
+    --theme-loading: #00ffff;
+    --theme-glow: #00ffff;
+    --theme-shadow: rgba(0, 128, 255, 0.5);
+    --theme-cursor: #00ffff;
+    --theme-avatar-glow: #0080ff;
+    --theme-success: #00ff00;
+    --theme-warning: #f59e0b;
+    --theme-error: #ef4444;
+
+    /* 默认渐变色配置 */
+    --theme-gradient-from: #0080ff;
+    --theme-gradient-via: #00ffff;
+    --theme-gradient-to: #4dd0e1;
+
+    /* 地图专用高对比度颜色 */
+    --theme-map-button-bg: rgba(0, 0, 0, 0.92);
+    --theme-map-button-bg-hover: rgba(0, 0, 0, 0.98);
+    --theme-map-button-border: #00ffff;
+    --theme-map-button-border-hover: #ffffff;
+    --theme-map-button-text: #00ffff;
+    --theme-map-button-text-hover: #ffffff;
+    --theme-map-button-glow: 0, 255, 255;
+    --theme-map-button-glow-intense: 255, 255, 255;
 }
 
 body {
@@ -164,7 +168,7 @@ body {
 
 .about-avatar-container:hover {
     transform: scale(1.05);
-    box-shadow: 
+    box-shadow:
         0 0 15px var(--theme-primary),
         0 0 30px rgba(var(--theme-primary-rgb), 0.6),
         0 0 45px rgba(var(--theme-primary-rgb), 0.4);
@@ -172,20 +176,23 @@ body {
 
 /* 雷达扫描效果优化 */
 @keyframes rotate-glow {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
 }
 
 @keyframes avatar-glow {
-    0%, 100% { 
-        filter: 
-            drop-shadow(0 0 5px var(--theme-primary))
+    0%,
+    100% {
+        filter: drop-shadow(0 0 5px var(--theme-primary))
             drop-shadow(0 0 10px rgba(var(--theme-primary-rgb), 0.6))
             drop-shadow(0 0 15px rgba(var(--theme-primary-rgb), 0.4));
     }
-    50% { 
-        filter: 
-            drop-shadow(0 0 8px var(--theme-primary))
+    50% {
+        filter: drop-shadow(0 0 8px var(--theme-primary))
             drop-shadow(0 0 16px rgba(var(--theme-primary-rgb), 0.8))
             drop-shadow(0 0 24px rgba(var(--theme-primary-rgb), 0.6));
     }
@@ -216,96 +223,96 @@ body {
 
 /* NZ Blue 主题变量 */
 .theme-nz-blue {
-  /* New Zealand Blue 方案A：科技蓝色系 - 统一蓝色调主题 */
-  --theme-primary: #00ffff;            /* 亮青色 - 主要强调色（光晕、边框） */
-  --theme-primary-rgb: 0, 255, 255;    /* RGB值用于透明度效果 */
-  --theme-secondary: #0080ff;          /* 蓝色 - 次要强调色 */
-  --theme-secondary-rgb: 0, 128, 255;
-  --theme-accent: #4dd0e1;             /* 浅蓝 - 装饰色 */
-  --theme-background: #0A0A0F;         /* 深蓝黑背景 */
-  --theme-surface: rgba(224, 224, 224, 0.05);      /* 浅灰白表面 */
-  --theme-surface-elevated: rgba(224, 224, 224, 0.1);
-  
-  /* 文字颜色层次 - 从高到低对比度 */
-  --theme-text-primary: #FFFFFF;       /* 纯白主标题文字 - 最高对比 */
-  --theme-section-title: #00ffff;      /* 章节主标题使用主题亮青色 */
-  --theme-text-secondary: #E0F2FF;     /* 浅蓝白次要文字 - 高对比 */
-  --theme-text-muted: #B0D0FF;         /* 淡蓝描述文字 - 中等对比 */
-  --theme-text-subtle: #6B8FCC;        /* 静音蓝文字 - 低对比 */
-  
-  /* 中性边框颜色系统 - 避免与主题色冲突 */
-  --theme-border-neutral: rgba(255, 255, 255, 0.2);     /* 中性边框 - 增强可见度 */
-  --theme-border-subtle: rgba(255, 255, 255, 0.08);     /* 微妙边框 */
-  --theme-border-emphasis: rgba(255, 255, 255, 0.35);   /* 强调边框 */
-  
-  --theme-border: #0080ff;             /* 蓝色边框 */
-  --theme-divider: #0080ff;            /* 分割线 */
-  --theme-hover: rgba(0, 128, 255, 0.1);          /* 悬停效果 */
-  
-  /* 按钮颜色层次 */
-  --theme-button: rgba(0, 255, 255, 0.15);         /* 按钮背景 - 低透明度 */
-  --theme-button-primary: rgba(0, 255, 255, 0.8);  /* 主按钮 */
-  --theme-button-hover: rgba(0, 255, 255, 0.25);   /* 按钮悬停 */
-  --theme-button-border: rgba(0, 255, 255, 0.6);   /* 按钮边框 */
-  
-  --theme-loading: #00ffff;
-  --theme-glow: #00ffff;
-  --theme-shadow: rgba(0, 128, 255, 0.5);
-  --theme-cursor: #00ffff;
-  --theme-avatar-glow: #00ffff;        /* 头像发光使用主色调 */
-  --theme-success: #00ff00;
-  --theme-warning: #ffff00;
-  --theme-error: #ff0000;
-  --theme-gradient-from: #0080ff;
-  --theme-gradient-via: #00ffff;
-  --theme-gradient-to: #4dd0e1;
+    /* New Zealand Blue 方案A：科技蓝色系 - 统一蓝色调主题 */
+    --theme-primary: #00ffff; /* 亮青色 - 主要强调色（光晕、边框） */
+    --theme-primary-rgb: 0, 255, 255; /* RGB值用于透明度效果 */
+    --theme-secondary: #0080ff; /* 蓝色 - 次要强调色 */
+    --theme-secondary-rgb: 0, 128, 255;
+    --theme-accent: #4dd0e1; /* 浅蓝 - 装饰色 */
+    --theme-background: #0a0a0f; /* 深蓝黑背景 */
+    --theme-surface: rgba(224, 224, 224, 0.05); /* 浅灰白表面 */
+    --theme-surface-elevated: rgba(224, 224, 224, 0.1);
+
+    /* 文字颜色层次 - 从高到低对比度 */
+    --theme-text-primary: #ffffff; /* 纯白主标题文字 - 最高对比 */
+    --theme-section-title: #00ffff; /* 章节主标题使用主题亮青色 */
+    --theme-text-secondary: #e0f2ff; /* 浅蓝白次要文字 - 高对比 */
+    --theme-text-muted: #b0d0ff; /* 淡蓝描述文字 - 中等对比 */
+    --theme-text-subtle: #6b8fcc; /* 静音蓝文字 - 低对比 */
+
+    /* 中性边框颜色系统 - 避免与主题色冲突 */
+    --theme-border-neutral: rgba(255, 255, 255, 0.2); /* 中性边框 - 增强可见度 */
+    --theme-border-subtle: rgba(255, 255, 255, 0.08); /* 微妙边框 */
+    --theme-border-emphasis: rgba(255, 255, 255, 0.35); /* 强调边框 */
+
+    --theme-border: #0080ff; /* 蓝色边框 */
+    --theme-divider: #0080ff; /* 分割线 */
+    --theme-hover: rgba(0, 128, 255, 0.1); /* 悬停效果 */
+
+    /* 按钮颜色层次 */
+    --theme-button: rgba(0, 255, 255, 0.15); /* 按钮背景 - 低透明度 */
+    --theme-button-primary: rgba(0, 255, 255, 0.8); /* 主按钮 */
+    --theme-button-hover: rgba(0, 255, 255, 0.25); /* 按钮悬停 */
+    --theme-button-border: rgba(0, 255, 255, 0.6); /* 按钮边框 */
+
+    --theme-loading: #00ffff;
+    --theme-glow: #00ffff;
+    --theme-shadow: rgba(0, 128, 255, 0.5);
+    --theme-cursor: #00ffff;
+    --theme-avatar-glow: #00ffff; /* 头像发光使用主色调 */
+    --theme-success: #00ff00;
+    --theme-warning: #ffff00;
+    --theme-error: #ff0000;
+    --theme-gradient-from: #0080ff;
+    --theme-gradient-via: #00ffff;
+    --theme-gradient-to: #4dd0e1;
 }
 
 /* SI Green 主题变量 */
 .theme-si-green {
-  /* South Island Green 方案A：科技绿色系 - 统一绿色调主题 */
-  --theme-primary: #00FF88;            /* 高亮绿 - 主要强调色（光晕、边框） */
-  --theme-primary-rgb: 0, 255, 136;    /* RGB值用于透明度效果 */
-  --theme-secondary: #10B981;          /* 翠绿 - 次要强调色 */
-  --theme-secondary-rgb: 16, 185, 129;
-  --theme-accent: #34D399;             /* 浅绿 - 装饰色 */
-  --theme-background: #0A0F0D;         /* 深绿黑背景 */
-  --theme-surface: rgba(224, 224, 224, 0.05);      /* 浅灰白表面 */
-  --theme-surface-elevated: rgba(224, 224, 224, 0.1);
-  
-  /* 文字颜色层次 - 从高到低对比度 */
-  --theme-text-primary: #FFFFFF;       /* 纯白主标题文字 - 最高对比 */
-  --theme-section-title: #00FF88;      /* 章节主标题使用主题高亮绿 */
-  --theme-text-secondary: #E0F2E0;     /* 浅绿白次要文字 - 高对比 */
-  --theme-text-muted: #B0D0B0;         /* 淡绿描述文字 - 中等对比 */
-  --theme-text-subtle: #6B8F6B;        /* 静音绿文字 - 低对比 */
-  
-  /* 中性边框颜色系统 - 避免与主题色冲突 */
-  --theme-border-neutral: rgba(255, 255, 255, 0.2);     /* 中性边框 - 增强可见度 */
-  --theme-border-subtle: rgba(255, 255, 255, 0.08);     /* 微妙边框 */
-  --theme-border-emphasis: rgba(255, 255, 255, 0.35);   /* 强调边框 */
-  
-  --theme-border: #10B981;             /* 翠绿边框 */
-  --theme-divider: #10B981;            /* 分割线 */
-  --theme-hover: rgba(16, 185, 129, 0.1);          /* 悬停效果 */
-  
-  /* 按钮颜色层次 */
-  --theme-button: rgba(0, 255, 136, 0.15);         /* 按钮背景 - 低透明度 */
-  --theme-button-primary: rgba(0, 255, 136, 0.8);  /* 主按钮 */
-  --theme-button-hover: rgba(0, 255, 136, 0.25);   /* 按钮悬停 */
-  --theme-button-border: rgba(0, 255, 136, 0.6);   /* 按钮边框 */
-  
-  --theme-loading: #00FF88;
-  --theme-glow: #00FF88;
-  --theme-shadow: rgba(16, 185, 129, 0.5);
-  --theme-cursor: #00FF88;
-  --theme-avatar-glow: #00FF88;        /* 头像发光使用高亮绿 */
-  --theme-success: #00ff00;
-  --theme-warning: #ffff00;
-  --theme-error: #ff0000;
-  --theme-gradient-from: #10B981;
-  --theme-gradient-via: #00FF88;
-  --theme-gradient-to: #34D399;
+    /* South Island Green 方案A：科技绿色系 - 统一绿色调主题 */
+    --theme-primary: #00ff88; /* 高亮绿 - 主要强调色（光晕、边框） */
+    --theme-primary-rgb: 0, 255, 136; /* RGB值用于透明度效果 */
+    --theme-secondary: #10b981; /* 翠绿 - 次要强调色 */
+    --theme-secondary-rgb: 16, 185, 129;
+    --theme-accent: #34d399; /* 浅绿 - 装饰色 */
+    --theme-background: #0a0f0d; /* 深绿黑背景 */
+    --theme-surface: rgba(224, 224, 224, 0.05); /* 浅灰白表面 */
+    --theme-surface-elevated: rgba(224, 224, 224, 0.1);
+
+    /* 文字颜色层次 - 从高到低对比度 */
+    --theme-text-primary: #ffffff; /* 纯白主标题文字 - 最高对比 */
+    --theme-section-title: #00ff88; /* 章节主标题使用主题高亮绿 */
+    --theme-text-secondary: #e0f2e0; /* 浅绿白次要文字 - 高对比 */
+    --theme-text-muted: #b0d0b0; /* 淡绿描述文字 - 中等对比 */
+    --theme-text-subtle: #6b8f6b; /* 静音绿文字 - 低对比 */
+
+    /* 中性边框颜色系统 - 避免与主题色冲突 */
+    --theme-border-neutral: rgba(255, 255, 255, 0.2); /* 中性边框 - 增强可见度 */
+    --theme-border-subtle: rgba(255, 255, 255, 0.08); /* 微妙边框 */
+    --theme-border-emphasis: rgba(255, 255, 255, 0.35); /* 强调边框 */
+
+    --theme-border: #10b981; /* 翠绿边框 */
+    --theme-divider: #10b981; /* 分割线 */
+    --theme-hover: rgba(16, 185, 129, 0.1); /* 悬停效果 */
+
+    /* 按钮颜色层次 */
+    --theme-button: rgba(0, 255, 136, 0.15); /* 按钮背景 - 低透明度 */
+    --theme-button-primary: rgba(0, 255, 136, 0.8); /* 主按钮 */
+    --theme-button-hover: rgba(0, 255, 136, 0.25); /* 按钮悬停 */
+    --theme-button-border: rgba(0, 255, 136, 0.6); /* 按钮边框 */
+
+    --theme-loading: #00ff88;
+    --theme-glow: #00ff88;
+    --theme-shadow: rgba(16, 185, 129, 0.5);
+    --theme-cursor: #00ff88;
+    --theme-avatar-glow: #00ff88; /* 头像发光使用高亮绿 */
+    --theme-success: #00ff00;
+    --theme-warning: #ffff00;
+    --theme-error: #ff0000;
+    --theme-gradient-from: #10b981;
+    --theme-gradient-via: #00ff88;
+    --theme-gradient-to: #34d399;
 }
 
 /* 文字背景确保可读性 */
@@ -353,7 +360,7 @@ body {
 
 .theme-card:hover {
     background: var(--theme-surface-elevated);
-    box-shadow: 
+    box-shadow:
         0 8px 25px var(--theme-shadow),
         0 0 20px var(--theme-glow),
         inset 0 1px 0 rgba(255, 255, 255, 0.1);
@@ -383,10 +390,7 @@ body {
 }
 
 .theme-loading::before {
-    background: linear-gradient(90deg, 
-        transparent, 
-        var(--theme-primary), 
-        transparent);
+    background: linear-gradient(90deg, transparent, var(--theme-primary), transparent);
 }
 
 /* 分割线 */
@@ -478,22 +482,24 @@ body {
     justify-content: center;
     align-items: center;
     box-shadow: 0 0 15px rgba(124, 166, 92, 0.8);
-    animation: glow 3s infinite linear, pulse 2s infinite ease-in-out;
+    animation:
+        glow 3s infinite linear,
+        pulse 2s infinite ease-in-out;
     transition: transform 0.3s ease-in-out;
 }
 
 .custom-cluster-icon {
     font-size: 24px;
-    font-family: Georgia, Arial, "Times New Roman", Times, serif;
+    font-family: Georgia, Arial, 'Times New Roman', Times, serif;
     font-weight: 100;
     position: relative;
     z-index: 2;
     text-align: center;
-    line-height: 100%
+    line-height: 100%;
 }
 
 .custom-cluster::before {
-    content: "";
+    content: '';
     position: absolute;
     width: 80px;
     height: 80px;
@@ -762,7 +768,8 @@ body {
     padding: 8px !important;
 }
 
-@media (min-width: 1280px) { /* xl屏幕 */
+@media (min-width: 1280px) {
+    /* xl屏幕 */
     .explore-map-button {
         width: 115px !important;
         height: 115px !important;
@@ -770,7 +777,8 @@ body {
     }
 }
 
-@media (min-width: 1536px) { /* 2xl屏幕 */
+@media (min-width: 1536px) {
+    /* 2xl屏幕 */
     .explore-map-button {
         width: 120px !important;
         height: 120px !important;
@@ -825,8 +833,13 @@ body {
 }
 
 @keyframes subtle-glow {
-    0%, 100% { opacity: 0.3; }
-    50% { opacity: 0.7; }
+    0%,
+    100% {
+        opacity: 0.3;
+    }
+    50% {
+        opacity: 0.7;
+    }
 }
 
 .project-controls {
@@ -889,12 +902,14 @@ body {
     left: -100%;
     width: 100%;
     height: 100%;
-    background: linear-gradient(90deg, 
-        transparent 0%, 
-        rgba(255,255,255,0.1) 25%, 
-        rgba(59, 130, 246, 0.3) 50%, 
-        rgba(255,255,255,0.1) 75%, 
-        transparent 100%);
+    background: linear-gradient(
+        90deg,
+        transparent 0%,
+        rgba(255, 255, 255, 0.1) 25%,
+        rgba(59, 130, 246, 0.3) 50%,
+        rgba(255, 255, 255, 0.1) 75%,
+        transparent 100%
+    );
     transition: left 1s ease-out;
     z-index: 2;
     pointer-events: none;
@@ -918,7 +933,7 @@ body {
     left: -100%;
     width: 100%;
     height: 1px;
-    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
     transition: left 0.6s ease-out;
 }
 
@@ -1055,7 +1070,11 @@ body {
     left: 0;
     right: 0;
     bottom: 0;
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+    background: linear-gradient(
+        135deg,
+        rgba(255, 255, 255, 0.1) 0%,
+        rgba(255, 255, 255, 0.05) 100%
+    );
     opacity: 0;
     transition: opacity 0.4s ease;
     pointer-events: none;
@@ -1071,7 +1090,14 @@ body {
     left: -100%;
     width: 100%;
     height: 3px;
-    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.9), rgba(59, 130, 246, 0.8), rgba(255,255,255,0.9), transparent);
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255, 255, 255, 0.9),
+        rgba(59, 130, 246, 0.8),
+        rgba(255, 255, 255, 0.9),
+        transparent
+    );
     transition: left 0.8s ease-out;
     z-index: 15;
     border-radius: inherit;
@@ -1082,7 +1108,7 @@ body {
     transform: translateY(-8px) scale(1.02);
     background: rgba(255, 255, 255, 0.1);
     border-color: var(--theme-primary);
-    box-shadow: 
+    box-shadow:
         0 25px 50px -12px rgba(0, 0, 0, 0.5),
         0 0 0 1px rgba(255, 255, 255, 0.1),
         0 0 20px rgba(59, 130, 246, 0.2);
@@ -1302,7 +1328,8 @@ body {
 
 /* 呼吸光晕动画 - 用于CircularLoadingIndicator，增强效果 */
 @keyframes breathing-glow {
-    0%, 100% {
+    0%,
+    100% {
         opacity: 0.7;
         transform: scale(0.98);
         filter: blur(3px);
@@ -1333,50 +1360,49 @@ body {
 }
 
 @keyframes map-button-glow {
-    0%, 100% {
-        box-shadow: 
+    0%,
+    100% {
+        box-shadow:
             0 0 15px var(--theme-glow),
             0 0 25px rgba(var(--theme-primary-rgb, 0, 255, 255), 0.3),
             0 0 35px rgba(var(--theme-primary-rgb, 0, 255, 255), 0.1);
-        filter: 
-            drop-shadow(0 0 8px var(--theme-avatar-glow))
+        filter: drop-shadow(0 0 8px var(--theme-avatar-glow))
             drop-shadow(0 0 15px rgba(var(--theme-primary-rgb, 0, 255, 255), 0.4));
     }
     50% {
-        box-shadow: 
+        box-shadow:
             0 0 20px var(--theme-glow),
             0 0 35px rgba(var(--theme-primary-rgb, 0, 255, 255), 0.5),
             0 0 50px rgba(var(--theme-primary-rgb, 0, 255, 255), 0.2);
-        filter: 
-            drop-shadow(0 0 12px var(--theme-avatar-glow))
+        filter: drop-shadow(0 0 12px var(--theme-avatar-glow))
             drop-shadow(0 0 20px rgba(var(--theme-primary-rgb, 0, 255, 255), 0.6));
     }
 }
 
 @keyframes map-button-glow-intense {
-    0%, 100% {
-        box-shadow: 
+    0%,
+    100% {
+        box-shadow:
             0 0 20px var(--theme-glow),
             0 0 35px rgba(var(--theme-primary-rgb, 0, 255, 255), 0.5),
             0 0 50px rgba(var(--theme-primary-rgb, 0, 255, 255), 0.3);
-        filter: 
-            drop-shadow(0 0 12px var(--theme-avatar-glow))
+        filter: drop-shadow(0 0 12px var(--theme-avatar-glow))
             drop-shadow(0 0 20px rgba(var(--theme-primary-rgb, 0, 255, 255), 0.6));
     }
     50% {
-        box-shadow: 
+        box-shadow:
             0 0 25px var(--theme-glow),
             0 0 45px rgba(var(--theme-primary-rgb, 0, 255, 255), 0.7),
             0 0 65px rgba(var(--theme-primary-rgb, 0, 255, 255), 0.4);
-        filter: 
-            drop-shadow(0 0 15px var(--theme-avatar-glow))
+        filter: drop-shadow(0 0 15px var(--theme-avatar-glow))
             drop-shadow(0 0 25px rgba(var(--theme-primary-rgb, 0, 255, 255), 0.8));
     }
 }
 
 /* Marker Pulse Animation - 标记脉冲动画 */
 @keyframes marker-pulse {
-    0%, 100% {
+    0%,
+    100% {
         opacity: 0.6;
         transform: scale(1);
     }
@@ -1388,7 +1414,8 @@ body {
 
 /* Cluster Pulse Animation - 聚类脉冲动画 */
 @keyframes cluster-pulse {
-    0%, 100% {
+    0%,
+    100% {
         opacity: 0.7;
         transform: scale(1);
     }
@@ -1428,33 +1455,33 @@ body {
         flex: none; /* 移除flex布局，使用块级布局 */
         width: 100%;
     }
-    
+
     .about-avatar-area {
         padding: 4rem 0; /* 64px 上下间距 */
         display: flex;
         justify-content: center;
         align-items: center;
     }
-    
+
     .about-content-area {
         padding-bottom: 4rem; /* 为卡片添加底部间距 */
     }
-    
+
     .about-avatar-wrapper {
         width: 240px;
         height: 240px;
         margin: 0 auto; /* 居中显示 */
     }
-    
+
     .avatar-cube-alignment {
         transform: translateX(0); /* 移除偏移，确保居中 */
     }
-    
+
     .about-section-spacing {
         gap: 2rem;
         flex-direction: column; /* 垂直排列 */
     }
-    
+
     .about-card-container {
         max-width: 100%;
         padding: 0 1rem;
@@ -1465,11 +1492,11 @@ body {
     .about-avatar-area {
         padding: 4.5rem 0; /* 增加间距到72px */
     }
-    
+
     .about-content-area {
         padding-bottom: 5rem; /* 增加卡片底部间距 */
     }
-    
+
     .about-avatar-wrapper {
         width: 220px;
         height: 220px;
@@ -1480,21 +1507,21 @@ body {
     .about-avatar-area {
         padding: 5rem 0; /* 增加间距到80px */
     }
-    
+
     .about-content-area {
         padding-bottom: 6rem; /* 更多卡片底部间距 */
     }
-    
+
     .about-avatar-wrapper {
         width: 200px;
         height: 200px;
         margin: 0 auto;
     }
-    
+
     .about-section-spacing {
         gap: 1.5rem;
     }
-    
+
     .about-card-container {
         padding: 0 0.75rem;
     }
@@ -1504,11 +1531,11 @@ body {
     .about-avatar-area {
         padding: 5.5rem 0; /* 最小屏幕最大间距88px */
     }
-    
+
     .about-content-area {
         padding-bottom: 7rem; /* 最大卡片底部间距 */
     }
-    
+
     .about-avatar-wrapper {
         width: 180px;
         height: 180px;
@@ -1519,11 +1546,11 @@ body {
     .about-avatar-area {
         padding: 6rem 0; /* 超小屏幕最大间距96px */
     }
-    
+
     .about-content-area {
         padding-bottom: 8rem; /* 最大卡片底部间距 */
     }
-    
+
     .about-avatar-wrapper {
         width: 160px;
         height: 160px;
@@ -1543,51 +1570,63 @@ body {
 
 /* 响应式调整 - 小屏幕适配 */
 @media (max-width: 768px) {
-    .simple-greeting-line span:nth-child(1) { /* Kia ora */
+    .simple-greeting-line span:nth-child(1) {
+        /* Kia ora */
         font-size: 2rem !important;
     }
-    .simple-greeting-line span:nth-child(2) { /* I'm */
+    .simple-greeting-line span:nth-child(2) {
+        /* I'm */
         font-size: 1.4rem !important;
         margin-left: 0.5rem !important;
     }
-    .simple-greeting-line span:nth-child(3) { /* Hua Wang */
+    .simple-greeting-line span:nth-child(3) {
+        /* Hua Wang */
         font-size: 2.5rem !important;
         margin-left: 0.5rem !important;
     }
 }
 
 @media (max-width: 640px) {
-    .simple-greeting-line span:nth-child(1) { /* Kia ora */
+    .simple-greeting-line span:nth-child(1) {
+        /* Kia ora */
         font-size: 1.75rem !important;
     }
-    .simple-greeting-line span:nth-child(2) { /* I'm */
+    .simple-greeting-line span:nth-child(2) {
+        /* I'm */
         font-size: 1.2rem !important;
     }
-    .simple-greeting-line span:nth-child(3) { /* Hua Wang */
+    .simple-greeting-line span:nth-child(3) {
+        /* Hua Wang */
         font-size: 2.25rem !important;
     }
 }
 
 @media (max-width: 480px) {
-    .simple-greeting-line span:nth-child(1) { /* Kia ora */
+    .simple-greeting-line span:nth-child(1) {
+        /* Kia ora */
         font-size: 1.5rem !important;
     }
-    .simple-greeting-line span:nth-child(2) { /* I'm */
+    .simple-greeting-line span:nth-child(2) {
+        /* I'm */
         font-size: 1rem !important;
     }
-    .simple-greeting-line span:nth-child(3) { /* Hua Wang */
+    .simple-greeting-line span:nth-child(3) {
+        /* Hua Wang */
         font-size: 2rem !important;
     }
 }
 
 @media (max-width: 375px) {
-    .simple-greeting-line span:nth-child(1) { /* Kia ora */
+    .simple-greeting-line span:nth-child(1) {
+        /* Kia ora */
         font-size: 1.3rem !important;
     }
-    .simple-greeting-line span:nth-child(2) { /* I'm */
+    .simple-greeting-line span:nth-child(2) {
+        /* I'm */
         font-size: 0.9rem !important;
     }
-    .simple-greeting-line span:nth-child(3) { /* Hua Wang */
+    .simple-greeting-line span:nth-child(3) {
+        /* Hua Wang */
         font-size: 1.6rem !important;
     }
 }
@@ -1641,7 +1680,12 @@ body {
     hyphens: none !important;
     font-weight: 400 !important;
     margin: 0 !important;
-    background: linear-gradient(135deg, var(--theme-gradient-from), var(--theme-gradient-via), var(--theme-gradient-to)) !important;
+    background: linear-gradient(
+        135deg,
+        var(--theme-gradient-from),
+        var(--theme-gradient-via),
+        var(--theme-gradient-to)
+    ) !important;
     -webkit-background-clip: text !important;
     -webkit-text-fill-color: transparent !important;
     background-clip: text !important;
@@ -1654,7 +1698,12 @@ body {
     line-height: 1.6 !important;
     letter-spacing: 0.025em;
     font-weight: 400 !important;
-    background: linear-gradient(135deg, var(--theme-gradient-from), var(--theme-gradient-via), var(--theme-gradient-to)) !important;
+    background: linear-gradient(
+        135deg,
+        var(--theme-gradient-from),
+        var(--theme-gradient-via),
+        var(--theme-gradient-to)
+    ) !important;
     -webkit-background-clip: text !important;
     -webkit-text-fill-color: transparent !important;
     background-clip: text !important;
@@ -1668,7 +1717,7 @@ body {
     line-height: 1.6 !important;
     letter-spacing: 0.025em;
     font-weight: 400 !important;
-    color: #FFFFFF !important;
+    color: #ffffff !important;
     display: block !important;
 }
 
@@ -1676,11 +1725,11 @@ body {
     .greeting-container .kia-ora-text {
         font-size: 2rem !important;
     }
-    
+
     .greeting-container .i-am-text {
         font-size: 1.4rem !important;
     }
-    
+
     .greeting-container .name-text {
         font-size: 2.5rem !important;
         white-space: nowrap !important;
@@ -1689,7 +1738,7 @@ body {
         min-width: max-content !important;
         word-break: keep-all !important;
     }
-    
+
     .programmer-text {
         font-size: 0.9rem !important;
     }
@@ -1701,15 +1750,15 @@ body {
         align-items: flex-start;
         gap: 0.25rem;
     }
-    
+
     .greeting-container .kia-ora-text {
         font-size: 1.75rem !important;
     }
-    
+
     .greeting-container .i-am-text {
         font-size: 1.2rem !important;
     }
-    
+
     .greeting-container .name-text {
         font-size: 2.25rem !important;
         white-space: nowrap !important;
@@ -1718,7 +1767,7 @@ body {
         min-width: max-content !important;
         word-break: keep-all !important;
     }
-    
+
     .programmer-text {
         font-size: 0.85rem !important;
     }
@@ -1728,11 +1777,11 @@ body {
     .greeting-container .kia-ora-text {
         font-size: 1.5rem !important;
     }
-    
+
     .greeting-container .i-am-text {
         font-size: 1rem !important;
     }
-    
+
     .greeting-container .name-text {
         font-size: 2rem !important;
         white-space: nowrap !important;
@@ -1741,7 +1790,7 @@ body {
         min-width: max-content !important;
         word-break: keep-all !important;
     }
-    
+
     .programmer-text {
         font-size: 0.8rem !important;
         line-height: 1.5 !important;
@@ -1752,11 +1801,11 @@ body {
     .greeting-container .kia-ora-text {
         font-size: 1.3rem !important;
     }
-    
+
     .greeting-container .i-am-text {
         font-size: 0.9rem !important;
     }
-    
+
     .greeting-container .name-text {
         font-size: 1.6rem !important;
         white-space: nowrap !important;
@@ -1775,7 +1824,7 @@ body {
         min-width: max-content !important;
         word-break: keep-all !important;
     }
-    
+
     .about-card-container {
         padding: 0 0.5rem;
         overflow-x: visible;
@@ -1795,14 +1844,14 @@ body {
     right: 0;
     height: 1px;
     background: linear-gradient(
-        to right, 
-        var(--theme-border) 0%, 
-        var(--theme-border) 10%, 
-        transparent 10%, 
-        transparent 75%, 
-        var(--theme-border) 75%, 
-        var(--theme-border) 88%, 
-        transparent 88%, 
+        to right,
+        var(--theme-border) 0%,
+        var(--theme-border) 10%,
+        transparent 10%,
+        transparent 75%,
+        var(--theme-border) 75%,
+        var(--theme-border) 88%,
+        transparent 88%,
         transparent 100%
     );
     z-index: 1;
@@ -1812,14 +1861,14 @@ body {
 @media (max-width: 768px) {
     .education-card-cutout-border::before {
         background: linear-gradient(
-            to right, 
-            var(--theme-border) 0%, 
-            var(--theme-border) 8%, 
-            transparent 8%, 
-            transparent 70%, 
-            var(--theme-border) 70%, 
-            var(--theme-border) 85%, 
-            transparent 85%, 
+            to right,
+            var(--theme-border) 0%,
+            var(--theme-border) 8%,
+            transparent 8%,
+            transparent 70%,
+            var(--theme-border) 70%,
+            var(--theme-border) 85%,
+            transparent 85%,
             transparent 100%
         );
     }
@@ -1828,14 +1877,14 @@ body {
 @media (max-width: 480px) {
     .education-card-cutout-border::before {
         background: linear-gradient(
-            to right, 
-            var(--theme-border) 0%, 
-            var(--theme-border) 5%, 
-            transparent 5%, 
-            transparent 65%, 
-            var(--theme-border) 65%, 
-            var(--theme-border) 80%, 
-            transparent 80%, 
+            to right,
+            var(--theme-border) 0%,
+            var(--theme-border) 5%,
+            transparent 5%,
+            transparent 65%,
+            var(--theme-border) 65%,
+            var(--theme-border) 80%,
+            transparent 80%,
             transparent 100%
         );
     }
@@ -1876,7 +1925,8 @@ body {
 /* ================================================ */
 
 /* 基础根容器设置 - 确保使用完整视口高度并考虑安全区域 */
-html, body {
+html,
+body {
     height: 100vh;
     height: 100dvh; /* 动态视口高度，自动适配移动端UI */
     overflow: hidden;
@@ -1924,12 +1974,12 @@ html, body {
         width: calc(100vw - env(safe-area-inset-left) - env(safe-area-inset-right));
         width: calc(100dvw - env(safe-area-inset-left) - env(safe-area-inset-right));
     }
-    
+
     /* 移动端底部固定元素的安全定位 */
     .mobile-bottom-safe {
         bottom: max(1rem, env(safe-area-inset-bottom) + 0.5rem);
     }
-    
+
     /* 移动端顶部固定元素的安全定位 */
     .mobile-top-safe {
         top: max(1rem, env(safe-area-inset-top) + 0.5rem);
@@ -1942,16 +1992,16 @@ html, body {
     body {
         -webkit-overflow-scrolling: touch;
     }
-    
+
     /* iOS Safari地址栏隐藏优化 */
     html {
         height: -webkit-fill-available;
     }
-    
+
     body {
         min-height: -webkit-fill-available;
     }
-    
+
     #root {
         min-height: -webkit-fill-available;
     }
@@ -1993,7 +2043,8 @@ html, body {
 
 /* 性能面板特有的滚动条动画 */
 @keyframes scrollbar-glow {
-    0%, 100% {
+    0%,
+    100% {
         box-shadow: 0 0 5px rgba(255, 255, 255, 0.1);
     }
     50% {

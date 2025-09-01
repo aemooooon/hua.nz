@@ -7,8 +7,8 @@ import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import imageOptimizer from '../../utils/image/ImageOptimizer.js';
 
-const OptimizedImageList = ({ 
-    images = [], 
+const OptimizedImageList = ({
+    images = [],
     alt = '',
     className = '',
     imageClassName = '',
@@ -16,7 +16,7 @@ const OptimizedImageList = ({
     enableAvif = true,
     enableWebp = true,
     onImagesOptimized,
-    renderImage
+    renderImage,
 }) => {
     const [optimizedImages, setOptimizedImages] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
@@ -33,16 +33,16 @@ const OptimizedImageList = ({
 
             try {
                 setIsLoading(true);
-                
+
                 const optimized = await imageOptimizer.getOptimizedImagePaths(images, {
                     enableAvif,
-                    enableWebp
+                    enableWebp,
                 });
-                
+
                 if (isMounted) {
                     setOptimizedImages(optimized);
                     setIsLoading(false);
-                    
+
                     if (onImagesOptimized) {
                         onImagesOptimized(optimized);
                     }
@@ -67,8 +67,8 @@ const OptimizedImageList = ({
         return (
             <div className={`${className} animate-pulse`}>
                 {images.map((_, index) => (
-                    <div 
-                        key={index} 
+                    <div
+                        key={index}
                         className={`${imageClassName} bg-gray-300 rounded`}
                         style={{ minHeight: '200px' }}
                     />
@@ -80,9 +80,7 @@ const OptimizedImageList = ({
     if (renderImage) {
         return (
             <div className={className}>
-                {optimizedImages.map((src, index) => 
-                    renderImage(src, index, images[index])
-                )}
+                {optimizedImages.map((src, index) => renderImage(src, index, images[index]))}
             </div>
         );
     }
@@ -96,7 +94,7 @@ const OptimizedImageList = ({
                     alt={`${alt} ${index + 1}`}
                     className={`${imageClassName} transition-opacity duration-300`}
                     loading={loading}
-                    onError={(e) => {
+                    onError={e => {
                         // 如果优化图片加载失败，回退到原始图片
                         if (e.target.src !== images[index]) {
                             console.warn('⚠️ 优化图片加载失败，回退到原始图片:', images[index]);

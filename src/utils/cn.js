@@ -3,8 +3,5 @@
  * 简化版的 clsx/classnames 替代品
  */
 export function cn(...classes) {
-  return classes
-    .filter(Boolean)
-    .join(' ')
-    .trim();
+    return classes.filter(Boolean).join(' ').trim();
 }

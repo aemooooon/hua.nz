@@ -1,14 +1,15 @@
 /* 发光分割线动画效果 */
 .glow-divider {
-    background: linear-gradient(90deg, 
-        transparent, 
-        var(--theme-text-white-30), 
-        var(--theme-text-white-80), 
-        var(--theme-text-white-30), 
+    background: linear-gradient(
+        90deg,
+        transparent,
+        var(--theme-text-white-30),
+        var(--theme-text-white-80),
+        var(--theme-text-white-30),
         transparent
     );
     animation: glow-pulse 3s ease-in-out infinite alternate;
-    box-shadow: 
+    box-shadow:
         0 0 10px var(--theme-text-white-30),
         0 0 20px var(--theme-text-white-20),
         0 0 30px var(--theme-text-white-10);
@@ -23,7 +24,7 @@
 }
 
 @keyframes glow-pulse {
-    0% { 
+    0% {
         opacity: 0.4;
         transform: scaleX(0.95);
     }
@@ -31,7 +32,7 @@
         opacity: 0.9;
         transform: scaleX(1);
     }
-    100% { 
+    100% {
         opacity: 0.6;
         transform: scaleX(0.98);
     }
@@ -39,16 +40,17 @@
 
 /* 增强发光效果的变体 */
 .glow-divider.enhanced {
-    background: linear-gradient(90deg, 
-        transparent, 
-        var(--theme-primary), 
-        var(--theme-secondary), 
+    background: linear-gradient(
+        90deg,
+        transparent,
+        var(--theme-primary),
+        var(--theme-secondary),
         var(--theme-accent),
-        var(--theme-primary), 
+        var(--theme-primary),
         transparent
     );
     animation: enhanced-glow-pulse 3s ease-in-out infinite alternate;
-    box-shadow: 
+    box-shadow:
         0 0 20px var(--theme-primary),
         0 0 40px var(--theme-secondary),
         0 0 60px var(--theme-accent);
@@ -63,7 +65,7 @@
 }
 
 @keyframes enhanced-glow-pulse {
-    0% { 
+    0% {
         opacity: 0.6;
         transform: scaleX(0.95);
     }
@@ -71,7 +73,7 @@
         opacity: 1;
         transform: scaleX(1.02);
     }
-    100% { 
+    100% {
         opacity: 0.8;
         transform: scaleX(0.98);
     }

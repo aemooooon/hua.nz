@@ -11,7 +11,7 @@ export class TextureLoader {
         this.loader = new THREE.TextureLoader();
         this.cache = new Map();
         this.loadingPromises = new Map();
-        
+
         // 默认配置
         this.config = {
             enableCache: true,
@@ -20,9 +20,9 @@ export class TextureLoader {
             timeout: 10000, // 10秒超时
             compression: {
                 maxSize: 1024,
-                quality: 0.9
+                quality: 0.9,
             },
-            ...options
+            ...options,
         };
 
         // 纹理默认设置
@@ -32,7 +32,7 @@ export class TextureLoader {
             magFilter: THREE.LinearFilter,
             wrapS: THREE.ClampToEdgeWrapping,
             wrapT: THREE.ClampToEdgeWrapping,
-            colorSpace: THREE.SRGBColorSpace
+            colorSpace: THREE.SRGBColorSpace,
         };
     }
 
@@ -41,43 +41,48 @@ export class TextureLoader {
      */
     async getOptimalPath(baseName, baseDirectory = 'cube-textures') {
         console.log(`🔍 开始为 ${baseName} 获取最优路径...`);
-        
+
         // 检查是否是视频文件，直接返回原路径
         if (baseName && baseName.match(/\.(mp4|webm|mov|avi|mkv)$/i)) {
             return {
                 primary: `${baseDirectory}/${baseName}`,
                 fallback: `${baseDirectory}/${baseName}`,
-                format: 'video'
+                format: 'video',
             };
         }
-        
+
         const { formatDetector } = await import('./FormatDetector.js');
         const format = await formatDetector.getBestFormat();
         console.log(`📋 检测到的最佳格式: ${format.toUpperCase()}`);
-        
+
         // 提取文件名（去除路径和扩展名）
-        const fileName = baseName.split('/').pop().replace(/\.(jpg|jpeg|png|webp|avif)$/i, '');
-        
+        const fileName = baseName
+            .split('/')
+            .pop()
+            .replace(/\.(jpg|jpeg|png|webp|avif)$/i, '');
+
         // 检测是否为gallery图片（基于文件名前缀）
         const isGalleryImage = fileName.startsWith('gallery-');
-        
-        console.log(`🔍 TextureLoader: 处理 ${baseName}, 文件名: ${fileName}, 格式: ${format}, 是Gallery图片: ${isGalleryImage}`);
-        
+
+        console.log(
+            `🔍 TextureLoader: 处理 ${baseName}, 文件名: ${fileName}, 格式: ${format}, 是Gallery图片: ${isGalleryImage}`
+        );
+
         let pathMapping;
         if (isGalleryImage) {
             // Gallery图片使用gallery目录结构
             pathMapping = {
-                'avif': `gallery-avif/${fileName}.avif`,
-                'webp': `gallery-webp/${fileName}.webp`,
-                'jpg': `gallery/${fileName}.jpg`
+                avif: `gallery-avif/${fileName}.avif`,
+                webp: `gallery-webp/${fileName}.webp`,
+                jpg: `gallery/${fileName}.jpg`,
             };
             console.log(`📁 使用Gallery目录结构:`, pathMapping);
         } else {
             // 其他图片使用cube-textures目录结构
             pathMapping = {
-                'avif': `cube-textures-avif/${baseName}.avif`,
-                'webp': `cube-textures-webp/${baseName}.webp`,
-                'jpg': `${baseDirectory}/${baseName}.jpg`
+                avif: `cube-textures-avif/${baseName}.avif`,
+                webp: `cube-textures-webp/${baseName}.webp`,
+                jpg: `${baseDirectory}/${baseName}.jpg`,
             };
             console.log(`📁 使用Cube目录结构:`, pathMapping);
         }
@@ -86,11 +91,11 @@ export class TextureLoader {
             primary: pathMapping[format],
             fallback: pathMapping['jpg'],
             format,
-            isGalleryImage
+            isGalleryImage,
         };
-        
+
         console.log(`🎯 选择的路径: 主要=${result.primary}, 备用=${result.fallback}`);
-        
+
         return result;
     }
 
@@ -99,7 +104,7 @@ export class TextureLoader {
      */
     async loadTexture(baseName, options = {}) {
         const cacheKey = `${baseName}_${JSON.stringify(options)}`;
-        
+
         // 检查缓存
         if (this.config.enableCache && this.cache.has(cacheKey)) {
             console.log(`📦 从缓存加载纹理: ${baseName}`);
@@ -117,12 +122,12 @@ export class TextureLoader {
 
         try {
             const texture = await loadingPromise;
-            
+
             // 缓存结果
             if (this.config.enableCache) {
                 this.cache.set(cacheKey, texture);
             }
-            
+
             return texture;
         } finally {
             this.loadingPromises.delete(cacheKey);
@@ -176,13 +181,13 @@ export class TextureLoader {
 
             this.loader.load(
                 url,
-                (texture) => {
+                texture => {
                     clearTimeout(timeout);
                     this._applyTextureSettings(texture, options);
                     resolve(texture);
                 },
                 undefined, // progress
-                (error) => {
+                error => {
                     clearTimeout(timeout);
                     reject(error);
                 }
@@ -195,7 +200,7 @@ export class TextureLoader {
      */
     _applyTextureSettings(texture, options = {}) {
         const settings = { ...this.defaultTextureSettings, ...options };
-        
+
         Object.keys(settings).forEach(key => {
             if (texture[key] !== undefined) {
                 texture[key] = settings[key];
@@ -211,9 +216,9 @@ export class TextureLoader {
      */
     async loadTextures(textureNames, options = {}) {
         const { onProgress, onError } = options;
-        
+
         console.log(`🎯 开始批量加载 ${textureNames.length} 个纹理...`);
-        
+
         let loadedCount = 0;
         const results = [];
 
@@ -222,11 +227,11 @@ export class TextureLoader {
                 const texture = await this.loadTexture(name, options);
                 results[index] = texture;
                 loadedCount++;
-                
+
                 if (onProgress) {
                     onProgress(loadedCount / textureNames.length, loadedCount, textureNames.length);
                 }
-                
+
                 return texture;
             } catch (error) {
                 console.error(`纹理加载失败: ${name}`, error);
@@ -235,20 +240,20 @@ export class TextureLoader {
                 }
                 results[index] = null;
                 loadedCount++;
-                
+
                 if (onProgress) {
                     onProgress(loadedCount / textureNames.length, loadedCount, textureNames.length);
                 }
-                
+
                 return null;
             }
         });
 
         await Promise.allSettled(loadPromises);
-        
+
         const successCount = results.filter(r => r !== null).length;
         console.log(`✨ 批量加载完成: ${successCount}/${textureNames.length} 成功`);
-        
+
         return results;
     }
 
@@ -257,8 +262,8 @@ export class TextureLoader {
      */
     async preloadTextures(textureNames, options = {}) {
         console.log(`⚡ 预加载 ${textureNames.length} 个纹理...`);
-        
-        const preloadPromises = textureNames.map(name => 
+
+        const preloadPromises = textureNames.map(name =>
             this.loadTexture(name, options).catch(error => {
                 console.warn(`预加载失败: ${name}`, error);
                 return null;
@@ -267,7 +272,7 @@ export class TextureLoader {
 
         const results = await Promise.allSettled(preloadPromises);
         const successCount = results.filter(r => r.status === 'fulfilled' && r.value).length;
-        
+
         console.log(`⚡ 预加载完成: ${successCount}/${textureNames.length} 成功`);
         return successCount;
     }
@@ -285,7 +290,7 @@ export class TextureLoader {
      */
     clearCache() {
         console.log(`🧹 清理纹理缓存，共 ${this.cache.size} 个纹理`);
-        
+
         // 释放WebGL资源
         this.cache.forEach((texture, key) => {
             if (texture && texture.dispose) {
@@ -293,7 +298,7 @@ export class TextureLoader {
                 console.log(`🗑️ 释放纹理资源: ${key}`);
             }
         });
-        
+
         this.cache.clear();
         this.loadingPromises.clear();
         console.log('✅ 纹理缓存已清理');
@@ -306,7 +311,7 @@ export class TextureLoader {
         return {
             total: this.cache.size,
             loading: this.loadingPromises.size,
-            memory: this._estimateMemoryUsage()
+            memory: this._estimateMemoryUsage(),
         };
     }
 
@@ -325,7 +330,7 @@ export class TextureLoader {
         });
         return {
             bytes: totalSize,
-            mb: Math.round(totalSize / (1024 * 1024) * 100) / 100
+            mb: Math.round((totalSize / (1024 * 1024)) * 100) / 100,
         };
     }
 }

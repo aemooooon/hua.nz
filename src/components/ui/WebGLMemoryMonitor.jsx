@@ -26,7 +26,7 @@ const WebGLMemoryMonitor = ({ enabled = true }) => {
     if (!enabled || !memoryInfo) return null;
 
     return (
-        <div 
+        <div
             className="fixed bottom-4 right-4 z-50 bg-black/80 text-white p-3 rounded-lg text-xs font-mono cursor-pointer"
             onClick={() => setShowDetails(!showDetails)}
         >
@@ -34,18 +34,12 @@ const WebGLMemoryMonitor = ({ enabled = true }) => {
                 <div className="w-2 h-2 bg-theme-success rounded-full animate-pulse"></div>
                 <span>WebGL资源: {memoryInfo.activeResourceGroups}</span>
             </div>
-            
+
             {showDetails && (
                 <div className="mt-2 space-y-1 border-t border-gray-600 pt-2">
-                    {memoryInfo.jsHeapSize && (
-                        <div>JS堆内存: {memoryInfo.jsHeapSize}MB</div>
-                    )}
-                    {memoryInfo.jsHeapLimit && (
-                        <div>JS堆限制: {memoryInfo.jsHeapLimit}MB</div>
-                    )}
-                    <div className="text-gray-400 text-xs">
-                        点击隐藏详情
-                    </div>
+                    {memoryInfo.jsHeapSize && <div>JS堆内存: {memoryInfo.jsHeapSize}MB</div>}
+                    {memoryInfo.jsHeapLimit && <div>JS堆限制: {memoryInfo.jsHeapLimit}MB</div>}
+                    <div className="text-gray-400 text-xs">点击隐藏详情</div>
                 </div>
             )}
         </div>
@@ -53,7 +47,7 @@ const WebGLMemoryMonitor = ({ enabled = true }) => {
 };
 
 WebGLMemoryMonitor.propTypes = {
-    enabled: PropTypes.bool
+    enabled: PropTypes.bool,
 };
 
 export default WebGLMemoryMonitor;

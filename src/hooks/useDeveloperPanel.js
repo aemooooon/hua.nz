@@ -31,13 +31,13 @@ export const useDeveloperPanel = () => {
     useEffect(() => {
         if (!isDev) return;
 
-        const handleKeyDown = (event) => {
+        const handleKeyDown = event => {
             // Ctrl+M or Cmd+M to toggle developer panel
             if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'm') {
                 event.preventDefault();
                 toggle();
             }
-            
+
             // Escape to close if open
             if (event.key === 'Escape' && isVisible) {
                 event.preventDefault();
@@ -46,26 +46,28 @@ export const useDeveloperPanel = () => {
         };
 
         document.addEventListener('keydown', handleKeyDown);
-        
+
         return () => {
             document.removeEventListener('keydown', handleKeyDown);
         };
     }, [isDev, isVisible, toggle, hide]);
 
     // Only return functionality if in development mode
-    return isDev ? {
-        isVisible,
-        toggle,
-        hide,
-        show,
-        isDev
-    } : {
-        isVisible: false,
-        toggle: () => {},
-        hide: () => {},
-        show: () => {},
-        isDev: false
-    };
+    return isDev
+        ? {
+              isVisible,
+              toggle,
+              hide,
+              show,
+              isDev,
+          }
+        : {
+              isVisible: false,
+              toggle: () => {},
+              hide: () => {},
+              show: () => {},
+              isDev: false,
+          };
 };
 
 export default useDeveloperPanel;

@@ -1,7 +1,7 @@
-import { useEffect, useRef } from "react";
-import PropTypes from "prop-types";
-import * as THREE from "three";
-import webglResourceManager from "../../utils/WebGLResourceManager";
+import { useEffect, useRef } from 'react';
+import PropTypes from 'prop-types';
+import * as THREE from 'three';
+import webglResourceManager from '../../utils/WebGLResourceManager';
 
 const EffectPixelDistortion = ({ src, style = {} }) => {
     const containerRef = useRef();
@@ -51,7 +51,7 @@ const EffectPixelDistortion = ({ src, style = {} }) => {
             }
         `;
 
-        const initializeScene = (texture) => {
+        const initializeScene = texture => {
             scene = new THREE.Scene();
 
             camera = new THREE.PerspectiveCamera(
@@ -63,10 +63,10 @@ const EffectPixelDistortion = ({ src, style = {} }) => {
             camera.position.z = 1;
 
             const shaderUniforms = {
-                u_mouse: { type: "v2", value: new THREE.Vector2() },
-                u_prevMouse: { type: "v2", value: new THREE.Vector2() },
-                u_aberrationIntensity: { type: "f", value: 0.0 },
-                u_texture: { type: "t", value: texture },
+                u_mouse: { type: 'v2', value: new THREE.Vector2() },
+                u_prevMouse: { type: 'v2', value: new THREE.Vector2() },
+                u_aberrationIntensity: { type: 'f', value: 0.0 },
+                u_texture: { type: 't', value: texture },
             };
 
             planeMesh = new THREE.Mesh(
@@ -83,13 +83,13 @@ const EffectPixelDistortion = ({ src, style = {} }) => {
             renderer = new THREE.WebGLRenderer({ antialias: true });
             renderer.setSize(containerRef.current.offsetWidth, containerRef.current.offsetHeight);
             containerRef.current.appendChild(renderer.domElement);
-            
+
             // 注册WebGL资源
             resourceId = webglResourceManager.registerResources('BackgroundCanvas', {
                 renderer,
                 scene,
                 camera,
-                planeMesh
+                planeMesh,
             });
         };
 
@@ -119,7 +119,7 @@ const EffectPixelDistortion = ({ src, style = {} }) => {
             renderer.setSize(width, height);
         };
 
-        const handleMouseMove = (event) => {
+        const handleMouseMove = event => {
             easeFactor = 0.02;
             const rect = containerRef.current.getBoundingClientRect();
             prevPosition = { ...targetMousePosition };
@@ -130,7 +130,7 @@ const EffectPixelDistortion = ({ src, style = {} }) => {
             aberrationIntensity = 1;
         };
 
-        const handleMouseEnter = (event) => {
+        const handleMouseEnter = event => {
             easeFactor = 0.02;
             const rect = containerRef.current.getBoundingClientRect();
 
@@ -146,32 +146,32 @@ const EffectPixelDistortion = ({ src, style = {} }) => {
         const textureLoader = new THREE.TextureLoader();
         textureLoader.load(
             src,
-            (texture) => {
+            texture => {
                 initializeScene(texture);
                 animateScene();
             },
             undefined,
-            (error) => {
+            error => {
                 console.error(`Error loading texture from ${src}:`, error);
             }
         );
 
-        window.addEventListener("resize", handleResize);
+        window.addEventListener('resize', handleResize);
         const container = containerRef.current;
         if (container) {
-            container.addEventListener("mousemove", handleMouseMove);
-            container.addEventListener("mouseenter", handleMouseEnter);
-            container.addEventListener("mouseleave", handleMouseLeave);
+            container.addEventListener('mousemove', handleMouseMove);
+            container.addEventListener('mouseenter', handleMouseEnter);
+            container.addEventListener('mouseleave', handleMouseLeave);
         }
 
         return () => {
             if (animationFrameId) cancelAnimationFrame(animationFrameId);
-            
+
             // 清理WebGL资源管理器中的资源
             if (resourceId) {
                 webglResourceManager.cleanup(resourceId);
             }
-            
+
             // 清理Three.js资源
             if (scene) {
                 scene.children.forEach(child => {
@@ -189,13 +189,13 @@ const EffectPixelDistortion = ({ src, style = {} }) => {
                     }
                 });
             }
-            
+
             if (renderer) renderer.dispose();
-            window.removeEventListener("resize", handleResize);
+            window.removeEventListener('resize', handleResize);
             if (container) {
-                container.removeEventListener("mousemove", handleMouseMove);
-                container.removeEventListener("mouseenter", handleMouseEnter);
-                container.removeEventListener("mouseleave", handleMouseLeave);
+                container.removeEventListener('mousemove', handleMouseMove);
+                container.removeEventListener('mouseenter', handleMouseEnter);
+                container.removeEventListener('mouseleave', handleMouseLeave);
             }
         };
     }, [src]);
@@ -204,11 +204,11 @@ const EffectPixelDistortion = ({ src, style = {} }) => {
         <div
             ref={containerRef}
             style={{
-                position: "relative",
-                overflow: "hidden",
-                borderRadius: "10px",
-                width: "100%",
-                height: "100%",
+                position: 'relative',
+                overflow: 'hidden',
+                borderRadius: '10px',
+                width: '100%',
+                height: '100%',
                 ...style,
             }}
         />

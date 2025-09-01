@@ -1,38 +1,38 @@
 /**
  * ImageOptimizer - 智能图片格式优化器
- * 
+ *
  * 核心功能：
  * - 自动检测浏览器图片格式支持能力
  * - 智能路径解析：支持根目录和文件夹结构的图片
  * - 格式优先级：AVIF > WebP > JPEG，确保最佳压缩率
  * - 异步初始化：避免阻塞主线程
  * - 缓存机制：提升重复请求性能
- * 
+ *
  * 支持的图片结构：
  * - 根目录图片：/image.jpg → /image.avif
  * - 单层文件夹：/folder/image.jpg → /folder-avif/image.avif
  * - 多层文件夹：/realibox/official/image.jpg → /realibox-avif/official/image.avif
- * 
+ *
  * API使用示例：
  * ```javascript
  * import imageOptimizer from './utils/image/ImageOptimizer.js';
- * 
+ *
  * // 单张图片优化
  * const optimizedPath = await imageOptimizer.getOptimizedImagePath('/photo.jpg');
  * console.log(optimizedPath); // '/photo.avif' 或 '/photo.webp' 或 '/photo.jpg'
- * 
+ *
  * // 批量图片优化
  * const paths = ['/img1.jpg', '/gallery/img2.jpg'];
  * const optimizedPaths = await imageOptimizer.getOptimizedImagePaths(paths);
- * 
+ *
  * // 图片预加载
  * await imageOptimizer.preloadImages(['/hero.jpg', '/banner.jpg']);
- * 
+ *
  * // 检查浏览器支持
  * const stats = imageOptimizer.getStats();
  * console.log(stats.supportedFormats); // { avif: true, webp: true }
  * ```
- * 
+ *
  * 性能优势：
  * - AVIF: 比JPEG节省50-90%文件大小，支持HDR
  * - WebP: 比JPEG节省25-50%文件大小，广泛支持
@@ -86,10 +86,7 @@ export class ImageOptimizer {
     async getOptimizedImagePath(originalPath, options = {}) {
         await this.ensureInitialized();
 
-        const { 
-            enableAvif = true, 
-            enableWebp = true 
-        } = options;
+        const { enableAvif = true, enableWebp = true } = options;
 
         // 解析原始路径
         const pathInfo = this.parseImagePath(originalPath);
@@ -146,7 +143,7 @@ export class ImageOptimizer {
         try {
             // 移除开头的斜杠
             const cleanPath = path.startsWith('/') ? path.slice(1) : path;
-            
+
             // 解析路径格式: folder/subfolder/filename.ext 或 folder/filename.ext 或 filename.ext (根目录)
             const parts = cleanPath.split('/');
             if (parts.length === 0) {
@@ -155,7 +152,7 @@ export class ImageOptimizer {
 
             const filename = parts[parts.length - 1];
             const folder = parts.length > 1 ? parts.slice(0, -1).join('/') : ''; // 根目录时folder为空字符串
-            
+
             // 提取文件名和扩展名
             const lastDotIndex = filename.lastIndexOf('.');
             if (lastDotIndex === -1) {
@@ -169,7 +166,7 @@ export class ImageOptimizer {
                 folder,
                 filename: nameWithoutExt,
                 extension,
-                fullPath: cleanPath
+                fullPath: cleanPath,
             };
         } catch (error) {
             console.error('解析图片路径失败:', error);
@@ -181,7 +178,7 @@ export class ImageOptimizer {
      * 构建优化格式的图片路径
      * 支持多层文件夹结构，例如：
      * - realibox/official/image.jpg → realibox-avif/official/image.avif
-     * - gallery/image.jpg → gallery-avif/image.avif  
+     * - gallery/image.jpg → gallery-avif/image.avif
      * - image.jpg → image.avif
      * @param {string} folder - 文件夹路径
      * @param {string} filename - 文件名（不含扩展名）
@@ -230,9 +227,9 @@ export class ImageOptimizer {
      */
     async preloadOptimizedImages(imagePaths, options = {}) {
         const optimizedPaths = await this.getOptimizedImagePaths(imagePaths, options);
-        
+
         const preloadPromises = optimizedPaths.map(path => {
-            return new Promise((resolve) => {
+            return new Promise(resolve => {
                 const img = new Image();
                 img.onload = () => resolve({ path, success: true });
                 img.onerror = () => resolve({ path, success: false });
@@ -252,8 +249,8 @@ export class ImageOptimizer {
             isInitialized: this.isInitialized,
             supportedFormats: {
                 avif: this.supportedFormats.get('avif') || false,
-                webp: this.supportedFormats.get('webp') || false
-            }
+                webp: this.supportedFormats.get('webp') || false,
+            },
         };
     }
 }

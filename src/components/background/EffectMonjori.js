@@ -1,5 +1,5 @@
-import * as THREE from "three";
-import webglResourceManager from "../../utils/WebGLResourceManager";
+import * as THREE from 'three';
+import webglResourceManager from '../../utils/WebGLResourceManager';
 
 export function EffectMonjori(canvas, params = {}, componentId = 'BackgroundCanvas') {
     let renderer, scene, camera, uniforms, animationFrameId, resourceId;
@@ -10,11 +10,11 @@ export function EffectMonjori(canvas, params = {}, componentId = 'BackgroundCanv
     // 主题色配置
     const updateThemeColors = () => {
         const computedStyle = getComputedStyle(document.documentElement);
-        
+
         // 获取主题色
         const primaryColor = computedStyle.getPropertyValue('--theme-primary').trim();
         const backgroundColor = computedStyle.getPropertyValue('--theme-background').trim();
-        
+
         // 创建三个颜色：背景深蓝色、主题色、暗主题色
         const colors = [
             // 第一个颜色：首页背景深蓝色
@@ -22,14 +22,16 @@ export function EffectMonjori(canvas, params = {}, componentId = 'BackgroundCanv
             // 第二个颜色：主题色
             primaryColor ? new THREE.Color(primaryColor) : new THREE.Color('#10B981'),
             // 第三个颜色：暗主题色（主题色的暗版本）
-            primaryColor ? new THREE.Color(primaryColor).multiplyScalar(0.6) : new THREE.Color('#0D9488')
+            primaryColor
+                ? new THREE.Color(primaryColor).multiplyScalar(0.6)
+                : new THREE.Color('#0D9488'),
         ];
-        
+
         // 如果uniforms已经初始化，更新颜色
         if (uniforms && uniforms.colors) {
             uniforms.colors.value = colors;
         }
-        
+
         return colors;
     };
 
@@ -117,10 +119,10 @@ export function EffectMonjori(canvas, params = {}, componentId = 'BackgroundCanv
             camera,
             geometry,
             material,
-            mesh
+            mesh,
         });
 
-        window.addEventListener("resize", onWindowResize);
+        window.addEventListener('resize', onWindowResize);
 
         animate();
     };
@@ -135,18 +137,18 @@ export function EffectMonjori(canvas, params = {}, componentId = 'BackgroundCanv
         if (now - lastFrameTime < frameInterval) return;
         lastFrameTime = now;
 
-        uniforms["time"].value = (now / 1000) * uniforms["animationSpeed"].value;
+        uniforms['time'].value = (now / 1000) * uniforms['animationSpeed'].value;
         renderer.render(scene, camera);
     };
 
     const stop = () => {
         if (animationFrameId) cancelAnimationFrame(animationFrameId);
-        
+
         // 清理WebGL资源管理器中的资源
         if (resourceId) {
             webglResourceManager.cleanup(resourceId);
         }
-        
+
         // 清理Three.js资源
         if (scene) {
             scene.children.forEach(child => {
@@ -160,7 +162,7 @@ export function EffectMonjori(canvas, params = {}, componentId = 'BackgroundCanv
                 }
             });
         }
-        
+
         if (renderer) {
             renderer.dispose();
             // 不强制丢失上下文，让它自然清理
@@ -168,13 +170,13 @@ export function EffectMonjori(canvas, params = {}, componentId = 'BackgroundCanv
                 canvas.parentNode.removeChild(canvas);
             }
         }
-        window.removeEventListener("resize", onWindowResize);
+        window.removeEventListener('resize', onWindowResize);
     };
 
     init();
 
-    return { 
+    return {
         stop,
-        updateThemeColors // 暴露主题色更新方法
+        updateThemeColors, // 暴露主题色更新方法
     };
 }

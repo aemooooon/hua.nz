@@ -11,71 +11,80 @@ const ContactSection = ({ language }) => {
 
     const contactInfo = [
         {
-            icon: "ri-phone-fill",
+            icon: 'ri-phone-fill',
             title: contactTexts.contactMethods.phone.title,
             value: contactTexts.phone,
             href: `tel:${contactTexts.phone}`,
             description: contactTexts.contactMethods.phone.description,
-            shineColor: "shine-green"
+            shineColor: 'shine-green',
         },
         {
-            icon: "ri-map-pin-fill",
+            icon: 'ri-map-pin-fill',
             title: contactTexts.contactMethods.location.title,
             value: contactTexts.location,
-            href: "https://maps.google.com/?q=Christchurch,New Zealand",
+            href: 'https://maps.google.com/?q=Christchurch,New Zealand',
             description: contactTexts.contactMethods.location.description,
-            shineColor: "shine-purple"
-        }
+            shineColor: 'shine-purple',
+        },
     ];
 
     // 微信信息单独处理
     const wechatInfo = {
-        icon: "ri-wechat-fill",
+        icon: 'ri-wechat-fill',
         title: contactTexts.contactMethods.wechat.title,
         value: contactTexts.contactMethods.wechat.id,
         description: contactTexts.contactMethods.wechat.description,
-        qrCode: "/wechat.jpg",
-        onClick: (e) => {
+        qrCode: '/wechat.jpg',
+        onClick: e => {
             e.preventDefault();
             // 复制微信号到剪贴板
             if (navigator.clipboard && window.isSecureContext) {
-                navigator.clipboard.writeText(contactTexts.contactMethods.wechat.id).then(() => {
-                    alert(language === 'zh' ? 
-                        `微信号已复制: ${contactTexts.contactMethods.wechat.id}` :
-                        `WeChat ID copied: ${contactTexts.contactMethods.wechat.id}`);
-                }).catch(() => {
-                    alert(language === 'zh' ? 
-                        `微信号: ${contactTexts.contactMethods.wechat.id}` :
-                        `WeChat ID: ${contactTexts.contactMethods.wechat.id}`);
-                });
+                navigator.clipboard
+                    .writeText(contactTexts.contactMethods.wechat.id)
+                    .then(() => {
+                        alert(
+                            language === 'zh'
+                                ? `微信号已复制: ${contactTexts.contactMethods.wechat.id}`
+                                : `WeChat ID copied: ${contactTexts.contactMethods.wechat.id}`
+                        );
+                    })
+                    .catch(() => {
+                        alert(
+                            language === 'zh'
+                                ? `微信号: ${contactTexts.contactMethods.wechat.id}`
+                                : `WeChat ID: ${contactTexts.contactMethods.wechat.id}`
+                        );
+                    });
             } else {
                 // 降级处理：直接显示微信号
-                alert(language === 'zh' ? 
-                    `微信号: ${contactTexts.contactMethods.wechat.id}` :
-                    `WeChat ID: ${contactTexts.contactMethods.wechat.id}`);
+                alert(
+                    language === 'zh'
+                        ? `微信号: ${contactTexts.contactMethods.wechat.id}`
+                        : `WeChat ID: ${contactTexts.contactMethods.wechat.id}`
+                );
             }
-        }
+        },
     };
 
     const socialLinks = [
         {
-            icon: "ri-github-fill",
+            icon: 'ri-github-fill',
             url: contactTexts.social.github.url,
             label: contactTexts.social.github.label,
-            iconColor: "text-theme-primary hover:text-theme-accent"
+            iconColor: 'text-theme-primary hover:text-theme-accent',
         },
         {
-            icon: "ri-linkedin-fill", 
+            icon: 'ri-linkedin-fill',
             url: contactTexts.social.linkedin.url,
             label: contactTexts.social.linkedin.label,
-            iconColor: "text-theme-primary hover:text-theme-accent"
+            iconColor: 'text-theme-primary hover:text-theme-accent',
         },
         {
-            icon: "ri-google-fill",
+            icon: 'ri-google-fill',
             url: contactTexts.social.email.url,
             label: contactTexts.social.email.label,
-            iconColor: "text-theme-primary hover:text-theme-accent"
-        }
+            iconColor: 'text-theme-primary hover:text-theme-accent',
+        },
     ];
 
     return (
@@ -83,18 +92,21 @@ const ContactSection = ({ language }) => {
             <div className="max-w-6xl mx-auto w-full">
                 {/* 标题部分 */}
                 <div className="flex flex-col items-center text-center mb-12">
-                    <ThemeTitle level={1} className="text-5xl md:text-6xl lg:text-7xl font-bold font-montserrat text-theme-section-title mb-3">
+                    <ThemeTitle
+                        level={1}
+                        className="text-5xl md:text-6xl lg:text-7xl font-bold font-montserrat text-theme-section-title mb-3"
+                    >
                         {contactTexts.title}
                     </ThemeTitle>
                     <ThemeSubtitle className="text-xl md:text-2xl font-light italic mb-8 text-theme-text-secondary/70">
                         {contactTexts.subtitle}
                     </ThemeSubtitle>
-                    
+
                     {/* 标题与内容之间的分隔线 */}
                     <div className="w-full max-w-4xl mb-8">
                         <GlowDivider width="w-full" />
                     </div>
-                    
+
                     <ThemeDescription className="text-base max-w-2xl mx-auto text-theme-text-muted">
                         {contactTexts.description}
                     </ThemeDescription>
@@ -106,13 +118,18 @@ const ContactSection = ({ language }) => {
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
                         {/* Phone Card */}
                         {contactInfo.map((info, index) => {
-                            if (index === 0) { // Phone card
+                            if (index === 0) {
+                                // Phone card
                                 return (
                                     <a
                                         key={index}
                                         href={info.href}
                                         target={info.href.startsWith('http') ? '_blank' : '_self'}
-                                        rel={info.href.startsWith('http') ? 'noopener noreferrer' : undefined}
+                                        rel={
+                                            info.href.startsWith('http')
+                                                ? 'noopener noreferrer'
+                                                : undefined
+                                        }
                                         className={`bg-gradient-to-br from-theme-bg-white-10 to-theme-bg-white-05 backdrop-blur-sm rounded-2xl p-8 hover:from-theme-bg-white-20 hover:to-theme-bg-white-10 transition-all duration-300 group glass-card text-center border border-theme-border-white-05 `}
                                     >
                                         <div>
@@ -129,8 +146,18 @@ const ContactSection = ({ language }) => {
                                                 {info.description}
                                             </p>
                                             <div className="mt-4 text-theme-text-white-60 group-hover:text-theme-text-white transition-colors flex justify-center">
-                                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                                                <svg
+                                                    className="w-5 h-5"
+                                                    fill="none"
+                                                    stroke="currentColor"
+                                                    viewBox="0 0 24 24"
+                                                >
+                                                    <path
+                                                        strokeLinecap="round"
+                                                        strokeLinejoin="round"
+                                                        strokeWidth={2}
+                                                        d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+                                                    />
                                                 </svg>
                                             </div>
                                         </div>
@@ -139,7 +166,7 @@ const ContactSection = ({ language }) => {
                             }
                             return null;
                         })}
-                        
+
                         {/* WeChat Card - 中间位置 */}
                         <div
                             onClick={wechatInfo.onClick}
@@ -160,11 +187,21 @@ const ContactSection = ({ language }) => {
                                     {wechatInfo.description}
                                 </p>
                                 <div className="mt-4 text-theme-text-white-60 group-hover:text-theme-text-white transition-colors flex justify-center">
-                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                                    <svg
+                                        className="w-5 h-5"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        viewBox="0 0 24 24"
+                                    >
+                                        <path
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            strokeWidth={2}
+                                            d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"
+                                        />
                                     </svg>
                                 </div>
-                                
+
                                 {/* 二维码悬浮层 - 固定定位在视口中央，最高层级 */}
                                 <div className="fixed inset-0 bg-black/50 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center z-[9999] pointer-events-none group-hover:pointer-events-auto">
                                     <div className="bg-transparent rounded-2xl p-6 shadow-2xl max-w-sm mx-4 transform scale-95 group-hover:scale-100 transition-transform duration-300">
@@ -177,39 +214,46 @@ const ContactSection = ({ language }) => {
                                                 {wechatInfo.title}
                                             </h4>
                                         </div>
-                                        
+
                                         {/* 二维码图片 - 四周等距间距 */}
                                         <div className="flex justify-center mb-4 p-4">
-                                            <OptimizedImage 
-                                                src={wechatInfo.qrCode} 
+                                            <OptimizedImage
+                                                src={wechatInfo.qrCode}
                                                 alt="WeChat QR Code"
                                                 className="w-32 h-32 object-cover rounded-lg"
                                             />
                                         </div>
-                                        
+
                                         {/* 底部信息 */}
                                         <div className="text-center">
                                             <p className="text-theme-primary font-bold mb-2 text-lg">
                                                 {wechatInfo.value}
                                             </p>
                                             <p className="text-sm text-theme-text-white-70">
-                                                {language === 'zh' ? '扫描二维码或点击复制微信号' : 'Scan QR code or click to copy WeChat ID'}
+                                                {language === 'zh'
+                                                    ? '扫描二维码或点击复制微信号'
+                                                    : 'Scan QR code or click to copy WeChat ID'}
                                             </p>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        
+
                         {/* Location Card - 右边位置 */}
                         {contactInfo.map((info, index) => {
-                            if (index === 1) { // Location card
+                            if (index === 1) {
+                                // Location card
                                 return (
                                     <a
                                         key={index}
                                         href={info.href}
                                         target={info.href.startsWith('http') ? '_blank' : '_self'}
-                                        rel={info.href.startsWith('http') ? 'noopener noreferrer' : undefined}
+                                        rel={
+                                            info.href.startsWith('http')
+                                                ? 'noopener noreferrer'
+                                                : undefined
+                                        }
                                         className={`bg-gradient-to-br from-theme-bg-white-10 to-theme-bg-white-05 backdrop-blur-sm rounded-2xl p-8 hover:from-theme-bg-white-20 hover:to-theme-bg-white-10 transition-all duration-300 group glass-card text-center border border-theme-border-white-05 `}
                                     >
                                         <div>
@@ -226,8 +270,18 @@ const ContactSection = ({ language }) => {
                                                 {info.description}
                                             </p>
                                             <div className="mt-4 text-theme-text-white-60 group-hover:text-theme-text-white transition-colors flex justify-center">
-                                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                                                <svg
+                                                    className="w-5 h-5"
+                                                    fill="none"
+                                                    stroke="currentColor"
+                                                    viewBox="0 0 24 24"
+                                                >
+                                                    <path
+                                                        strokeLinecap="round"
+                                                        strokeLinejoin="round"
+                                                        strokeWidth={2}
+                                                        d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+                                                    />
                                                 </svg>
                                             </div>
                                         </div>
@@ -253,7 +307,9 @@ const ContactSection = ({ language }) => {
                                     className="w-16 h-16 inline-flex items-center justify-center p-4 bg-theme-surface/20 backdrop-blur-sm border-2 border-theme-border-white-10 rounded-full text-2xl no-underline transition-all duration-500 hover:shadow-2xl hover:scale-110 social-link hover:border-theme-primary hover:bg-theme-hover"
                                     title={social.label}
                                 >
-                                    <i className={`${social.icon} ${social.iconColor} transition-colors duration-300`}></i>
+                                    <i
+                                        className={`${social.icon} ${social.iconColor} transition-colors duration-300`}
+                                    ></i>
                                 </a>
                             ))}
                         </div>
@@ -264,9 +320,7 @@ const ContactSection = ({ language }) => {
                 <div className="mt-16 text-center">
                     <div className="inline-flex items-center space-x-2 text-theme-text-white-60">
                         <span className="w-8 h-px bg-gradient-to-r from-transparent to-theme-text-white-60 decorative-line"></span>
-                        <span className="text-sm">
-                            {contactTexts.lookingForward}
-                        </span>
+                        <span className="text-sm">{contactTexts.lookingForward}</span>
                         <span className="w-8 h-px bg-gradient-to-l from-transparent to-theme-text-white-60 decorative-line"></span>
                     </div>
                 </div>
@@ -276,7 +330,7 @@ const ContactSection = ({ language }) => {
 };
 
 ContactSection.propTypes = {
-    language: PropTypes.string.isRequired
+    language: PropTypes.string.isRequired,
 };
 
 export default ContactSection;

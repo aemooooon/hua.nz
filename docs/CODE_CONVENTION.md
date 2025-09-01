@@ -4,7 +4,37 @@
 
 这是一个现代化的React + Three.js个人作品集网站，采用以下技术栈：
 
-- **React 18** - 用户界面框架
+- **React 18*}
+```
+
+### 🚀 开发工具脚本
+
+项目提供以下npm脚本来维护代码格式：
+
+```bash
+# 格式化所有源码文件
+npm run format
+
+# 检查代码格式是否符合规范（不修改文件）
+npm run format:check
+
+# 检查代码质量和格式
+npm run lint
+
+# 开发模式
+npm run dev
+```
+
+### 📖 使用建议
+
+1. **开发前**: 运行 `npm run format` 确保现有代码格式正确
+2. **提交前**: 运行 `npm run lint` 和 `npm run format:check` 检查代码质量
+3. **编辑器**: 建议安装Prettier和ESLint插件，启用保存时自动格式化
+
+## 📁 文件结构规范
+
+### 🎯 整体架构原则
+- **按功能分组**，而非按文件类型分组面框架
 - **Three.js** - 3D图形渲染
 - **Vite** - 构建工具
 - **Zustand** - 状态管理
@@ -21,7 +51,90 @@
 - 性能监控和优化
 - Web Workers 支持
 
-## 📁 文件结构规范
+## � 代码格式规范
+
+### 🎯 缩进和空格
+- **缩进**: 使用 **4个空格** 进行缩进，不使用Tab字符
+- **行尾**: 不允许行尾空格
+- **文件结尾**: 文件必须以换行符结尾
+
+### 🔧 配置文件
+项目应配置以下文件来确保代码格式一致性：
+
+#### `.editorconfig` 配置
+```ini
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+indent_style = space
+indent_size = 4
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+[*.{json,yml,yaml}]
+indent_size = 2
+
+[*.md]
+trim_trailing_whitespace = false
+```
+
+#### ESLint 格式规则
+```javascript
+rules: {
+    "indent": ["error", 4, { "SwitchCase": 1 }],
+    "no-trailing-spaces": "error",
+    "eol-last": "error",
+    // ... 其他规则
+}
+```
+
+### 📐 代码风格
+- **引号**: JavaScript/JSX 使用单引号，JSON 使用双引号
+- **分号**: JavaScript 语句必须以分号结尾
+- **括号**: 函数参数、对象属性等使用适当的空格
+- **命名**: 使用驼峰命名法 (camelCase)，组件使用帕斯卡命名法 (PascalCase)
+
+### 📋 示例代码格式
+
+```javascript
+// ✅ 正确的4空格缩进
+function ExampleComponent({ title, isVisible }) {
+    const [state, setState] = useState({
+        loading: false,
+        data: null
+    });
+
+    useEffect(() => {
+        if (isVisible) {
+            setState(prev => ({
+                ...prev,
+                loading: true
+            }));
+        }
+    }, [isVisible]);
+
+    return (
+        <div className="example-component">
+            <h1>{title}</h1>
+            {state.loading ? (
+                <LoadingSpinner />
+            ) : (
+                <div className="content">
+                    {state.data?.map(item => (
+                        <div key={item.id} className="item">
+                            {item.name}
+                        </div>
+                    ))}
+                </div>
+            )}
+        </div>
+    );
+}
+```
+
+## �📁 文件结构规范
 
 ### 🎯 整体架构原则
 - **按功能分组**，而非按文件类型分组

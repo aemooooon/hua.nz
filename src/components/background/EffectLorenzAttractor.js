@@ -1,11 +1,12 @@
-import * as THREE from "three";
+import * as THREE from 'three';
 import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
-import webglResourceManager from "../../utils/WebGLResourceManager";
+import webglResourceManager from '../../utils/WebGLResourceManager';
 
 export class EffectLorenzAttractor {
+    // eslint-disable-next-line no-unused-vars
     constructor(canvas, params = {}, componentId = 'BackgroundCanvas') {
         this.canvas = canvas;
         this.componentId = componentId;
@@ -22,7 +23,7 @@ export class EffectLorenzAttractor {
         this.sigma = 10;
         this.rho = 28;
         this.beta = 8 / 3;
-        this.x = 0.1;  // 初始位置
+        this.x = 0.1; // 初始位置
         this.y = 0;
         this.z = 0;
         this.dt = 0.02; // 恢复到0.02
@@ -36,7 +37,7 @@ export class EffectLorenzAttractor {
             new THREE.Color('#00FF88'), // 主题主色
             new THREE.Color('#34D399'), // 主题装饰色
         ];
-        
+
         // 延迟更新主题颜色，确保DOM已加载
         setTimeout(() => {
             this.updateThemeColors();
@@ -46,7 +47,7 @@ export class EffectLorenzAttractor {
         this.trailPositions = [];
         this.trailColors = [];
         this.particleIndex = 0;
-        
+
         // 性能监控
         this.frameCount = 0;
         this.lastFPSCheck = performance.now();
@@ -66,54 +67,63 @@ export class EffectLorenzAttractor {
         this.scene.background = new THREE.Color(0x000a15); // 深夜海洋色背景
 
         // 优化的相机设置
-        this.camera = new THREE.PerspectiveCamera(75, this.canvas.width / this.canvas.height, 0.1, 1000);
+        this.camera = new THREE.PerspectiveCamera(
+            75,
+            this.canvas.width / this.canvas.height,
+            0.1,
+            1000
+        );
         this.camera.position.set(0, 0, 48); // 更近的相机位置
         this.camera.lookAt(0, 0, 0);
 
         // 渲染器设置 - 优化高DPI屏幕支持
-        this.renderer = new THREE.WebGLRenderer({ 
-            canvas: this.canvas, 
+        this.renderer = new THREE.WebGLRenderer({
+            canvas: this.canvas,
             antialias: true,
             alpha: false,
-            powerPreference: "high-performance"
+            powerPreference: 'high-performance',
         });
-        
+
         // 不使用 setPixelRatio，直接设置渲染尺寸
         this.renderer.setSize(this.canvas.width, this.canvas.height, false);
         this.renderer.setClearColor(0x000a15, 1.0); // 与场景背景一致
-        
+
         // 注册WebGL资源 - 使用传入的componentId，标记为持久资源
-        this.resourceId = webglResourceManager.registerResources(this.componentId, {
-            renderer: this.renderer,
-            scene: this.scene,
-            camera: this.camera
-        }, { 
-            persistent: true // 🔧 标记为持久资源，防止自动清理背景效果
-        });
-        
+        this.resourceId = webglResourceManager.registerResources(
+            this.componentId,
+            {
+                renderer: this.renderer,
+                scene: this.scene,
+                camera: this.camera,
+            },
+            {
+                persistent: true, // 🔧 标记为持久资源，防止自动清理背景效果
+            }
+        );
+
         // 设置后处理管道以实现发光效果
         this.composer = new EffectComposer(this.renderer);
-        
+
         // 基础渲染通道
         const renderPass = new RenderPass(this.scene, this.camera);
         this.composer.addPass(renderPass);
-        
+
         // 发光效果通道 - 减少强度避免过度发光
         const bloomPass = new UnrealBloomPass(
             new THREE.Vector2(this.canvas.width, this.canvas.height),
             0.8, // 大幅降低发光强度，从1.6降到0.8
             0.2, // 进一步减小发光半径
-            0.7  // 提高阈值，减少发光的粒子数量
+            0.7 // 提高阈值，减少发光的粒子数量
         );
         this.composer.addPass(bloomPass);
-        
+
         // 输出通道
         const outputPass = new OutputPass();
         this.composer.addPass(outputPass);
 
         // 太阳风格的发光主球 - 在 Lorenz 轨迹起点
         const fireballGeometry = new THREE.SphereGeometry(1.5, 32, 32); // 减小尺寸，从2.0到1.5
-        
+
         // 创建太阳材质 - 使用渐变纹理和发光效果
         const fireballMaterial = new THREE.MeshBasicMaterial({
             color: new THREE.Color('#ffaa33'), // 更像太阳的橙黄色
@@ -124,7 +134,7 @@ export class EffectLorenzAttractor {
 
         this.fireball = new THREE.Mesh(fireballGeometry, fireballMaterial);
         this.scene.add(this.fireball);
-        
+
         // 在主球周围添加太阳风格的光环 - 多层次发光
         const haloGeometry = new THREE.SphereGeometry(2.5, 32, 32); // 调整光环大小
         const haloMaterial = new THREE.MeshBasicMaterial({
@@ -134,23 +144,23 @@ export class EffectLorenzAttractor {
             blending: THREE.AdditiveBlending,
             side: THREE.BackSide, // 内部渲染
         });
-        
+
         this.halo = new THREE.Mesh(haloGeometry, haloMaterial);
         this.scene.add(this.halo);
 
         // 更强的光照系统以照亮粒子轨迹
         const ambientLight = new THREE.AmbientLight(0x404040, 0.8); // 增强环境光
         this.scene.add(ambientLight);
-        
+
         // 添加多个方向光来照亮粒子
         const directionalLight1 = new THREE.DirectionalLight(0xffffff, 1.0);
         directionalLight1.position.set(50, 50, 50);
         this.scene.add(directionalLight1);
-        
+
         const directionalLight2 = new THREE.DirectionalLight(0x6699ff, 0.8); // 蓝色方向光
         directionalLight2.position.set(-50, -50, 50);
         this.scene.add(directionalLight2);
-        
+
         // 添加点光源在主球位置 - 蓝色光源
         this.pointLight = new THREE.PointLight(0x0088ff, 2.0, 100); // 蓝色点光源
         this.scene.add(this.pointLight);
@@ -162,14 +172,14 @@ export class EffectLorenzAttractor {
         this.sunLight.castShadow = false; // 不投射阴影以提高性能
         this.scene.add(this.sunLight);
         this.scene.add(this.sunLight.target);
-        
+
         // 可选：添加太阳光的辅助可视化（开发时使用，生产环境可以注释掉）
         // const sunLightHelper = new THREE.DirectionalLightHelper(this.sunLight, 5);
         // this.scene.add(sunLightHelper);
 
         // 创建类似 Three.js WebGPU Galaxy 的粒子系统
         this.particleGeometry = new THREE.SphereGeometry(0.5, 8, 8); // 先使用简单的球体几何
-        
+
         // 创建材质，支持 AdditiveBlending 和渐变效果
         this.particleMaterial = new THREE.MeshBasicMaterial({
             color: 0xffffff,
@@ -178,41 +188,42 @@ export class EffectLorenzAttractor {
             blending: THREE.AdditiveBlending, // 加法混合，创造发光效果
             depthWrite: false,
         });
-        
+
         // 创建粒子纹理 - 类似 Galaxy 的圆形粒子
         this.createParticleTexture();
         // 暂时不使用纹理，避免 SpriteMaterial 的问题
         // this.particleMaterial.map = this.particleTexture;
-        
+
         // 使用 InstancedMesh 来渲染大量粒子
         this.instancedMesh = new THREE.InstancedMesh(
-            this.particleGeometry, 
-            this.particleMaterial, 
+            this.particleGeometry,
+            this.particleMaterial,
             this.maxParticles
         );
-        
+
         // 为实例化网格添加颜色属性 - 确保支持实例颜色
         if (this.instancedMesh.geometry.attributes.color === undefined) {
             this.instancedMesh.instanceColor = new THREE.InstancedBufferAttribute(
-                new Float32Array(this.maxParticles * 3), 3
+                new Float32Array(this.maxParticles * 3),
+                3
             );
         }
-        
+
         this.scene.add(this.instancedMesh);
-        
+
         // 初始化实例矩阵和颜色
         const matrix = new THREE.Matrix4();
         const position = new THREE.Vector3();
         const scale = new THREE.Vector3(0, 0, 0); // 初始为不可见
-        
+
         // 定义渐变颜色 - 类似 Galaxy 的内外颜色
         this.colorInside = new THREE.Color('#ffa575'); // 橙色内核
         this.colorOutside = new THREE.Color('#0088ff'); // 蓝色外围
-        
+
         for (let i = 0; i < this.maxParticles; i++) {
             matrix.compose(position, new THREE.Quaternion(), scale);
             this.instancedMesh.setMatrixAt(i, matrix);
-            
+
             // 只有在支持实例颜色时才设置
             if (this.instancedMesh.instanceColor) {
                 this.instancedMesh.setColorAt(i, new THREE.Color(0, 0, 0));
@@ -223,7 +234,7 @@ export class EffectLorenzAttractor {
             this.instancedMesh.instanceColor.needsUpdate = true;
         }
 
-        window.addEventListener("resize", this.onResize.bind(this));
+        window.addEventListener('resize', this.onResize.bind(this));
     }
 
     // 创建粒子纹理 - 减小尺寸和透明度，避免过度发光
@@ -232,23 +243,23 @@ export class EffectLorenzAttractor {
         const canvas = document.createElement('canvas');
         canvas.width = size;
         canvas.height = size;
-        
+
         const context = canvas.getContext('2d');
         const center = size / 2;
-        
+
         // 创建径向渐变 - 更快的衰减和更低的透明度
         const gradient = context.createRadialGradient(center, center, 0, center, center, center);
         gradient.addColorStop(0, 'rgba(255, 255, 255, 0.6)'); // 降低核心透明度从1到0.6
         gradient.addColorStop(0.1, 'rgba(255, 255, 255, 0.3)'); // 更快衰减
         gradient.addColorStop(0.3, 'rgba(255, 255, 255, 0.1)'); // 更快衰减
         gradient.addColorStop(1, 'rgba(255, 255, 255, 0)');
-        
+
         context.fillStyle = gradient;
         // 使用更小的圆形路径
         context.beginPath();
         context.arc(center, center, center * 0.8, 0, Math.PI * 2); // 减小到80%大小
         context.fill();
-        
+
         this.particleTexture = new THREE.CanvasTexture(canvas);
     }
 
@@ -271,7 +282,7 @@ export class EffectLorenzAttractor {
             this.currentFPS = this.frameCount;
             this.frameCount = 0;
             this.lastFPSCheck = now;
-            
+
             // 如果 FPS 过低，减少粒子数量
             if (this.currentFPS < 30 && this.maxParticles > 1000) {
                 this.maxParticles = Math.max(1000, this.maxParticles - 100);
@@ -286,7 +297,7 @@ export class EffectLorenzAttractor {
         const dx = this.sigma * (this.y - this.x) * this.dt;
         const dy = (this.x * (this.rho - this.z) - this.y) * this.dt;
         const dz = (this.x * this.y - this.beta * this.z) * this.dt;
-        
+
         this.x += dx;
         this.y += dy;
         this.z += dz;
@@ -294,21 +305,22 @@ export class EffectLorenzAttractor {
         // 缩放并居中 Lorenz 吸引子
         const scale = 0.8;
         this.fireball.position.set(this.x * scale, this.y * scale, this.z * scale);
-        
+
         // 光环跟随主球，但有轻微的延迟和缩放动画
         this.halo.position.copy(this.fireball.position);
         this.halo.scale.setScalar(1.0 + Math.sin(this.time * 2) * 0.1); // 恢复原来的脉动效果
-        
+
         // 更新点光源位置跟随主球
         this.pointLight.position.copy(this.fireball.position);
 
         // 记录当前位置到轨迹数组 - 每隔几帧添加一次以优化性能
-        if (this.frameCount % 2 === 0) { // 每2帧添加一个粒子，减少计算量
+        if (this.frameCount % 2 === 0) {
+            // 每2帧添加一个粒子，减少计算量
             this.trailPositions.push({
                 x: this.x * scale,
                 y: this.y * scale,
                 z: this.z * scale,
-                life: 1.0
+                life: 1.0,
             });
 
             // 限制轨迹长度
@@ -324,16 +336,16 @@ export class EffectLorenzAttractor {
         const scale_vec = new THREE.Vector3();
 
         this.trailPositions.forEach((pos, index) => {
-            const fadeRate = (index / this.trailPositions.length);
-            
+            const fadeRate = index / this.trailPositions.length;
+
             // 计算距离比率用于大小调整
             const distance = Math.sqrt(pos.x * pos.x + pos.y * pos.y + pos.z * pos.z);
             const maxDistance = 40;
             const radiusRatio = Math.min(distance / maxDistance, 1.0);
-            
+
             // 基于距离和时间的粒子大小
             const particleScale = (1.0 - radiusRatio * 0.5) * fadeRate * 1.2 + 0.3;
-            
+
             // 添加轻微的随机扰动
             position.set(
                 pos.x + (Math.random() - 0.5) * 0.08,
@@ -341,21 +353,21 @@ export class EffectLorenzAttractor {
                 pos.z + (Math.random() - 0.5) * 0.08
             );
             scale_vec.set(particleScale, particleScale, particleScale);
-            
+
             matrix.compose(position, quaternion, scale_vec);
             this.instancedMesh.setMatrixAt(index, matrix);
-            
+
             // 只有在支持实例颜色时才设置颜色
             if (this.instancedMesh.instanceColor) {
                 // 设置渐变颜色 - 中心橙色，外围蓝色
                 const mixFactor = Math.pow(1.0 - radiusRatio, 2);
                 const tempColor = new THREE.Color();
                 tempColor.lerpColors(this.colorOutside, this.colorInside, mixFactor);
-                
+
                 // 基于生命周期调整透明度
                 const alpha = fadeRate * (1.0 - radiusRatio * 0.3);
                 tempColor.multiplyScalar(alpha);
-                
+
                 this.instancedMesh.setColorAt(index, tempColor);
             }
         });
@@ -365,7 +377,7 @@ export class EffectLorenzAttractor {
             scale_vec.set(0, 0, 0);
             matrix.compose(position, quaternion, scale_vec);
             this.instancedMesh.setMatrixAt(i, matrix);
-            
+
             // 只有在支持实例颜色时才设置颜色
             if (this.instancedMesh.instanceColor) {
                 this.instancedMesh.setColorAt(i, new THREE.Color(0, 0, 0));
@@ -387,18 +399,18 @@ export class EffectLorenzAttractor {
 
     onResize(width, height) {
         if (!this.renderer || !this.camera) return;
-        
+
         // 使用传入的尺寸或画布当前尺寸
         const canvasWidth = width || this.canvas.width;
         const canvasHeight = height || this.canvas.height;
-        
+
         // 更新相机宽高比
         this.camera.aspect = canvasWidth / canvasHeight;
         this.camera.updateProjectionMatrix();
 
         // 更新渲染器尺寸 - 不使用 devicePixelRatio
         this.renderer.setSize(canvasWidth, canvasHeight, false);
-        
+
         // 更新后处理管道尺寸
         if (this.composer) {
             this.composer.setSize(canvasWidth, canvasHeight);
@@ -414,15 +426,15 @@ export class EffectLorenzAttractor {
             console.warn('DOM not ready for theme color update');
             return;
         }
-        
+
         try {
             const computedStyle = getComputedStyle(document.documentElement);
-            
+
             // 获取主题色 - 添加安全检查
             const primaryColor = computedStyle.getPropertyValue('--theme-primary')?.trim();
             const secondaryColor = computedStyle.getPropertyValue('--theme-secondary')?.trim();
             const accentColor = computedStyle.getPropertyValue('--theme-accent')?.trim();
-            
+
             // 更新粒子颜色
             if (primaryColor) {
                 this.fireballColor.setStyle(primaryColor);
@@ -436,7 +448,7 @@ export class EffectLorenzAttractor {
             if (accentColor) {
                 this.particleColors[2].setStyle(accentColor); // 装饰色
             }
-            
+
             // 更新背景颜色
             const bgColor = computedStyle.getPropertyValue('--theme-background')?.trim();
             if (bgColor && this.scene) {
@@ -445,7 +457,7 @@ export class EffectLorenzAttractor {
                     this.renderer.setClearColor(new THREE.Color(bgColor), 1.0);
                 }
             }
-            
+
             // 更新主球和光环的材质颜色
             if (this.fireball && primaryColor) {
                 this.fireball.material.color.setStyle(primaryColor);
@@ -453,17 +465,16 @@ export class EffectLorenzAttractor {
             if (this.halo && secondaryColor) {
                 this.halo.material.color.setStyle(secondaryColor);
             }
-            
+
             // 更新点光源颜色
             if (this.pointLight && primaryColor) {
                 this.pointLight.color.setStyle(primaryColor);
             }
-            
+
             // 如果粒子系统已经初始化，更新粒子颜色
             if (this.instancedMesh) {
                 this.updateParticleColors();
             }
-            
         } catch (error) {
             console.warn('Error updating theme colors:', error);
         }
@@ -474,43 +485,43 @@ export class EffectLorenzAttractor {
      */
     updateParticleColors() {
         if (!this.instancedMesh || !this.instancedMesh.instanceColor) return;
-        
+
         // 重新设置所有粒子的颜色
         const colors = this.instancedMesh.instanceColor.array;
-        
+
         for (let i = 0; i < this.trailPositions.length; i++) {
             if (i >= this.maxParticles) break;
-            
+
             const i3 = i * 3;
             const particle = this.trailPositions[i];
-            
+
             // 基于粒子生命周期在颜色间插值
             const mixColor = this.colorInside.clone();
             mixColor.lerp(this.colorOutside, 1.0 - particle.life);
-            
+
             colors[i3] = mixColor.r;
             colors[i3 + 1] = mixColor.g;
             colors[i3 + 2] = mixColor.b;
         }
-        
+
         this.instancedMesh.instanceColor.needsUpdate = true;
     }
 
     stop() {
         // 停止动画并清理资源
-        
+
         // 停止动画循环
         if (this.animationFrameId) {
             cancelAnimationFrame(this.animationFrameId);
             this.animationFrameId = null;
         }
-        
+
         // 清理后处理管道
         if (this.composer) {
             this.composer.dispose();
             this.composer = null;
         }
-        
+
         // 清理渲染器
         if (this.renderer) {
             // 清理渲染器上下文
@@ -522,7 +533,7 @@ export class EffectLorenzAttractor {
             this.renderer.forceContextLoss();
             this.renderer = null;
         }
-        
+
         // 清理实例化网格
         if (this.instancedMesh) {
             this.scene.remove(this.instancedMesh);
@@ -537,7 +548,7 @@ export class EffectLorenzAttractor {
             }
             this.instancedMesh = null;
         }
-        
+
         // 清理主球和光环
         if (this.fireball) {
             this.scene.remove(this.fireball);
@@ -545,52 +556,52 @@ export class EffectLorenzAttractor {
             if (this.fireball.material) this.fireball.material.dispose();
             this.fireball = null;
         }
-        
+
         if (this.halo) {
             this.scene.remove(this.halo);
             if (this.halo.geometry) this.halo.geometry.dispose();
             if (this.halo.material) this.halo.material.dispose();
             this.halo = null;
         }
-        
+
         // 清理几何体和材质
         if (this.particleGeometry) {
             this.particleGeometry.dispose();
             this.particleGeometry = null;
         }
-        
+
         if (this.particleMaterial) {
             this.particleMaterial.dispose();
             this.particleMaterial = null;
         }
-        
+
         // 清理粒子纹理
         if (this.particleTexture) {
             this.particleTexture.dispose();
             this.particleTexture = null;
         }
-        
+
         // 清理轨迹数组
         this.trailPositions = [];
         this.trailColors = [];
-        
+
         // 清理所有光源
         if (this.pointLight) {
             this.scene.remove(this.pointLight);
             this.pointLight = null;
         }
-        
+
         if (this.sunLight) {
             this.scene.remove(this.sunLight);
             this.scene.remove(this.sunLight.target);
             this.sunLight = null;
         }
-        
+
         // 清理场景中的所有对象
         while (this.scene.children.length > 0) {
             const child = this.scene.children[0];
             this.scene.remove(child);
-            
+
             // 递归清理几何体和材质
             if (child.geometry) child.geometry.dispose();
             if (child.material) {
@@ -601,18 +612,18 @@ export class EffectLorenzAttractor {
                 }
             }
         }
-        
+
         // 清理场景
         this.scene = null;
         this.camera = null;
-        
+
         // 清理WebGL资源管理器中的资源
         if (this.resourceId) {
             webglResourceManager.cleanup(this.resourceId);
             this.resourceId = null;
         }
-        
+
         // 移除事件监听器
-        window.removeEventListener("resize", this.onResize.bind(this));
+        window.removeEventListener('resize', this.onResize.bind(this));
     }
 }

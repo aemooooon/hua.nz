@@ -1,23 +1,38 @@
-import { useState } from "react";
-import PropTypes from "prop-types";
-import { useAppStore } from "../../../store/useAppStore";
-import { ThemeTitle, ThemeSubtitle } from "../../ui/ThemeComponents";
-import OptimizedImage from "../../ui/OptimizedImage";
-import "./EducationSection.css";
+import { useState } from 'react';
+import PropTypes from 'prop-types';
+import { useAppStore } from '../../../store/useAppStore';
+import { ThemeTitle, ThemeSubtitle } from '../../ui/ThemeComponents';
+import OptimizedImage from '../../ui/OptimizedImage';
+import './EducationSection.css';
 
 // 图标组件
-const MapPin = ({ className = "w-4 h-4" }) => (
-  <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-  </svg>
+const MapPin = ({ className = 'w-4 h-4' }) => (
+    <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+        />
+        <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+        />
+    </svg>
 );
 MapPin.propTypes = { className: PropTypes.string };
 
-const Calendar = ({ className = "w-4 h-4" }) => (
-  <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-  </svg>
+const Calendar = ({ className = 'w-4 h-4' }) => (
+    <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+        />
+    </svg>
 );
 Calendar.propTypes = { className: PropTypes.string };
 
@@ -29,18 +44,18 @@ const EducationSection = ({ language }) => {
     const educationData = content.education;
 
     // 获取成绩颜色的函数
-    const getGradeColor = (grade) => {
-        if (grade === "A+") return "text-theme-primary";
-        if (grade === "A") return "text-theme-secondary";
-        if (grade === "A-") return "text-theme-accent";
-        if (grade === "B+") return "text-theme-text-white-90";
-        if (grade === "Passed" || grade === "通过") return "text-theme-primary";
-        return "text-theme-text-white-60";
+    const getGradeColor = grade => {
+        if (grade === 'A+') return 'text-theme-primary';
+        if (grade === 'A') return 'text-theme-secondary';
+        if (grade === 'A-') return 'text-theme-accent';
+        if (grade === 'B+') return 'text-theme-text-white-90';
+        if (grade === 'Passed' || grade === '通过') return 'text-theme-primary';
+        return 'text-theme-text-white-60';
     };
 
     // 添加安全检查，确保数据存在
-    const mastersDegree = educationData?.degrees?.find((d) => d.id === "masters");
-    const bachelorsDegree = educationData?.degrees?.find((d) => d.id === "bachelors");
+    const mastersDegree = educationData?.degrees?.find(d => d.id === 'masters');
+    const bachelorsDegree = educationData?.degrees?.find(d => d.id === 'bachelors');
 
     // 如果缺少必要数据，提前返回
     if (!educationData || !educationData.degrees || !mastersDegree || !bachelorsDegree) {
@@ -55,19 +70,20 @@ const EducationSection = ({ language }) => {
 
     // 学历配置 - 按时间顺序：Masters在前，Bachelors在后
     const degrees = [
-        { id: "masters", data: mastersDegree, theme: "emerald" },
-        { id: "bachelors", data: bachelorsDegree, theme: "blue" },
+        { id: 'masters', data: mastersDegree, theme: 'emerald' },
+        { id: 'bachelors', data: bachelorsDegree, theme: 'blue' },
     ];
 
     // 渲染单个教育卡片
-    const renderEducationCard = (degreeConfig) => {
+    const renderEducationCard = degreeConfig => {
         const { data: degree, theme } = degreeConfig;
 
         return (
             <div key={degree.id} className="w-full mb-16 lg:mb-20">
                 {/* 移除glass-card效果，降低透明度，使用更不透明的背景 */}
-                <div className="bg-theme-bg-white-5 backdrop-blur-sm rounded-2xl p-6 lg:p-8 border border-theme-border-white-15">{/* 从glass-card改为自定义样式，降低透明度 */}
-                    
+                <div className="bg-theme-bg-white-5 backdrop-blur-sm rounded-2xl p-6 lg:p-8 border border-theme-border-white-15">
+                    {/* 从glass-card改为自定义样式，降低透明度 */}
+
                     {/* 学位信息和学校信息 - 统一在顶部 */}
                     <div className="space-y-6 mb-8">
                         {/* 大屏幕：左右分布 - 学位信息居左，学校名称+logo居右 */}
@@ -76,7 +92,10 @@ const EducationSection = ({ language }) => {
                             <div className="flex-1 flex flex-col space-y-6">
                                 {/* 学位名称 + 荣誉徽章 */}
                                 <div className="space-y-4">
-                                    <ThemeTitle level={3} className="text-2xl xl:text-3xl text-theme-section-title font-bold leading-tight">
+                                    <ThemeTitle
+                                        level={3}
+                                        className="text-2xl xl:text-3xl text-theme-section-title font-bold leading-tight"
+                                    >
                                         {degree.degree}
                                     </ThemeTitle>
                                     {degree.degreeHonor && (
@@ -88,7 +107,7 @@ const EducationSection = ({ language }) => {
                                         </div>
                                     )}
                                 </div>
-                                
+
                                 {/* 地址和时间信息 */}
                                 <div className="space-y-4">
                                     <div className="flex items-center text-theme-text-white-70 text-base xl:text-lg">
@@ -106,14 +125,17 @@ const EducationSection = ({ language }) => {
                             <div className="flex-shrink-0 flex flex-col justify-between h-full">
                                 {/* 学校名称 - 与学位名称对齐 */}
                                 <div className="text-right">
-                                    <ThemeTitle level={4} className="text-lg xl:text-xl text-theme-text-white-90 font-semibold leading-tight">
+                                    <ThemeTitle
+                                        level={4}
+                                        className="text-lg xl:text-xl text-theme-text-white-90 font-semibold leading-tight"
+                                    >
                                         {degree.institution}
                                     </ThemeTitle>
                                 </div>
-                                
+
                                 {/* logo - 与时间信息底部对齐 */}
                                 <div className="rounded-xl p-4 self-end">
-                                    <OptimizedImage 
+                                    <OptimizedImage
                                         src={degree.logo}
                                         alt={`${degree.institution} Logo`}
                                         className="w-32 h-32 xl:w-40 xl:h-40 object-contain opacity-90 hover:opacity-100 transition-opacity duration-300"
@@ -126,7 +148,10 @@ const EducationSection = ({ language }) => {
                         <div className="lg:hidden space-y-6">
                             {/* 学位名称 + 荣誉徽章 */}
                             <div className="text-center space-y-4">
-                                <ThemeTitle level={3} className="text-xl sm:text-2xl text-theme-section-title font-bold leading-tight">
+                                <ThemeTitle
+                                    level={3}
+                                    className="text-xl sm:text-2xl text-theme-section-title font-bold leading-tight"
+                                >
                                     {degree.degree}
                                 </ThemeTitle>
                                 {degree.degreeHonor && (
@@ -142,7 +167,7 @@ const EducationSection = ({ language }) => {
                             {/* 大学标志 */}
                             <div className="flex justify-center">
                                 <div className="rounded-xl p-4">
-                                    <OptimizedImage 
+                                    <OptimizedImage
                                         src={degree.logo}
                                         alt={`${degree.institution} Logo`}
                                         className="w-24 h-24 sm:w-32 sm:h-32 object-contain opacity-90 hover:opacity-100 transition-opacity duration-300"
@@ -153,7 +178,10 @@ const EducationSection = ({ language }) => {
                             {/* 学校信息 - 三行 */}
                             <div className="space-y-3 text-center sm:text-left">
                                 <div>
-                                    <ThemeTitle level={4} className="text-base sm:text-lg text-theme-text-white-90 font-semibold leading-tight">
+                                    <ThemeTitle
+                                        level={4}
+                                        className="text-base sm:text-lg text-theme-text-white-90 font-semibold leading-tight"
+                                    >
                                         {degree.institution}
                                     </ThemeTitle>
                                 </div>
@@ -172,33 +200,52 @@ const EducationSection = ({ language }) => {
                     {/* Course Records */}
                     {degree.courses && degree.courses.length > 0 && (
                         <div className="mb-10">
-                            <ThemeTitle level={4} className="text-xl sm:text-2xl font-bold mb-6 flex items-center text-theme-text-white-90">
+                            <ThemeTitle
+                                level={4}
+                                className="text-xl sm:text-2xl font-bold mb-6 flex items-center text-theme-text-white-90"
+                            >
                                 <span className="w-2 h-6 bg-theme-primary rounded-full mr-3"></span>
                                 {educationData.labels.academicRecords}
                             </ThemeTitle>
-                            
+
                             {/* 总体统计 */}
                             <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-8">
                                 <div className="glass-card p-4 text-center">
-                                    <div className="text-2xl font-bold text-theme-primary">{degree.totalCredits}</div>
-                                    <div className="text-theme-text-white-70 text-sm">{educationData.labels.totalCredits}</div>
+                                    <div className="text-2xl font-bold text-theme-primary">
+                                        {degree.totalCredits}
+                                    </div>
+                                    <div className="text-theme-text-white-70 text-sm">
+                                        {educationData.labels.totalCredits}
+                                    </div>
                                 </div>
                                 <div className="glass-card p-4 text-center">
-                                    <div className="text-2xl font-bold text-theme-secondary">{degree.gpa}</div>
-                                    <div className="text-theme-text-white-70 text-sm">{educationData.labels.gpa}</div>
+                                    <div className="text-2xl font-bold text-theme-secondary">
+                                        {degree.gpa}
+                                    </div>
+                                    <div className="text-theme-text-white-70 text-sm">
+                                        {educationData.labels.gpa}
+                                    </div>
                                 </div>
                                 <div className="glass-card p-4 text-center">
                                     <div className="text-2xl font-bold text-theme-accent">
-                                        {degree.courses.reduce((total, semester) => total + semester.courses.length, 0)}
+                                        {degree.courses.reduce(
+                                            (total, semester) => total + semester.courses.length,
+                                            0
+                                        )}
                                     </div>
-                                    <div className="text-theme-text-white-70 text-sm">{educationData.labels.totalCourses}</div>
+                                    <div className="text-theme-text-white-70 text-sm">
+                                        {educationData.labels.totalCourses}
+                                    </div>
                                 </div>
                             </div>
 
                             {/* 学期课程详细信息 */}
                             <div className="space-y-6">
                                 {degree.courses.map((semester, semesterIdx) => (
-                                    <div key={semesterIdx} className="bg-theme-bg-white-10 backdrop-blur-md rounded-xl p-6 border border-theme-border-white-10">
+                                    <div
+                                        key={semesterIdx}
+                                        className="bg-theme-bg-white-10 backdrop-blur-md rounded-xl p-6 border border-theme-border-white-10"
+                                    >
                                         <h5 className="text-lg font-bold mb-4 flex items-center text-theme-text-white-90">
                                             <span className="text-2xl mr-2">📚</span>
                                             {semester.year} - {semester.semester}
@@ -214,7 +261,7 @@ const EducationSection = ({ language }) => {
                                                             {course.code} - {course.name}
                                                         </div>
                                                         <div className="text-xs mt-1 text-theme-text-white-70">
-                                                            {language === "en"
+                                                            {language === 'en'
                                                                 ? `${educationData.labels.level} ${course.level} • ${course.credits} ${educationData.labels.credits}`
                                                                 : `${educationData.labels.level} ${course.level} • ${course.credits} ${educationData.labels.credits}`}
                                                         </div>
@@ -235,7 +282,10 @@ const EducationSection = ({ language }) => {
 
                     {/* Capstone Projects */}
                     <div className="mb-10">
-                        <ThemeTitle level={4} className="text-xl sm:text-2xl font-bold text-theme-text-white-90 mb-6 flex items-center">
+                        <ThemeTitle
+                            level={4}
+                            className="text-xl sm:text-2xl font-bold text-theme-text-white-90 mb-6 flex items-center"
+                        >
                             <span className="w-2 h-6 bg-theme-primary rounded-full mr-3"></span>
                             {educationData.labels.capstoneProjects}
                         </ThemeTitle>
@@ -246,18 +296,24 @@ const EducationSection = ({ language }) => {
                                     <div
                                         key={idx}
                                         className={`project-thumbnail-card ${
-                                            hoveredProject === theme + "-project-" + idx
-                                                ? "project-hovered"
-                                                : ""
+                                            hoveredProject === theme + '-project-' + idx
+                                                ? 'project-hovered'
+                                                : ''
                                         }`}
-                                        onMouseEnter={() => setHoveredProject(theme + "-project-" + idx)}
+                                        onMouseEnter={() =>
+                                            setHoveredProject(theme + '-project-' + idx)
+                                        }
                                         onMouseLeave={() => setHoveredProject(null)}
                                     >
                                         <div
                                             className="relative h-48 sm:h-48 md:h-48 lg:h-36 xl:h-48 rounded-xl overflow-hidden group cursor-pointer"
                                             onClick={() => {
                                                 if (project.githubUrl) {
-                                                    window.open(project.githubUrl, '_blank', 'noopener,noreferrer');
+                                                    window.open(
+                                                        project.githubUrl,
+                                                        '_blank',
+                                                        'noopener,noreferrer'
+                                                    );
                                                 }
                                             }}
                                         >
@@ -267,7 +323,7 @@ const EducationSection = ({ language }) => {
                                                 alt={project.name}
                                                 className="w-full h-full object-cover"
                                             />
-                                            
+
                                             {/* 图片覆盖层 */}
                                             <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent"></div>
 
@@ -286,7 +342,7 @@ const EducationSection = ({ language }) => {
                                                     rel="noopener noreferrer"
                                                     className="github-link-small"
                                                     title="View on GitHub"
-                                                    onClick={(e) => e.stopPropagation()}
+                                                    onClick={e => e.stopPropagation()}
                                                 >
                                                     <svg
                                                         className="w-5 h-5"
@@ -313,9 +369,12 @@ const EducationSection = ({ language }) => {
                     </div>
 
                     {/* Awards部分 - 仅对bachelor显示，不使用单独卡片 */}
-                    {theme === "blue" && degree.awards && degree.awards.length > 0 && (
+                    {theme === 'blue' && degree.awards && degree.awards.length > 0 && (
                         <div>
-                            <ThemeTitle level={4} className="text-xl sm:text-2xl font-bold text-theme-text-white-90 mb-6 flex items-center">
+                            <ThemeTitle
+                                level={4}
+                                className="text-xl sm:text-2xl font-bold text-theme-text-white-90 mb-6 flex items-center"
+                            >
                                 <span className="w-2 h-6 bg-theme-primary rounded-full mr-3"></span>
                                 {educationData.labels.academicAwards}
                             </ThemeTitle>
@@ -326,23 +385,23 @@ const EducationSection = ({ language }) => {
                                         <div
                                             key={idx}
                                             className={`project-thumbnail-card ${
-                                                hoveredProject === theme + "-award-" + idx
-                                                    ? "project-hovered"
-                                                    : ""
+                                                hoveredProject === theme + '-award-' + idx
+                                                    ? 'project-hovered'
+                                                    : ''
                                             }`}
-                                            onMouseEnter={() => setHoveredProject(theme + "-award-" + idx)}
+                                            onMouseEnter={() =>
+                                                setHoveredProject(theme + '-award-' + idx)
+                                            }
                                             onMouseLeave={() => setHoveredProject(null)}
                                         >
-                                            <div
-                                                className="relative h-48 sm:h-48 rounded-xl overflow-hidden group cursor-pointer"
-                                            >
+                                            <div className="relative h-48 sm:h-48 rounded-xl overflow-hidden group cursor-pointer">
                                                 {/* 奖项图片 */}
                                                 <OptimizedImage
                                                     src={award.image}
                                                     alt={award.title}
                                                     className="w-full h-full object-cover"
                                                 />
-                                                
+
                                                 {/* 图片覆盖层 */}
                                                 <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent"></div>
 
@@ -373,7 +432,10 @@ const EducationSection = ({ language }) => {
                                                             {award.year}
                                                         </p>
                                                         <div className="mt-3 text-xs text-theme-text-white-80">
-                                                            {educationData.labels.academicExcellenceAward}
+                                                            {
+                                                                educationData.labels
+                                                                    .academicExcellenceAward
+                                                            }
                                                         </div>
                                                     </div>
                                                 </div>
@@ -390,37 +452,38 @@ const EducationSection = ({ language }) => {
 
     return (
         <div className="min-h-screen w-full px-6 sm:px-8 lg:px-12 xl:px-16 py-8 text-theme-text-white relative education-section-bg">
-            <div className="max-w-screen-xl mx-auto">{/* 从 max-w-screen-2xl 改为 max-w-screen-xl，增加两边空白 */}
-            {/* Education标题 - 居中显示，使用主题化组件 */}
-            <div className="flex flex-col pt-4">
-                <div className="flex flex-col items-center text-center">
-                    <ThemeTitle
-                        level={1}
-                        className="text-5xl md:text-6xl lg:text-7xl font-bold font-montserrat text-theme-section-title mb-3"
-                    >
-                        {educationData.title}
-                    </ThemeTitle>
-                    <ThemeSubtitle className="text-xl md:text-2xl font-light italic">
-                        {educationData.subtitle}
-                    </ThemeSubtitle>
-                </div>
-            </div>
-
-            {/* 标题与内容之间的分隔线 - 与教育卡片内容区域宽度完全保持一致 */}
-            <div className="flex justify-center my-8">
-                <div className="w-full">
-                    <div className="bg-transparent rounded-2xl px-6 lg:px-8">
-                        {/* <GlowDivider className="w-full" /> */}
+            <div className="max-w-screen-xl mx-auto">
+                {/* 从 max-w-screen-2xl 改为 max-w-screen-xl，增加两边空白 */}
+                {/* Education标题 - 居中显示，使用主题化组件 */}
+                <div className="flex flex-col pt-4">
+                    <div className="flex flex-col items-center text-center">
+                        <ThemeTitle
+                            level={1}
+                            className="text-5xl md:text-6xl lg:text-7xl font-bold font-montserrat text-theme-section-title mb-3"
+                        >
+                            {educationData.title}
+                        </ThemeTitle>
+                        <ThemeSubtitle className="text-xl md:text-2xl font-light italic">
+                            {educationData.subtitle}
+                        </ThemeSubtitle>
                     </div>
                 </div>
-            </div>
 
-            {/* 学历内容 - 垂直滚动，使用主题化文本颜色 */}
-            <div className="w-full text-theme-text-primary pt-0">
-                {degrees.map((degree) => (
-                    <div key={degree.id}>{renderEducationCard(degree)}</div>
-                ))}
-            </div>
+                {/* 标题与内容之间的分隔线 - 与教育卡片内容区域宽度完全保持一致 */}
+                <div className="flex justify-center my-8">
+                    <div className="w-full">
+                        <div className="bg-transparent rounded-2xl px-6 lg:px-8">
+                            {/* <GlowDivider className="w-full" /> */}
+                        </div>
+                    </div>
+                </div>
+
+                {/* 学历内容 - 垂直滚动，使用主题化文本颜色 */}
+                <div className="w-full text-theme-text-primary pt-0">
+                    {degrees.map(degree => (
+                        <div key={degree.id}>{renderEducationCard(degree)}</div>
+                    ))}
+                </div>
             </div>
         </div>
     );

@@ -1,6 +1,6 @@
 /**
  * TextureCache - 智能纹理缓存管理器
- * 
+ *
  * 功能：
  * 1. LRU缓存策略，自动清理最少使用的纹理
  * 2. 内存使用监控和限制
@@ -23,9 +23,9 @@ class TextureCache {
             hits: 0,
             misses: 0,
             evictions: 0,
-            memoryPeak: 0
+            memoryPeak: 0,
         };
-        
+
         console.log('🗄️ TextureCache初始化', { maxSize: this.maxSize, maxMemory: this.maxMemory });
     }
 
@@ -49,30 +49,29 @@ class TextureCache {
         try {
             // 计算纹理内存使用
             const textureMemory = this.estimateTextureMemory(texture);
-            
+
             // 如果需要，清理缓存为新纹理腾出空间
             this.makeSpace(textureMemory);
-            
+
             // 如果已存在，先清理旧的
             if (this.cache.has(key)) {
                 this.remove(key, false);
             }
-            
+
             // 添加新纹理
             this.cache.set(key, texture);
             this.updateUsage(key);
             this.memoryUsage += textureMemory;
             this.stats.memoryPeak = Math.max(this.stats.memoryPeak, this.memoryUsage);
-            
+
             // 存储元数据
             texture.userData = texture.userData || {};
             texture.userData.cacheKey = key;
             texture.userData.memorySize = textureMemory;
             texture.userData.metadata = metadata;
             texture.userData.cachedAt = Date.now();
-            
+
             console.log(`📥 纹理已缓存: ${key} (${this.formatBytes(textureMemory)})`);
-            
         } catch (error) {
             console.warn('⚠️ 纹理缓存失败:', key, error);
         }
@@ -85,15 +84,15 @@ class TextureCache {
         if (this.cache.has(key)) {
             const texture = this.cache.get(key);
             const memorySize = texture.userData?.memorySize || 0;
-            
+
             if (dispose && texture.dispose) {
                 texture.dispose();
             }
-            
+
             this.cache.delete(key);
             this.usage.delete(key);
             this.memoryUsage -= memorySize;
-            
+
             console.log(`🗑️ 纹理已移除: ${key} (${this.formatBytes(memorySize)})`);
         }
     }
@@ -103,17 +102,17 @@ class TextureCache {
      */
     async preloadTextures(textureConfigs, onProgress) {
         console.log(`🚀 开始批量预加载 ${textureConfigs.length} 个纹理`);
-        
+
         const results = {
             success: [],
             failed: [],
-            cached: []
+            cached: [],
         };
-        
+
         for (let i = 0; i < textureConfigs.length; i++) {
             const config = textureConfigs[i];
             const { key, src, options = {} } = config;
-            
+
             try {
                 // 检查是否已缓存
                 if (this.cache.has(key)) {
@@ -122,7 +121,7 @@ class TextureCache {
                     if (onProgress) onProgress((i + 1) / textureConfigs.length, key, 'cached');
                     continue;
                 }
-                
+
                 // 加载新纹理
                 const texture = await this.loadTexture(src, options);
                 if (texture) {
@@ -131,18 +130,21 @@ class TextureCache {
                 } else {
                     results.failed.push({ key, error: 'Load failed' });
                 }
-                
+
                 if (onProgress) {
-                    onProgress((i + 1) / textureConfigs.length, key, texture ? 'success' : 'failed');
+                    onProgress(
+                        (i + 1) / textureConfigs.length,
+                        key,
+                        texture ? 'success' : 'failed'
+                    );
                 }
-                
             } catch (error) {
                 console.warn(`⚠️ 预加载失败: ${key}`, error);
                 results.failed.push({ key, error: error.message });
                 if (onProgress) onProgress((i + 1) / textureConfigs.length, key, 'failed');
             }
         }
-        
+
         console.log(`✅ 预加载完成:`, results);
         return results;
     }
@@ -151,18 +153,18 @@ class TextureCache {
      * 加载单个纹理
      */
     async loadTexture(src, options = {}) {
-        return new Promise((resolve) => {
+        return new Promise(resolve => {
             const loader = new THREE.TextureLoader();
-            
+
             loader.load(
                 src,
-                (texture) => {
+                texture => {
                     // 应用纹理选项
                     this.applyTextureOptions(texture, options);
                     resolve(texture);
                 },
                 undefined, // onProgress
-                (error) => {
+                error => {
                     console.warn(`⚠️ 纹理加载失败: ${src}`, error);
                     resolve(null);
                 }
@@ -183,9 +185,9 @@ class TextureCache {
             offset,
             generateMipmaps = true,
             flipY = true,
-            colorSpace = THREE.SRGBColorSpace
+            colorSpace = THREE.SRGBColorSpace,
         } = options;
-        
+
         texture.wrapS = wrapS;
         texture.wrapT = wrapT;
         texture.magFilter = magFilter;
@@ -193,11 +195,11 @@ class TextureCache {
         texture.generateMipmaps = generateMipmaps;
         texture.flipY = flipY;
         texture.colorSpace = colorSpace;
-        
+
         if (repeat) {
             texture.repeat.set(repeat.x || 1, repeat.y || 1);
         }
-        
+
         if (offset) {
             texture.offset.set(offset.x || 0, offset.y || 0);
         }
@@ -208,15 +210,15 @@ class TextureCache {
      */
     estimateTextureMemory(texture) {
         if (!texture.image) return 1024; // 默认估算
-        
+
         const width = texture.image.width || 512;
         const height = texture.image.height || 512;
         const channels = 4; // RGBA
         const bytesPerChannel = 1; // 8位
-        
+
         // 考虑mipmaps
         const mipmapMultiplier = texture.generateMipmaps ? 1.33 : 1;
-        
+
         return width * height * channels * bytesPerChannel * mipmapMultiplier;
     }
 
@@ -225,10 +227,11 @@ class TextureCache {
      */
     makeSpace(requiredMemory) {
         // 检查是否需要清理
-        while ((this.cache.size >= this.maxSize || 
-                this.memoryUsage + requiredMemory > this.maxMemory) && 
-               this.cache.size > 0) {
-            
+        while (
+            (this.cache.size >= this.maxSize ||
+                this.memoryUsage + requiredMemory > this.maxMemory) &&
+            this.cache.size > 0
+        ) {
             const lruKey = this.getLRUKey();
             if (lruKey) {
                 this.remove(lruKey);
@@ -245,14 +248,14 @@ class TextureCache {
     getLRUKey() {
         let oldestKey = null;
         let oldestAccess = Infinity;
-        
+
         for (const [key, lastAccess] of this.usage) {
             if (lastAccess < oldestAccess) {
                 oldestAccess = lastAccess;
                 oldestKey = key;
             }
         }
-        
+
         return oldestKey;
     }
 
@@ -268,17 +271,17 @@ class TextureCache {
      */
     clear() {
         console.log('🧹 清理纹理缓存...');
-        
+
         for (const [, texture] of this.cache) {
             if (texture.dispose) {
                 texture.dispose();
             }
         }
-        
+
         this.cache.clear();
         this.usage.clear();
         this.memoryUsage = 0;
-        
+
         console.log('✅ 纹理缓存已清理');
     }
 
@@ -294,7 +297,7 @@ class TextureCache {
             memoryPeakFormatted: this.formatBytes(this.stats.memoryPeak),
             hitRate: this.stats.hits / (this.stats.hits + this.stats.misses) || 0,
             cachedTextures: Array.from(this.cache.keys()),
-            oldestTextures: this.getOldestTextures(5)
+            oldestTextures: this.getOldestTextures(5),
         };
     }
 
@@ -308,7 +311,7 @@ class TextureCache {
             .map(([key, access]) => ({
                 key,
                 lastAccess: access,
-                texture: this.cache.get(key)?.userData
+                texture: this.cache.get(key)?.userData,
             }));
     }
 
@@ -348,7 +351,7 @@ class TextureCache {
 // 创建全局纹理缓存实例
 export const globalTextureCache = new TextureCache({
     maxSize: 50,
-    maxMemory: 256 * 1024 * 1024 // 256MB
+    maxMemory: 256 * 1024 * 1024, // 256MB
 });
 
 export default TextureCache;

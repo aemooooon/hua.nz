@@ -1,13 +1,13 @@
-import { useRef, useEffect, useState, useMemo, useCallback } from "react";
-import PropTypes from "prop-types";
-import * as THREE from "three";
-import { RoundedBoxGeometry } from "three/addons/geometries/RoundedBoxGeometry.js";
-import { useAppStore } from "../../../store/useAppStore";
-import { gsap } from "gsap";
-import { debounce } from "lodash";
-import textureSystem from "../../../utils/texture/index";
-import webglResourceManager from "../../../utils/WebGLResourceManager";
-import { useTheme } from "../../../hooks/useTheme";
+import { useRef, useEffect, useState, useMemo, useCallback } from 'react';
+import PropTypes from 'prop-types';
+import * as THREE from 'three';
+import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
+import { useAppStore } from '../../../store/useAppStore';
+import { gsap } from 'gsap';
+import { debounce } from 'lodash';
+import textureSystem from '../../../utils/texture/index';
+import webglResourceManager from '../../../utils/WebGLResourceManager';
+import { useTheme } from '../../../hooks/useTheme';
 
 const HeroCube = ({ enableOpeningAnimation = false, onAnimationComplete, onReady }) => {
     const mountRef = useRef();
@@ -24,7 +24,7 @@ const HeroCube = ({ enableOpeningAnimation = false, onAnimationComplete, onReady
     const hasBeenDraggedRef = useRef(false); // 跟踪是否已被用户拖拽过
     const preloadedTexturesRef = useRef(null); // 存储预加载的纹理结果
 
-    const { getContent } = useAppStore();
+    const { getContent, getSectionsData } = useAppStore();
     const content = getContent();
     const { getThemeColors } = useTheme();
     const themeColors = getThemeColors();
@@ -36,59 +36,20 @@ const HeroCube = ({ enableOpeningAnimation = false, onAnimationComplete, onReady
 
     const [texturesReady, setTexturesReady] = useState(false); // 纹理预加载状态
 
-    // 智能cube纹理配置 - 使用新的纹理系统
+    // 智能cube纹理配置 - 使用新的配置系统
     const faces = useMemo(() => {
-        return [
-            {
-                name: "home",
-                label: content.navigation?.home || "Home",
-                color: "#afcc8f",
-                effect: "effectchaos",
-                video: "/cube-textures/home.mp4", // 视频保持原路径
-            },
-            {
-                name: "about",
-                label: content.navigation?.about || "About",
-                color: "#7ca65c",
-                effect: "effectlorenz",
-                texture: "about", // 只需要基础名称，新系统会自动选择最优格式
-            },
-            {
-                name: "projects",
-                label: content.navigation?.projects || "Projects",
-                color: "#5d7d4b",
-                effect: "effectmonjori",
-                texture: "projects",
-            },
-            {
-                name: "gallery",
-                label: content.navigation?.gallery || "Gallery",
-                color: "#768e90",
-                effect: "effectheartbeats",
-                texture: "gallery",
-            },
-            {
-                name: "education",
-                label: content.navigation?.education || "Education",
-                color: "#4a636a",
-                effect: "effectfuse",
-                texture: "education",
-            },
-            {
-                name: "contact",
-                label: content.navigation?.contact || "Contact",
-                color: "#3a4e55",
-                effect: "effectpixeldistortion",
-                texture: "contact",
-            },
-        ];
-    }, [content.navigation]);
+        const sectionsData = getSectionsData();
+        return sectionsData.map(section => ({
+            ...section.faces,
+            label: content.navigation?.[section.id] || section.faces.label,
+        }));
+    }, [content.navigation, getSectionsData]);
 
     // 预加载所有纹理资源 - 使用新的统一纹理系统
     useEffect(() => {
         const preloadTextures = async () => {
             try {
-                console.log("🚀 开始Hero Cube纹理预加载...");
+                console.log('🚀 开始Hero Cube纹理预加载...');
 
                 // 使用新的Hero Cube专用API进行一次性加载
                 const result = await textureSystem.loadHeroCubeTextures(faces);
@@ -99,24 +60,24 @@ const HeroCube = ({ enableOpeningAnimation = false, onAnimationComplete, onReady
                 console.log(`  - 错误数量: ${result.errors.length}`);
 
                 if (result.errors.length > 0) {
-                    console.warn("⚠️ 部分纹理加载失败:", result.errors);
+                    console.warn('⚠️ 部分纹理加载失败:', result.errors);
                 }
 
                 // 将结果存储到ref中供后续使用
                 preloadedTexturesRef.current = result;
 
                 // 调试信息：检查视频纹理
-                console.log("🔍 调试预加载结果:");
-                console.log("  - 纹理Map键:", Array.from(result.textures.keys()));
-                console.log("  - 视频Map键:", Array.from(result.videos.keys()));
+                console.log('🔍 调试预加载结果:');
+                console.log('  - 纹理Map键:', Array.from(result.textures.keys()));
+                console.log('  - 视频Map键:', Array.from(result.videos.keys()));
                 console.log(
-                    "  - faces配置:",
-                    faces.map((f) => ({ name: f.name, hasVideo: !!f.video, hasTexture: !!f.texture }))
+                    '  - faces配置:',
+                    faces.map(f => ({ name: f.name, hasVideo: !!f.video, hasTexture: !!f.texture }))
                 );
 
                 setTexturesReady(true);
             } catch (error) {
-                console.warn("纹理预加载部分失败，继续渲染:", error);
+                console.warn('纹理预加载部分失败，继续渲染:', error);
                 setTexturesReady(true);
             }
         };
@@ -131,8 +92,8 @@ const HeroCube = ({ enableOpeningAnimation = false, onAnimationComplete, onReady
             // 更新渲染器尺寸
             if (mountRef.current?.firstChild) {
                 const canvas = mountRef.current.firstChild;
-                canvas.style.width = "100vw";
-                canvas.style.height = "100vh";
+                canvas.style.width = '100vw';
+                canvas.style.height = '100vh';
             }
         };
 
@@ -145,19 +106,19 @@ const HeroCube = ({ enableOpeningAnimation = false, onAnimationComplete, onReady
         };
 
         // 监听多种用户活动事件
-        const activityEvents = ["mousedown", "mousemove", "keydown", "scroll", "touchstart"];
+        const activityEvents = ['mousedown', 'mousemove', 'keydown', 'scroll', 'touchstart'];
 
-        window.addEventListener("resize", handleResize);
+        window.addEventListener('resize', handleResize);
 
         // 添加用户活动监听器，使用防抖避免频繁调用
         const debouncedActivityHandler = debounce(handleUserActivity, 30000); // 30秒防抖
-        activityEvents.forEach((event) => {
+        activityEvents.forEach(event => {
             document.addEventListener(event, debouncedActivityHandler);
         });
 
         return () => {
-            window.removeEventListener("resize", handleResize);
-            activityEvents.forEach((event) => {
+            window.removeEventListener('resize', handleResize);
+            activityEvents.forEach(event => {
                 document.removeEventListener(event, debouncedActivityHandler);
             });
         };
@@ -204,8 +165,8 @@ const HeroCube = ({ enableOpeningAnimation = false, onAnimationComplete, onReady
         const renderer = new THREE.WebGLRenderer({
             alpha: true,
             antialias: shouldUseAntialias, // 🔥 更严格的抗锯齿条件
-            powerPreference: "high-performance",
-            precision: "lowp", // 🔥 使用最低精度提升性能
+            powerPreference: 'high-performance',
+            precision: 'lowp', // 🔥 使用最低精度提升性能
             stencil: false,
             depth: false, // 🔥 禁用深度缓冲，减少GPU负载
             premultipliedAlpha: false,
@@ -214,10 +175,10 @@ const HeroCube = ({ enableOpeningAnimation = false, onAnimationComplete, onReady
 
         // 设置透明背景，让3D背景可见
         renderer.setClearColor(0x000000, 0); // 完全透明背景
-        
+
         // 设置全分辨率渲染，避免canvas尺寸问题
         renderer.setSize(window.innerWidth, window.innerHeight);
-        
+
         // 🔥 进一步限制像素比：防止高DPI设备过载，提升LCP性能
         renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.0)); // 降至1.0，确保性能优先
 
@@ -227,19 +188,19 @@ const HeroCube = ({ enableOpeningAnimation = false, onAnimationComplete, onReady
         renderer.toneMapping = THREE.NoToneMapping;
 
         // 全屏显示设置
-        renderer.domElement.style.position = "fixed";
-        renderer.domElement.style.top = "0";
-        renderer.domElement.style.left = "0";
-        renderer.domElement.style.width = "100vw";
-        renderer.domElement.style.height = "100vh";
-        renderer.domElement.style.display = "block";
-        renderer.domElement.style.zIndex = "10";
-        renderer.domElement.style.pointerEvents = "none"; // 去掉交互
+        renderer.domElement.style.position = 'fixed';
+        renderer.domElement.style.top = '0';
+        renderer.domElement.style.left = '0';
+        renderer.domElement.style.width = '100vw';
+        renderer.domElement.style.height = '100vh';
+        renderer.domElement.style.display = 'block';
+        renderer.domElement.style.zIndex = '10';
+        renderer.domElement.style.pointerEvents = 'none'; // 去掉交互
 
         // 添加数据属性，让智能光标识别这是不可点击的Canvas
-        renderer.domElement.setAttribute("data-no-custom-cursor", "true");
-        renderer.domElement.setAttribute("data-hero-cube-canvas", "true");
-        renderer.domElement.classList.add("hero-cube-canvas");
+        renderer.domElement.setAttribute('data-no-custom-cursor', 'true');
+        renderer.domElement.setAttribute('data-hero-cube-canvas', 'true');
+        renderer.domElement.classList.add('hero-cube-canvas');
 
         // 更新渲染器尺寸为全屏
         renderer.setSize(window.innerWidth, window.innerHeight);
@@ -272,7 +233,7 @@ const HeroCube = ({ enableOpeningAnimation = false, onAnimationComplete, onReady
             }
         }, 100); // 100ms防抖
 
-        window.addEventListener("resize", handleCanvasResize);
+        window.addEventListener('resize', handleCanvasResize);
 
         // 增强光照系统 - 更亮更丰富的灯光
         // 环境光 - 提升基础亮度
@@ -310,10 +271,10 @@ const HeroCube = ({ enableOpeningAnimation = false, onAnimationComplete, onReady
 
         // 创建棋盘格默认纹理的函数
         const createCheckerboardTexture = (size = 256) => {
-            const canvas = document.createElement("canvas");
+            const canvas = document.createElement('canvas');
             canvas.width = size;
             canvas.height = size;
-            const context = canvas.getContext("2d");
+            const context = canvas.getContext('2d');
 
             const squareSize = size / 8;
 
@@ -321,17 +282,19 @@ const HeroCube = ({ enableOpeningAnimation = false, onAnimationComplete, onReady
                 for (let j = 0; j < 8; j++) {
                     // 使用主题色创建棋盘格效果
                     context.fillStyle =
-                        (i + j) % 2 === 0 ? themeColorsRef.current.surface : themeColorsRef.current.muted;
+                        (i + j) % 2 === 0
+                            ? themeColorsRef.current.surface
+                            : themeColorsRef.current.muted;
                     context.fillRect(i * squareSize, j * squareSize, squareSize, squareSize);
                 }
             }
 
             context.fillStyle = themeColorsRef.current.primary;
             context.font = `bold ${size / 16}px Arial`;
-            context.textAlign = "center";
-            context.textBaseline = "middle";
-            context.fillText("VIDEO", size / 2, size / 2 - size / 32);
-            context.fillText("ERROR", size / 2, size / 2 + size / 32);
+            context.textAlign = 'center';
+            context.textBaseline = 'middle';
+            context.fillText('VIDEO', size / 2, size / 2 - size / 32);
+            context.fillText('ERROR', size / 2, size / 2 + size / 32);
 
             const texture = new THREE.CanvasTexture(canvas);
             texture.needsUpdate = true;
@@ -341,27 +304,31 @@ const HeroCube = ({ enableOpeningAnimation = false, onAnimationComplete, onReady
         // 为每个面创建材质 - 按照Three.js立方体面的标准顺序
         const materials = [
             // 索引0: 右面 (X+) - About面
-            faces.find((f) => f.name === "about"),
+            faces.find(f => f.name === 'about'),
             // 索引1: 左面 (X-) - Gallery面
-            faces.find((f) => f.name === "gallery"),
+            faces.find(f => f.name === 'gallery'),
             // 索引2: 顶面 (Y+) - Contact面
-            faces.find((f) => f.name === "contact"),
+            faces.find(f => f.name === 'contact'),
             // 索引3: 底面 (Y-) - Education面
-            faces.find((f) => f.name === "education"),
+            faces.find(f => f.name === 'education'),
             // 索引4: 正面 (Z+) - Home面
-            faces.find((f) => f.name === "home"),
+            faces.find(f => f.name === 'home'),
             // 索引5: 背面 (Z-) - Projects面
-            faces.find((f) => f.name === "projects"),
+            faces.find(f => f.name === 'projects'),
         ].map((face, index) => {
             // 调试信息：检查每个面是否正确加载
-            console.log(`Face ${index} (${['right', 'left', 'top', 'bottom', 'front', 'back'][index]}):`, 
-                face ? face.name : 'NOT FOUND', face);
-            
+            console.log(
+                `Face ${index} (${['right', 'left', 'top', 'bottom', 'front', 'back'][index]}):`,
+                face ? face.name : 'NOT FOUND',
+                face
+            );
+
             // 如果face未找到，创建一个明显的错误纹理
             if (!face) {
                 console.error(`Face at index ${index} not found!`);
                 const errorTexture = createCheckerboardTexture(256);
-                return new THREE.MeshBasicMaterial({ // 🔥 错误材质也使用Basic
+                return new THREE.MeshBasicMaterial({
+                    // 🔥 错误材质也使用Basic
                     map: errorTexture,
                     transparent: false, // 🔥 禁用透明度
                     side: THREE.FrontSide,
@@ -371,7 +338,8 @@ const HeroCube = ({ enableOpeningAnimation = false, onAnimationComplete, onReady
             if (face.video) {
                 const fallbackTexture = createCheckerboardTexture(256);
 
-                const material = new THREE.MeshBasicMaterial({ // 🔥 使用Basic材质，无光照计算
+                const material = new THREE.MeshBasicMaterial({
+                    // 🔥 使用Basic材质，无光照计算
                     map: fallbackTexture, // 初始使用fallback
                     transparent: false, // 🔥 禁用透明度提升性能
                     side: THREE.FrontSide, // 只渲染正面，提升性能
@@ -379,7 +347,9 @@ const HeroCube = ({ enableOpeningAnimation = false, onAnimationComplete, onReady
 
                 // 检查是否有预加载的视频纹理
                 if (preloadedTexturesRef.current?.videos.has(face.name)) {
-                    const preloadedVideoTexture = preloadedTexturesRef.current.videos.get(face.name);
+                    const preloadedVideoTexture = preloadedTexturesRef.current.videos.get(
+                        face.name
+                    );
                     material.map = preloadedVideoTexture;
                     material.needsUpdate = true;
                     console.log(`✅ 使用预加载视频纹理: ${face.name}`);
@@ -397,7 +367,7 @@ const HeroCube = ({ enableOpeningAnimation = false, onAnimationComplete, onReady
 
                         // 确保视频在播放
                         if (video.paused) {
-                            video.play().catch((err) => console.warn("视频自动播放失败:", err));
+                            video.play().catch(err => console.warn('视频自动播放失败:', err));
                         }
 
                         // 添加用户交互启动播放的监听器
@@ -408,17 +378,27 @@ const HeroCube = ({ enableOpeningAnimation = false, onAnimationComplete, onReady
                                     .then(() => {
                                         console.log(`🎬 用户交互后视频开始播放: ${face.name}`);
                                         // 移除监听器
-                                        document.removeEventListener("click", tryPlayOnUserInteraction);
-                                        document.removeEventListener("touchstart", tryPlayOnUserInteraction);
+                                        document.removeEventListener(
+                                            'click',
+                                            tryPlayOnUserInteraction
+                                        );
+                                        document.removeEventListener(
+                                            'touchstart',
+                                            tryPlayOnUserInteraction
+                                        );
                                     })
-                                    .catch((err) => console.warn("用户交互后视频播放失败:", err));
+                                    .catch(err => console.warn('用户交互后视频播放失败:', err));
                             }
                         };
 
                         // 如果视频暂停，添加用户交互监听器
                         if (video.paused) {
-                            document.addEventListener("click", tryPlayOnUserInteraction, { once: true });
-                            document.addEventListener("touchstart", tryPlayOnUserInteraction, { once: true });
+                            document.addEventListener('click', tryPlayOnUserInteraction, {
+                                once: true,
+                            });
+                            document.addEventListener('touchstart', tryPlayOnUserInteraction, {
+                                once: true,
+                            });
                         }
                     }
                 } else {
@@ -426,14 +406,14 @@ const HeroCube = ({ enableOpeningAnimation = false, onAnimationComplete, onReady
                     console.warn(`⚠️ 预加载视频纹理不可用，创建新的: ${face.name}`);
 
                     // 创建新的视频元素，确保每次都有一个新的实例
-                    const video = document.createElement("video");
+                    const video = document.createElement('video');
                     video.src = face.video;
-                    video.crossOrigin = "anonymous";
+                    video.crossOrigin = 'anonymous';
                     video.loop = true;
                     video.muted = true;
                     video.autoplay = true;
                     video.playsInline = true;
-                    video.preload = "metadata";
+                    video.preload = 'metadata';
 
                     const setupVideoTexture = () => {
                         try {
@@ -452,33 +432,33 @@ const HeroCube = ({ enableOpeningAnimation = false, onAnimationComplete, onReady
                             material.needsUpdate = true;
 
                             // 确保视频开始播放
-                            video.play().catch((error) => {
-                                console.warn("Video autoplay failed:", error);
+                            video.play().catch(error => {
+                                console.warn('Video autoplay failed:', error);
                             });
                         } catch (error) {
-                            console.warn("Failed to create video texture:", error);
+                            console.warn('Failed to create video texture:', error);
                             // 保持使用fallback纹理
                         }
                     };
 
                     // 多个事件监听确保视频正确加载
-                    video.addEventListener("loadeddata", () => {
+                    video.addEventListener('loadeddata', () => {
                         setupVideoTexture();
                     });
 
-                    video.addEventListener("canplay", () => {
+                    video.addEventListener('canplay', () => {
                         setupVideoTexture();
                     });
 
-                    video.addEventListener("loadedmetadata", () => {
+                    video.addEventListener('loadedmetadata', () => {
                         // 视频元数据加载完成，可以尝试播放
                         video.play().catch(() => {
                             // 忽略自动播放失败
                         });
                     });
 
-                    video.addEventListener("error", (error) => {
-                        console.warn("Video loading error, using fallback texture:", error);
+                    video.addEventListener('error', error => {
+                        console.warn('Video loading error, using fallback texture:', error);
                         // 保持使用fallback纹理
                     });
 
@@ -493,7 +473,8 @@ const HeroCube = ({ enableOpeningAnimation = false, onAnimationComplete, onReady
             if (face.texture) {
                 // 先创建带fallback的材质
                 const fallbackTexture = createCheckerboardTexture(256);
-                const material = new THREE.MeshBasicMaterial({ // 🔥 使用Basic材质
+                const material = new THREE.MeshBasicMaterial({
+                    // 🔥 使用Basic材质
                     map: fallbackTexture, // 初始使用fallback
                     transparent: false, // 🔥 禁用透明度
                     side: THREE.FrontSide,
@@ -501,10 +482,12 @@ const HeroCube = ({ enableOpeningAnimation = false, onAnimationComplete, onReady
 
                 // 使用预加载的纹理（如果可用）
                 if (preloadedTexturesRef.current?.textures.has(face.texture)) {
-                    const preloadedTexture = preloadedTexturesRef.current.textures.get(face.texture);
+                    const preloadedTexture = preloadedTexturesRef.current.textures.get(
+                        face.texture
+                    );
 
                     // 🔄 为education纹理添加Y轴翻转功能
-                    if (face.texture === "education") {
+                    if (face.texture === 'education') {
                         preloadedTexture.flipY = true;
                         preloadedTexture.needsUpdate = true;
                         console.log(`🔄 为${face.texture}纹理启用Y轴翻转`);
@@ -518,14 +501,14 @@ const HeroCube = ({ enableOpeningAnimation = false, onAnimationComplete, onReady
                     console.warn(`⚠️ 预加载纹理不可用，使用统一系统异步加载: ${face.texture}`);
                     (async () => {
                         try {
-                            const result = await textureSystem.loadSceneTextures("hero-cube", {
+                            const result = await textureSystem.loadSceneTextures('hero-cube', {
                                 textures: [face.texture],
                             });
                             if (result.textures.has(face.texture)) {
                                 const texture = result.textures.get(face.texture);
 
                                 // 🔄 为education纹理添加Y轴翻转功能
-                                if (face.texture === "education") {
+                                if (face.texture === 'education') {
                                     texture.flipY = true;
                                     texture.needsUpdate = true;
                                     console.log(`🔄 异步加载时为${face.texture}纹理启用Y轴翻转`);
@@ -548,11 +531,11 @@ const HeroCube = ({ enableOpeningAnimation = false, onAnimationComplete, onReady
             }
 
             // Canvas纹理逻辑 - 只显示文字，不显示图标
-            const canvas = document.createElement("canvas");
+            const canvas = document.createElement('canvas');
             const textureSize = 256;
             canvas.width = textureSize;
             canvas.height = textureSize;
-            const context = canvas.getContext("2d");
+            const context = canvas.getContext('2d');
 
             // 绘制背景色彩
             context.clearRect(0, 0, textureSize, textureSize);
@@ -579,24 +562,24 @@ const HeroCube = ({ enableOpeningAnimation = false, onAnimationComplete, onReady
 
             // 添加反光效果
             const reflectGradient = context.createLinearGradient(0, 0, textureSize, textureSize);
-            reflectGradient.addColorStop(0, "rgba(255, 255, 255, 0.15)");
-            reflectGradient.addColorStop(0.5, "rgba(255, 255, 255, 0.08)");
-            reflectGradient.addColorStop(1, "rgba(255, 255, 255, 0)");
+            reflectGradient.addColorStop(0, 'rgba(255, 255, 255, 0.15)');
+            reflectGradient.addColorStop(0.5, 'rgba(255, 255, 255, 0.08)');
+            reflectGradient.addColorStop(1, 'rgba(255, 255, 255, 0)');
             context.fillStyle = reflectGradient;
             context.fillRect(0, 0, textureSize / 3, textureSize);
 
             // 只绘制文字，居中显示
-            context.shadowColor = "rgba(0, 0, 0, 0.8)";
+            context.shadowColor = 'rgba(0, 0, 0, 0.8)';
             context.shadowBlur = 6;
             const fontSize = 36;
             context.font = `bold ${fontSize}px "Helvetica Neue", Arial`;
-            context.fillStyle = themeColorsRef.current.text || "#ffffff";
-            context.textAlign = "center";
-            context.textBaseline = "middle";
+            context.fillStyle = themeColorsRef.current.text || '#ffffff';
+            context.textAlign = 'center';
+            context.textBaseline = 'middle';
             context.fillText(face.label, textureSize / 2, textureSize / 2);
 
             // 重置阴影
-            context.shadowColor = "transparent";
+            context.shadowColor = 'transparent';
             context.shadowBlur = 0;
             context.shadowOffsetX = 0;
             context.shadowOffsetY = 0;
@@ -607,7 +590,8 @@ const HeroCube = ({ enableOpeningAnimation = false, onAnimationComplete, onReady
             texture.minFilter = THREE.LinearFilter; // 🔥 简化过滤器
             texture.magFilter = THREE.LinearFilter;
 
-            const material = new THREE.MeshBasicMaterial({ // 🔥 使用Basic材质
+            const material = new THREE.MeshBasicMaterial({
+                // 🔥 使用Basic材质
                 map: texture,
                 transparent: false, // 🔥 禁用透明度
                 side: THREE.FrontSide, // 🔥 只渲染正面
@@ -635,7 +619,7 @@ const HeroCube = ({ enableOpeningAnimation = false, onAnimationComplete, onReady
         // ═══════════════════════════════════════════════════════════════════════════════
         // 🎬 HeroCube 电影级开场动画系统
         // ═══════════════════════════════════════════════════════════════════════════════
-        // 
+        //
         // 动画概述：
         // - 总时长：~27.6秒的电影级3D立方体展示动画
         // - 立方体面映射：6个面展示不同内容页面
@@ -646,12 +630,12 @@ const HeroCube = ({ enableOpeningAnimation = false, onAnimationComplete, onReady
         // - 核心特效：智能速度曲线、平滑面切换、戏剧性3D变换、物理弹跳
         //
         // ═══════════════════════════════════════════════════════════════════════════════
-        
+
         if (enableOpeningAnimation) {
             // 🎯 设置cube初始状态：从远处、极小尺寸开始
-            cube.position.set(0, 0, -80);  // 远在屏幕后方
-            cube.scale.set(0.05, 0.05, 0.05);  // 微小尺寸
-            cube.rotation.set(0, 0, 0);  // 无旋转
+            cube.position.set(0, 0, -80); // 远在屏幕后方
+            cube.scale.set(0.05, 0.05, 0.05); // 微小尺寸
+            cube.rotation.set(0, 0, 0); // 无旋转
 
             // 🎪 创建主动画时间线
             openingAnimationRef.current = gsap
@@ -660,42 +644,42 @@ const HeroCube = ({ enableOpeningAnimation = false, onAnimationComplete, onReady
                         if (onAnimationCompleteRef.current) {
                             onAnimationCompleteRef.current();
                         }
-                        window.dispatchEvent(new CustomEvent("cubeAnimationComplete"));
+                        window.dispatchEvent(new CustomEvent('cubeAnimationComplete'));
                     },
                 })
-                
+
                 // ┌─────────────────────────────────────────────────────────────────────────────┐
                 // │ 🚀 阶段1: 震撼飞入与初始缩放 (0-2.5s)                                          │
                 // │ 效果：从远处高速飞入，带有弹性放大效果                                            │
                 // └─────────────────────────────────────────────────────────────────────────────┘
                 .to(cube.position, {
-                    z: 0,  // 飞入到屏幕中心
+                    z: 0, // 飞入到屏幕中心
                     duration: 2.0,
-                    ease: "power3.out",  // 强力减速，营造冲击感
-                    delay: 0.5,  // 延迟开始，增加期待感
+                    ease: 'power3.out', // 强力减速，营造冲击感
+                    delay: 0.5, // 延迟开始，增加期待感
                 })
                 .to(
                     cube.scale,
                     {
-                        x: 1.2,  // 放大到1.2倍，适中的展示尺寸
+                        x: 1.2, // 放大到1.2倍，适中的展示尺寸
                         y: 1.2,
                         z: 1.2,
                         duration: 2.0,
-                        ease: "back.out(1.7)",  // 弹性效果，超调后回弹
+                        ease: 'back.out(1.7)', // 弹性效果，超调后回弹
                     },
-                    0.5  // 与位置动画同时开始
+                    0.5 // 与位置动画同时开始
                 )
 
                 // ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
                 // 🎬 阶段 2: 6面内容展示循环 - Movie-Level Content Showcase (2.5-22.0s) [持续19.5秒]
                 // ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
-                
+
                 // 🎭 设计哲学: 电影级别的类似花絮highlight的感觉
                 // ────────────────────────────────────────────────────────────────
                 // • 灵感来源: 电影预告片的节奏感 - 慢镜头特写 + 快速切换的视觉冲击
                 // • 核心体验: 每个面都是一个"高光时刻"，有自己的叙事节奏
                 // • 情感递进: Education(学术) → About(个人) → Projects(技术) → Gallery(创意) → Home(品牌) → Contact(联系)
-                
+
                 // 🎵 时间节奏设计: 慢-快-慢的电影级变速美学
                 // ────────────────────────────────────────────────────────────────
                 // • 慢镜头特写期: 1.5秒静止展示，让观者充分感受内容
@@ -731,7 +715,7 @@ const HeroCube = ({ enableOpeningAnimation = false, onAnimationComplete, onReady
 
                 // 📐 立方体面部索引映射 (Three.js BoxGeometry标准):
                 // • 索引0 (Right/右面/X+): About    - 个人简介
-                // • 索引1 (Left/左面/X-):  Gallery  - 创意作品集  
+                // • 索引1 (Left/左面/X-):  Gallery  - 创意作品集
                 // • 索引2 (Top/顶面/Y+):   Contact  - 联系方式
                 // • 索引3 (Bottom/底面/Y-): Education - 教育背景
                 // • 索引4 (Front/前面/Z+): Home     - 品牌首页
@@ -745,12 +729,12 @@ const HeroCube = ({ enableOpeningAnimation = false, onAnimationComplete, onReady
                         y: 1.4,
                         z: 1.4, // 放大20%，营造IMAX般的沉浸感
                         duration: 0.5, // 快速放大，为后续展示做准备
-                        ease: "power2.out", // 强劲开始，平滑结束
+                        ease: 'power2.out', // 强劲开始，平滑结束
                     },
                     2.5
                 )
                 // 核心：通过速度曲线控制实现进入后期和退出前期的特写效果
-                
+
                 // === 面1: Education面 (底面, Y-, 索引3) - 教育背景 (2.5-5.5s) ===
                 .to(
                     cube.rotation,
@@ -759,7 +743,7 @@ const HeroCube = ({ enableOpeningAnimation = false, onAnimationComplete, onReady
                         y: 0,
                         z: 0,
                         duration: 1.5, // 进入时间：1.5秒，前快后慢
-                        ease: "power3.out", // 强力减速：快速开始，大幅减速结束
+                        ease: 'power3.out', // 强力减速：快速开始，大幅减速结束
                     },
                     2.5
                 )
@@ -768,9 +752,9 @@ const HeroCube = ({ enableOpeningAnimation = false, onAnimationComplete, onReady
                     {
                         x: 0,
                         y: 0,
-                        z: 5, 
+                        z: 5,
                         duration: 1.5, // 进入时间：1.5秒，前快后慢
-                        ease: "power3.out", // 与cube旋转同步减速
+                        ease: 'power3.out', // 与cube旋转同步减速
                         onUpdate: () => camera.lookAt(cube.position),
                     },
                     2.5
@@ -786,7 +770,7 @@ const HeroCube = ({ enableOpeningAnimation = false, onAnimationComplete, onReady
                         y: Math.PI * 0.5, // 修正：右面朝向用户（正旋转）
                         z: Math.PI, // 修复：添加180度Z轴旋转，让about图片从倒立改为站立
                         duration: 1.5, // 退出Education(前慢) + 进入About(后慢)
-                        ease: "power2.inOut", // 慢-快-慢：前期慢(Education特写) + 中期快 + 后期慢(About特写)
+                        ease: 'power2.inOut', // 慢-快-慢：前期慢(Education特写) + 中期快 + 后期慢(About特写)
                     },
                     5.5
                 )
@@ -797,7 +781,7 @@ const HeroCube = ({ enableOpeningAnimation = false, onAnimationComplete, onReady
                         y: 0,
                         z: 5,
                         duration: 1.5, // 与cube旋转同步
-                        ease: "power2.inOut", // 慢-快-慢曲线
+                        ease: 'power2.inOut', // 慢-快-慢曲线
                         onUpdate: () => camera.lookAt(cube.position),
                     },
                     5.5
@@ -813,7 +797,7 @@ const HeroCube = ({ enableOpeningAnimation = false, onAnimationComplete, onReady
                         y: Math.PI, // 背面朝向用户（180度旋转）
                         z: Math.PI, // 翻转图片显示
                         duration: 1.5, // 退出About(前慢) + 进入Projects(后慢)
-                        ease: "power2.inOut", // 慢-快-慢：前期慢(About特写) + 中期快 + 后期慢(Projects特写)
+                        ease: 'power2.inOut', // 慢-快-慢：前期慢(About特写) + 中期快 + 后期慢(Projects特写)
                     },
                     8.5
                 )
@@ -824,7 +808,7 @@ const HeroCube = ({ enableOpeningAnimation = false, onAnimationComplete, onReady
                         y: 0,
                         z: 5,
                         duration: 1.5, // 与cube旋转同步
-                        ease: "power2.inOut", // 慢-快-慢曲线
+                        ease: 'power2.inOut', // 慢-快-慢曲线
                         onUpdate: () => camera.lookAt(cube.position),
                     },
                     8.5
@@ -840,7 +824,7 @@ const HeroCube = ({ enableOpeningAnimation = false, onAnimationComplete, onReady
                         y: -Math.PI * 0.5, // 修正：左面朝向用户（负旋转）
                         z: Math.PI, // 修复：添加180度Z轴旋转，让gallery图片从倒立改为站立
                         duration: 1.5, // 退出Projects(前慢) + 进入Gallery(后慢)
-                        ease: "power2.inOut", // 慢-快-慢：前期慢(Projects特写) + 中期快 + 后期慢(Gallery特写)
+                        ease: 'power2.inOut', // 慢-快-慢：前期慢(Projects特写) + 中期快 + 后期慢(Gallery特写)
                     },
                     11.5
                 )
@@ -851,7 +835,7 @@ const HeroCube = ({ enableOpeningAnimation = false, onAnimationComplete, onReady
                         y: 0,
                         z: 5,
                         duration: 1.5, // 与cube旋转同步
-                        ease: "power2.inOut", // 慢-快-慢曲线
+                        ease: 'power2.inOut', // 慢-快-慢曲线
                         onUpdate: () => camera.lookAt(cube.position),
                     },
                     11.5
@@ -867,7 +851,7 @@ const HeroCube = ({ enableOpeningAnimation = false, onAnimationComplete, onReady
                         y: 0, // 正面朝向用户（0度）
                         z: 0,
                         duration: 1.5, // 退出Gallery(前慢) + 进入Home(后慢)
-                        ease: "power2.inOut", // 慢-快-慢：前期慢(Gallery特写) + 中期快 + 后期慢(Home特写)
+                        ease: 'power2.inOut', // 慢-快-慢：前期慢(Gallery特写) + 中期快 + 后期慢(Home特写)
                     },
                     14.5
                 )
@@ -878,7 +862,7 @@ const HeroCube = ({ enableOpeningAnimation = false, onAnimationComplete, onReady
                         y: 0,
                         z: 5,
                         duration: 0.5, // 与cube旋转同步，缩短时间
-                        ease: "power2.out", // 使用相同的缓动
+                        ease: 'power2.out', // 使用相同的缓动
                         onUpdate: () => camera.lookAt(cube.position),
                     },
                     17.5
@@ -894,7 +878,7 @@ const HeroCube = ({ enableOpeningAnimation = false, onAnimationComplete, onReady
                         y: Math.PI, // Y轴180度旋转来让Contact图片正立
                         z: 0,
                         duration: 0.5, // 缩短旋转时间，确保Contact面能及时显示
-                        ease: "power2.out", // 使用快速完成的缓动，确保旋转快速到位
+                        ease: 'power2.out', // 使用快速完成的缓动，确保旋转快速到位
                     },
                     17.5
                 )
@@ -905,7 +889,7 @@ const HeroCube = ({ enableOpeningAnimation = false, onAnimationComplete, onReady
                         y: 0,
                         z: 5,
                         duration: 0.5, // 修复：与cube旋转同步，缩短时间
-                        ease: "power2.out", // 修复：使用相同的缓动
+                        ease: 'power2.out', // 修复：使用相同的缓动
                         onUpdate: () => camera.lookAt(cube.position),
                     },
                     20.5
@@ -919,7 +903,7 @@ const HeroCube = ({ enableOpeningAnimation = false, onAnimationComplete, onReady
                         y: 2,
                         z: 6, // 先到中间过渡位置
                         duration: 0.7,
-                        ease: "power2.inOut",
+                        ease: 'power2.inOut',
                         onUpdate: () => camera.lookAt(cube.position),
                     },
                     20.5 // 在Contact面展示后期开始过渡
@@ -931,7 +915,7 @@ const HeroCube = ({ enableOpeningAnimation = false, onAnimationComplete, onReady
                         y: 0,
                         z: 10, // 再到最终标准位置
                         duration: 0.8,
-                        ease: "power2.out",
+                        ease: 'power2.out',
                         onUpdate: () => camera.lookAt(cube.position),
                     },
                     21.2 // 在阶段3开始前完成
@@ -940,14 +924,14 @@ const HeroCube = ({ enableOpeningAnimation = false, onAnimationComplete, onReady
                 // ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
                 // 🌪️ 阶段 3: 戏剧性3D变换 - Dramatic Zoom & Immersive Transformation (22.0-23.7s) [持续1.7秒]
                 // ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
-                
+
                 // 🎭 视觉效果目标: 创造"进入立方体内部"的沉浸式体验
                 // ────────────────────────────────────────────────────────────────
                 // • 摄像机急速前进 (z: 10 → 2) 模拟"冲入"效果
                 // • 立方体放大3倍 (1.2 → 3.0) 填满整个视野
                 // • 多轴疯狂旋转 (X+4π, Y+6π, Z+3π) 营造眩晕感
                 // • power3.in加速度曲线 创造冲击力
-                
+
                 .to(
                     cube.scale,
                     {
@@ -955,7 +939,7 @@ const HeroCube = ({ enableOpeningAnimation = false, onAnimationComplete, onReady
                         y: 3,
                         z: 3,
                         duration: 1.7, // 1.7秒的渐进放大
-                        ease: "power3.in", // 加速度曲线，越来越快
+                        ease: 'power3.in', // 加速度曲线，越来越快
                     },
                     22.0 // 从22秒开始，衔接阶段2结束
                 )
@@ -965,21 +949,21 @@ const HeroCube = ({ enableOpeningAnimation = false, onAnimationComplete, onReady
                     {
                         z: 2, // 从10冲入到2，距离立方体表面仅2个单位
                         duration: 1.7, // 与立方体放大同步
-                        ease: "power3.in", // 同样的加速度，保持一致性
+                        ease: 'power3.in', // 同样的加速度，保持一致性
                         onUpdate: () => camera.lookAt(cube.position), // 始终锁定立方体中心
                     },
                     22.0 // 完全同步开始
                 )
-                
+
                 // === 🌀 多轴疯狂旋转 - 创造迷幻的3D空间体验 ===
                 .to(
                     cube.rotation,
                     {
                         x: cube.rotation.x + Math.PI * 4, // X轴旋转4整圈
-                        y: cube.rotation.y + Math.PI * 6, // Y轴旋转6整圈  
+                        y: cube.rotation.y + Math.PI * 6, // Y轴旋转6整圈
                         z: cube.rotation.z + Math.PI * 3, // Z轴旋转3整圈
                         duration: 1.7, // 1.7秒内完成所有旋转
-                        ease: "power2.out", // 开始快，后期缓慢，避免过度眩晕
+                        ease: 'power2.out', // 开始快，后期缓慢，避免过度眩晕
                     },
                     22.0 // 三重动画完美同步
                 )
@@ -987,14 +971,14 @@ const HeroCube = ({ enableOpeningAnimation = false, onAnimationComplete, onReady
                 // ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
                 // 🎯 阶段 4: 优雅稳定化 - Elegant Stabilization & Reset (23.7-25.5s) [持续1.8秒]
                 // ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
-                
+
                 // 🎨 设计理念: 从混乱到秩序的优雅过渡
                 // ────────────────────────────────────────────────────────────────
                 // • 立方体尺寸回归正常 (3.0 → 1.0) 恢复可视性
-                // • 摄像机退回安全距离 (2 → 10) 获得全局视角  
+                // • 摄像机退回安全距离 (2 → 10) 获得全局视角
                 // • 旋转归位到初始角度 营造"归来"的仪式感
                 // • power2.out减速曲线 确保平滑着陆
-                
+
                 // === 📏 立方体尺寸归位 - 从巨大回归到标准 ===
                 .to(
                     cube.scale,
@@ -1003,32 +987,32 @@ const HeroCube = ({ enableOpeningAnimation = false, onAnimationComplete, onReady
                         y: 1,
                         z: 1,
                         duration: 1.8, // 1.8秒缓慢收缩
-                        ease: "power2.out", // 前期快速，后期平缓
+                        ease: 'power2.out', // 前期快速，后期平缓
                     },
                     23.7 // 紧接阶段3结束
                 )
-                
+
                 // === 📷 摄像机退回标准位置 - 恢复最佳观察距离 ===
                 .to(
                     camera.position,
                     {
                         z: 10, // 退回到标准观察距离
                         duration: 0.5, // 快速退回，优先恢复视野
-                        ease: "power2.out", // 平滑减速
+                        ease: 'power2.out', // 平滑减速
                         onUpdate: () => camera.lookAt(cube.position), // 保持焦点锁定
                     },
                     23.7 // 立即开始退回
                 )
-                
+
                 // === 🧭 旋转角度归位 - 回到初始展示角度 ===
                 .to(
                     cube.rotation,
                     {
                         x: -Math.PI * 0.81, // 恢复到初始的X轴倾斜角度
-                        y: Math.PI * 0.25,  // 恢复到初始的Y轴旋转角度
-                        z: 0,               // Z轴归零，无倾斜
-                        duration: 1.8,      // 1.8秒缓慢归位
-                        ease: "power2.out", // 平滑减速到完全静止
+                        y: Math.PI * 0.25, // 恢复到初始的Y轴旋转角度
+                        z: 0, // Z轴归零，无倾斜
+                        duration: 1.8, // 1.8秒缓慢归位
+                        ease: 'power2.out', // 平滑减速到完全静止
                     },
                     23.7 // 与尺寸归位同步开始
                 )
@@ -1038,7 +1022,7 @@ const HeroCube = ({ enableOpeningAnimation = false, onAnimationComplete, onReady
                 // ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
                 // 🏀 阶段 5: 物理弹跳序列 - Physics-Based Bounce Finale (26.0-27.6s) [持续1.6秒]
                 // ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
-                
+
                 // 🎪 设计哲学: 模拟真实物理的弹跳衰减效果
                 // ────────────────────────────────────────────────────────────────
                 // • 3次递减弹跳: 1.15x → 1.08x → 1.04x (振幅逐渐衰减)
@@ -1063,7 +1047,7 @@ const HeroCube = ({ enableOpeningAnimation = false, onAnimationComplete, onReady
                         y: 1.15,
                         z: 1.15,
                         duration: 0.2, // 快速弹起，模拟瞬间冲击
-                        ease: "power2.out", // 强力开始，快速减速
+                        ease: 'power2.out', // 强力开始，快速减速
                     },
                     26.0 // 从静止期结束开始
                 )
@@ -1074,7 +1058,7 @@ const HeroCube = ({ enableOpeningAnimation = false, onAnimationComplete, onReady
                         y: 1,
                         z: 1,
                         duration: 0.3, // 稍长的回落时间
-                        ease: "bounce.out", // 弹性回落，有轻微二次弹跳
+                        ease: 'bounce.out', // 弹性回落，有轻微二次弹跳
                     },
                     26.2 // 弹起后立即回落
                 )
@@ -1087,7 +1071,7 @@ const HeroCube = ({ enableOpeningAnimation = false, onAnimationComplete, onReady
                         y: 1.08,
                         z: 1.08,
                         duration: 0.15, // 更快的弹起，模拟能量损失
-                        ease: "power2.out", // 保持一致的弹起特性
+                        ease: 'power2.out', // 保持一致的弹起特性
                     },
                     26.6 // 间隔0.1秒，模拟连续弹跳
                 )
@@ -1098,7 +1082,7 @@ const HeroCube = ({ enableOpeningAnimation = false, onAnimationComplete, onReady
                         y: 1,
                         z: 1,
                         duration: 0.25, // 中等回落时间
-                        ease: "bounce.out", // 轻微的二次弹跳效果
+                        ease: 'bounce.out', // 轻微的二次弹跳效果
                     },
                     26.75 // 第2次弹跳的回落
                 )
@@ -1111,7 +1095,7 @@ const HeroCube = ({ enableOpeningAnimation = false, onAnimationComplete, onReady
                         y: 1.04,
                         z: 1.04,
                         duration: 0.1, // 最快的弹起，能量几乎耗尽
-                        ease: "power2.out", // 最后的力量输出
+                        ease: 'power2.out', // 最后的力量输出
                     },
                     27.1 // 间隔0.1秒后的最后弹跳
                 )
@@ -1122,7 +1106,7 @@ const HeroCube = ({ enableOpeningAnimation = false, onAnimationComplete, onReady
                         y: 1,
                         z: 1,
                         duration: 0.4, // 最长的静止时间
-                        ease: "elastic.out(1, 0.3)", // 弹性收尾，微妙的振荡后完全静止
+                        ease: 'elastic.out(1, 0.3)', // 弹性收尾，微妙的振荡后完全静止
                     },
                     27.2 // 27.6s实现完全静止，完美收官
                 );
@@ -1137,17 +1121,17 @@ const HeroCube = ({ enableOpeningAnimation = false, onAnimationComplete, onReady
         // ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
         // 🖱️ 全局鼠标交互系统 - Global Mouse Interaction System
         // ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
-        
-        // 🎯 功能说明: 
+
+        // 🎯 功能说明:
         // ────────────────────────────────────────────────────────────────
         // • 实时追踪鼠标位置和移动速度
-        // • 为后续的物理效果提供输入数据  
+        // • 为后续的物理效果提供输入数据
         // • 标准化坐标系统 (-1 到 1 的NDC坐标)
         // • 基于时间的速度计算，确保帧率无关的一致性
-        
-        const handleGlobalMouseMove = (event) => {
+
+        const handleGlobalMouseMove = event => {
             // === 🗺️ 坐标标准化 - 转换为Three.js标准NDC坐标系 ===
-            const newMouseX = (event.clientX / window.innerWidth) * 2 - 1;   // [-1, 1]
+            const newMouseX = (event.clientX / window.innerWidth) * 2 - 1; // [-1, 1]
             const newMouseY = -(event.clientY / window.innerHeight) * 2 + 1; // [-1, 1] Y轴翻转
 
             // === ⏱️ 基于时间的速度计算 - 确保帧率无关的准确测量 ===
@@ -1169,19 +1153,19 @@ const HeroCube = ({ enableOpeningAnimation = false, onAnimationComplete, onReady
         };
 
         // === 🔗 事件监听器注册 ===
-        window.addEventListener("mousemove", handleGlobalMouseMove);
+        window.addEventListener('mousemove', handleGlobalMouseMove);
 
         // ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
         // 🔄 主渲染循环 - Main Render Loop
         // ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
-        
+
         // 🎪 核心职责:
         // ────────────────────────────────────────────────────────────────
         // • 维持60FPS的渲染循环
         // • 实时应用鼠标交互效果
         // • 处理动画完成后的物理模拟
         // • 确保所有3D对象的及时更新
-        
+
         const animate = () => {
             requestAnimationFrame(animate);
 
@@ -1197,7 +1181,7 @@ const HeroCube = ({ enableOpeningAnimation = false, onAnimationComplete, onReady
             // ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
             if (!hasBeenDraggedRef.current) {
                 // === 🎯 基础旋转计算 - 结合鼠标位置与预设角度 ===
-                const baseTargetRotationY = mouseRef.current.x * 0.1 + Math.PI * 0.25;  // 水平跟随 + 45度基础偏移
+                const baseTargetRotationY = mouseRef.current.x * 0.1 + Math.PI * 0.25; // 水平跟随 + 45度基础偏移
                 const baseTargetRotationX = mouseRef.current.y * 0.05 - Math.PI * 0.81; // 垂直跟随 + 倾斜角度
 
                 // === 🌊 物理效果融合 - 基础旋转 + 晃动偏移 ===
@@ -1219,15 +1203,18 @@ const HeroCube = ({ enableOpeningAnimation = false, onAnimationComplete, onReady
             // ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
             if (deltaTime > 0) {
                 // === ⚙️ 物理常数定义 - Fine-tuned Physics Constants ===
-                const springStrength = 12.0;        // 弹簧强度：回复力的强度
-                const damping = 0.88;               // 阻尼系数：能量损失率
-                const rotationSensitivity = 2.5;    // 旋转敏感度：鼠标影响程度
-                const maxRotationOffset = 1.2;      // 最大偏移角度：防止过度旋转
+                const springStrength = 12.0; // 弹簧强度：回复力的强度
+                const damping = 0.88; // 阻尼系数：能量损失率
+                const rotationSensitivity = 2.5; // 旋转敏感度：鼠标影响程度
+                const maxRotationOffset = 1.2; // 最大偏移角度：防止过度旋转
 
                 // === 🎯 鼠标力转换 - Mouse Velocity to Rotation Forces ===
-                const rotationForceX = mouseVelocityRef.current.y * rotationSensitivity;      // Y速度影响X轴旋转
-                const rotationForceY = -mouseVelocityRef.current.x * rotationSensitivity;     // X速度影响Y轴旋转(反向)
-                const rotationForceZ = (mouseVelocityRef.current.x + mouseVelocityRef.current.y) * rotationSensitivity * 0.4; // 综合影响Z轴
+                const rotationForceX = mouseVelocityRef.current.y * rotationSensitivity; // Y速度影响X轴旋转
+                const rotationForceY = -mouseVelocityRef.current.x * rotationSensitivity; // X速度影响Y轴旋转(反向)
+                const rotationForceZ =
+                    (mouseVelocityRef.current.x + mouseVelocityRef.current.y) *
+                    rotationSensitivity *
+                    0.4; // 综合影响Z轴
 
                 // === 🔧 弹簧回复力 - Spring Restoration Forces ===
                 const rotationSpringForceX = -cubeRotationOffsetRef.current.x * springStrength;
@@ -1235,9 +1222,12 @@ const HeroCube = ({ enableOpeningAnimation = false, onAnimationComplete, onReady
                 const rotationSpringForceZ = -cubeRotationOffsetRef.current.z * springStrength;
 
                 // === ⚡ 速度积分更新 - Velocity Integration ===
-                cubeRotationVelocityRef.current.x += (rotationForceX + rotationSpringForceX) * deltaTime;
-                cubeRotationVelocityRef.current.y += (rotationForceY + rotationSpringForceY) * deltaTime;
-                cubeRotationVelocityRef.current.z += (rotationForceZ + rotationSpringForceZ) * deltaTime;
+                cubeRotationVelocityRef.current.x +=
+                    (rotationForceX + rotationSpringForceX) * deltaTime;
+                cubeRotationVelocityRef.current.y +=
+                    (rotationForceY + rotationSpringForceY) * deltaTime;
+                cubeRotationVelocityRef.current.z +=
+                    (rotationForceZ + rotationSpringForceZ) * deltaTime;
 
                 // === 🛑 阻尼应用 - Damping Application ===
                 cubeRotationVelocityRef.current.x *= damping; // 能量衰减
@@ -1250,9 +1240,18 @@ const HeroCube = ({ enableOpeningAnimation = false, onAnimationComplete, onReady
                 cubeRotationOffsetRef.current.z += cubeRotationVelocityRef.current.z * deltaTime;
 
                 // === 🚫 边界限制 - Boundary Constraints ===
-                cubeRotationOffsetRef.current.x = Math.max(-maxRotationOffset, Math.min(maxRotationOffset, cubeRotationOffsetRef.current.x));
-                cubeRotationOffsetRef.current.y = Math.max(-maxRotationOffset, Math.min(maxRotationOffset, cubeRotationOffsetRef.current.y));
-                cubeRotationOffsetRef.current.z = Math.max(-maxRotationOffset, Math.min(maxRotationOffset, cubeRotationOffsetRef.current.z));
+                cubeRotationOffsetRef.current.x = Math.max(
+                    -maxRotationOffset,
+                    Math.min(maxRotationOffset, cubeRotationOffsetRef.current.x)
+                );
+                cubeRotationOffsetRef.current.y = Math.max(
+                    -maxRotationOffset,
+                    Math.min(maxRotationOffset, cubeRotationOffsetRef.current.y)
+                );
+                cubeRotationOffsetRef.current.z = Math.max(
+                    -maxRotationOffset,
+                    Math.min(maxRotationOffset, cubeRotationOffsetRef.current.z)
+                );
 
                 // === 🎈 微妙浮动效果 - Subtle Floating Animation ===
                 const floatY = Math.sin(currentTime * 0.001) * 0.05; // 0.05单位的垂直浮动
@@ -1267,8 +1266,13 @@ const HeroCube = ({ enableOpeningAnimation = false, onAnimationComplete, onReady
             // 🎬 视频纹理更新系统 - Video Texture Update System
             // ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
             // 遍历立方体的每个面，检查并更新视频纹理
-            cube.children.forEach((face) => {
-                if (face.material && face.material.map && face.material.map.image && face.material.map.image.tagName === "VIDEO") {
+            cube.children.forEach(face => {
+                if (
+                    face.material &&
+                    face.material.map &&
+                    face.material.map.image &&
+                    face.material.map.image.tagName === 'VIDEO'
+                ) {
                     const video = face.material.map.image;
                     // 仅在视频播放且数据就绪时更新纹理
                     if (!video.paused && video.readyState >= 2) {
@@ -1292,17 +1296,17 @@ const HeroCube = ({ enableOpeningAnimation = false, onAnimationComplete, onReady
         }
 
         // ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
-        // 🗂️ WebGL资源管理 - WebGL Resource Management  
+        // 🗂️ WebGL资源管理 - WebGL Resource Management
         // ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
         // 注册所有WebGL资源到资源管理器，标记为持久资源防止自动清理
         const resourceId = webglResourceManager.registerResources(
-            "HeroCube", // 资源标识符
+            'HeroCube', // 资源标识符
             {
-                renderer,   // WebGL渲染器
-                scene,      // 3D场景
-                geometry,   // 几何体
-                materials,  // 材质数组
-                textures: materials.map((mat) => mat.map).filter(Boolean), // 提取所有纹理
+                renderer, // WebGL渲染器
+                scene, // 3D场景
+                geometry, // 几何体
+                materials, // 材质数组
+                textures: materials.map(mat => mat.map).filter(Boolean), // 提取所有纹理
             },
             { persistent: true } // 设置为持久资源，防止被垃圾回收
         );
@@ -1325,8 +1329,8 @@ const HeroCube = ({ enableOpeningAnimation = false, onAnimationComplete, onReady
             }
 
             // === 🎧 移除事件监听器 ===
-            window.removeEventListener("mousemove", handleGlobalMouseMove);
-            window.removeEventListener("resize", handleCanvasResize);
+            window.removeEventListener('mousemove', handleGlobalMouseMove);
+            window.removeEventListener('resize', handleCanvasResize);
 
             // === 💾 WebGL资源清理 ===
             webglResourceManager.cleanup(resourceId); // 通过资源管理器统一清理
@@ -1342,10 +1346,10 @@ const HeroCube = ({ enableOpeningAnimation = false, onAnimationComplete, onReady
                 ref={mountRef}
                 className="fixed inset-0 w-full h-full overflow-hidden"
                 style={{
-                    pointerEvents: "none", // 完全禁用鼠标交互，作为纯视觉背景
+                    pointerEvents: 'none', // 完全禁用鼠标交互，作为纯视觉背景
                     zIndex: 5, // 层级：高于背景(0-4)，低于内容(6+)
                     // South Island Green：新西兰南岛绿色科技外发光效果
-                    filter: "drop-shadow(0 0 30px rgba(16, 185, 129, 0.3)) drop-shadow(0 0 80px rgba(0, 255, 136, 0.2))",
+                    filter: 'drop-shadow(0 0 30px rgba(16, 185, 129, 0.3)) drop-shadow(0 0 80px rgba(0, 255, 136, 0.2))',
                 }}
             />
         </div>
@@ -1357,8 +1361,8 @@ const HeroCube = ({ enableOpeningAnimation = false, onAnimationComplete, onReady
 // ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
 HeroCube.propTypes = {
     enableOpeningAnimation: PropTypes.bool, // 是否启用开场动画序列
-    onAnimationComplete: PropTypes.func,    // 动画完成回调函数
-    onReady: PropTypes.func,                // 组件就绪回调函数
+    onAnimationComplete: PropTypes.func, // 动画完成回调函数
+    onReady: PropTypes.func, // 组件就绪回调函数
 };
 
 // ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════

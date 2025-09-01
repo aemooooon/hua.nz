@@ -23,19 +23,19 @@
  * - WebGL 资源的智能清理
  */
 
-import { useEffect, useCallback, useRef, useState, useMemo } from "react";
-import { useAppStore } from "../../store/useAppStore";
-import BackgroundCanvas from "../background/BackgroundCanvas";
-import webglResourceManager from "../../utils/WebGLResourceManager";
-import "../../styles/SmartScroll.css";
+import { useEffect, useCallback, useRef, useState, useMemo } from 'react';
+import { useAppStore } from '../../store/useAppStore';
+import BackgroundCanvas from '../background/BackgroundCanvas';
+import webglResourceManager from '../../utils/WebGLResourceManager';
+import '../../styles/SmartScroll.css';
 
-import { lazy, Suspense } from "react";
-const HomeSection = lazy(() => import("../sections/home/HomeSection"));
-const ProjectSection = lazy(() => import("../sections/project/ProjectSection"));
-const GallerySection = lazy(() => import("../sections/gallery/GallerySection"));
-const EducationSection = lazy(() => import("../sections/education/EducationSection"));
-const ContactSection = lazy(() => import("../sections/contact/ContactSection"));
-const AboutSection = lazy(() => import("../sections/about/AboutSection"));
+import { lazy, Suspense } from 'react';
+const HomeSection = lazy(() => import('../sections/home/HomeSection'));
+const ProjectSection = lazy(() => import('../sections/project/ProjectSection'));
+const GallerySection = lazy(() => import('../sections/gallery/GallerySection'));
+const EducationSection = lazy(() => import('../sections/education/EducationSection'));
+const ContactSection = lazy(() => import('../sections/contact/ContactSection'));
+const AboutSection = lazy(() => import('../sections/about/AboutSection'));
 
 const SmartScrollManager = () => {
     // ========================================================================================
@@ -48,7 +48,7 @@ const SmartScrollManager = () => {
         navigateNext,
         navigatePrev,
         isScrolling,
-        getCurrentSection,
+        getCurrentSectionData,
         language,
         enableOpeningAnimation,
         isProjectModalOpen,
@@ -58,13 +58,13 @@ const SmartScrollManager = () => {
     // 配置常量 - 统一管理所有滚动相关阈值
     // ========================================================================================
     const SCROLL_CONFIG = {
-        DESKTOP_THRESHOLD: 600,        // 桌面端滚轮累积阈值
-        MOBILE_THRESHOLD: 200,         // 移动端触摸累积阈值
-        RESET_TIME: 256,              // 滚动重置时间间隔(ms)
-        PREVIEW_MAX_OFFSET: 80,       // 预览滚动最大偏移量
-        BOUNDARY_THRESHOLD: 50,       // 边界检测阈值
-        BOUNCE_MAX_OFFSET: 30,        // 回弹动画最大偏移量
-        LONG_CONTENT_SECTIONS: ["projects", "education", "about", "contact", "gallery"], // 长内容页面列表
+        DESKTOP_THRESHOLD: 600, // 桌面端滚轮累积阈值
+        MOBILE_THRESHOLD: 200, // 移动端触摸累积阈值
+        RESET_TIME: 256, // 滚动重置时间间隔(ms)
+        PREVIEW_MAX_OFFSET: 80, // 预览滚动最大偏移量
+        BOUNDARY_THRESHOLD: 50, // 边界检测阈值
+        BOUNCE_MAX_OFFSET: 30, // 回弹动画最大偏移量
+        LONG_CONTENT_SECTIONS: ['projects', 'education', 'about', 'contact', 'gallery'], // 长内容页面列表
     };
 
     // 从配置中解构常用值
@@ -75,7 +75,7 @@ const SmartScrollManager = () => {
         PREVIEW_MAX_OFFSET,
         BOUNDARY_THRESHOLD,
         BOUNCE_MAX_OFFSET,
-        LONG_CONTENT_SECTIONS
+        LONG_CONTENT_SECTIONS,
     } = SCROLL_CONFIG;
 
     // ========================================================================================
@@ -90,31 +90,31 @@ const SmartScrollManager = () => {
     const touchMoveAccumulatorRef = useRef(0);
 
     // 基础状态
-    const [scrollMode, setScrollMode] = useState("slide");
+    const [scrollMode, setScrollMode] = useState('slide');
     const [isContentOverflowing, setIsContentOverflowing] = useState(false);
     const [sectionScrollPositions, setSectionScrollPositions] = useState({});
     const [isPreviewingScroll, setIsPreviewingScroll] = useState(false);
     const [previewOffset, setPreviewOffset] = useState(0);
     const [isBouncing, setIsBouncing] = useState(false);
-    const [bounceDirection, setBounceDirection] = useState("none");
+    const [bounceDirection, setBounceDirection] = useState('none');
 
     // 派生状态 - 统一判断逻辑
-    const currentSectionConfig = getCurrentSection();
-    const isHomePage = currentSectionConfig?.id === "home";
-    const isLongContentSection = LONG_CONTENT_SECTIONS.includes(currentSectionConfig?.id);
+    const currentSectionData = getCurrentSectionData();
+    const isHomePage = currentSectionData?.id === 'home';
+    const isLongContentSection = LONG_CONTENT_SECTIONS.includes(currentSectionData?.id);
 
     // ========================================================================================
     // 智能资源管理 - WebGL 资源清理
     // ========================================================================================
     useEffect(() => {
-        if (currentSectionConfig?.id) {
-            const currentSectionName = currentSectionConfig.id;
+        if (currentSectionData?.id) {
+            const currentSectionName = currentSectionData.id;
 
             // 延迟执行清理，给新section足够时间初始化资源
             const cleanupTimer = setTimeout(() => {
                 const cleanedCount = webglResourceManager.cleanupOtherSections(
                     `BackgroundCanvas_${currentSectionName}`,
-                    ["HeroCube"] // 保留HeroCube持久资源
+                    ['HeroCube'] // 保留HeroCube持久资源
                 );
 
                 if (import.meta.env.DEV && cleanedCount > 0) {
@@ -124,24 +124,28 @@ const SmartScrollManager = () => {
 
             return () => clearTimeout(cleanupTimer);
         }
-    }, [currentSectionConfig?.id]);
+    }, [currentSectionData?.id]);
 
     // ========================================================================================
     // 工具函数 - 边界检测
     // ========================================================================================
-    const checkScrollBoundary = useCallback((container) => {
-        if (!container) return { isAtTop: false, isAtBottom: false, currentScrollTop: 0, maxScrollTop: 0 };
-        
-        const currentScrollTop = container.scrollTop;
-        const maxScrollTop = container.scrollHeight - container.clientHeight;
-        
-        return {
-            isAtTop: currentScrollTop <= BOUNDARY_THRESHOLD,
-            isAtBottom: currentScrollTop >= maxScrollTop - BOUNDARY_THRESHOLD,
-            currentScrollTop,
-            maxScrollTop
-        };
-    }, [BOUNDARY_THRESHOLD]);
+    const checkScrollBoundary = useCallback(
+        container => {
+            if (!container)
+                return { isAtTop: false, isAtBottom: false, currentScrollTop: 0, maxScrollTop: 0 };
+
+            const currentScrollTop = container.scrollTop;
+            const maxScrollTop = container.scrollHeight - container.clientHeight;
+
+            return {
+                isAtTop: currentScrollTop <= BOUNDARY_THRESHOLD,
+                isAtBottom: currentScrollTop >= maxScrollTop - BOUNDARY_THRESHOLD,
+                currentScrollTop,
+                maxScrollTop,
+            };
+        },
+        [BOUNDARY_THRESHOLD]
+    );
 
     // ========================================================================================
     // 组件映射 - 懒加载配置
@@ -175,10 +179,15 @@ const SmartScrollManager = () => {
             setTimeout(() => {
                 if (contentRef.current) {
                     const updatedRect = contentRef.current.getBoundingClientRect();
-                    const updatedOverflowing = contentRef.current.scrollHeight > updatedRect.height + 10;
-                    
+                    const updatedOverflowing =
+                        contentRef.current.scrollHeight > updatedRect.height + 10;
+
                     setIsContentOverflowing(updatedOverflowing);
-                    const updatedMode = isHomePage ? "slide" : updatedOverflowing ? "content" : "slide";
+                    const updatedMode = isHomePage
+                        ? 'slide'
+                        : updatedOverflowing
+                          ? 'content'
+                          : 'slide';
                     setScrollMode(updatedMode);
                 }
             }, 500);
@@ -186,39 +195,42 @@ const SmartScrollManager = () => {
 
         // 更新状态
         setIsContentOverflowing(isOverflowing);
-        const newMode = isHomePage ? "slide" : isOverflowing ? "content" : "slide";
+        const newMode = isHomePage ? 'slide' : isOverflowing ? 'content' : 'slide';
         setScrollMode(newMode);
     }, [isHomePage, isLongContentSection]);
 
     // ========================================================================================
     // 动画效果 - iOS风格回弹和预览
     // ========================================================================================
-    
+
     // iOS风格回弹动画
-    const triggerBounceAnimation = useCallback((direction, intensity = 0.5) => {
-        if (bounceTimerRef.current) {
-            clearTimeout(bounceTimerRef.current);
-        }
+    const triggerBounceAnimation = useCallback(
+        (direction, intensity = 0.5) => {
+            if (bounceTimerRef.current) {
+                clearTimeout(bounceTimerRef.current);
+            }
 
-        setBounceDirection(direction);
-        setIsBouncing(true);
+            setBounceDirection(direction);
+            setIsBouncing(true);
 
-        const bounceOffset = Math.min(intensity * BOUNCE_MAX_OFFSET, BOUNCE_MAX_OFFSET);
-        const offset = direction === "up" ? -bounceOffset : bounceOffset;
+            const bounceOffset = Math.min(intensity * BOUNCE_MAX_OFFSET, BOUNCE_MAX_OFFSET);
+            const offset = direction === 'up' ? -bounceOffset : bounceOffset;
 
-        setPreviewOffset(offset);
-        setIsPreviewingScroll(true);
+            setPreviewOffset(offset);
+            setIsPreviewingScroll(true);
 
-        bounceTimerRef.current = setTimeout(() => {
-            setIsPreviewingScroll(false);
-            setPreviewOffset(0);
+            bounceTimerRef.current = setTimeout(() => {
+                setIsPreviewingScroll(false);
+                setPreviewOffset(0);
 
-            setTimeout(() => {
-                setIsBouncing(false);
-                setBounceDirection("none");
-            }, 300);
-        }, 150);
-    }, [BOUNCE_MAX_OFFSET]);
+                setTimeout(() => {
+                    setIsBouncing(false);
+                    setBounceDirection('none');
+                }, 300);
+            }, 150);
+        },
+        [BOUNCE_MAX_OFFSET]
+    );
 
     // 预览回弹处理
     const triggerPreviewBounceBack = useCallback(() => {
@@ -237,8 +249,8 @@ const SmartScrollManager = () => {
 
     // 滚动预览处理
     const handleScrollPreview = useCallback(
-        (event) => {
-            if (scrollMode !== "content") {
+        event => {
+            if (scrollMode !== 'content') {
                 const direction = event.deltaY > 0 ? 1 : -1;
                 const atBottomBoundary = direction > 0 && currentSection >= sections.length - 1;
                 const atTopBoundary = direction < 0 && currentSection <= 0;
@@ -259,7 +271,7 @@ const SmartScrollManager = () => {
 
                 if (atBottomBoundary || atTopBoundary) {
                     const intensity = Math.min(scrollAccumulatorRef.current / DESKTOP_THRESHOLD, 1);
-                    const bounceDirection = atBottomBoundary ? "down" : "up";
+                    const bounceDirection = atBottomBoundary ? 'down' : 'up';
 
                     if (bounceTimerRef.current) {
                         clearTimeout(bounceTimerRef.current);
@@ -285,7 +297,7 @@ const SmartScrollManager = () => {
             triggerPreviewBounceBack,
             triggerBounceAnimation,
             DESKTOP_THRESHOLD,
-            PREVIEW_MAX_OFFSET
+            PREVIEW_MAX_OFFSET,
         ]
     );
 
@@ -297,26 +309,26 @@ const SmartScrollManager = () => {
         setIsPreviewingScroll(false);
         setPreviewOffset(0);
         setIsBouncing(false);
-        setBounceDirection("none");
+        setBounceDirection('none');
 
         if (bounceTimerRef.current) {
             clearTimeout(bounceTimerRef.current);
         }
 
         if (contentRef.current) {
-            const sectionId = currentSectionConfig?.id;
+            const sectionId = currentSectionData?.id;
 
             // 主页特殊处理
-            if (sectionId === "home") {
+            if (sectionId === 'home') {
                 const container = contentRef.current;
-                container.style.transform = "translateY(0)";
-                container.style.transition = "none";
+                container.style.transform = 'translateY(0)';
+                container.style.transition = 'none';
                 container.scrollTop = 0;
 
                 requestAnimationFrame(() => {
                     if (container) {
                         container.offsetHeight;
-                        container.style.transition = "";
+                        container.style.transition = '';
                     }
                 });
                 return;
@@ -325,12 +337,12 @@ const SmartScrollManager = () => {
             // 其他页面的滚动位置恢复
             const shouldScrollToBottom = () => {
                 if (sectionScrollPositions[sectionId] !== undefined) {
-                    return sectionScrollPositions[sectionId] === "bottom";
+                    return sectionScrollPositions[sectionId] === 'bottom';
                 }
 
                 if (isContentOverflowing) {
-                    const previousDirection = currentSectionConfig?.previousDirection;
-                    if (previousDirection === "from-next") {
+                    const previousDirection = currentSectionData?.previousDirection;
+                    if (previousDirection === 'from-next') {
                         return true;
                     }
                 }
@@ -341,7 +353,8 @@ const SmartScrollManager = () => {
             if (shouldScrollToBottom()) {
                 requestAnimationFrame(() => {
                     if (contentRef.current) {
-                        const maxScrollTop = contentRef.current.scrollHeight - contentRef.current.clientHeight;
+                        const maxScrollTop =
+                            contentRef.current.scrollHeight - contentRef.current.clientHeight;
                         contentRef.current.scrollTop = maxScrollTop;
                     }
                 });
@@ -349,15 +362,15 @@ const SmartScrollManager = () => {
                 contentRef.current.scrollTop = 0;
             }
         }
-    }, [currentSectionConfig, isContentOverflowing, sectionScrollPositions]);
+    }, [currentSectionData, isContentOverflowing, sectionScrollPositions]);
 
     // ========================================================================================
     // 事件处理器 - 触摸事件 (移动端支持)
     // ========================================================================================
-    
+
     // 触摸开始
     const handleTouchStart = useCallback(
-        (event) => {
+        event => {
             if (isScrolling || isProjectModalOpen) return;
 
             const touch = event.touches[0];
@@ -373,7 +386,7 @@ const SmartScrollManager = () => {
 
     // 触摸移动 - 核心滑动逻辑
     const handleTouchMove = useCallback(
-        (event) => {
+        event => {
             if (isScrolling || isProjectModalOpen) return;
 
             const touch = event.touches[0];
@@ -386,7 +399,7 @@ const SmartScrollManager = () => {
             touchMoveAccumulatorRef.current = Math.abs(deltaY);
 
             // 分段滚动模式处理
-            if (isHomePage || (!isContentOverflowing && scrollMode === "slide")) {
+            if (isHomePage || (!isContentOverflowing && scrollMode === 'slide')) {
                 if (touchMoveAccumulatorRef.current >= MOBILE_THRESHOLD) {
                     event.preventDefault();
                     const isScrollingDown = deltaY < 0;
@@ -404,7 +417,7 @@ const SmartScrollManager = () => {
             }
 
             // 内容滚动模式处理
-            if (scrollMode === "content" && isContentOverflowing && !isHomePage) {
+            if (scrollMode === 'content' && isContentOverflowing && !isHomePage) {
                 const container = contentRef.current;
                 if (!container) return;
 
@@ -439,7 +452,7 @@ const SmartScrollManager = () => {
             navigateNext,
             navigatePrev,
             checkScrollBoundary,
-            MOBILE_THRESHOLD
+            MOBILE_THRESHOLD,
         ]
     );
 
@@ -452,16 +465,17 @@ const SmartScrollManager = () => {
     // 事件处理器 - 滚轮事件 (桌面端支持)
     // ========================================================================================
     const handleWheel = useCallback(
-        (event) => {
+        event => {
             const now = Date.now();
             if (isScrolling || isProjectModalOpen) return;
 
             // 内容滚动模式：优先处理内容滚动
-            if (scrollMode === "content" && isContentOverflowing && !isHomePage) {
+            if (scrollMode === 'content' && isContentOverflowing && !isHomePage) {
                 const container = contentRef.current;
                 if (!container) return;
 
-                const { isAtTop, isAtBottom, currentScrollTop, maxScrollTop } = checkScrollBoundary(container);
+                const { isAtTop, isAtBottom, currentScrollTop, maxScrollTop } =
+                    checkScrollBoundary(container);
                 const isScrollingDown = event.deltaY > 0;
                 const isScrollingUp = event.deltaY < 0;
 
@@ -476,8 +490,11 @@ const SmartScrollManager = () => {
                             scrollAccumulatorRef.current += Math.abs(event.deltaY);
 
                             if (currentScrollTop >= maxScrollTop - 5) {
-                                const intensity = Math.min(scrollAccumulatorRef.current / DESKTOP_THRESHOLD, 1);
-                                triggerBounceAnimation("down", intensity);
+                                const intensity = Math.min(
+                                    scrollAccumulatorRef.current / DESKTOP_THRESHOLD,
+                                    1
+                                );
+                                triggerBounceAnimation('down', intensity);
                             }
 
                             if (
@@ -504,11 +521,17 @@ const SmartScrollManager = () => {
                             scrollAccumulatorRef.current += Math.abs(event.deltaY);
 
                             if (currentScrollTop <= 5) {
-                                const intensity = Math.min(scrollAccumulatorRef.current / DESKTOP_THRESHOLD, 1);
-                                triggerBounceAnimation("up", intensity);
+                                const intensity = Math.min(
+                                    scrollAccumulatorRef.current / DESKTOP_THRESHOLD,
+                                    1
+                                );
+                                triggerBounceAnimation('up', intensity);
                             }
 
-                            if (scrollAccumulatorRef.current >= DESKTOP_THRESHOLD && currentSection > 0) {
+                            if (
+                                scrollAccumulatorRef.current >= DESKTOP_THRESHOLD &&
+                                currentSection > 0
+                            ) {
                                 scrollAccumulatorRef.current = 0;
                                 navigatePrev();
                             }
@@ -523,7 +546,7 @@ const SmartScrollManager = () => {
             }
 
             // 分段滚动模式处理
-            if (isHomePage || (!isContentOverflowing && scrollMode === "slide")) {
+            if (isHomePage || (!isContentOverflowing && scrollMode === 'slide')) {
                 event.preventDefault();
             }
 
@@ -543,16 +566,19 @@ const SmartScrollManager = () => {
 
             // 记录滚动位置
             const container = contentRef.current;
-            if (container && scrollMode === "content" && isContentOverflowing) {
-                const sectionId = currentSectionConfig?.id;
+            if (container && scrollMode === 'content' && isContentOverflowing) {
+                const sectionId = currentSectionData?.id;
                 if (sectionId) {
                     const { currentScrollTop, maxScrollTop } = checkScrollBoundary(container);
                     const scrollPosition =
-                        currentScrollTop >= maxScrollTop - 10 ? "bottom" : 
-                        currentScrollTop <= 10 ? "top" : "middle";
+                        currentScrollTop >= maxScrollTop - 10
+                            ? 'bottom'
+                            : currentScrollTop <= 10
+                              ? 'top'
+                              : 'middle';
 
                     if (sectionScrollPositions[sectionId] !== scrollPosition) {
-                        setSectionScrollPositions((prev) => ({
+                        setSectionScrollPositions(prev => ({
                             ...prev,
                             [sectionId]: scrollPosition,
                         }));
@@ -561,7 +587,7 @@ const SmartScrollManager = () => {
             }
 
             // 预览处理
-            if (scrollMode !== "content") {
+            if (scrollMode !== 'content') {
                 const isAtBoundary = handleScrollPreview(event);
                 if (isAtBoundary) {
                     return;
@@ -598,7 +624,7 @@ const SmartScrollManager = () => {
             sections.length,
             navigateNext,
             navigatePrev,
-            currentSectionConfig,
+            currentSectionData,
             isPreviewingScroll,
             sectionScrollPositions,
             triggerBounceAnimation,
@@ -606,7 +632,7 @@ const SmartScrollManager = () => {
             triggerPreviewBounceBack,
             checkScrollBoundary,
             RESET_TIME,
-            DESKTOP_THRESHOLD
+            DESKTOP_THRESHOLD,
         ]
     );
 
@@ -614,15 +640,20 @@ const SmartScrollManager = () => {
     // 事件处理器 - 键盘事件 (键盘导航支持)
     // ========================================================================================
     const handleKeyDown = useCallback(
-        (event) => {
+        event => {
             if (isScrolling || isProjectModalOpen) return;
 
             const container = contentRef.current;
 
             switch (event.key) {
-                case "ArrowDown":
+                case 'ArrowDown':
                     event.preventDefault();
-                    if (scrollMode === "content" && isContentOverflowing && !isHomePage && container) {
+                    if (
+                        scrollMode === 'content' &&
+                        isContentOverflowing &&
+                        !isHomePage &&
+                        container
+                    ) {
                         const { isAtBottom, maxScrollTop } = checkScrollBoundary(container);
                         if (isAtBottom) {
                             if (currentSection < sections.length - 1) {
@@ -639,9 +670,14 @@ const SmartScrollManager = () => {
                     }
                     break;
 
-                case "ArrowUp":
+                case 'ArrowUp':
                     event.preventDefault();
-                    if (scrollMode === "content" && isContentOverflowing && !isHomePage && container) {
+                    if (
+                        scrollMode === 'content' &&
+                        isContentOverflowing &&
+                        !isHomePage &&
+                        container
+                    ) {
                         const { isAtTop } = checkScrollBoundary(container);
                         if (isAtTop) {
                             if (currentSection > 0) {
@@ -658,33 +694,33 @@ const SmartScrollManager = () => {
                     }
                     break;
 
-                case "PageDown":
-                case " ":
+                case 'PageDown':
+                case ' ':
                     event.preventDefault();
                     if (currentSection < sections.length - 1) {
                         navigateNext();
                     }
                     break;
 
-                case "PageUp":
+                case 'PageUp':
                     event.preventDefault();
                     if (currentSection > 0) {
                         navigatePrev();
                     }
                     break;
 
-                case "Home":
+                case 'Home':
                     event.preventDefault();
-                    if (scrollMode === "content" && !isHomePage && container) {
+                    if (scrollMode === 'content' && !isHomePage && container) {
                         container.scrollTop = 0;
                     } else {
                         navigateToSection(0);
                     }
                     break;
 
-                case "End":
+                case 'End':
                     event.preventDefault();
-                    if (scrollMode === "content" && !isHomePage && container) {
+                    if (scrollMode === 'content' && !isHomePage && container) {
                         const { maxScrollTop } = checkScrollBoundary(container);
                         container.scrollTop = maxScrollTop;
                     } else {
@@ -713,7 +749,7 @@ const SmartScrollManager = () => {
             navigateNext,
             navigatePrev,
             navigateToSection,
-            checkScrollBoundary
+            checkScrollBoundary,
         ]
     );
 
@@ -721,7 +757,7 @@ const SmartScrollManager = () => {
     // 边界通知 - 光标组件状态同步
     // ========================================================================================
     useEffect(() => {
-        const bounceEvent = new CustomEvent("scrollBounce", {
+        const bounceEvent = new CustomEvent('scrollBounce', {
             detail: {
                 isBouncing,
                 direction: bounceDirection,
@@ -734,13 +770,13 @@ const SmartScrollManager = () => {
     // ========================================================================================
     // Effect Hooks - 生命周期管理
     // ========================================================================================
-    
+
     // Section切换时的状态重置
     useEffect(() => {
         setIsPreviewingScroll(false);
         setPreviewOffset(0);
         setIsBouncing(false);
-        setBounceDirection("none");
+        setBounceDirection('none');
         scrollAccumulatorRef.current = 0;
 
         if (bounceTimerRef.current) {
@@ -762,16 +798,16 @@ const SmartScrollManager = () => {
         checkContentOverflow();
 
         const isMobile = window.innerWidth < 768;
-        
+
         if (isMobile && isLongContentSection) {
             // 移动端长内容页面使用密集检测
-            const checkTimers = [50, 100, 200, 300, 500, 800, 1200].map((delay) =>
+            const checkTimers = [50, 100, 200, 300, 500, 800, 1200].map(delay =>
                 setTimeout(() => {
                     checkContentOverflow();
                 }, delay)
             );
 
-            const clearTimers = () => checkTimers.forEach((timer) => clearTimeout(timer));
+            const clearTimers = () => checkTimers.forEach(timer => clearTimeout(timer));
 
             // 图片加载监听
             const handleImageLoad = () => {
@@ -782,13 +818,13 @@ const SmartScrollManager = () => {
 
             const currentContentRef = contentRef.current;
             if (currentContentRef) {
-                const images = currentContentRef.querySelectorAll("img");
-                images.forEach((img) => {
+                const images = currentContentRef.querySelectorAll('img');
+                images.forEach(img => {
                     if (img.complete) {
                         handleImageLoad();
                     } else {
-                        img.addEventListener("load", handleImageLoad, { once: true });
-                        img.addEventListener("error", handleImageLoad, { once: true });
+                        img.addEventListener('load', handleImageLoad, { once: true });
+                        img.addEventListener('error', handleImageLoad, { once: true });
                     }
                 });
             }
@@ -796,10 +832,10 @@ const SmartScrollManager = () => {
             return () => {
                 clearTimers();
                 if (currentContentRef) {
-                    const images = currentContentRef.querySelectorAll("img");
-                    images.forEach((img) => {
-                        img.removeEventListener("load", handleImageLoad);
-                        img.removeEventListener("error", handleImageLoad);
+                    const images = currentContentRef.querySelectorAll('img');
+                    images.forEach(img => {
+                        img.removeEventListener('load', handleImageLoad);
+                        img.removeEventListener('error', handleImageLoad);
                     });
                 }
             };
@@ -832,20 +868,20 @@ const SmartScrollManager = () => {
         };
 
         if (container) {
-            container.addEventListener("wheel", handleWheel, { passive: false });
-            container.addEventListener("touchstart", handleTouchStart, { passive: false });
-            container.addEventListener("touchmove", handleTouchMove, { passive: false });
-            container.addEventListener("touchend", handleTouchEnd, { passive: false });
-            document.addEventListener("keydown", handleKeyDown);
-            window.addEventListener("resize", handleResize);
+            container.addEventListener('wheel', handleWheel, { passive: false });
+            container.addEventListener('touchstart', handleTouchStart, { passive: false });
+            container.addEventListener('touchmove', handleTouchMove, { passive: false });
+            container.addEventListener('touchend', handleTouchEnd, { passive: false });
+            document.addEventListener('keydown', handleKeyDown);
+            window.addEventListener('resize', handleResize);
 
             return () => {
-                container.removeEventListener("wheel", handleWheel);
-                container.removeEventListener("touchstart", handleTouchStart);
-                container.removeEventListener("touchmove", handleTouchMove);
-                container.removeEventListener("touchend", handleTouchEnd);
-                document.removeEventListener("keydown", handleKeyDown);
-                window.removeEventListener("resize", handleResize);
+                container.removeEventListener('wheel', handleWheel);
+                container.removeEventListener('touchstart', handleTouchStart);
+                container.removeEventListener('touchmove', handleTouchMove);
+                container.removeEventListener('touchend', handleTouchEnd);
+                document.removeEventListener('keydown', handleKeyDown);
+                window.removeEventListener('resize', handleResize);
 
                 if (bounceTimerRef.current) {
                     clearTimeout(bounceTimerRef.current);
@@ -855,15 +891,22 @@ const SmartScrollManager = () => {
                 }
             };
         }
-    }, [handleWheel, handleTouchStart, handleTouchMove, handleTouchEnd, handleKeyDown, checkContentOverflow]);
+    }, [
+        handleWheel,
+        handleTouchStart,
+        handleTouchMove,
+        handleTouchEnd,
+        handleKeyDown,
+        checkContentOverflow,
+    ]);
 
     // ========================================================================================
     // 渲染函数 - Section组件渲染
     // ========================================================================================
     const renderCurrentSection = () => {
-        if (!currentSectionConfig) return null;
+        if (!currentSectionData) return null;
 
-        const SectionComponent = sectionComponents[currentSectionConfig.id];
+        const SectionComponent = sectionComponents[currentSectionData.id];
         if (!SectionComponent) return null;
 
         return (
@@ -875,9 +918,9 @@ const SmartScrollManager = () => {
                 }
             >
                 <SectionComponent
-                    section={currentSectionConfig}
+                    section={currentSectionData}
                     language={language}
-                    {...(currentSectionConfig.id === "home"
+                    {...(currentSectionData.id === 'home'
                         ? {
                               sections: sections,
                               onSectionChange: navigateToSection,
@@ -897,16 +940,16 @@ const SmartScrollManager = () => {
             ref={containerRef}
             className="relative w-full m-0 p-0 h-screen"
             style={{
-                overflow: "hidden",
-                height: "var(--vh-fallback, 100vh)", // 支持自定义视口高度
-                minHeight: "100dvh", // 动态视口高度
+                overflow: 'hidden',
+                height: 'var(--vh-fallback, 100vh)', // 支持自定义视口高度
+                minHeight: '100dvh', // 动态视口高度
             }}
         >
             {/* 背景画布 - WebGL效果渲染 */}
-            {currentSectionConfig?.backgroundEffect && (
+            {currentSectionData?.backgroundEffect && (
                 <BackgroundCanvas
-                    effectType={currentSectionConfig.backgroundEffect}
-                    sectionName={currentSectionConfig.id || "unknown"}
+                    effectType={currentSectionData.backgroundEffect}
+                    sectionName={currentSectionData.id || 'unknown'}
                 />
             )}
 
@@ -915,28 +958,34 @@ const SmartScrollManager = () => {
                 ref={contentRef}
                 className={`absolute inset-0 z-20 smooth-scroll scroll-mode-transition ${
                     isHomePage
-                        ? "scroll-mode-home overflow-hidden"
+                        ? 'scroll-mode-home overflow-hidden'
                         : isContentOverflowing
-                        ? "scroll-mode-auto overflow-y-auto"
-                        : "overflow-hidden"
-                } ${isBouncing ? "bouncing" : ""}`}
+                          ? 'scroll-mode-auto overflow-y-auto'
+                          : 'overflow-hidden'
+                } ${isBouncing ? 'bouncing' : ''}`}
                 style={{
-                    transform: isPreviewingScroll && !isBouncing ? `translateY(${previewOffset}px)` : "translateY(0)",
+                    transform:
+                        isPreviewingScroll && !isBouncing
+                            ? `translateY(${previewOffset}px)`
+                            : 'translateY(0)',
                     transition: isScrolling
-                        ? "none"
+                        ? 'none'
                         : isPreviewingScroll && !isBouncing
-                        ? "none"
-                        : isBouncing
-                        ? "transform 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55)"
-                        : "transform 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
-                    willChange: isScrolling || isPreviewingScroll || isBouncing ? "transform" : "auto",
+                          ? 'none'
+                          : isBouncing
+                            ? 'transform 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55)'
+                            : 'transform 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
+                    willChange:
+                        isScrolling || isPreviewingScroll || isBouncing ? 'transform' : 'auto',
                 }}
             >
                 {renderCurrentSection()}
             </div>
 
             {/* 过渡遮罩 - 切换时的视觉缓冲 */}
-            {isScrolling && <div className="fixed inset-0 bg-black/20 z-30 transition-opacity duration-300" />}
+            {isScrolling && (
+                <div className="fixed inset-0 bg-black/20 z-30 transition-opacity duration-300" />
+            )}
         </div>
     );
 };

@@ -14,58 +14,58 @@ export class RectAreaLightingSystem {
         this.rectLights = [];
         this.helpers = [];
         this.animationId = null;
-        
+
         // 配置参数
         this.config = {
             // 光照参数
             intensity: options.intensity || 5,
             colors: options.colors || [0xff6b6b, 0x4ecdc4, 0x45b7d1, 0xf9ca24], // 柔和的色彩组合
             showHelpers: options.showHelpers || false,
-            
+
             // 动画参数
             enableAnimation: options.enableAnimation !== false, // 默认启用
             animationSpeed: options.animationSpeed || 0.001,
-            
+
             // 几何参数
             lightWidth: options.lightWidth || 6,
             lightHeight: options.lightHeight || 8,
-            
+
             // 画廊适配参数
             positions: options.positions || [
                 { x: -18, y: 8, z: 15, rx: 0, ry: 0, rz: 0 }, // 左墙上方
                 { x: 18, y: 8, z: 15, rx: 0, ry: Math.PI, rz: 0 }, // 右墙上方
-                { x: 0, y: 10, z: 35, rx: -Math.PI/2, ry: 0, rz: 0 }, // 前墙天花板
-                { x: 0, y: 10, z: -15, rx: -Math.PI/2, ry: Math.PI, rz: 0 }, // 后墙天花板
-            ]
+                { x: 0, y: 10, z: 35, rx: -Math.PI / 2, ry: 0, rz: 0 }, // 前墙天花板
+                { x: 0, y: 10, z: -15, rx: -Math.PI / 2, ry: Math.PI, rz: 0 }, // 后墙天花板
+            ],
         };
-        
+
         this.clock = new THREE.Clock();
         this.init();
     }
-    
+
     /**
      * 初始化RectAreaLight系统
      */
     init() {
         // 初始化RectAreaLight uniforms（必需步骤）
         RectAreaLightUniformsLib.init();
-        
+
         // 创建矩形区域光源
         this.createRectAreaLights();
-        
+
         // 启动动画循环
         if (this.config.enableAnimation) {
             this.startAnimation();
         }
     }
-    
+
     /**
      * 创建矩形区域光源
      */
     createRectAreaLights() {
         this.config.positions.forEach((position, index) => {
             const color = this.config.colors[index % this.config.colors.length];
-            
+
             // 创建RectAreaLight
             const rectLight = new THREE.RectAreaLight(
                 color,
@@ -73,32 +73,32 @@ export class RectAreaLightingSystem {
                 this.config.lightWidth,
                 this.config.lightHeight
             );
-            
+
             // 设置位置和旋转
             rectLight.position.set(position.x, position.y, position.z);
             rectLight.rotation.set(position.rx, position.ry, position.rz);
-            
+
             // 添加到场景
             this.scene.add(rectLight);
             this.rectLights.push(rectLight);
-            
+
             // 添加辅助线（可选）
             if (this.config.showHelpers) {
                 const helper = new RectAreaLightHelper(rectLight);
                 this.scene.add(helper);
                 this.helpers.push(helper);
             }
-            
+
             // 存储初始参数用于动画
             rectLight.userData = {
                 originalIntensity: this.config.intensity,
                 originalColor: new THREE.Color(color),
                 animationPhase: (index / this.config.positions.length) * Math.PI * 2,
-                index: index
+                index: index,
             };
         });
     }
-    
+
     /**
      * 启动动画循环
      */
@@ -109,24 +109,28 @@ export class RectAreaLightingSystem {
         };
         animate();
     }
-    
+
     /**
      * 更新动画效果
      */
     updateAnimation() {
         const time = this.clock.getElapsedTime();
-        
+
         this.rectLights.forEach((light, index) => {
             const userData = light.userData;
-            
+
             // 缓慢的强度波动
-            const intensityWave = Math.sin(time * this.config.animationSpeed * 1000 + userData.animationPhase);
+            const intensityWave = Math.sin(
+                time * this.config.animationSpeed * 1000 + userData.animationPhase
+            );
             light.intensity = userData.originalIntensity + intensityWave * 2;
-            
+
             // 轻微的色彩变化
-            const colorShift = Math.sin(time * this.config.animationSpeed * 500 + userData.animationPhase * 2) * 0.1;
+            const colorShift =
+                Math.sin(time * this.config.animationSpeed * 500 + userData.animationPhase * 2) *
+                0.1;
             light.color.copy(userData.originalColor);
-            
+
             // 根据位置调整色彩变化
             switch (index) {
                 case 0: // 左墙 - 红色系
@@ -146,7 +150,7 @@ export class RectAreaLightingSystem {
             }
         });
     }
-    
+
     /**
      * 设置整体强度
      */
@@ -156,20 +160,20 @@ export class RectAreaLightingSystem {
             light.userData.originalIntensity = intensity;
         });
     }
-    
+
     /**
      * 设置动画速度
      */
     setAnimationSpeed(speed) {
         this.config.animationSpeed = speed;
     }
-    
+
     /**
      * 切换辅助线显示
      */
     toggleHelpers() {
         this.config.showHelpers = !this.config.showHelpers;
-        
+
         if (this.config.showHelpers) {
             // 添加辅助线
             this.rectLights.forEach(light => {
@@ -185,7 +189,7 @@ export class RectAreaLightingSystem {
             this.helpers = [];
         }
     }
-    
+
     /**
      * 设置预设效果
      */
@@ -212,20 +216,20 @@ export class RectAreaLightingSystem {
                 this.setAnimationSpeed(0.0005);
                 break;
         }
-        
+
         // 更新现有光源的颜色
         this.rectLights.forEach((light, index) => {
             const newColor = this.config.colors[index % this.config.colors.length];
             light.userData.originalColor = new THREE.Color(newColor);
         });
     }
-    
+
     /**
      * 切换动画开关
      */
     toggleAnimation() {
         this.config.enableAnimation = !this.config.enableAnimation;
-        
+
         if (this.config.enableAnimation) {
             this.startAnimation();
         } else {
@@ -233,7 +237,7 @@ export class RectAreaLightingSystem {
                 cancelAnimationFrame(this.animationId);
                 this.animationId = null;
             }
-            
+
             // 重置到原始状态
             this.rectLights.forEach(light => {
                 light.intensity = light.userData.originalIntensity;
@@ -241,7 +245,7 @@ export class RectAreaLightingSystem {
             });
         }
     }
-    
+
     /**
      * 获取当前配置状态
      */
@@ -251,10 +255,10 @@ export class RectAreaLightingSystem {
             animationSpeed: this.config.animationSpeed,
             enableAnimation: this.config.enableAnimation,
             showHelpers: this.config.showHelpers,
-            lightCount: this.rectLights.length
+            lightCount: this.rectLights.length,
         };
     }
-    
+
     /**
      * 销毁资源
      */
@@ -264,13 +268,13 @@ export class RectAreaLightingSystem {
             cancelAnimationFrame(this.animationId);
             this.animationId = null;
         }
-        
+
         // 移除光源
         this.rectLights.forEach(light => {
             this.scene.remove(light);
         });
         this.rectLights = [];
-        
+
         // 移除辅助线
         this.helpers.forEach(helper => {
             this.scene.remove(helper);

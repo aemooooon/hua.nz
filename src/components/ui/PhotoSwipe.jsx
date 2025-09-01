@@ -1,6 +1,6 @@
 /**
  * PhotoSwipe全屏图片查看器组件
- * 
+ *
  * 功能特点：
  * - 支持图片全屏浏览和缩放
  * - 智能尺寸检测，优先使用预计算维度
@@ -8,7 +8,7 @@
  * - 支持图片格式优化加载
  * - 多语言界面支持
  * - 触控友好的移动端体验
- * 
+ *
  * @component
  */
 
@@ -21,249 +21,254 @@ import textureSystem from '../../utils/texture';
 
 // PhotoSwipe Provider Component
 export const PhotoSwipeProvider = ({ children, language = 'en' }) => {
-  const [isOpen, setIsOpen] = useState(false);
-  const [images, setImages] = useState([]);
-  const [initialIndex, setInitialIndex] = useState(0);
-  const lightboxRef = useRef(null);
+    const [isOpen, setIsOpen] = useState(false);
+    const [images, setImages] = useState([]);
+    const [initialIndex, setInitialIndex] = useState(0);
+    const lightboxRef = useRef(null);
 
-  // 获取图片真实尺寸，优先使用预计算维度避免重复加载
-  const getImageDimensions = async (src) => {
-    try {
-      // 跳过视频文件，返回默认视频尺寸
-      if (src && src.match(/\.(mp4|webm|mov|avi|mkv)$/i)) {
-        return { width: 1920, height: 1080, aspectRatio: 16/9 };
-      }
-      
-      // 检查是否可以使用预计算维度
-      if (src && src.includes('/gallery/')) {
-        const fileName = src.split('/').pop().replace(/\.(jpg|jpeg|png|webp|avif)$/i, '');
-        
+    // 获取图片真实尺寸，优先使用预计算维度避免重复加载
+    const getImageDimensions = async src => {
         try {
-          const response = await fetch('/precomputed-dimensions.json');
-          const precomputed = await response.json();
-          if (precomputed.gallery && precomputed.gallery[fileName]) {
-            const dims = precomputed.gallery[fileName];
-            return {
-              width: dims.width,
-              height: dims.height,
-              aspectRatio: dims.aspectRatio
-            };
-          }
+            // 跳过视频文件，返回默认视频尺寸
+            if (src && src.match(/\.(mp4|webm|mov|avi|mkv)$/i)) {
+                return { width: 1920, height: 1080, aspectRatio: 16 / 9 };
+            }
+
+            // 检查是否可以使用预计算维度
+            if (src && src.includes('/gallery/')) {
+                const fileName = src
+                    .split('/')
+                    .pop()
+                    .replace(/\.(jpg|jpeg|png|webp|avif)$/i, '');
+
+                try {
+                    const response = await fetch('/precomputed-dimensions.json');
+                    const precomputed = await response.json();
+                    if (precomputed.gallery && precomputed.gallery[fileName]) {
+                        const dims = precomputed.gallery[fileName];
+                        return {
+                            width: dims.width,
+                            height: dims.height,
+                            aspectRatio: dims.aspectRatio,
+                        };
+                    }
+                } catch {
+                    // 预计算维度加载失败，继续使用图片检测
+                }
+            }
+
+            // 使用优化格式进行尺寸检测
+            let imageSrc = src;
+
+            if (src && src.includes('/gallery/') && src.endsWith('.jpg')) {
+                const fileName = src
+                    .split('/')
+                    .pop()
+                    .replace(/\.(jpg|jpeg|png|webp|avif)$/i, '');
+                try {
+                    const optimalPath = await textureSystem.getOptimalPath(fileName, 'gallery');
+                    imageSrc = optimalPath;
+                } catch {
+                    // 格式优化失败，使用原始路径
+                }
+            }
+
+            return new Promise(resolve => {
+                const img = new Image();
+                img.onload = () => {
+                    resolve({
+                        width: img.naturalWidth,
+                        height: img.naturalHeight,
+                        aspectRatio: img.naturalWidth / img.naturalHeight,
+                    });
+                };
+                img.onerror = () => {
+                    // 如果优化格式失败，尝试原始路径
+                    if (imageSrc !== src) {
+                        const fallbackImg = new Image();
+                        fallbackImg.onload = () => {
+                            resolve({
+                                width: fallbackImg.naturalWidth,
+                                height: fallbackImg.naturalHeight,
+                                aspectRatio: fallbackImg.naturalWidth / fallbackImg.naturalHeight,
+                            });
+                        };
+                        fallbackImg.onerror = () => {
+                            resolve({ width: 1200, height: 800, aspectRatio: 1.5 });
+                        };
+                        fallbackImg.crossOrigin = 'anonymous';
+                        fallbackImg.src = src;
+                    } else {
+                        resolve({ width: 1200, height: 800, aspectRatio: 1.5 });
+                    }
+                };
+                img.crossOrigin = 'anonymous';
+                img.src = imageSrc;
+            });
         } catch {
-          // 预计算维度加载失败，继续使用图片检测
+            return { width: 1200, height: 800, aspectRatio: 1.5 };
         }
-      }
-      
-      // 使用优化格式进行尺寸检测
-      let imageSrc = src;
-      
-      if (src && src.includes('/gallery/') && src.endsWith('.jpg')) {
-        const fileName = src.split('/').pop().replace(/\.(jpg|jpeg|png|webp|avif)$/i, '');
+    };
+
+    // 打开PhotoSwipe
+    const openPhotoSwipe = async (imageList, index = 0) => {
+        if (!imageList || imageList.length === 0) return;
+
+        setImages(imageList);
+        setInitialIndex(index);
+        setIsOpen(true);
+
+        // 获取所有图片的真实尺寸
+        const dimensionsPromises = imageList.map(image =>
+            getImageDimensions(image.src || image.original)
+        );
+
         try {
-          const optimalPath = await textureSystem.getOptimalPath(fileName, 'gallery');
-          imageSrc = optimalPath;
-        } catch {
-          // 格式优化失败，使用原始路径
-        }
-      }
-      
-      return new Promise((resolve) => {
-        const img = new Image();
-        img.onload = () => {
-          resolve({ 
-            width: img.naturalWidth, 
-            height: img.naturalHeight,
-            aspectRatio: img.naturalWidth / img.naturalHeight
-          });
-        };
-        img.onerror = () => {
-          // 如果优化格式失败，尝试原始路径
-          if (imageSrc !== src) {
-            const fallbackImg = new Image();
-            fallbackImg.onload = () => {
-              resolve({ 
-                width: fallbackImg.naturalWidth, 
-                height: fallbackImg.naturalHeight,
-                aspectRatio: fallbackImg.naturalWidth / fallbackImg.naturalHeight
-              });
-            };
-            fallbackImg.onerror = () => {
-              resolve({ width: 1200, height: 800, aspectRatio: 1.5 });
-            };
-            fallbackImg.crossOrigin = 'anonymous';
-            fallbackImg.src = src;
-          } else {
-            resolve({ width: 1200, height: 800, aspectRatio: 1.5 });
-          }
-        };
-        img.crossOrigin = 'anonymous';
-        img.src = imageSrc;
-      });
-    } catch {
-      return { width: 1200, height: 800, aspectRatio: 1.5 };
-    }
-  };
+            const dimensions = await Promise.all(dimensionsPromises);
 
-  // 打开PhotoSwipe
-  const openPhotoSwipe = async (imageList, index = 0) => {
-    if (!imageList || imageList.length === 0) return;
+            // 准备PhotoSwipe数据
+            const pswpItems = imageList.map((image, idx) => ({
+                src: image.src || image.original,
+                width: dimensions[idx].width,
+                height: dimensions[idx].height,
+                alt: image.alt || image.title || `Image ${idx + 1}`,
+                caption: image.caption,
+                title: image.title,
+                description: image.description,
+            }));
 
-    setImages(imageList);
-    setInitialIndex(index);
-    setIsOpen(true);
+            // 初始化PhotoSwipe
+            if (lightboxRef.current) {
+                lightboxRef.current.destroy();
+            }
 
-    // 获取所有图片的真实尺寸
-    const dimensionsPromises = imageList.map(image => 
-      getImageDimensions(image.src || image.original)
-    );
+            const lightbox = new PhotoSwipeLightbox({
+                dataSource: pswpItems,
+                index: index,
+                pswpModule: () => import('photoswipe'),
 
-    try {
-      const dimensions = await Promise.all(dimensionsPromises);
-      
-      // 准备PhotoSwipe数据
-      const pswpItems = imageList.map((image, idx) => ({
-        src: image.src || image.original,
-        width: dimensions[idx].width,
-        height: dimensions[idx].height,
-        alt: image.alt || image.title || `Image ${idx + 1}`,
-        caption: image.caption,
-        title: image.title,
-        description: image.description
-      }));
+                // UI配置
+                bgOpacity: 0.95,
+                spacing: 0.1,
+                loop: true, // 循环播放
+                zoom: true,
 
-      // 初始化PhotoSwipe
-      if (lightboxRef.current) {
-        lightboxRef.current.destroy();
-      }
+                // 动画配置
+                showAnimationDuration: 300,
+                hideAnimationDuration: 300,
+                showHideAnimationType: 'zoom',
 
-      const lightbox = new PhotoSwipeLightbox({
-        dataSource: pswpItems,
-        index: index,
-        pswpModule: () => import('photoswipe'),
-        
-        // UI配置
-        bgOpacity: 0.95,
-        spacing: 0.1,
-        loop: true, // 循环播放
-        zoom: true,
-        
-        // 动画配置
-        showAnimationDuration: 300,
-        hideAnimationDuration: 300,
-        showHideAnimationType: 'zoom',
-        
-        // 移动端手势支持
-        allowMouseDrag: true, // 允许鼠标拖拽（桌面端）
-        allowPanToNext: true, // 允许平移到下一张（左右滑动）
-        allowSwipeToClose: true, // 允许向下滑动关闭（移动端）
-        wheelToZoom: true, // 滚轮缩放（桌面端）
-        
-        // 交互配置
-        imageClickAction: 'close',
-        tapAction: 'close',
-        doubleTapAction: 'zoom',
-        
-        // UI元素
-        closeTitle: language === 'zh' ? '关闭' : 'Close',
-        zoomTitle: language === 'zh' ? '缩放' : 'Zoom',
-        arrowPrevTitle: language === 'zh' ? '上一张' : 'Previous',
-        arrowNextTitle: language === 'zh' ? '下一张' : 'Next',
-        
-        // 错误处理
-        errorMsg: language === 'zh' ? '图片无法加载' : 'The image cannot be loaded',
-        
-        // 移动端优化
-        pinchToClose: true, // 捏合手势关闭
-        closeOnVerticalDrag: true, // 垂直拖拽关闭
-        returnFocus: false, // 关闭后不返回焦点
-        padding: { top: 40, bottom: 40, left: 20, right: 20 },
-        
-        // 预加载设置
-        preload: [1, 2]
-      });
+                // 移动端手势支持
+                allowMouseDrag: true, // 允许鼠标拖拽（桌面端）
+                allowPanToNext: true, // 允许平移到下一张（左右滑动）
+                allowSwipeToClose: true, // 允许向下滑动关闭（移动端）
+                wheelToZoom: true, // 滚轮缩放（桌面端）
 
-      // 监听关闭事件
-      lightbox.on('close', () => {
-        setIsOpen(false);
-        setImages([]);
-        setInitialIndex(0);
-      });
+                // 交互配置
+                imageClickAction: 'close',
+                tapAction: 'close',
+                doubleTapAction: 'zoom',
 
-      // 添加自定义UI元素
-      lightbox.on('uiRegister', () => {
-        // 添加图片计数器
-        lightbox.pswp.ui.registerElement({
-          name: 'custom-counter',
-          className: 'pswp__custom-counter',
-          appendTo: 'top-bar',
-          onInit: (el, pswp) => {
-            const updateCounter = () => {
-              el.textContent = `${pswp.currIndex + 1} / ${pswp.getNumItems()}`;
-            };
-            
-            pswp.on('change', updateCounter);
-            pswp.on('afterInit', updateCounter);
-          }
-        });
+                // UI元素
+                closeTitle: language === 'zh' ? '关闭' : 'Close',
+                zoomTitle: language === 'zh' ? '缩放' : 'Zoom',
+                arrowPrevTitle: language === 'zh' ? '上一张' : 'Previous',
+                arrowNextTitle: language === 'zh' ? '下一张' : 'Next',
 
-        // 添加下载按钮
-        lightbox.pswp.ui.registerElement({
-          name: 'download-button',
-          className: 'pswp__download-button',
-          appendTo: 'bar',
-          onInit: (el, pswp) => {
-            el.innerHTML = `
+                // 错误处理
+                errorMsg: language === 'zh' ? '图片无法加载' : 'The image cannot be loaded',
+
+                // 移动端优化
+                pinchToClose: true, // 捏合手势关闭
+                closeOnVerticalDrag: true, // 垂直拖拽关闭
+                returnFocus: false, // 关闭后不返回焦点
+                padding: { top: 40, bottom: 40, left: 20, right: 20 },
+
+                // 预加载设置
+                preload: [1, 2],
+            });
+
+            // 监听关闭事件
+            lightbox.on('close', () => {
+                setIsOpen(false);
+                setImages([]);
+                setInitialIndex(0);
+            });
+
+            // 添加自定义UI元素
+            lightbox.on('uiRegister', () => {
+                // 添加图片计数器
+                lightbox.pswp.ui.registerElement({
+                    name: 'custom-counter',
+                    className: 'pswp__custom-counter',
+                    appendTo: 'top-bar',
+                    onInit: (el, pswp) => {
+                        const updateCounter = () => {
+                            el.textContent = `${pswp.currIndex + 1} / ${pswp.getNumItems()}`;
+                        };
+
+                        pswp.on('change', updateCounter);
+                        pswp.on('afterInit', updateCounter);
+                    },
+                });
+
+                // 添加下载按钮
+                lightbox.pswp.ui.registerElement({
+                    name: 'download-button',
+                    className: 'pswp__download-button',
+                    appendTo: 'bar',
+                    onInit: (el, pswp) => {
+                        el.innerHTML = `
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
                 <polyline points="7,10 12,15 17,10"/>
                 <line x1="12" y1="15" x2="12" y2="3"/>
               </svg>
             `;
-            el.title = language === 'zh' ? '下载图片' : 'Download image';
-            el.onclick = () => {
-              const currentItem = pswpItems[pswp.currIndex];
-              if (currentItem) {
-                const link = document.createElement('a');
-                link.href = currentItem.src;
-                link.download = `image_${pswp.currIndex + 1}.jpg`;
-                link.click();
-              }
-            };
-          }
-        });
-      });
+                        el.title = language === 'zh' ? '下载图片' : 'Download image';
+                        el.onclick = () => {
+                            const currentItem = pswpItems[pswp.currIndex];
+                            if (currentItem) {
+                                const link = document.createElement('a');
+                                link.href = currentItem.src;
+                                link.download = `image_${pswp.currIndex + 1}.jpg`;
+                                link.click();
+                            }
+                        };
+                    },
+                });
+            });
 
-      lightbox.init();
-      lightbox.loadAndOpen(index);
-      lightboxRef.current = lightbox;
+            lightbox.init();
+            lightbox.loadAndOpen(index);
+            lightboxRef.current = lightbox;
+        } catch (error) {
+            console.error('Error loading images for PhotoSwipe:', error);
+            setIsOpen(false);
+        }
+    };
 
-    } catch (error) {
-      console.error('Error loading images for PhotoSwipe:', error);
-      setIsOpen(false);
-    }
-  };
+    // 关闭PhotoSwipe
+    const closePhotoSwipe = () => {
+        if (lightboxRef.current) {
+            lightboxRef.current.close();
+        }
+    };
 
-  // 关闭PhotoSwipe
-  const closePhotoSwipe = () => {
-    if (lightboxRef.current) {
-      lightboxRef.current.close();
-    }
-  };
+    const contextValue = {
+        isOpen,
+        images,
+        initialIndex,
+        openPhotoSwipe,
+        closePhotoSwipe,
+    };
 
-  const contextValue = {
-    isOpen,
-    images,
-    initialIndex,
-    openPhotoSwipe,
-    closePhotoSwipe
-  };
+    return (
+        <PhotoSwipeContext.Provider value={contextValue}>
+            {children}
 
-  return (
-    <PhotoSwipeContext.Provider value={contextValue}>
-      {children}
-      
-      {/* 全局样式 */}
-      <style>{`
+            {/* 全局样式 */}
+            <style>{`
         .pswp__custom-counter {
           position: absolute;
           top: 20px;
@@ -390,53 +395,48 @@ export const PhotoSwipeProvider = ({ children, language = 'en' }) => {
           mask: radial-gradient(circle at center, transparent 40%, black 41%);
         }
       `}</style>
-    </PhotoSwipeContext.Provider>
-  );
+        </PhotoSwipeContext.Provider>
+    );
 };
 
 PhotoSwipeProvider.propTypes = {
-  children: PropTypes.node.isRequired,
-  language: PropTypes.string
+    children: PropTypes.node.isRequired,
+    language: PropTypes.string,
 };
 
 // 简单的PhotoSwipe触发组件
-export const PhotoSwipeImage = ({ 
-  src, 
-  alt, 
-  title, 
-  description, 
-  className = '',
-  children,
-  images = [] // 可选：如果是图片组的一部分
+export const PhotoSwipeImage = ({
+    src,
+    alt,
+    title,
+    description,
+    className = '',
+    children,
+    images = [], // 可选：如果是图片组的一部分
 }) => {
-  const { openPhotoSwipe } = usePhotoSwipe();
+    const { openPhotoSwipe } = usePhotoSwipe();
 
-  const handleClick = () => {
-    const imageList = images.length > 0 ? images : [{ src, alt, title, description }];
-    const index = images.length > 0 ? images.findIndex(img => img.src === src) : 0;
-    openPhotoSwipe(imageList, Math.max(0, index));
-  };
+    const handleClick = () => {
+        const imageList = images.length > 0 ? images : [{ src, alt, title, description }];
+        const index = images.length > 0 ? images.findIndex(img => img.src === src) : 0;
+        openPhotoSwipe(imageList, Math.max(0, index));
+    };
 
-  return (
-    <div className={`cursor-pointer ${className}`} onClick={handleClick}>
-      {children || (
-        <img 
-          src={src} 
-          alt={alt} 
-          title={title}
-          className="w-full h-full object-cover"
-        />
-      )}
-    </div>
-  );
+    return (
+        <div className={`cursor-pointer ${className}`} onClick={handleClick}>
+            {children || (
+                <img src={src} alt={alt} title={title} className="w-full h-full object-cover" />
+            )}
+        </div>
+    );
 };
 
 PhotoSwipeImage.propTypes = {
-  src: PropTypes.string.isRequired,
-  alt: PropTypes.string,
-  title: PropTypes.string,
-  description: PropTypes.string,
-  className: PropTypes.string,
-  children: PropTypes.node,
-  images: PropTypes.array
+    src: PropTypes.string.isRequired,
+    alt: PropTypes.string,
+    title: PropTypes.string,
+    description: PropTypes.string,
+    className: PropTypes.string,
+    children: PropTypes.node,
+    images: PropTypes.array,
 };

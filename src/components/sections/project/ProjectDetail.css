@@ -2,7 +2,8 @@
 
 /* 浮动动画 */
 @keyframes float {
-    0%, 100% {
+    0%,
+    100% {
         transform: translate(-50%, -50%) translateY(0px) scale(1);
     }
     50% {
@@ -12,7 +13,8 @@
 
 /* 脉冲效果 */
 @keyframes pulse-glow {
-    0%, 100% {
+    0%,
+    100% {
         box-shadow: 0 0 5px rgba(59, 130, 246, 0.3);
     }
     50% {
@@ -36,8 +38,10 @@
     inset: 0;
     border-radius: inherit;
     padding: 1px;
-    background: linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent);
-    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+    mask:
+        linear-gradient(#fff 0 0) content-box,
+        linear-gradient(#fff 0 0);
     mask-composite: exclude;
     pointer-events: none;
     opacity: 0;
@@ -90,12 +94,12 @@
         width: 4px;
         opacity: 0.6;
     }
-    
+
     .project-detail-container::-webkit-scrollbar-thumb {
         background: rgba(255, 255, 255, 0.4);
         border-radius: 2px;
     }
-    
+
     .project-detail-container::-webkit-scrollbar-track {
         background: rgba(0, 0, 0, 0.1);
         border-radius: 2px;

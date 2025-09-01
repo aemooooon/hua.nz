@@ -4,12 +4,8 @@ import { useAppStore } from '../../store/useAppStore';
 import { useTheme } from '../../hooks/useTheme';
 
 const ThemeLanguageToggle = () => {
-    const { 
-        language, 
-        toggleLanguage, 
-        getContent 
-    } = useAppStore();
-    
+    const { language, toggleLanguage, getContent } = useAppStore();
+
     const { toggleTheme, getCurrentTheme } = useTheme();
     const [isVisible, setIsVisible] = useState(false);
     const content = getContent();
@@ -21,7 +17,9 @@ const ThemeLanguageToggle = () => {
     }, []);
 
     return (
-        <div className={`fixed bottom-6 right-6 z-50 flex items-center space-x-3 transition-opacity duration-1000 ${isVisible ? 'opacity-100' : 'opacity-0'}`}>
+        <div
+            className={`fixed bottom-6 right-6 z-50 flex items-center space-x-3 transition-opacity duration-1000 ${isVisible ? 'opacity-100' : 'opacity-0'}`}
+        >
             {/* 语言切换 */}
             <button
                 onClick={toggleLanguage}

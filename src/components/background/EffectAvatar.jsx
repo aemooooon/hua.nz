@@ -1,26 +1,26 @@
-import { useEffect, useRef, useState, useCallback } from "react";
-import PropTypes from "prop-types";
-import { gsap } from "gsap";
-import CircularLoadingIndicator from "../ui/CircularLoadingIndicator";
-import OptimizedImage from "../ui/OptimizedImage";
-import webglResourceManager from "../../utils/WebGLResourceManager";
+import { useEffect, useRef, useState, useCallback } from 'react';
+import PropTypes from 'prop-types';
+import { gsap } from 'gsap';
+import CircularLoadingIndicator from '../ui/CircularLoadingIndicator';
+import OptimizedImage from '../ui/OptimizedImage';
+import webglResourceManager from '../../utils/WebGLResourceManager';
 
 /**
  * EffectAvatar - 高性能粒子动画头像效果组件
- * 
+ *
  * 核心功能：
  * - 粒子动画系统：Web Worker处理粒子计算，保持60fps流畅性能
  * - 智能图片优化：自动加载AVIF/WebP格式，提升加载速度
  * - 交互式体验：hover时显示清晰头像，平滑的动画过渡
  * - 响应式设计：自适应窗口大小变化，保持最佳显示效果
  * - 资源管理：自动清理内存和WebGL资源，避免内存泄漏
- * 
+ *
  * 技术亮点：
  * - Canvas 2D + Web Worker：分离渲染和计算，提升性能
  * - GSAP动画引擎：弹性动画效果，增强用户体验
  * - 图片格式优化：AVIF > WebP > JPEG，最大化压缩效果
  * - 内存优化：OffscreenCanvas + ImageBitmap高效图片处理
- * 
+ *
  * 适用场景：
  * - 个人网站头像展示
  * - 创意交互界面
@@ -41,7 +41,7 @@ const EffectAvatar = ({ imageSrc, hoverImageSrc }) => {
         if (!particles.length) return;
 
         // 重置所有粒子到12点钟方向的初始位置
-        particles.forEach((particle) => {
+        particles.forEach(particle => {
             gsap.set(particle, {
                 x1: particle.x0 + (Math.random() - 0.5) * 20, // 稍微随机化初始X位置
                 y1: -50 - Math.random() * 30, // 从12点钟方向更上方开始
@@ -49,13 +49,13 @@ const EffectAvatar = ({ imageSrc, hoverImageSrc }) => {
         });
 
         // 粒子从12点钟方向散开到目标位置的动画
-        particles.forEach((particle) => {
+        particles.forEach(particle => {
             gsap.to(particle, {
                 duration: particle.speed,
                 x1: particle.x0,
                 y1: particle.y0,
                 delay: particle.y0 / 200 + Math.random() * 0.3, // 增加随机延迟让动画更自然
-                ease: "elastic.out(1, 0.5)",
+                ease: 'elastic.out(1, 0.5)',
             });
         });
     }, []);
@@ -63,9 +63,11 @@ const EffectAvatar = ({ imageSrc, hoverImageSrc }) => {
     // 初始化 Web Worker 并设置粒子动画
     useEffect(() => {
         // 创建 Web Worker 处理粒子计算，避免阻塞主线程
-        workerRef.current = new Worker(new URL("../../workers/particleWorker.js?worker", import.meta.url));
-        
-        workerRef.current.onmessage = (event) => {
+        workerRef.current = new Worker(
+            new URL('../../workers/particleWorker.js?worker', import.meta.url)
+        );
+
+        workerRef.current.onmessage = event => {
             const particles = event.data;
             particlesRef.current = particles;
             // 触发初始粒子散开动画
@@ -84,11 +86,11 @@ const EffectAvatar = ({ imageSrc, hoverImageSrc }) => {
     useEffect(() => {
         const png = new Image();
         let resourceId = null; // 用于跟踪资源ID
-        
+
         png.onload = () => {
             const canvas = canvasRef.current;
             if (!canvas) return;
-            
+
             // 设置 Canvas 内部分辨率为图片尺寸的2倍，提供更清晰的渲染
             canvas.width = png.width * 2;
             canvas.height = png.height * 2;
@@ -96,37 +98,41 @@ const EffectAvatar = ({ imageSrc, hoverImageSrc }) => {
 
             // 使用 OffscreenCanvas 提高性能
             const offscreen = new OffscreenCanvas(png.width, png.height);
-            const offscreenCtx = offscreen.getContext("2d");
+            const offscreenCtx = offscreen.getContext('2d');
             offscreenCtx.drawImage(png, 0, 0);
 
             const imageBitmap = offscreen.transferToImageBitmap();
             if (workerRef.current) {
                 workerRef.current.postMessage(
-                    { imageBitmap, width: png.width, height: png.height }, 
+                    { imageBitmap, width: png.width, height: png.height },
                     [imageBitmap]
                 );
             }
-            
+
             // 注册Canvas 2D资源到WebGL资源管理器
             // 这样About section会显示额外的资源组
-            const ctx = canvas.getContext("2d");
-            resourceId = webglResourceManager.registerResources('EffectAvatar_about', {
-                canvas: canvas,
-                context2d: ctx,
-                worker: workerRef.current,
-                offscreenCanvas: offscreen
-            }, { persistent: false });
-            
+            const ctx = canvas.getContext('2d');
+            resourceId = webglResourceManager.registerResources(
+                'EffectAvatar_about',
+                {
+                    canvas: canvas,
+                    context2d: ctx,
+                    worker: workerRef.current,
+                    offscreenCanvas: offscreen,
+                },
+                { persistent: false }
+            );
+
             setIsLoading(false);
         };
-        
+
         png.onerror = () => {
             console.warn('EffectAvatar: 图片加载失败:', imageSrc);
             setIsLoading(false);
         };
-        
+
         png.src = imageSrc;
-        
+
         // 清理函数
         return () => {
             if (resourceId) {
@@ -139,32 +145,32 @@ const EffectAvatar = ({ imageSrc, hoverImageSrc }) => {
     useEffect(() => {
         const canvas = canvasRef.current;
         if (!canvas) return;
-        
-        const ctx = canvas.getContext("2d", { 
+
+        const ctx = canvas.getContext('2d', {
             willReadFrequently: true,
-            alpha: false // 禁用透明度通道提升性能
+            alpha: false, // 禁用透明度通道提升性能
         });
-        
+
         let animationFrameId;
 
         const render = () => {
             // 使用更高效的清除方法
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            
+
             // 批量渲染粒子，减少 draw call
             const particles = particlesRef.current;
             if (particles.length > 0) {
-                particles.forEach((particle) => {
+                particles.forEach(particle => {
                     ctx.fillStyle = particle.color;
                     ctx.fillRect(particle.x1 * 2, particle.y1 * 2, 2, 2);
                 });
             }
-            
+
             animationFrameId = requestAnimationFrame(render);
         };
 
         animationFrameId = requestAnimationFrame(render);
-        
+
         // 清理动画循环
         return () => {
             if (animationFrameId) {
@@ -176,7 +182,7 @@ const EffectAvatar = ({ imageSrc, hoverImageSrc }) => {
     // 响应式窗口缩放处理（性能优化版）
     useEffect(() => {
         let resizeTimeout;
-        
+
         const handleResize = () => {
             const canvas = canvasRef.current;
             if (!canvas) return;
@@ -186,7 +192,7 @@ const EffectAvatar = ({ imageSrc, hoverImageSrc }) => {
             resizeTimeout = setTimeout(() => {
                 const parent = canvas.parentElement;
                 if (!parent) return;
-                
+
                 const { clientWidth: parentWidth, clientHeight: parentHeight } = parent;
 
                 // 根据宽高比计算最优显示尺寸
@@ -202,7 +208,7 @@ const EffectAvatar = ({ imageSrc, hoverImageSrc }) => {
                 // 恢复原来的设置方式，不改变transform，只设置CSS尺寸
                 canvas.style.width = `${newWidth}px`;
                 canvas.style.height = `${newHeight}px`;
-                
+
                 // Canvas内部分辨率保持不变，与原始图片尺寸一致
             }, 150);
         };
@@ -210,7 +216,7 @@ const EffectAvatar = ({ imageSrc, hoverImageSrc }) => {
         // 使用 ResizeObserver API 替代 window resize 事件，更精确且性能更好
         const resizeObserver = new ResizeObserver(handleResize);
         const parentElement = canvasRef.current?.parentElement;
-        
+
         if (parentElement) {
             resizeObserver.observe(parentElement);
         }
@@ -226,32 +232,32 @@ const EffectAvatar = ({ imageSrc, hoverImageSrc }) => {
     // 鼠标悬停显示清晰头像（优化版）
     const handleMouseEnter = useCallback(() => {
         setIsHovered(true);
-        
+
         // 控制Canvas淡出
         const canvas = canvasRef.current;
         if (canvas) {
             gsap.to(canvas, {
                 opacity: 0.1,
                 duration: 0.3,
-                ease: "power2.out"
+                ease: 'power2.out',
             });
         }
-        
+
         const hoverContainer = hoverImgRef.current?.parentElement;
         if (hoverContainer) {
             // 停止冲突的动画，避免性能浪费
             gsap.killTweensOf(hoverContainer);
             gsap.fromTo(
                 hoverContainer,
-                { 
-                    opacity: 0, 
-                    transform: "translate(-50%, -50%) scale(0.9)"
+                {
+                    opacity: 0,
+                    transform: 'translate(-50%, -50%) scale(0.9)',
                 },
-                { 
-                    opacity: 1, 
-                    transform: "translate(-50%, -50%) scale(1.0)",
-                    duration: 0.8, 
-                    ease: "elastic.out"
+                {
+                    opacity: 1,
+                    transform: 'translate(-50%, -50%) scale(1.0)',
+                    duration: 0.8,
+                    ease: 'elastic.out',
                 }
             );
         }
@@ -264,29 +270,29 @@ const EffectAvatar = ({ imageSrc, hoverImageSrc }) => {
     const handleMouseLeave = useCallback(() => {
         // 立即设置状态，让Canvas开始显示粒子动画
         setIsHovered(false);
-        
+
         // 控制Canvas淡入
         const canvas = canvasRef.current;
         if (canvas) {
             gsap.to(canvas, {
                 opacity: 0.85,
                 duration: 0.5,
-                ease: "power2.out"
+                ease: 'power2.out',
             });
         }
-        
+
         const hoverContainer = hoverImgRef.current?.parentElement;
         if (hoverContainer) {
             gsap.killTweensOf(hoverContainer);
             gsap.to(hoverContainer, {
                 opacity: 0,
-                transform: "translate(-50%, -50%) scale(0.9)",
+                transform: 'translate(-50%, -50%) scale(0.9)',
                 duration: 0.8,
-                ease: "elastic.out",
+                ease: 'elastic.out',
                 onComplete: () => {
                     // 鼠标离开时重新触发粒子散开动画
                     setTimeout(animateParticles, 100);
-                }
+                },
             });
         }
     }, [animateParticles]);
@@ -295,14 +301,14 @@ const EffectAvatar = ({ imageSrc, hoverImageSrc }) => {
     useEffect(() => {
         const currentHoverImg = hoverImgRef.current;
         const currentParticles = particlesRef.current;
-        
+
         return () => {
             // 清理所有 GSAP 动画
             const hoverContainer = currentHoverImg?.parentElement;
             if (hoverContainer) {
                 gsap.killTweensOf(hoverContainer);
             }
-            
+
             // 清理粒子动画
             if (currentParticles) {
                 currentParticles.forEach(particle => {
@@ -314,11 +320,11 @@ const EffectAvatar = ({ imageSrc, hoverImageSrc }) => {
 
     return (
         <div
-            style={{ 
-                position: "relative", 
-                width: "100%", 
-                height: "100%", 
-                zIndex: 3 // 降低z-index，让雷达扫描效果可以从背后透出
+            style={{
+                position: 'relative',
+                width: '100%',
+                height: '100%',
+                zIndex: 3, // 降低z-index，让雷达扫描效果可以从背后透出
             }}
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
@@ -334,48 +340,48 @@ const EffectAvatar = ({ imageSrc, hoverImageSrc }) => {
                     />
                 </div>
             )}
-            
+
             {/* 粒子动画 Canvas */}
             <canvas
                 ref={canvasRef}
                 style={{
-                    width: "100%",
-                    height: "100%",
-                    cursor: "pointer",
-                    objectFit: "cover",
-                    position: "absolute",
-                    top: "50%",
-                    left: "50%",
-                    transform: "translate(-50%, -30%) scale(1.5)",
+                    width: '100%',
+                    height: '100%',
+                    cursor: 'pointer',
+                    objectFit: 'cover',
+                    position: 'absolute',
+                    top: '50%',
+                    left: '50%',
+                    transform: 'translate(-50%, -30%) scale(1.5)',
                     opacity: isLoading ? 0 : 0.85, // 移除isHovered控制，让GSAP处理
                     // 移除transition，让GSAP完全控制动画
                     zIndex: 1, // 确保粒子在雷达扫描效果上方，但不会完全挡住
                     // 优化 Canvas 渲染性能
-                    imageRendering: "auto"
+                    imageRendering: 'auto',
                 }}
             />
 
             {/* 清晰头像显示容器 */}
             <div
                 style={{
-                    position: "absolute",
-                    top: "50%",
-                    left: "50%",
-                    transform: "translate(-50%, -50%)",
-                    width: "100%",
-                    height: "100%",
-                    borderRadius: "50%",
-                    overflow: "hidden",
+                    position: 'absolute',
+                    top: '50%',
+                    left: '50%',
+                    transform: 'translate(-50%, -50%)',
+                    width: '100%',
+                    height: '100%',
+                    borderRadius: '50%',
+                    overflow: 'hidden',
                     opacity: isHovered ? 1 : 0,
-                    visibility: isHovered ? "visible" : "hidden",
-                    transition: "opacity 0.5s ease, visibility 0.5s ease",
-                    pointerEvents: "none",
+                    visibility: isHovered ? 'visible' : 'hidden',
+                    transition: 'opacity 0.5s ease, visibility 0.5s ease',
+                    pointerEvents: 'none',
                     zIndex: 2,
                     // iOS Safari 兼容性修复
-                    WebkitBorderRadius: "50%",
-                    WebkitMaskImage: "radial-gradient(circle, white 100%, black 100%)",
+                    WebkitBorderRadius: '50%',
+                    WebkitMaskImage: 'radial-gradient(circle, white 100%, black 100%)',
                     // 性能优化：只在需要时启用 GPU 加速
-                    willChange: isHovered ? "opacity, transform" : "auto"
+                    willChange: isHovered ? 'opacity, transform' : 'auto',
                 }}
             >
                 <OptimizedImage
@@ -383,18 +389,18 @@ const EffectAvatar = ({ imageSrc, hoverImageSrc }) => {
                     src={hoverImageSrc}
                     alt="清晰头像"
                     style={{
-                        position: "absolute",
-                        top: "50%",
-                        left: "50%",
-                        transform: "translate(-50%, -50%)",
-                        width: "100%",
-                        height: "100%",
-                        objectFit: "cover",
-                        pointerEvents: "none",
-                        borderRadius: "50%", // iOS Safari 兼容性修复
-                        WebkitBorderRadius: "50%", // iOS Safari 兼容性修复
+                        position: 'absolute',
+                        top: '50%',
+                        left: '50%',
+                        transform: 'translate(-50%, -50%)',
+                        width: '100%',
+                        height: '100%',
+                        objectFit: 'cover',
+                        pointerEvents: 'none',
+                        borderRadius: '50%', // iOS Safari 兼容性修复
+                        WebkitBorderRadius: '50%', // iOS Safari 兼容性修复
                         // 图片渲染优化
-                        imageRendering: "auto"
+                        imageRendering: 'auto',
                     }}
                     loading="lazy" // 懒加载优化
                     decoding="async" // 异步解码提升性能

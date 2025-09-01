@@ -1,48 +1,50 @@
-import webglResourceManager from "../../utils/WebGLResourceManager";
+import webglResourceManager from '../../utils/WebGLResourceManager';
 
 export class EffectFuse {
     constructor(canvas, params = {}, componentId = 'BackgroundCanvas') {
-
         this.canvas = canvas;
         this.componentId = componentId;
         this.componentId = componentId;
         this.gl = this.canvas.getContext('webgl') || this.canvas.getContext('experimental-webgl');
-        
+
         if (!this.gl) {
             console.error('EffectFuse: Unable to get WebGL context');
             throw new Error('WebGL not supported');
         }
-        
+
         // 注册WebGL资源（原生WebGL上下文）- 使用传入的componentId，标记为持久资源
-        this.resourceId = webglResourceManager.registerResources(this.componentId, {
-            gl: this.gl,
-            canvas: this.canvas
-        }, { 
-            persistent: true // 🔧 标记为持久资源，防止自动清理背景效果
-        });
-        
+        this.resourceId = webglResourceManager.registerResources(
+            this.componentId,
+            {
+                gl: this.gl,
+                canvas: this.canvas,
+            },
+            {
+                persistent: true, // 🔧 标记为持久资源，防止自动清理背景效果
+            }
+        );
+
         // 设置默认参数 - 平衡粒子大小和可见性
         this.params = {
-            brightness: 1.8,    // 原始亮度值
-            blobiness: 1.3,     // 适中的粘性值，平衡均匀性和可见性 (1.2 -> 1.3)
-            particles: 16,      // 增加粒子数量从10到16
+            brightness: 1.8, // 原始亮度值
+            blobiness: 1.3, // 适中的粘性值，平衡均匀性和可见性 (1.2 -> 1.3)
+            particles: 16, // 增加粒子数量从10到16
             scanlines: false,
-            energy: 1.25,       // 原始能量值
-            timeScale: 1.1,     // 原始时间缩放
-            ...params
+            energy: 1.25, // 原始能量值
+            timeScale: 1.1, // 原始时间缩放
+            ...params,
         };
-        
+
         this.program = null;
         this.animationFrameId = null;
         this.startTime = performance.now();
         this.uniformLocations = {};
-        
+
         // 获取主题颜色
         this.themeColors = this.getThemeColors();
-        
+
         try {
             this.initGL();
-
         } catch (error) {
             console.error('EffectFuse: Failed to initialize WebGL', error);
             throw error;
@@ -54,10 +56,10 @@ export class EffectFuse {
             console.error('WebGL not supported.');
             return;
         }
-        
+
         // 设置视口
         this.gl.viewport(0, 0, this.canvas.width, this.canvas.height);
-        
+
         this.gl.getExtension('OES_texture_float');
 
         const vertexShaderSource = `
@@ -330,14 +332,11 @@ export class EffectFuse {
     setupBuffers() {
         this.positionBuffer = this.gl.createBuffer();
         this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.positionBuffer);
-        this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array([
-            -1.0, -1.0,
-            1.0, -1.0,
-            -1.0, 1.0,
-            -1.0, 1.0,
-            1.0, -1.0,
-            1.0, 1.0,
-        ]), this.gl.STATIC_DRAW);
+        this.gl.bufferData(
+            this.gl.ARRAY_BUFFER,
+            new Float32Array([-1.0, -1.0, 1.0, -1.0, -1.0, 1.0, -1.0, 1.0, 1.0, -1.0, 1.0, 1.0]),
+            this.gl.STATIC_DRAW
+        );
 
         const positionAttributeLocation = this.gl.getAttribLocation(this.program, 'a_position');
         this.gl.enableVertexAttribArray(positionAttributeLocation);
@@ -346,7 +345,6 @@ export class EffectFuse {
     }
 
     start() {
-        
         this.startTime = performance.now();
         this.gl.viewport(0, 0, this.canvas.width, this.canvas.height);
         this.gl.clearColor(0.0, 0.0, 0.0, 1.0);
@@ -378,7 +376,7 @@ export class EffectFuse {
                     this.gl.deleteBuffer(this.positionBuffer);
                     this.positionBuffer = null;
                 }
-                
+
                 // 不强制丢失上下文，让它自然清理
             } catch (error) {
                 console.error('Error cleaning up WebGL resources:', error);
@@ -408,7 +406,7 @@ export class EffectFuse {
 
     render() {
         if (!this.gl || !this.program || !this.params) return;
-        
+
         this.animationFrameId = requestAnimationFrame(this.render.bind(this));
 
         const currentTime = performance.now();
@@ -419,7 +417,11 @@ export class EffectFuse {
 
         // 确保所有uniform location存在
         if (this.uniformLocations.resolution) {
-            this.gl.uniform2f(this.uniformLocations.resolution, this.canvas.width, this.canvas.height);
+            this.gl.uniform2f(
+                this.uniformLocations.resolution,
+                this.canvas.width,
+                this.canvas.height
+            );
         }
         if (this.uniformLocations.brightness) {
             this.gl.uniform1f(this.uniformLocations.brightness, this.params.brightness || 15000);
@@ -442,72 +444,95 @@ export class EffectFuse {
         if (this.uniformLocations.timeScale) {
             this.gl.uniform1f(this.uniformLocations.timeScale, this.params.timeScale || 0.5);
         }
-        
+
         // 设置主题颜色 uniforms
         if (this.uniformLocations.themePrimary && this.themeColors) {
-            this.gl.uniform3f(this.uniformLocations.themePrimary, 
-                this.themeColors.primary.r, this.themeColors.primary.g, this.themeColors.primary.b);
+            this.gl.uniform3f(
+                this.uniformLocations.themePrimary,
+                this.themeColors.primary.r,
+                this.themeColors.primary.g,
+                this.themeColors.primary.b
+            );
         }
         if (this.uniformLocations.themeSecondary && this.themeColors) {
-            this.gl.uniform3f(this.uniformLocations.themeSecondary, 
-                this.themeColors.secondary.r, this.themeColors.secondary.g, this.themeColors.secondary.b);
+            this.gl.uniform3f(
+                this.uniformLocations.themeSecondary,
+                this.themeColors.secondary.r,
+                this.themeColors.secondary.g,
+                this.themeColors.secondary.b
+            );
         }
         if (this.uniformLocations.themeAccent && this.themeColors) {
-            this.gl.uniform3f(this.uniformLocations.themeAccent, 
-                this.themeColors.accent.r, this.themeColors.accent.g, this.themeColors.accent.b);
+            this.gl.uniform3f(
+                this.uniformLocations.themeAccent,
+                this.themeColors.accent.r,
+                this.themeColors.accent.g,
+                this.themeColors.accent.b
+            );
         }
         if (this.uniformLocations.themeDarkBlue && this.themeColors) {
-            this.gl.uniform3f(this.uniformLocations.themeDarkBlue, 
-                this.themeColors.darkBlue.r, this.themeColors.darkBlue.g, this.themeColors.darkBlue.b);
+            this.gl.uniform3f(
+                this.uniformLocations.themeDarkBlue,
+                this.themeColors.darkBlue.r,
+                this.themeColors.darkBlue.g,
+                this.themeColors.darkBlue.b
+            );
         }
         if (this.uniformLocations.themeProjectBlue && this.themeColors) {
-            this.gl.uniform3f(this.uniformLocations.themeProjectBlue, 
-                this.themeColors.projectBlue.r, this.themeColors.projectBlue.g, this.themeColors.projectBlue.b);
+            this.gl.uniform3f(
+                this.uniformLocations.themeProjectBlue,
+                this.themeColors.projectBlue.r,
+                this.themeColors.projectBlue.g,
+                this.themeColors.projectBlue.b
+            );
         }
 
         this.gl.drawArrays(this.gl.TRIANGLES, 0, 6);
     }
-    
+
     getThemeColors() {
         // 从CSS自定义属性获取主题颜色
         const rootStyles = getComputedStyle(document.documentElement);
-        
+
         // 辅助函数：将十六进制颜色转换为归一化的RGB值
-        const hexToRgb = (hex) => {
+        const hexToRgb = hex => {
             const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-            return result ? {
-                r: parseInt(result[1], 16) / 255,
-                g: parseInt(result[2], 16) / 255,
-                b: parseInt(result[3], 16) / 255
-            } : {r: 0, g: 1, b: 1}; // 默认青色
+            return result
+                ? {
+                      r: parseInt(result[1], 16) / 255,
+                      g: parseInt(result[2], 16) / 255,
+                      b: parseInt(result[3], 16) / 255,
+                  }
+                : { r: 0, g: 1, b: 1 }; // 默认青色
         };
-        
+
         try {
             // 获取CSS变量
             const primaryColor = rootStyles.getPropertyValue('--theme-primary').trim() || '#00ffff';
-            const secondaryColor = rootStyles.getPropertyValue('--theme-secondary').trim() || '#0080ff';
+            const secondaryColor =
+                rootStyles.getPropertyValue('--theme-secondary').trim() || '#0080ff';
             const accentColor = rootStyles.getPropertyValue('--theme-accent').trim() || '#4dd0e1';
-            
+
             // 添加深色系颜色
-            const darkBlueColor = '#0A0A0F';       // 深蓝黑背景色
-            const projectBlueColor = '#1E40AF';    // 项目页面使用的深蓝色
-            
+            const darkBlueColor = '#0A0A0F'; // 深蓝黑背景色
+            const projectBlueColor = '#1E40AF'; // 项目页面使用的深蓝色
+
             return {
                 primary: hexToRgb(primaryColor),
                 secondary: hexToRgb(secondaryColor),
                 accent: hexToRgb(accentColor),
                 darkBlue: hexToRgb(darkBlueColor),
-                projectBlue: hexToRgb(projectBlueColor)
+                projectBlue: hexToRgb(projectBlueColor),
             };
         } catch (error) {
             console.warn('Failed to get theme colors, using defaults:', error);
             // 返回默认颜色（归一化的RGB值）
             return {
-                primary: {r: 0, g: 1, b: 1},         // #00ffff
-                secondary: {r: 0, g: 0.5, b: 1},     // #0080ff 
-                accent: {r: 0.3, g: 0.82, b: 0.88},  // #4dd0e1
-                darkBlue: {r: 0.04, g: 0.04, b: 0.06}, // #0A0A0F
-                projectBlue: {r: 0.12, g: 0.25, b: 0.69} // #1E40AF
+                primary: { r: 0, g: 1, b: 1 }, // #00ffff
+                secondary: { r: 0, g: 0.5, b: 1 }, // #0080ff
+                accent: { r: 0.3, g: 0.82, b: 0.88 }, // #4dd0e1
+                darkBlue: { r: 0.04, g: 0.04, b: 0.06 }, // #0A0A0F
+                projectBlue: { r: 0.12, g: 0.25, b: 0.69 }, // #1E40AF
             };
         }
     }

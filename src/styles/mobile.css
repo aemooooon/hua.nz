@@ -11,27 +11,32 @@
         -webkit-user-select: none;
         user-select: none;
     }
-    
+
     /* 允许文本选择的元素 */
-    p, span, div[class*="text"], .selectable {
+    p,
+    span,
+    div[class*='text'],
+    .selectable {
         -webkit-user-select: text;
         user-select: text;
     }
-    
+
     /* 按钮和交互元素的触摸优化 */
-    button, a, [role="button"] {
+    button,
+    a,
+    [role='button'] {
         min-height: 44px; /* Apple推荐的最小触摸目标尺寸 */
         min-width: 44px;
         -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
         cursor: pointer;
     }
-    
+
     /* 移动端容器安全区域适配 */
     .mobile-container {
         padding-left: max(1rem, env(safe-area-inset-left));
         padding-right: max(1rem, env(safe-area-inset-right));
     }
-    
+
     /* 移动端全屏容器 */
     .mobile-fullscreen {
         height: 100vh;
@@ -39,59 +44,59 @@
         width: 100vw;
         width: 100dvw;
     }
-    
+
     /* 移动端底部安全区域 */
     .mobile-bottom-content {
         padding-bottom: max(1rem, env(safe-area-inset-bottom) + 1rem);
         margin-bottom: env(safe-area-inset-bottom);
     }
-    
+
     /* 移动端顶部安全区域 */
     .mobile-top-content {
         padding-top: max(1rem, env(safe-area-inset-top) + 1rem);
         margin-top: env(safe-area-inset-top);
     }
-    
+
     /* 移动端固定定位元素 */
     .mobile-fixed-bottom {
         position: fixed;
         bottom: max(1rem, env(safe-area-inset-bottom) + 0.5rem);
         z-index: 1000;
     }
-    
+
     .mobile-fixed-top {
         position: fixed;
         top: max(1rem, env(safe-area-inset-top) + 0.5rem);
         z-index: 1000;
     }
-    
+
     /* 移动端滚动优化 */
     .mobile-scroll {
         -webkit-overflow-scrolling: touch;
         overflow-scrolling: touch;
         scroll-behavior: smooth;
     }
-    
+
     /* 首页特殊处理 */
     .home-section {
         height: calc(100vh - env(safe-area-inset-top) - env(safe-area-inset-bottom));
         height: calc(100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom));
     }
-    
+
     /* 首页标语位置调整 */
     .home-slogan {
         bottom: max(4rem, env(safe-area-inset-bottom) + 3rem);
     }
-    
+
     /* 首页控制按钮位置调整 */
     .home-controls {
         bottom: max(1.5rem, env(safe-area-inset-bottom) + 1rem);
     }
-    
+
     .home-controls.left {
         left: max(1.5rem, env(safe-area-inset-left) + 1rem);
     }
-    
+
     .home-controls.right {
         right: max(1.5rem, env(safe-area-inset-right) + 1rem);
     }
@@ -103,12 +108,12 @@
         bottom: max(3rem, env(safe-area-inset-bottom) + 2rem);
         font-size: 0.875rem; /* 14px */
     }
-    
+
     .home-controls button {
         width: 2.5rem; /* 40px */
         height: 2.5rem; /* 40px */
     }
-    
+
     .home-controls {
         bottom: max(1rem, env(safe-area-inset-bottom) + 0.5rem);
     }
@@ -121,7 +126,7 @@
         height: 100vh;
         height: -webkit-fill-available;
     }
-    
+
     /* iOS弹性滚动 */
     .ios-scroll {
         -webkit-overflow-scrolling: touch;
@@ -134,11 +139,11 @@
         bottom: max(2rem, env(safe-area-inset-bottom) + 1rem);
         font-size: 0.875rem; /* 更小的字体适应横屏 */
     }
-    
+
     .home-controls {
         bottom: max(1rem, env(safe-area-inset-bottom) + 0.5rem);
     }
-    
+
     .home-controls button {
         width: 2.5rem;
         height: 2.5rem;

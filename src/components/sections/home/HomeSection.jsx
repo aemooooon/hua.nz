@@ -9,10 +9,10 @@ import Tooltip from '../../ui/Tooltip';
 import { ThemeTitle, ThemeSubtitle } from '../../ui/ThemeComponents';
 import '../../../styles/OpeningAnimations.css';
 
-const HomeSection = ({ 
-    language, 
+const HomeSection = ({
+    language,
     // 开场动画相关属性
-    enableOpeningAnimation = false
+    enableOpeningAnimation = false,
 }) => {
     const { getContent, toggleLanguage } = useAppStore();
     const content = getContent();
@@ -30,7 +30,7 @@ const HomeSection = ({
         const preloadTimer = setTimeout(() => {
             setCubeLoading(true);
         }, 400);
-        
+
         const showTimer = setTimeout(() => {
             setShowCube(true);
         }, 600);
@@ -39,7 +39,7 @@ const HomeSection = ({
         const toggleButtonTimer = setTimeout(() => {
             setShowToggleButtons(true);
         }, 2000); // Show after 2 seconds
-        
+
         return () => {
             clearTimeout(preloadTimer);
             clearTimeout(showTimer);
@@ -54,53 +54,73 @@ const HomeSection = ({
     }, []);
 
     return (
-        <div className="w-screen overflow-hidden" 
-             style={{ 
-                 margin: 0, 
-                 padding: 0, 
-                 background: 'transparent',
-                 height: '100vh',
-                 minHeight: '100dvh' // 动态视口高度确保在移动端正确显示
-             }}>
+        <div
+            className="w-screen overflow-hidden"
+            style={{
+                margin: 0,
+                padding: 0,
+                background: 'transparent',
+                height: '100vh',
+                minHeight: '100dvh', // 动态视口高度确保在移动端正确显示
+            }}
+        >
             {/* 主内容优先渲染 */}
-            <div className={`absolute top-8 left-1/2 transform -translate-x-1/2 text-center text-white z-50 w-full px-4 ${
-                enableOpeningAnimation ? 'grand-title-entrance' : ''
-            }`} style={!enableOpeningAnimation ? {
-                animation: 'movieTitleEntrance 2s ease-out forwards 0.3s', // 缩短动画时间和延迟
-                animationFillMode: 'both'
-            } : {}}>
+            <div
+                className={`absolute top-8 left-1/2 transform -translate-x-1/2 text-center text-white z-50 w-full px-4 ${
+                    enableOpeningAnimation ? 'grand-title-entrance' : ''
+                }`}
+                style={
+                    !enableOpeningAnimation
+                        ? {
+                              animation: 'movieTitleEntrance 2s ease-out forwards 0.3s', // 缩短动画时间和延迟
+                              animationFillMode: 'both',
+                          }
+                        : {}
+                }
+            >
                 <div className="flex flex-col items-center justify-center w-full relative">
                     {/* 姓名 */}
-                    <ThemeTitle level={1} className={`text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold font-beauRivage hover:text-theme-primary transition-colors duration-300 mb-2 sm:mb-4 leading-tight text-center w-full mt-12 ${
-                        enableOpeningAnimation ? 'shimmer-text' : ''
-                    }`}>
+                    <ThemeTitle
+                        level={1}
+                        className={`text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold font-beauRivage hover:text-theme-primary transition-colors duration-300 mb-2 sm:mb-4 leading-tight text-center w-full mt-12 ${
+                            enableOpeningAnimation ? 'shimmer-text' : ''
+                        }`}
+                    >
                         {content.home.name}
                     </ThemeTitle>
                     {/* Title - 绝对定位强制居中 */}
-                    <ThemeSubtitle className={`text-lg sm:text-xl md:text-2xl lg:text-3xl font-mono text-theme-accent mt-48 ${
-                        enableOpeningAnimation ? 'grand-subtitle-entrance' : ''
-                    }`} style={{ 
-                        position: 'absolute',
-                        left: '50%',
-                        transform: 'translateX(-50%)',
-                        width: 'max-content',
-                        whiteSpace: 'nowrap'
-                    }}>
+                    <ThemeSubtitle
+                        className={`text-lg sm:text-xl md:text-2xl lg:text-3xl font-mono text-theme-accent mt-48 ${
+                            enableOpeningAnimation ? 'grand-subtitle-entrance' : ''
+                        }`}
+                        style={{
+                            position: 'absolute',
+                            left: '50%',
+                            transform: 'translateX(-50%)',
+                            width: 'max-content',
+                            whiteSpace: 'nowrap',
+                        }}
+                    >
                         {content.home.title}
                     </ThemeSubtitle>
                 </div>
             </div>
 
             {/* Slogan - 屏幕下方 */}
-            <div className={`absolute left-1/2 transform -translate-x-1/2 text-center z-50 w-full px-4 ${
-                enableOpeningAnimation ? 'grand-slogan-entrance' : ''
-            }`} style={{
-                bottom: 'max(4rem, env(safe-area-inset-bottom) + 3rem)', // 使用安全区域，确保在所有设备上都可见
-                ...(!enableOpeningAnimation ? {
-                    animation: 'sloganEntrance 1.5s ease-out forwards 2s', // 缩短动画时间和延迟
-                    animationFillMode: 'both'
-                } : {})
-            }}>
+            <div
+                className={`absolute left-1/2 transform -translate-x-1/2 text-center z-50 w-full px-4 ${
+                    enableOpeningAnimation ? 'grand-slogan-entrance' : ''
+                }`}
+                style={{
+                    bottom: 'max(4rem, env(safe-area-inset-bottom) + 3rem)', // 使用安全区域，确保在所有设备上都可见
+                    ...(!enableOpeningAnimation
+                        ? {
+                              animation: 'sloganEntrance 1.5s ease-out forwards 2s', // 缩短动画时间和延迟
+                              animationFillMode: 'both',
+                          }
+                        : {}),
+                }}
+            >
                 <div className="text-center">
                     <p className="text-base sm:text-lg md:text-xl lg:text-2xl font-light text-theme-primary tracking-wider leading-relaxed transition-colors duration-300">
                         {content.home.slogan}
@@ -110,16 +130,12 @@ const HomeSection = ({
 
             {/* Loading效果 - 使用统一的加载组件 */}
             {cubeLoading && !cubeReady && (
-                <CircularLoadingIndicator
-                    size={160}
-                    strokeWidth={12}
-                    showMask={true}
-                />
+                <CircularLoadingIndicator size={160} strokeWidth={12} showMask={true} />
             )}
 
             {/* Cube延迟加载 */}
             {showCube && (
-                <HeroCube 
+                <HeroCube
                     enableOpeningAnimation={enableOpeningAnimation}
                     onReady={handleCubeReady}
                 />
@@ -129,12 +145,15 @@ const HomeSection = ({
             {showToggleButtons && (
                 <>
                     {/* Language Toggle - 左下角 */}
-                    <div className="absolute z-50 transition-opacity duration-1000 opacity-100" style={{
-                        bottom: 'max(1.5rem, env(safe-area-inset-bottom) + 1rem)',
-                        left: 'max(1.5rem, env(safe-area-inset-left) + 1rem)'
-                    }}>
-                        <Tooltip 
-                            content={language === 'en' ? 'English' : '中文'} 
+                    <div
+                        className="absolute z-50 transition-opacity duration-1000 opacity-100"
+                        style={{
+                            bottom: 'max(1.5rem, env(safe-area-inset-bottom) + 1rem)',
+                            left: 'max(1.5rem, env(safe-area-inset-left) + 1rem)',
+                        }}
+                    >
+                        <Tooltip
+                            content={language === 'en' ? 'English' : '中文'}
                             placement="top"
                             delay={200}
                         >
@@ -149,12 +168,17 @@ const HomeSection = ({
                     </div>
 
                     {/* Theme Toggle - 右下角 */}
-                    <div className="absolute z-50 transition-opacity duration-1000 opacity-100" style={{
-                        bottom: 'max(1.5rem, env(safe-area-inset-bottom) + 1rem)',
-                        right: 'max(1.5rem, env(safe-area-inset-right) + 1rem)'
-                    }}>
-                        <Tooltip 
-                            content={currentThemeConfig.name[language] || currentThemeConfig.name.en} 
+                    <div
+                        className="absolute z-50 transition-opacity duration-1000 opacity-100"
+                        style={{
+                            bottom: 'max(1.5rem, env(safe-area-inset-bottom) + 1rem)',
+                            right: 'max(1.5rem, env(safe-area-inset-right) + 1rem)',
+                        }}
+                    >
+                        <Tooltip
+                            content={
+                                currentThemeConfig.name[language] || currentThemeConfig.name.en
+                            }
                             placement="left"
                             delay={200}
                         >
@@ -169,11 +193,14 @@ const HomeSection = ({
                     </div>
 
                     {/* Mobile Scroll Hint - 移动端滚动提示 (只在移动端和窄屏显示) */}
-                    <div className={`absolute z-50 transition-opacity duration-1000 md:hidden ${showToggleButtons ? 'opacity-100' : 'opacity-0'}`} style={{
-                        bottom: 'max(1.5rem, env(safe-area-inset-bottom) + 1rem)',
-                        left: '50%',
-                        transform: 'translateX(-50%)'
-                    }}>
+                    <div
+                        className={`absolute z-50 transition-opacity duration-1000 md:hidden ${showToggleButtons ? 'opacity-100' : 'opacity-0'}`}
+                        style={{
+                            bottom: 'max(1.5rem, env(safe-area-inset-bottom) + 1rem)',
+                            left: '50%',
+                            transform: 'translateX(-50%)',
+                        }}
+                    >
                         <p className="text-white/70 text-sm font-medium whitespace-nowrap animate-pulse">
                             {content.ui.mobileScrollHint}
                         </p>
@@ -186,7 +213,7 @@ const HomeSection = ({
 
 HomeSection.propTypes = {
     language: PropTypes.string.isRequired,
-    enableOpeningAnimation: PropTypes.bool
+    enableOpeningAnimation: PropTypes.bool,
 };
 
 export default HomeSection;

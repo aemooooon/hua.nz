@@ -11,8 +11,8 @@ export { default as OptimizedImage } from '../components/ui/OptimizedImage.jsx';
 export { default as OptimizedImageList } from '../components/ui/OptimizedImageList.jsx';
 
 // React Hooks
-export { 
-    useOptimizedImage, 
-    useOptimizedImages, 
-    useImagePreloader 
+export {
+    useOptimizedImage,
+    useOptimizedImages,
+    useImagePreloader,
 } from '../hooks/useOptimizedImage.js';

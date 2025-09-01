@@ -1,6 +1,6 @@
 /**
  * GalleryOptimizations - Gallery性能优化工具集
- * 
+ *
  * 针对Gallery Section的专门优化：
  * 1. Web Worker计算卸载
  * 2. 智能纹理缓存
@@ -21,20 +21,20 @@ export class GalleryOptimizations {
             progressiveLoading: true,
             adaptiveQuality: true,
             memoryLimit: 256 * 1024 * 1024, // 256MB
-            ...options
+            ...options,
         };
-        
+
         this.loadingState = {
             phase: 'idle', // 'idle' | 'processing' | 'loading' | 'complete'
             progress: 0,
             currentTask: '',
-            errors: []
+            errors: [],
         };
-        
+
         this.performanceState = {
             level: 'good',
             adaptiveMode: false,
-            qualityReductions: []
+            qualityReductions: [],
         };
     }
 
@@ -43,13 +43,13 @@ export class GalleryOptimizations {
      */
     async initialize() {
         console.log('🚀 Gallery优化系统初始化...');
-        
+
         try {
             // 预热纹理缓存
             if (this.options.enableTextureCache) {
                 this.initializeTextureCache();
             }
-            
+
             console.log('✅ Gallery优化系统就绪');
             return true;
         } catch (error) {
@@ -77,29 +77,29 @@ export class GalleryOptimizations {
 
         try {
             this.updateLoadingState('processing', 0, '正在分析画廊数据...');
-            
+
             console.log('🔄 使用Worker处理画廊数据...');
             const startTime = performance.now();
-            
+
             const result = await worker.batchProcessGalleryData({
                 galleryData,
-                maxPaintings: 22
+                maxPaintings: 22,
             });
-            
+
             const processingTime = performance.now() - startTime;
             console.log(`✅ Worker处理完成 (${Math.round(processingTime)}ms):`, result.statistics);
-            
+
             this.updateLoadingState('loading', 0.3, '数据处理完成，开始加载资源...');
-            
+
             return result;
         } catch (error) {
             console.warn('⚠️ Worker处理失败，回退到主线程:', error);
             this.loadingState.errors.push({
                 type: 'worker_failure',
                 message: error.message,
-                fallback: true
+                fallback: true,
             });
-            
+
             return this.fallbackProcessing(galleryData);
         }
     }
@@ -110,7 +110,7 @@ export class GalleryOptimizations {
     async fallbackProcessing(galleryData) {
         console.log('🔄 主线程处理画廊数据...');
         this.updateLoadingState('processing', 0, '主线程处理中...');
-        
+
         // 简化的主线程处理逻辑
         const processedData = {
             imageAnalysis: galleryData.slice(0, 22).map((item, index) => ({
@@ -118,14 +118,14 @@ export class GalleryOptimizations {
                 item,
                 aspectRatio: item.aspectRatio || 1.5,
                 isPrecomputed: !!(item.aspectRatio && item.dimensions),
-                dimensions: item.dimensions || { width: 300, height: 200 }
+                dimensions: item.dimensions || { width: 300, height: 200 },
             })),
             statistics: {
                 processedImages: Math.min(galleryData.length, 22),
-                fallbackMode: true
-            }
+                fallbackMode: true,
+            },
         };
-        
+
         this.updateLoadingState('loading', 0.2, '主线程处理完成');
         return processedData;
     }
@@ -139,47 +139,46 @@ export class GalleryOptimizations {
         }
 
         console.log('📦 开始渐进式纹理加载...');
-        
+
         // 分批加载策略
         const batches = this.createLoadingBatches(imageAnalysis);
         const loadedTextures = new Map();
         let totalProgress = 0;
-        
+
         for (let batchIndex = 0; batchIndex < batches.length; batchIndex++) {
             const batch = batches[batchIndex];
             const batchName = batch.name;
-            
+
             this.updateLoadingState('loading', totalProgress, `加载${batchName}...`);
-            
+
             try {
                 const batchResult = await this.loadTextureBatch(batch.items);
-                
+
                 // 合并结果
                 for (const [key, texture] of batchResult.entries()) {
                     loadedTextures.set(key, texture);
                 }
-                
-                totalProgress = 0.3 + (0.6 * (batchIndex + 1) / batches.length);
-                
+
+                totalProgress = 0.3 + (0.6 * (batchIndex + 1)) / batches.length;
+
                 if (onProgress) {
                     onProgress(totalProgress, batchName, loadedTextures.size);
                 }
-                
+
                 console.log(`✅ ${batchName}加载完成 (${batchResult.size}张)`);
-                
+
                 // 小延迟，让UI更新
                 await new Promise(resolve => setTimeout(resolve, 50));
-                
             } catch (error) {
                 console.warn(`⚠️ ${batchName}加载失败:`, error);
                 this.loadingState.errors.push({
                     type: 'batch_loading_error',
                     batch: batchName,
-                    message: error.message
+                    message: error.message,
                 });
             }
         }
-        
+
         console.log(`✅ 渐进式加载完成，总计${loadedTextures.size}张纹理`);
         return loadedTextures;
     }
@@ -189,55 +188,53 @@ export class GalleryOptimizations {
      */
     createLoadingBatches(imageAnalysis) {
         const batches = [];
-        
+
         // 批次1：关键显示区域（后墙和前墙）
-        const criticalImages = imageAnalysis.filter(img => 
-            img.item.wall === 'vertical_wall_32m'
-        );
+        const criticalImages = imageAnalysis.filter(img => img.item.wall === 'vertical_wall_32m');
         if (criticalImages.length > 0) {
             batches.push({
                 name: '关键区域',
                 priority: 'high',
-                items: criticalImages
+                items: criticalImages,
             });
         }
-        
+
         // 批次2：主要展示区域（左右墙下层）
-        const mainImages = imageAnalysis.filter(img => 
-            img.item.wall === 'horizontal_wall_64m' && img.item.layer === 'lower'
+        const mainImages = imageAnalysis.filter(
+            img => img.item.wall === 'horizontal_wall_64m' && img.item.layer === 'lower'
         );
         if (mainImages.length > 0) {
             batches.push({
                 name: '主展示区',
                 priority: 'medium',
-                items: mainImages
+                items: mainImages,
             });
         }
-        
+
         // 批次3：次要展示区域（左右墙上层）
-        const secondaryImages = imageAnalysis.filter(img => 
-            img.item.wall === 'horizontal_wall_64m' && img.item.layer === 'upper'
+        const secondaryImages = imageAnalysis.filter(
+            img => img.item.wall === 'horizontal_wall_64m' && img.item.layer === 'upper'
         );
         if (secondaryImages.length > 0) {
             batches.push({
                 name: '次展示区',
                 priority: 'low',
-                items: secondaryImages
+                items: secondaryImages,
             });
         }
-        
+
         // 批次4：特殊内容（灯箱等）
-        const specialImages = imageAnalysis.filter(img => 
-            img.item.position === 'lightbox' || img.item.type === 'video'
+        const specialImages = imageAnalysis.filter(
+            img => img.item.position === 'lightbox' || img.item.type === 'video'
         );
         if (specialImages.length > 0) {
             batches.push({
                 name: '特殊内容',
                 priority: 'low',
-                items: specialImages
+                items: specialImages,
             });
         }
-        
+
         return batches;
     }
 
@@ -246,19 +243,19 @@ export class GalleryOptimizations {
      */
     async loadTextureBatch(batchItems) {
         const loadedTextures = new Map();
-        
+
         // 并行加载批次中的纹理
-        const loadPromises = batchItems.map(async (imageData) => {
+        const loadPromises = batchItems.map(async imageData => {
             const item = imageData.item;
             const imageSrc = item.src || item.thumbnail;
-            
+
             if (!imageSrc) return null;
-            
+
             try {
                 // 检查缓存
                 const cacheKey = this.generateCacheKey(item);
                 let texture = globalTextureCache.get(cacheKey);
-                
+
                 if (!texture) {
                     // 加载新纹理
                     if (item.type === 'video') {
@@ -266,28 +263,28 @@ export class GalleryOptimizations {
                     } else {
                         texture = await this.loadImageTexture(imageSrc);
                     }
-                    
+
                     if (texture) {
                         globalTextureCache.set(cacheKey, texture, {
                             type: item.type,
                             src: imageSrc,
                             wall: item.wall,
-                            layer: item.layer
+                            layer: item.layer,
                         });
                     }
                 }
-                
+
                 if (texture) {
                     loadedTextures.set(item.id, texture);
                 }
-                
+
                 return { id: item.id, texture, success: true };
             } catch (error) {
                 console.warn(`纹理加载失败: ${item.id}`, error);
                 return { id: item.id, texture: null, success: false, error };
             }
         });
-        
+
         await Promise.all(loadPromises);
         return loadedTextures;
     }
@@ -305,16 +302,16 @@ export class GalleryOptimizations {
      * 加载图片纹理
      */
     async loadImageTexture(src) {
-        return new Promise((resolve) => {
+        return new Promise(resolve => {
             const loader = new THREE.TextureLoader();
             loader.load(
                 src,
-                (texture) => {
+                texture => {
                     this.applyTextureOptimizations(texture);
                     resolve(texture);
                 },
                 undefined,
-                (error) => {
+                error => {
                     console.warn(`图片纹理加载失败: ${src}`, error);
                     resolve(null);
                 }
@@ -326,7 +323,7 @@ export class GalleryOptimizations {
      * 加载视频纹理
      */
     async loadVideoTexture(src, item) {
-        return new Promise((resolve) => {
+        return new Promise(resolve => {
             const video = document.createElement('video');
             video.src = src;
             video.crossOrigin = 'anonymous';
@@ -335,7 +332,7 @@ export class GalleryOptimizations {
             video.autoplay = item.autoplay || true;
             video.playsInline = true;
             video.preload = 'auto';
-            
+
             const setupTexture = () => {
                 try {
                     const texture = new THREE.VideoTexture(video);
@@ -346,14 +343,14 @@ export class GalleryOptimizations {
                     resolve(null);
                 }
             };
-            
+
             video.addEventListener('loadeddata', setupTexture);
             video.addEventListener('canplay', setupTexture);
             video.addEventListener('error', () => {
                 console.warn(`视频加载失败: ${src}`);
                 resolve(null);
             });
-            
+
             video.load();
         });
     }
@@ -370,7 +367,7 @@ export class GalleryOptimizations {
             texture.generateMipmaps = true;
             texture.minFilter = THREE.LinearMipmapLinearFilter;
         }
-        
+
         texture.magFilter = THREE.LinearFilter;
         texture.wrapS = THREE.ClampToEdgeWrapping;
         texture.wrapT = THREE.ClampToEdgeWrapping;
@@ -398,7 +395,7 @@ export class GalleryOptimizations {
             ...this.loadingState,
             phase,
             progress: Math.min(1, Math.max(0, progress)),
-            currentTask
+            currentTask,
         };
     }
 
@@ -426,13 +423,13 @@ export class GalleryOptimizations {
      */
     applyCriticalOptimizations() {
         console.log('🚨 应用严重性能优化...');
-        
+
         this.performanceState.qualityReductions.push(
             'disabled_shadows',
             'reduced_texture_quality',
             'disabled_lighting_effects'
         );
-        
+
         // 清理不必要的纹理缓存
         this.cleanupUnusedTextures();
     }
@@ -442,7 +439,7 @@ export class GalleryOptimizations {
      */
     applyWarningOptimizations() {
         console.log('⚠️ 应用性能警告优化...');
-        
+
         this.performanceState.qualityReductions.push(
             'reduced_shadow_quality',
             'optimized_lighting'
@@ -464,15 +461,15 @@ export class GalleryOptimizations {
         const stats = globalTextureCache.getStats();
         if (stats.memoryUsage > this.options.memoryLimit * 0.8) {
             console.log('🧹 清理纹理缓存以释放内存...');
-            
+
             // 清理最老的纹理
             const oldestTextures = stats.oldestTextures;
             const toRemove = oldestTextures.slice(0, Math.floor(oldestTextures.length / 3));
-            
+
             toRemove.forEach(({ key }) => {
                 globalTextureCache.remove(key);
             });
-            
+
             console.log(`✅ 已清理${toRemove.length}个纹理`);
         }
     }
@@ -485,7 +482,7 @@ export class GalleryOptimizations {
             loading: this.loadingState,
             performance: this.performanceState,
             cache: globalTextureCache.getStats(),
-            memory: this.getMemoryUsage()
+            memory: this.getMemoryUsage(),
         };
     }
 
@@ -498,7 +495,8 @@ export class GalleryOptimizations {
                 used: performance.memory.usedJSHeapSize,
                 total: performance.memory.totalJSHeapSize,
                 limit: performance.memory.jsHeapSizeLimit,
-                usagePercent: (performance.memory.usedJSHeapSize / performance.memory.jsHeapSizeLimit) * 100
+                usagePercent:
+                    (performance.memory.usedJSHeapSize / performance.memory.jsHeapSizeLimit) * 100,
             };
         }
         return null;
@@ -509,22 +507,22 @@ export class GalleryOptimizations {
      */
     cleanup() {
         console.log('🧹 清理Gallery优化资源...');
-        
+
         if (this.options.enableTextureCache) {
             globalTextureCache.clear();
         }
-        
+
         this.loadingState = {
             phase: 'idle',
             progress: 0,
             currentTask: '',
-            errors: []
+            errors: [],
         };
-        
+
         this.performanceState = {
             level: 'good',
             adaptiveMode: false,
-            qualityReductions: []
+            qualityReductions: [],
         };
     }
 }
