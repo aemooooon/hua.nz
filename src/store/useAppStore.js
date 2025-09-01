@@ -10,8 +10,6 @@ const sectionsConfig = [
   {
     id: "home",
     index: 0,
-    name: { en: "Home", zh: "首页" },
-    description: { en: "Welcome to my portfolio", zh: "欢迎来到我的个人主页" },
     backgroundEffect: "effectchaos", // Chaos 效果
     cubeImage: "/gallery/gallery-horizontal-12.jpg",
     cubeVideo: "/cube-textures/home.mp4", // 立方体视频
@@ -19,40 +17,30 @@ const sectionsConfig = [
   {
     id: "about",
     index: 1,
-    name: { en: "About", zh: "关于" },
-    description: { en: "About myself", zh: "个人介绍" },
     backgroundEffect: "effectlorenz", // Lorenz 背景
     cubeImage: "/cube-textures/about.jpg", // 修正立方体图片路径
   },
   {
     id: "projects",
     index: 2,
-    name: { en: "Projects", zh: "项目" },
-    description: { en: "My development projects", zh: "我的开发项目" },
     backgroundEffect: "effectmonjori", // Monjori 背景
     cubeImage: "/cube-textures/projects.jpg", // 修正立方体图片路径
   },
   {
     id: "gallery",
     index: 3,
-    name: { en: "Corridor of Light and Shadow", zh: "浮生长廊" },
-    description: { en: "Immersive 3D art experience", zh: "沉浸式3D艺术体验" },
     backgroundEffect: "", // 清空背景效果，因为Gallery section有自己的3D场景
     cubeImage: "/cube-textures/gallery.jpg", // 修正立方体图片路径
   },
   {
     id: "education",
     index: 4,
-    name: { en: "Education", zh: "教育背景" },
-    description: { en: "Academic background", zh: "学术背景" },
     backgroundEffect: "effectfuse", // Fuse 背景
     cubeImage: "/cube-textures/education.jpg", // 修正立方体图片路径
   },
   {
     id: "contact",
     index: 5,
-    name: { en: "Contact", zh: "联系我" },
-    description: { en: "Get in touch", zh: "联系方式" },
     backgroundEffect: "effectripple", // Ripple Waves 背景 - 波纹传播效果
     cubeImage: "/cube-textures/contact.jpg", // 修正立方体图片路径
   }
@@ -67,12 +55,6 @@ const contentConfig = {
       slogan: "Order from Chaos. Innovation through Tradeoffs..."
     },
     about: {
-      title: "About Me",
-      subtitle: "My journey as a developer",
-      description: "Learn more about my background, skills, and passion for technology.",
-      background: "Background",
-      education: "Education",
-      interests: "Interests",
       pages: [
         {
           id: 'statement',
@@ -85,40 +67,6 @@ const contentConfig = {
               "Beyond frontend and backend development, I explore DevOps, containerization, and cloud platforms, while my Master’s in Data Science deepens my grasp of algorithms and data pipelines. To me, development is about seeking order in chaos and finding innovation in every trade-off."
             ]
           }
-        },
-        {
-          id: 'experience',
-          title: 'Professional Experience',
-          experiences: [
-            {
-              company: "Zespri International",
-              position: "Full Stack Developer (Internship)",
-              period: "Nov 2024 - Feb 2025",
-              color: "blue",
-              icon: "ZI"
-            },
-            {
-              company: "Realibox, GuangZhou",
-              position: "Frontend Developer",
-              period: "Aug 2021 - Feb 2023",
-              color: "purple",
-              icon: "RB"
-            },
-            {
-              company: "Nuclear Stone Technology",
-              position: "Frontend Developer",
-              period: "Aug 2020 - Jul 2021",
-              color: "green",
-              icon: "NS"
-            },
-            {
-              company: "Enshi Environmental Agency",
-              position: "Full Stack Developer (Contract)",
-              period: "Feb 2020 - Jul 2021",
-              color: "orange",
-              icon: "ES"
-            }
-          ]
         }
       ]
     },
@@ -165,10 +113,6 @@ const contentConfig = {
       }
     },
     gallery: {
-      title: "Photo Gallery",
-      subtitle: "Visual journey through my work and experiences",
-      description: "A curated collection of visual projects and creative works.",
-      viewImage: "View Image",
       // 移动端画廊配置
       mobile: {
         title: "Gallery",
@@ -389,7 +333,7 @@ const contentConfig = {
     contact: {
       title: "Get In Touch",
       subtitle: "Looking forward to hearing from you",
-      description: "Get in touch for opportunities, collaborations, or just to say hello.",
+      description: "Connect for opportunities, collaborations, or just to say hello.",
       location: "Christchurch, New Zealand",
       emailAddress: "aemooooon@gmail.com",
       phone: "+64 21 *** 0520",
@@ -454,16 +398,9 @@ const contentConfig = {
       slogan: "驭混沌而立秩序；执中庸以启新象。"
     },
     about: {
-      title: "关于我",
-      subtitle: "我的开发者之路",
-      description: "了解更多关于我的背景、技能和对技术的热情。",
-      background: "背景",
-      education: "教育经历",
-      interests: "兴趣爱好",
       pages: [
         {
           id: 'statement',
-          title: '个人陈述',
           content: {
             greeting: "你好，我是王华",
             paragraphs: [
@@ -474,40 +411,6 @@ const contentConfig = {
             ]
           }
         },
-        {
-          id: 'experience',
-          title: '职业历程',
-          experiences: [
-            {
-              company: "佳沛国际",
-              position: "全栈开发工程师（实习）",
-              period: "2024年11月 - 2025年2月",
-              color: "blue",
-              icon: "ZI"
-            },
-            {
-              company: "引力波，广州",
-              position: "前端开发工程师",
-              period: "2021年8月 - 2023年2月",
-              color: "purple",
-              icon: "RB"
-            },
-            {
-              company: "核石数字，重庆",
-              position: "前端开发工程师",
-              period: "2020年8月 - 2021年7月",
-              color: "green",
-              icon: "NS"
-            },
-            {
-              company: "恩施环境保护局",
-              position: "全栈开发工程师（合同）",
-              period: "2020年2月 - 2021年7月",
-              color: "orange",
-              icon: "ES"
-            }
-          ]
-        }
       ]
     },
     projects: {
