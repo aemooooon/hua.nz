@@ -199,16 +199,17 @@ const HeroCube = ({ enableOpeningAnimation = false, onAnimationComplete, onReady
         const camera = new THREE.PerspectiveCamera(50, 1, 0.1, 1000);
         camera.position.z = 10; // 固定摄像机距离
 
-        // 创建渲染器 - 性能优化设置
-        const shouldUseAntialias = window.innerWidth * window.innerHeight < 3840 * 2160; // 仅在4K以下开启抗锯齿 (包含2K)
+        // 创建渲染器 - 极度性能优化设置，专注LCP性能
+        const shouldUseAntialias = window.innerWidth * window.innerHeight < 1920 * 1080; // 仅在1080p以下开启抗锯齿
         const renderer = new THREE.WebGLRenderer({
             alpha: true,
-            antialias: shouldUseAntialias, // 🔥 动态抗锯齿：4K及以上关闭以提升性能
-            powerPreference: "high-performance", // 改为高性能模式
-            precision: "mediump", // 使用中等精度
+            antialias: shouldUseAntialias, // 🔥 更严格的抗锯齿条件
+            powerPreference: "high-performance",
+            precision: "lowp", // 🔥 使用最低精度提升性能
             stencil: false,
-            depth: true,
+            depth: false, // 🔥 禁用深度缓冲，减少GPU负载
             premultipliedAlpha: false,
+            preserveDrawingBuffer: false, // 🔥 不保留绘制缓冲区
         });
 
         // 设置透明背景，让3D背景可见
@@ -217,8 +218,8 @@ const HeroCube = ({ enableOpeningAnimation = false, onAnimationComplete, onReady
         // 设置全分辨率渲染，避免canvas尺寸问题
         renderer.setSize(window.innerWidth, window.innerHeight);
         
-        // 🔥 限制像素比：防止高DPI设备过载
-        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.2)); // 从1.5降至1.2
+        // 🔥 进一步限制像素比：防止高DPI设备过载，提升LCP性能
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.0)); // 降至1.0，确保性能优先
 
         // 性能优化设置
         renderer.shadowMap.enabled = false;
@@ -360,10 +361,9 @@ const HeroCube = ({ enableOpeningAnimation = false, onAnimationComplete, onReady
             if (!face) {
                 console.error(`Face at index ${index} not found!`);
                 const errorTexture = createCheckerboardTexture(256);
-                return new THREE.MeshLambertMaterial({
+                return new THREE.MeshBasicMaterial({ // 🔥 错误材质也使用Basic
                     map: errorTexture,
-                    transparent: true,
-                    opacity: 0.9,
+                    transparent: false, // 🔥 禁用透明度
                     side: THREE.FrontSide,
                 });
             }
@@ -371,10 +371,9 @@ const HeroCube = ({ enableOpeningAnimation = false, onAnimationComplete, onReady
             if (face.video) {
                 const fallbackTexture = createCheckerboardTexture(256);
 
-                const material = new THREE.MeshLambertMaterial({
+                const material = new THREE.MeshBasicMaterial({ // 🔥 使用Basic材质，无光照计算
                     map: fallbackTexture, // 初始使用fallback
-                    transparent: true,
-                    opacity: 0.9,
+                    transparent: false, // 🔥 禁用透明度提升性能
                     side: THREE.FrontSide, // 只渲染正面，提升性能
                 });
 
@@ -494,10 +493,9 @@ const HeroCube = ({ enableOpeningAnimation = false, onAnimationComplete, onReady
             if (face.texture) {
                 // 先创建带fallback的材质
                 const fallbackTexture = createCheckerboardTexture(256);
-                const material = new THREE.MeshLambertMaterial({
+                const material = new THREE.MeshBasicMaterial({ // 🔥 使用Basic材质
                     map: fallbackTexture, // 初始使用fallback
-                    transparent: true,
-                    opacity: 0.9,
+                    transparent: false, // 🔥 禁用透明度
                     side: THREE.FrontSide,
                 });
 
@@ -605,15 +603,14 @@ const HeroCube = ({ enableOpeningAnimation = false, onAnimationComplete, onReady
 
             const texture = new THREE.CanvasTexture(canvas);
             texture.needsUpdate = true;
-            texture.generateMipmaps = true;
-            texture.minFilter = THREE.LinearMipmapLinearFilter;
+            texture.generateMipmaps = false; // 🔥 禁用mipmaps提升性能
+            texture.minFilter = THREE.LinearFilter; // 🔥 简化过滤器
             texture.magFilter = THREE.LinearFilter;
 
-            const material = new THREE.MeshLambertMaterial({
+            const material = new THREE.MeshBasicMaterial({ // 🔥 使用Basic材质
                 map: texture,
-                transparent: true,
-                opacity: 0.9,
-                side: THREE.DoubleSide,
+                transparent: false, // 🔥 禁用透明度
+                side: THREE.FrontSide, // 🔥 只渲染正面
             });
 
             return material;
@@ -624,16 +621,16 @@ const HeroCube = ({ enableOpeningAnimation = false, onAnimationComplete, onReady
         scene.add(cube);
         cubeRef.current = cube;
 
-        // 添加边缘线框增强立体感
-        const edges = new THREE.EdgesGeometry(geometry);
-        const lineMaterial = new THREE.LineBasicMaterial({
-            color: 0xffffff,
-            opacity: 0.3,
-            transparent: true,
-            linewidth: 2,
-        });
-        const wireframe = new THREE.LineSegments(edges, lineMaterial);
-        cube.add(wireframe);
+        // 🔥 性能优化：移除线框渲染，减少GPU负载
+        // const edges = new THREE.EdgesGeometry(geometry);
+        // const lineMaterial = new THREE.LineBasicMaterial({
+        //     color: 0xffffff,
+        //     opacity: 0.3,
+        //     transparent: true,
+        //     linewidth: 2,
+        // });
+        // const wireframe = new THREE.LineSegments(edges, lineMaterial);
+        // cube.add(wireframe);
 
         // ═══════════════════════════════════════════════════════════════════════════════
         // 🎬 HeroCube 电影级开场动画系统

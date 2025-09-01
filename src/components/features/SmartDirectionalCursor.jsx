@@ -41,6 +41,27 @@ import { useEffect, useState, useCallback, useRef } from 'react';
 import { useAppStore } from '../../store/useAppStore';
 import { useTheme } from '../../hooks/useTheme';
 
+// 性能优化：将选择器定义移到组件外部，避免重复创建
+const CLICKABLE_SELECTORS = [
+    'a', 'button', 'input', 'select', 'textarea',
+    '[onclick]', '[role="button"]', '[role="link"]', '[role="menuitem"]',
+    '[tabindex]:not([tabindex="-1"])',
+    '.clickable', '.btn', '.button', '.cursor-pointer',
+    'summary', 'label', '[data-clickable="true"]'
+];
+
+const EXCLUDE_SELECTORS = [
+    'canvas', 'svg', 'img', 'video', 
+    '.hero-cube', '.effect-avatar', '.lorenz-attractor',
+    '[data-no-custom-cursor="true"]',
+    '[style*="pointer-events: none"]',
+    '[style*="pointerEvents: none"]',
+    '.h-screen.w-screen',
+    '.overflow-hidden',
+    '.background-container',
+    '.bg-container'
+];
+
 const SmartDirectionalCursor = () => {
     // ==================== 主题系统 ====================
     
@@ -51,8 +72,7 @@ const SmartDirectionalCursor = () => {
     // ==================== 应用状态 ====================
     
     /** 获取当前section和语言 */
-    const { currentSection, language, getContent } = useAppStore();
-    const content = getContent();
+    const { currentSection, language } = useAppStore();
     
     /** 检查是否在首页 */
     const isHomePage = currentSection === 0;
@@ -127,6 +147,9 @@ const SmartDirectionalCursor = () => {
     /** 可点击元素检测的缓存，避免重复计算 */
     const clickableElementCache = useRef(new WeakMap());
     
+    /** 位置缓存，避免对相近位置重复检测 */
+    const positionCache = useRef({ x: -1, y: -1, result: false, timestamp: 0 });
+    
     /** 存储最新状态值的refs，避免闭包问题 */
     const stateRefs = useRef({
         currentScrollDelta: 0,
@@ -162,37 +185,36 @@ const SmartDirectionalCursor = () => {
      * - 特殊类：.clickable, .btn, .button
      */
     const isClickableElement = useCallback((x, y) => {
+        // 性能优化：检查位置缓存，如果位置变化很小则使用缓存结果
+        const cache = positionCache.current;
+        const now = performance.now();
+        const distance = Math.sqrt(Math.pow(x - cache.x, 2) + Math.pow(y - cache.y, 2));
+        
+        // 如果距离小于10px且缓存时间在50ms内，使用缓存结果
+        if (distance < 10 && (now - cache.timestamp) < 50) {
+            return cache.result;
+        }
+        
         const element = document.elementFromPoint(x, y);
-        if (!element) return false;
-
-        // 检查缓存
-        if (clickableElementCache.current.has(element)) {
-            return clickableElementCache.current.get(element);
+        if (!element) {
+            // 更新缓存
+            positionCache.current = { x, y, result: false, timestamp: now };
+            return false;
         }
 
-        // 定义可点击元素的选择器
-        const clickableSelectors = [
-            'a', 'button', 'input', 'select', 'textarea',
-            '[onclick]', '[role="button"]', '[role="link"]', '[role="menuitem"]',
-            '[tabindex]:not([tabindex="-1"])',
-            '.clickable', '.btn', '.button', '.cursor-pointer',
-            'summary', 'label', '[data-clickable="true"]'
-        ];
+        // 检查元素缓存
+        if (clickableElementCache.current.has(element)) {
+            const result = clickableElementCache.current.get(element);
+            // 更新位置缓存
+            positionCache.current = { x, y, result, timestamp: now };
+            return result;
+        }
 
-        // 排除某些不应该被视为可点击的元素
-        const excludeSelectors = [
-            'canvas', 'svg', 'img', 'video', 
-            '.hero-cube', '.effect-avatar', '.lorenz-attractor',
-            '[data-no-custom-cursor="true"]',
-            // 添加更多排除条件
-            '[style*="pointer-events: none"]',
-            '[style*="pointerEvents: none"]',
-            // 排除常见的背景容器类
-            '.h-screen.w-screen',
-            '.overflow-hidden',
-            '.background-container',
-            '.bg-container'
-        ];
+        // 定义可点击元素的选择器（使用预定义常量优化性能）
+        const clickableSelectors = CLICKABLE_SELECTORS;
+
+        // 排除某些不应该被视为可点击的元素（使用预定义常量优化性能）
+        const excludeSelectors = EXCLUDE_SELECTORS;
 
         // 首先进行快速检查：是否有明确的排除标记
         if (element.hasAttribute('data-no-custom-cursor') ||
@@ -331,6 +353,9 @@ const SmartDirectionalCursor = () => {
 
         // 缓存结果
         clickableElementCache.current.set(element, isClickable);
+        
+        // 更新位置缓存
+        positionCache.current = { x, y, result: isClickable, timestamp: performance.now() };
         
         // 清理缓存以避免内存泄漏（保留最近的100个元素）
         if (clickableElementCache.current.size > 100) {
@@ -540,9 +565,9 @@ const SmartDirectionalCursor = () => {
         // 确定滚动方向：deltaY > 0为向下，< 0为向上
         const direction = rawDelta > 0 ? 'down' : 'up';
         
-        // 🏎️ 超高性能节流：限制更新频率到240fps（从120fps提升）
+        // 🏎️ 优化性能节流：限制更新频率到120fps（提升响应性和性能平衡）
         const now = performance.now();
-        if (now - (handleWheelForce.lastTime || 0) < 4) return;
+        if (now - (handleWheelForce.lastTime || 0) < 8) return;
         handleWheelForce.lastTime = now;
         
         // 停止任何正在进行的递减动画
@@ -598,17 +623,20 @@ const SmartDirectionalCursor = () => {
      * 实时跟踪鼠标位置，让光标能跟随鼠标移动
      * 同时检测是否悬停在可点击元素上
      * 
-     * 性能优化：8ms节流，120fps更新频率
+     * 性能优化：16ms节流，60fps更新频率
      */
     const handleMouseMove = useCallback((e) => {
         const now = performance.now();
-        if (now - (handleMouseMove.lastTime || 0) < 8) return;
+        if (now - (handleMouseMove.lastTime || 0) < 16) return;
         handleMouseMove.lastTime = now;
         
-        setCursorPosition({ x: e.clientX, y: e.clientY });
+        const newPosition = { x: e.clientX, y: e.clientY };
         
         // 检测是否悬停在可点击元素上
         const isOverClickableElement = isClickableElement(e.clientX, e.clientY);
+        
+        // 批量更新状态以减少重新渲染
+        setCursorPosition(newPosition);
         setIsOverClickable(isOverClickableElement);
         
         if (!isVisible) {
@@ -667,10 +695,10 @@ const SmartDirectionalCursor = () => {
             
             // 滚动强度自然衰减：防止长时间显示进度
             const timeSinceScroll = now - lastScrollTime;
-            if (timeSinceScroll > 30) {
+            if (timeSinceScroll > 50) { // 增加检查间隔，减少计算频率
                 // 性能优化：减少状态更新频率，只在必要时更新
-                const newIntensity = Math.max(scrollIntensity - 0.05, 0);
-                if (now - lastIntensityUpdate > 32 && newIntensity !== scrollIntensity) { // 限制到30fps更新
+                const newIntensity = Math.max(scrollIntensity - 0.03, 0); // 降低衰减率，减少更新频率
+                if (now - lastIntensityUpdate > 50 && newIntensity !== scrollIntensity) { // 进一步限制更新频率
                     setScrollIntensity(newIntensity);
                     lastIntensityUpdate = now;
                 }
