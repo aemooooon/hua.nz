@@ -3,7 +3,6 @@ import { persist } from 'zustand/middleware';
 import {
     sectionsData,
     contentData,
-    newContentData,
     educationData,
     projectsData,
     footprintsData,
@@ -132,15 +131,14 @@ export const useAppStore = create(
 
             // 新的内容访问方法 - 支持标准化多语言结构
             getNewContent: () => {
-                const { language } = get();
-                return newContentData;
+                return contentData;
             },
 
             // 获取标准化多语言文本
             getText: path => {
                 const { language } = get();
                 const pathArray = path.split('.');
-                let current = newContentData;
+                let current = contentData;
 
                 for (const key of pathArray) {
                     if (current && current[key]) {
@@ -165,8 +163,8 @@ export const useAppStore = create(
 
             // 获取教育数据
             getEducationData: () => {
-                // 从 content-new.js 获取界面文本
-                const educationTexts = newContentData.education;
+                // 从 content.js 获取界面文本
+                const educationTexts = contentData.education;
 
                 // 从 education.js 获取学历数据
                 const degrees = educationData;

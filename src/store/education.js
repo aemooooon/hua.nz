@@ -229,28 +229,40 @@ export const educationData = [
                 courses: [
                     {
                         code: 'IN501001',
-                        name: 'Professional Practice for Information Technology',
+                        name: {
+                            en: 'Professional Practice for Information Technology',
+                            zh: '信息技术专业实践'
+                        },
                         credits: 15,
                         grade: 'B+',
                         level: 5,
                     },
                     {
                         code: 'IN510001',
-                        name: 'Programming 1',
+                        name: {
+                            en: 'Programming 1',
+                            zh: '编程 1'
+                        },
                         credits: 15,
                         grade: 'A+',
                         level: 5,
                     },
                     {
                         code: 'IN520001',
-                        name: 'PC Maintenance',
+                        name: {
+                            en: 'PC Maintenance',
+                            zh: '计算机维护'
+                        },
                         credits: 15,
                         grade: 'A+',
                         level: 5,
                     },
                     {
                         code: 'IN521001',
-                        name: 'Maths For IT',
+                        name: {
+                            en: 'Maths For IT',
+                            zh: 'IT数学'
+                        },
                         credits: 15,
                         grade: 'A+',
                         level: 5,
@@ -266,56 +278,80 @@ export const educationData = [
                 courses: [
                     {
                         code: 'IN505001',
-                        name: 'Introduction to Systems Analysis',
+                        name: {
+                            en: 'Introduction to Systems Analysis',
+                            zh: '系统分析入门'
+                        },
                         credits: 15,
                         grade: 'A+',
                         level: 5,
                     },
                     {
                         code: 'IN511001',
-                        name: 'Programming 2',
+                        name: {
+                            en: 'Programming 2',
+                            zh: '编程 2'
+                        },
                         credits: 15,
                         grade: 'A+',
                         level: 5,
                     },
                     {
                         code: 'IN512001',
-                        name: 'Web 1 - Technology and Development',
+                        name: {
+                            en: 'Web 1 - Technology and Development',
+                            zh: 'Web 1 - 技术与开发'
+                        },
                         credits: 15,
                         grade: 'A+',
                         level: 5,
                     },
                     {
                         code: 'IN515001',
-                        name: 'Introduction to Networks',
+                        name: {
+                            en: 'Introduction to Networks',
+                            zh: '网络入门'
+                        },
                         credits: 15,
                         grade: 'A+',
                         level: 5,
                     },
                     {
                         code: 'IN605001',
-                        name: 'Databases 2',
+                        name: {
+                            en: 'Databases 2',
+                            zh: '数据库 2'
+                        },
                         credits: 15,
                         grade: 'A+',
                         level: 6,
                     },
                     {
                         code: 'IN610001',
-                        name: 'Programming 3',
+                        name: {
+                            en: 'Programming 3',
+                            zh: '编程 3'
+                        },
                         credits: 15,
                         grade: 'A+',
                         level: 6,
                     },
                     {
                         code: 'IN612001',
-                        name: 'Web 2 - Programming',
+                        name: {
+                            en: 'Web 2 - Programming',
+                            zh: 'Web 2 - 编程'
+                        },
                         credits: 15,
                         grade: 'A+',
                         level: 6,
                     },
                     {
                         code: 'IN617001',
-                        name: 'Linux Operating Systems - Ubuntu',
+                        name: {
+                            en: 'Linux Operating Systems - Ubuntu',
+                            zh: 'Linux操作系统 - Ubuntu'
+                        },
                         credits: 15,
                         grade: 'A+',
                         level: 6,
@@ -331,56 +367,80 @@ export const educationData = [
                 courses: [
                     {
                         code: 'IN602001',
-                        name: 'Software Engineering',
+                        name: {
+                            en: 'Software Engineering',
+                            zh: '软件工程'
+                        },
                         credits: 15,
                         grade: 'A-',
                         level: 6,
                     },
                     {
                         code: 'IN628002',
-                        name: 'Programming 4',
+                        name: {
+                            en: 'Programming 4',
+                            zh: '编程 4'
+                        },
                         credits: 15,
                         grade: 'A+',
                         level: 6,
                     },
                     {
                         code: 'IN700001',
-                        name: 'Project 1',
+                        name: {
+                            en: 'Project 1',
+                            zh: '项目 1'
+                        },
                         credits: 15,
                         grade: 'A+',
                         level: 7,
                     },
                     {
                         code: 'IN705002',
-                        name: 'Databases 3',
+                        name: {
+                            en: 'Databases 3',
+                            zh: '数据库 3'
+                        },
                         credits: 15,
                         grade: 'A+',
                         level: 7,
                     },
                     {
                         code: 'IN711001',
-                        name: 'Algorithms and Data Structures',
+                        name: {
+                            en: 'Algorithms and Data Structures',
+                            zh: '算法与数据结构'
+                        },
                         credits: 15,
                         grade: 'A',
                         level: 7,
                     },
                     {
                         code: 'IN712001',
-                        name: 'Web 3 - Enterprise Development',
+                        name: {
+                            en: 'Web 3 - Enterprise Development',
+                            zh: 'Web 3 - 企业级开发'
+                        },
                         credits: 15,
                         grade: 'A-',
                         level: 7,
                     },
                     {
                         code: 'IN719001',
-                        name: 'Systems Administration',
+                        name: {
+                            en: 'Systems Administration',
+                            zh: '系统管理'
+                        },
                         credits: 15,
                         grade: 'A',
                         level: 7,
                     },
                     {
                         code: 'IN720001',
-                        name: 'Administering a Virtual Infrastructure',
+                        name: {
+                            en: 'Administering a Virtual Infrastructure',
+                            zh: '虚拟基础设施管理'
+                        },
                         credits: 15,
                         grade: 'A',
                         level: 7,
@@ -396,28 +456,40 @@ export const educationData = [
                 courses: [
                     {
                         code: 'IN608001',
-                        name: 'Intermediate Application Development Concepts',
+                        name: {
+                            en: 'Intermediate Application Development Concepts',
+                            zh: '中级应用开发概念'
+                        },
                         credits: 15,
                         grade: 'A+',
                         level: 6,
                     },
                     {
                         code: 'IN721001',
-                        name: 'Mobile Application Development',
+                        name: {
+                            en: 'Mobile Application Development',
+                            zh: '移动应用开发'
+                        },
                         credits: 15,
                         grade: 'A+',
                         level: 7,
                     },
                     {
                         code: 'IN730151',
-                        name: 'Year Three Special Topic',
+                        name: {
+                            en: 'Year Three Special Topic',
+                            zh: '第三年专题研究'
+                        },
                         credits: 15,
                         grade: 'A+',
                         level: 7,
                     },
                     {
                         code: 'IN732001',
-                        name: 'Studio 6',
+                        name: {
+                            en: 'Studio 6',
+                            zh: '工作室 6'
+                        },
                         credits: 15,
                         grade: 'Passed',
                         level: 7,
