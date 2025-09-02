@@ -8,10 +8,9 @@ const EffectAvatar = lazy(() => import('../../background/EffectAvatar'));
 const AboutSection = ({ language = 'en' }) => {
     const { getNewContent } = useAppStore();
     const content = getNewContent();
-    // 获取个人陈述内容
-    const statementPage = content.about.pages.find(page => page.id === 'statement');
-    const paragraphsData = statementPage?.content?.paragraphs || { en: [], zh: [] };
-    const paragraphs = paragraphsData[language] || paragraphsData.en || [];
+
+    // 直接访问 about 内容
+    const paragraphs = content.about.paragraphs[language] || content.about.paragraphs.en || [];
 
     // 解析 greeting 为三个部分：问候语、连接词、姓名
     const parseGreeting = () => {

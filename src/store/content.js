@@ -13,65 +13,38 @@ export const contentData = {
     },
 
     about: {
-        pages: [
-            {
-                id: 'statement',
-                title: { en: 'Personal Statement', zh: '个人陈述' },
-                content: {
-                    greeting: { en: "Kia ora, I'm Hua Wang", zh: '你好，我是王华' },
-                    paragraphs: {
-                        en: [
-                            "I am a full-stack developer with over a decade of experience, from early work with PHP to today's modern React ecosystems. My journey spans enterprise websites, CMS platforms, internal systems, and data-driven apps, enriched by a passion for computer graphics, where I blend shaders, lighting, and generative effects into the web.",
-                            'What drives me is the process: turning scattered user stories into clarity, navigating complexity with an agnostic mindset toward languages and frameworks, and building solutions that balance logic with creativity. To me, code is not just function but also expression, where design, implementation, and narrative converge.',
-                            "Beyond frontend and backend development, I explore DevOps, containerization, and cloud platforms, while my Master's in Data Science deepens my grasp of algorithms and data pipelines. To me, development is about seeking order in chaos and finding innovation in every trade-off.",
-                        ],
-                        zh: [
-                            '夫天地演数，阴阳化爻，臣以一介码农，躬耕于比特之野十载有余。初习jQuery古法，今研React新道，历经诸侯之网站，掌CMS之枢机，筑内廷之系统，驭数据于方寸。然臣心向星辰，醉心图形之域，每有涉猎，必穷Shader之变，究光影之妙，合生成之艺于万维网中，此臣技之所寄也。',
-                            '臣闻《易》云："形而上者谓之道，形而下者谓之器。"臣之所驱，正在道器相融：散落之用户故事，臣析为清明；纷杂之技术桎梏，臣以无执之心破之。盖语言框架，不过器物；逻辑创造，方见精神。是故代码非止于功用，亦载文心，融设计、实现与叙事于一炉，犹《诗》之兴观群怨，皆可托于数行之间。',
-                            '臣虽主营前后二端，然未尝忘怀运维之策、容器之术与云之平台。更修数据科学之硕学，深研算法之精微，管道之纤畅。诚如《道德经》所言："图难于其易，为大于其细"，臣每日所行，皆在混沌中求秩序，于权衡处创新篇——此乃臣平生之志也。',
-                            '今托心于代码，寄志于云端，惟愿以技术立命，以创造安身，虽世变时移，此心不易。',
-                        ],
-                    },
-                },
-            },
-        ],
+        greeting: { en: "Kia ora, I'm Hua Wang", zh: '你好，我是王华' },
+        paragraphs: {
+            en: [
+                "I am a full-stack developer with over a decade of experience, from early work with PHP to today's modern React ecosystems. My journey spans enterprise websites, CMS platforms, internal systems, and data-driven apps, enriched by a passion for computer graphics, where I blend shaders, lighting, and generative effects into the web.",
+                'What drives me is the process: turning scattered user stories into clarity, navigating complexity with an agnostic mindset toward languages and frameworks, and building solutions that balance logic with creativity. To me, code is not just function but also expression, where design, implementation, and narrative converge.',
+                "Beyond frontend and backend development, I explore DevOps, containerization, and cloud platforms, while my Master's in Data Science deepens my grasp of algorithms and data pipelines. To me, development is about seeking order in chaos and finding innovation in every trade-off.",
+            ],
+            zh: [
+                '夫天地演数，阴阳化爻，臣以一介码农，躬耕于比特之野十载有余。初习jQuery古法，今研React新道，历经诸侯之网站，掌CMS之枢机，筑内廷之系统，驭数据于方寸。然臣心向星辰，醉心图形之域，每有涉猎，必穷Shader之变，究光影之妙，合生成之艺于万维网中，此臣技之所寄也。',
+                '臣闻《易》云："形而上者谓之道，形而下者谓之器。"臣之所驱，正在道器相融：散落之用户故事，臣析为清明；纷杂之技术桎梏，臣以无执之心破之。盖语言框架，不过器物；逻辑创造，方见精神。是故代码非止于功用，亦载文心，融设计、实现与叙事于一炉，犹《诗》之兴观群怨，皆可托于数行之间。',
+                '臣虽主营前后二端，然未尝忘怀运维之策、容器之术与云之平台。更修数据科学之硕学，深研算法之精微，管道之纤畅。诚如《道德经》所言："图难于其易，为大于其细"，臣每日所行，皆在混沌中求秩序，于权衡处创新篇——此乃臣平生之志也。',
+                '今托心于代码，寄志于云端，惟愿以技术立命，以创造安身，虽世变时移，此心不易。',
+            ],
+        },
     },
 
     projects: {
-        title: { en: 'My Projects', zh: '我的项目' },
-        subtitle: { en: 'Showcases', zh: '作品展示' },
+        title: { en: 'My Projects', zh: '累岁所成' },
+        subtitle: { en: 'Showcases', zh: '列艺斯观' },
         bottomSubtitle: {
             en: 'Each project represents a unique challenge and learning journey',
             zh: '每个项目都代表独特的挑战和学习历程',
         },
         description: {
             en: 'From Full Stack Web Development to 3D immersive experiences, from computer science to data science, to computer graphics — explore the diverse technology and solutions. Language, platform, framework agnostic.',
-            zh: '从全栈Web开发到3D沉浸式体验，从计算机科学到数据科学，再到计算机图形学——探索多元化的技术和解决方案。语言、平台、框架无关。',
+            zh: '从全栈Web开发到3D沉浸式体验，从计算机科学到数据科学，再到计算机图形学——探索多元化的技术和解决方案。',
         },
-        viewProject: { en: 'View Project', zh: '查看项目' },
-        viewAction: { en: 'View', zh: '查看' },
-        technologies: { en: 'Technologies', zh: '技术栈' },
-        totalProjects: { en: 'Total Projects', zh: '项目总数' },
-        exploreMap: { en: 'Map View', zh: '地图视图' },
-        exploreMapTooltip: {
-            en: 'Explore Projects on Interactive Map',
-            zh: '在交互式地图上探索项目',
-        },
-        showing: { en: 'Showing', zh: '显示' },
-        viewDetails: { en: 'View Details', zh: '查看详情' },
+        exploreMap: { en: 'Footprints', zh: '足迹' },
         liveDemo: { en: 'Live Demo', zh: '在线演示' },
         officialSite: { en: 'Official', zh: '官方网站' },
         githubRepo: { en: 'GitHub', zh: 'GitHub' },
         learnMore: { en: 'Learn more', zh: '了解更多' },
-
-        // 项目详情相关文本
-        detail: {
-            technologyStack: { en: 'Technology Stack', zh: '技术栈' },
-            projectStatistics: { en: 'Project Statistics', zh: '项目统计' },
-            subProjects: { en: 'Sub Projects', zh: '子项目' },
-            visitSite: { en: 'Visit Site', zh: '访问网站' },
-            closeModal: { en: 'Close modal', zh: '关闭弹窗' },
-        },
 
         // 项目过滤相关文本
         filter: {
@@ -82,20 +55,28 @@ export const contentData = {
 
         // 地图相关文本
         map: {
-            resetToDefaultView: { en: 'Reset to default view', zh: '重置为默认视图' },
+            resetToDefaultView: { en: 'Reset to default view', zh: '重置视图' },
             closeMap: { en: 'Close map', zh: '关闭地图' },
-            title: { en: 'Mapping Myself', zh: '我的足迹地图' },
+            title: { en: 'My Footprints', zh: '我的足迹' },
             zoomIn: { en: 'Zoom in', zh: '放大' },
             zoomOut: { en: 'Zoom out', zh: '缩小' },
-            locateMe: { en: 'Locate me', zh: '定位我' },
+            locateMe: { en: 'Locate me', zh: '我的位置' },
             categories: { en: 'Categories', zh: '分类' },
+        },
+
+        // 项目详情页面相关文本
+        detail: {
+            closeModal: { en: 'Close project details', zh: '关闭项目详情' },
+            technologyStack: { en: 'Technology Stack', zh: '技术栈' },
+            projectStatistics: { en: 'Project Statistics', zh: '项目统计' },
+            subProjects: { en: 'Sub Projects', zh: '子项目' },
         },
     },
 
     gallery: {
         // 移动端画廊配置
         mobile: {
-            title: { en: 'Gallery', zh: '画廊' },
+            title: { en: 'Gallery', zh: '浮生长廊' },
             subtitle: {
                 en: 'Each photo carries unique stories.',
                 zh: '每张照片都承载着独特的故事。',
@@ -123,7 +104,7 @@ export const contentData = {
 
         // 3D Gallery 配置
         gallery3D: {
-            title: { en: 'Corridor of Light and Shadow', zh: '光影走廊' },
+            title: { en: 'Corridor of Light and Shadow', zh: '浮生长廊' },
             subtitle: { en: 'Immersive 3D Art Experience', zh: '沉浸式3D艺术体验' },
             description: {
                 en: 'Enter a professionally curated virtual gallery space showcasing visual works in an interactive 3D environment.',
@@ -234,17 +215,7 @@ export const contentData = {
     ui: {
         language: { en: 'Language', zh: '语言' },
         theme: { en: 'Theme', zh: '主题' },
-        light: { en: 'Light', zh: '浅色' },
-        dark: { en: 'Dark', zh: '深色' },
-        audio: { en: 'Audio', zh: '音频' },
-        play: { en: 'Play', zh: '播放' },
-        pause: { en: 'Pause', zh: '暂停' },
-        mute: { en: 'Mute', zh: '静音' },
-        unmute: { en: 'Unmute', zh: '取消静音' },
         loading: { en: 'Loading...', zh: '加载中...' },
-        backToHome: { en: 'Back to Home', zh: '返回首页' },
-        darkMode: { en: 'Dark Mode', zh: '深色模式' },
-        lightMode: { en: 'Light Mode', zh: '浅色模式' },
         toggleTheme: { en: 'Toggle Theme', zh: '切换主题' },
         mobileScrollHint: { en: 'Swipe down to explore more...', zh: '向下滑动探索更多...' },
     },

@@ -180,8 +180,7 @@ export const useAppStore = create(
 
             // 获取当前语言的项目文本
             getProjectsText: () => {
-                const { language } = get();
-                return contentData[language]?.projects || contentData['en'].projects;
+                return contentData.projects;
             },
 
             // 获取项目描述（支持多语言和多段落）

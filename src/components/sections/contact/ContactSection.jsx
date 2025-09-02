@@ -6,24 +6,25 @@ import OptimizedImage from '../../ui/OptimizedImage';
 import './ContactSection.css';
 
 const ContactSection = ({ language }) => {
-    const { texts } = useAppStore();
-    const contactTexts = texts[language].contact;
+    const { getNewContent } = useAppStore();
+    const content = getNewContent();
+    const contactTexts = content.contact;
 
     const contactInfo = [
         {
             icon: 'ri-phone-fill',
-            title: contactTexts.contactMethods.phone.title,
+            title: contactTexts.contactMethods.phone.title[language] || contactTexts.contactMethods.phone.title.en,
             value: contactTexts.phone,
             href: `tel:${contactTexts.phone}`,
-            description: contactTexts.contactMethods.phone.description,
+            description: contactTexts.contactMethods.phone.description[language] || contactTexts.contactMethods.phone.description.en,
             shineColor: 'shine-green',
         },
         {
             icon: 'ri-map-pin-fill',
-            title: contactTexts.contactMethods.location.title,
-            value: contactTexts.location,
+            title: contactTexts.contactMethods.location.title[language] || contactTexts.contactMethods.location.title.en,
+            value: contactTexts.location[language] || contactTexts.location.en,
             href: 'https://maps.google.com/?q=Christchurch,New Zealand',
-            description: contactTexts.contactMethods.location.description,
+            description: contactTexts.contactMethods.location.description[language] || contactTexts.contactMethods.location.description.en,
             shineColor: 'shine-purple',
         },
     ];
@@ -31,9 +32,9 @@ const ContactSection = ({ language }) => {
     // 微信信息单独处理
     const wechatInfo = {
         icon: 'ri-wechat-fill',
-        title: contactTexts.contactMethods.wechat.title,
+        title: contactTexts.contactMethods.wechat.title[language] || contactTexts.contactMethods.wechat.title.en,
         value: contactTexts.contactMethods.wechat.id,
-        description: contactTexts.contactMethods.wechat.description,
+        description: contactTexts.contactMethods.wechat.description[language] || contactTexts.contactMethods.wechat.description.en,
         qrCode: '/wechat.jpg',
         onClick: e => {
             e.preventDefault();
@@ -70,19 +71,19 @@ const ContactSection = ({ language }) => {
         {
             icon: 'ri-github-fill',
             url: contactTexts.social.github.url,
-            label: contactTexts.social.github.label,
+            label: contactTexts.social.github.label[language] || contactTexts.social.github.label.en,
             iconColor: 'text-theme-primary hover:text-theme-accent',
         },
         {
             icon: 'ri-linkedin-fill',
             url: contactTexts.social.linkedin.url,
-            label: contactTexts.social.linkedin.label,
+            label: contactTexts.social.linkedin.label[language] || contactTexts.social.linkedin.label.en,
             iconColor: 'text-theme-primary hover:text-theme-accent',
         },
         {
             icon: 'ri-google-fill',
             url: contactTexts.social.email.url,
-            label: contactTexts.social.email.label,
+            label: contactTexts.social.email.label[language] || contactTexts.social.email.label.en,
             iconColor: 'text-theme-primary hover:text-theme-accent',
         },
     ];
@@ -96,10 +97,10 @@ const ContactSection = ({ language }) => {
                         level={1}
                         className="text-5xl md:text-6xl lg:text-7xl font-bold font-montserrat text-theme-section-title mb-3"
                     >
-                        {contactTexts.title}
+                        {contactTexts.title[language] || contactTexts.title.en}
                     </ThemeTitle>
                     <ThemeSubtitle className="text-xl md:text-2xl font-light italic mb-8 text-theme-text-secondary/70">
-                        {contactTexts.subtitle}
+                        {contactTexts.subtitle[language] || contactTexts.subtitle.en}
                     </ThemeSubtitle>
 
                     {/* 标题与内容之间的分隔线 */}
@@ -108,7 +109,7 @@ const ContactSection = ({ language }) => {
                     </div>
 
                     <ThemeDescription className="text-base max-w-2xl mx-auto text-theme-text-muted">
-                        {contactTexts.description}
+                        {contactTexts.description[language] || contactTexts.description.en}
                     </ThemeDescription>
                 </div>
 
@@ -295,7 +296,7 @@ const ContactSection = ({ language }) => {
                     {/* 社交媒体链接 - 居中 */}
                     <div className="text-center">
                         <ThemeTitle level={3} className="text-2xl font-bold mb-8">
-                            {contactTexts.connectWithMe}
+                            {contactTexts.connectWithMe[language] || contactTexts.connectWithMe.en}
                         </ThemeTitle>
                         <div className="flex justify-center space-x-6">
                             {socialLinks.map((social, index) => (
@@ -320,7 +321,7 @@ const ContactSection = ({ language }) => {
                 <div className="mt-16 text-center">
                     <div className="inline-flex items-center space-x-2 text-theme-text-white-60">
                         <span className="w-8 h-px bg-gradient-to-r from-transparent to-theme-text-white-60 decorative-line"></span>
-                        <span className="text-sm">{contactTexts.lookingForward}</span>
+                        <span className="text-sm">{contactTexts.lookingForward[language] || contactTexts.lookingForward.en}</span>
                         <span className="w-8 h-px bg-gradient-to-l from-transparent to-theme-text-white-60 decorative-line"></span>
                     </div>
                 </div>

@@ -7,6 +7,14 @@ import OptimizedImage from '../../ui/OptimizedImage';
 import useAppStore from '../../../store/useAppStore';
 import { ThemeTitle } from '../../ui/ThemeComponents';
 
+// 简化的多语言文本获取函数 - 处理对象和字符串类型的字段
+const getText = (field, language) => {
+    if (typeof field === 'string') {
+        return field;
+    }
+    return field?.[language] || field?.en || '';
+};
+
 // MapPin 图标组件
 const MapPin = ({ className = 'w-4 h-4' }) => (
     <svg
@@ -53,10 +61,7 @@ const ProjectSection = ({ language }) => {
         // 优先使用 type 字段进行分类
         if (project.type) {
             // 处理多语言类型字段
-            const category =
-                typeof project.type === 'object'
-                    ? project.type[language] || project.type.en
-                    : project.type;
+            const category = getText(project.type, language);
             if (!acc[category]) acc[category] = [];
             acc[category].push(project);
         } else if (project.tags && Array.isArray(project.tags)) {
@@ -67,7 +72,7 @@ const ProjectSection = ({ language }) => {
             });
         } else {
             // 都没有的情况下使用默认分类
-            const category = projectText.filter.other;
+            const category = getText(projectText.filter.other, language);
             if (!acc[category]) acc[category] = [];
             acc[category].push(project);
         }
@@ -214,10 +219,10 @@ const ProjectSection = ({ language }) => {
                             level={1}
                             className="text-5xl md:text-6xl lg:text-7xl font-bold font-montserrat text-theme-section-title mb-3"
                         >
-                            {projectText.title}
+                            {projectText.title[language] || projectText.title.en}
                         </ThemeTitle>
                         <h2 className="text-xl md:text-2xl text-theme-text-white-70 font-light italic">
-                            {projectText.subtitle}
+                            {projectText.subtitle[language] || projectText.subtitle.en}
                         </h2>
                     </div>
 
@@ -226,13 +231,12 @@ const ProjectSection = ({ language }) => {
                         <div
                             className="flex flex-col items-center justify-center cursor-pointer bg-gradient-to-br from-theme-primary/20 to-theme-secondary/20 border border-theme-primary/30 hover:border-theme-primary/50 transition-all duration-300 hover:scale-105 explore-map-button rounded-full backdrop-blur-sm"
                             onClick={() => setIsMapOpen(true)}
-                            title={projectText.exploreMapTooltip}
                         >
                             <div className="text-5xl xl:text-6xl text-theme-primary mb-1 flex items-center justify-center">
                                 🗺️
                             </div>
                             <div className="text-xs xl:text-sm text-theme-primary font-medium text-center leading-tight px-2">
-                                {projectText.exploreMap}
+                                {projectText.exploreMap[language] || projectText.exploreMap.en}
                             </div>
                         </div>
                     </div>
@@ -254,7 +258,7 @@ const ProjectSection = ({ language }) => {
                                 className={`category-filter-btn ${activeFilter === 'all' ? 'active' : ''} bg-theme-bg-white-10 text-theme-text-white-90 border-theme-text-white-50 hover:border-theme-text-white-70`}
                                 onClick={() => setActiveFilter('all')}
                             >
-                                {projectText.filter.all}
+                                {projectText.filter.all[language] || projectText.filter.all.en}
                             </button>
 
                             {/* 各个分类按钮 */}
@@ -287,37 +291,13 @@ const ProjectSection = ({ language }) => {
                                         Array.isArray(project.img) ? (
                                             <OptimizedImage
                                                 src={project.img[0]}
-                                                alt={
-                                                    project.name
-                                                        ? typeof project.name === 'object'
-                                                            ? project.name[language] ||
-                                                              project.name.en
-                                                            : project.name
-                                                        : project.title
-                                                          ? typeof project.title === 'object'
-                                                              ? project.title[language] ||
-                                                                project.title.en
-                                                              : project.title
-                                                          : ''
-                                                }
+                                                alt={getText(project.name, language)}
                                                 className="project-image"
                                             />
                                         ) : (
                                             <OptimizedImage
                                                 src={project.img}
-                                                alt={
-                                                    project.name
-                                                        ? typeof project.name === 'object'
-                                                            ? project.name[language] ||
-                                                              project.name.en
-                                                            : project.name
-                                                        : project.title
-                                                          ? typeof project.title === 'object'
-                                                              ? project.title[language] ||
-                                                                project.title.en
-                                                              : project.title
-                                                          : ''
-                                                }
+                                                alt={getText(project.name, language)}
                                                 className="project-image"
                                             />
                                         )
@@ -349,11 +329,8 @@ const ProjectSection = ({ language }) => {
                                     <div className="project-category-badge">
                                         {project.tags && Array.isArray(project.tags)
                                             ? project.tags.join(', ')
-                                            : project.type
-                                              ? typeof project.type === 'object'
-                                                  ? project.type[language] || project.type.en
-                                                  : project.type
-                                              : projectText.filter.other}
+                                            : getText(project.type, language) ||
+                                              getText(projectText.filter.other, language)}
                                     </div>
                                     {/* 年份标签 - 右上角 */}
                                     <div
@@ -377,42 +354,9 @@ const ProjectSection = ({ language }) => {
                                         level={3}
                                         className="project-title leading-snug line-clamp-2"
                                     >
-                                        {project.name
-                                            ? typeof project.name === 'object'
-                                                ? project.name[language] || project.name.en
-                                                : project.name
-                                            : project.title
-                                              ? typeof project.title === 'object'
-                                                  ? project.title[language] || project.title.en
-                                                  : project.title
-                                              : ''}
+                                        {getText(project.name, language)}
                                     </ThemeTitle>
 
-                                    {/* 项目统计信息已移除 - 卡片上不显示统计和技术栈信息 */}
-                                    {/* {project.stats && (
-                                    <div className="project-stats mb-3">
-                                        <div className="flex flex-wrap gap-4 text-xs text-theme-text-muted">
-                                            {project.stats.projects && (
-                                                <span>📊 {project.stats.projects} projects</span>
-                                            )}
-                                            {project.stats.locations && (
-                                                <span>📍 {project.stats.locations}</span>
-                                            )}
-                                            {project.stats.clients && (
-                                                <span>🏢 {project.stats.clients}</span>
-                                            )}
-                                            {project.stats.sectors && (
-                                                <span>🏛️ {project.stats.sectors}</span>
-                                            )}
-                                            {project.stats.pages && (
-                                                <span>� {project.stats.pages}</span>
-                                            )}
-                                            {project.stats.uptime && (
-                                                <span>⚡ {project.stats.uptime} uptime</span>
-                                            )}
-                                        </div>
-                                    </div>
-                                )} */}
                                 </div>
                             </div>
                         ))}
@@ -422,10 +366,11 @@ const ProjectSection = ({ language }) => {
                     <div className="text-center py-12 border-t border-theme-border-white-10 bg-black/20 backdrop-blur-sm rounded-xl mt-8">
                         <div className="max-w-4xl mx-auto">
                             <p className="text-theme-text-white-80 text-lg mb-3 font-medium">
-                                {projectText.bottomSubtitle}
+                                {projectText.bottomSubtitle[language] ||
+                                    projectText.bottomSubtitle.en}
                             </p>
                             <p className="text-theme-text-white-60 text-base leading-relaxed">
-                                {projectText.description}
+                                {projectText.description[language] || projectText.description.en}
                             </p>
                         </div>
                     </div>

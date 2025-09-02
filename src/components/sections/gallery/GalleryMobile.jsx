@@ -20,7 +20,9 @@ import textureSystem from '../../../utils/texture';
 
 const GalleryMobile = ({ language = 'zh' }) => {
     const galleryData = useAppStore(state => state.getAllGalleryItems());
-    const texts = useAppStore(state => state.texts);
+    const { getNewContent } = useAppStore();
+    const content = getNewContent();
+    const galleryText = content.gallery;
     const { openPhotoSwipe } = usePhotoSwipe();
     const containerRef = useRef(null);
     const [optimizedImages, setOptimizedImages] = useState(new Map());
@@ -118,24 +120,24 @@ const GalleryMobile = ({ language = 'zh' }) => {
           overflow-y: auto;
           overflow-x: hidden;
           overscroll-behavior: none;
-          
+
           /* iOS 安全区域支持 - 优化移动端布局 */
           padding-top: max(1rem, env(safe-area-inset-top));
           padding-bottom: max(2rem, env(safe-area-inset-bottom));
           padding-left: env(safe-area-inset-left);
           padding-right: env(safe-area-inset-right);
-          
+
           /* 确保在iOS上平滑滚动 */
           -webkit-overflow-scrolling: touch;
-          
+
           /* 防止选择文本 */
           -webkit-user-select: none;
           user-select: none;
-          
+
           /* 确保触摸滚动正常工作 */
           touch-action: pan-y;
         }
-        
+
         /* 自定义滚动条样式 */
         .gallery-mobile-container::-webkit-scrollbar {
           width: 4px;
@@ -150,7 +152,7 @@ const GalleryMobile = ({ language = 'zh' }) => {
         .gallery-mobile-container::-webkit-scrollbar-thumb:hover {
           background: rgba(255, 255, 255, 0.3);
         }
-        
+
         /* 移动端特殊处理 */
         @media (max-width: 768px) {
           .gallery-mobile-container {
@@ -158,11 +160,11 @@ const GalleryMobile = ({ language = 'zh' }) => {
             scrollbar-width: none;
             -ms-overflow-style: none;
           }
-          
+
           .gallery-mobile-container::-webkit-scrollbar {
             display: none;
           }
-          
+
           /* 确保图片点击区域可用 */
           .gallery-image-item {
             touch-action: manipulation;
@@ -174,14 +176,10 @@ const GalleryMobile = ({ language = 'zh' }) => {
                 {/* 标题部分 - 使用store中的i18n文案 */}
                 <div className="text-center mb-8 px-4">
                     <h2 className="text-3xl md:text-4xl font-bold text-theme-text-primary mb-4">
-                        {texts[language]?.gallery?.mobile?.title ||
-                            (language === 'zh' ? '作品集' : 'Gallery')}
+                        {galleryText.mobile.title[language] || galleryText.mobile.title.en}
                     </h2>
                     <p className="text-theme-text-secondary max-w-2xl mx-auto leading-relaxed">
-                        {texts[language]?.gallery?.mobile?.subtitle ||
-                            (language === 'zh'
-                                ? '记录生活中的美好瞬间，每一张照片都承载着独特的故事与回忆。'
-                                : 'Each photo carries unique stories.')}
+                        {galleryText.mobile.subtitle[language] || galleryText.mobile.subtitle.en}
                     </p>
                 </div>
 
@@ -253,14 +251,10 @@ const GalleryMobile = ({ language = 'zh' }) => {
                                 </svg>
                             </div>
                             <div className="text-theme-text-secondary text-lg mb-2">
-                                {texts[language]?.gallery?.mobile?.noContent ||
-                                    (language === 'zh'
-                                        ? '暂无图片内容'
-                                        : 'No gallery items available')}
+                                {galleryText.mobile.noContent[language] || galleryText.mobile.noContent.en}
                             </div>
                             <div className="text-theme-text-secondary/60 text-sm">
-                                {texts[language]?.gallery?.mobile?.tryAgain ||
-                                    (language === 'zh' ? '请稍后再试' : 'Please try again later')}
+                                {galleryText.mobile.tryAgain[language] || galleryText.mobile.tryAgain.en}
                             </div>
                         </div>
                     )}

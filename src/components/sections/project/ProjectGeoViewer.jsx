@@ -256,7 +256,7 @@ const ProjectGeoViewer = ({ isOpen, onClose, language = 'en' }) => {
 
                 container.innerHTML = `
           <div class="control-group">
-            <button class="control-btn zoom-in" title="${projectText.map.zoomIn}">
+            <button class="control-btn zoom-in" title="${projectText.map.zoomIn[language] || projectText.map.zoomIn.en}">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <circle cx="11" cy="11" r="8"></circle>
                 <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
@@ -264,14 +264,14 @@ const ProjectGeoViewer = ({ isOpen, onClose, language = 'en' }) => {
                 <line x1="8" y1="11" x2="14" y2="11"></line>
               </svg>
             </button>
-            <button class="control-btn zoom-out" title="${projectText.map.zoomOut}">
+            <button class="control-btn zoom-out" title="${projectText.map.zoomOut[language] || projectText.map.zoomOut.en}">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <circle cx="11" cy="11" r="8"></circle>
                 <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
                 <line x1="8" y1="11" x2="14" y2="11"></line>
               </svg>
             </button>
-            <button class="control-btn reset-view" title="${projectText.map.resetToDefaultView}">
+            <button class="control-btn reset-view" title="${projectText.map.resetToDefaultView[language] || projectText.map.resetToDefaultView.en}">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"></path>
                 <path d="M21 3v5h-5"></path>
@@ -279,7 +279,7 @@ const ProjectGeoViewer = ({ isOpen, onClose, language = 'en' }) => {
                 <path d="M3 21v-5h5"></path>
               </svg>
             </button>
-            <button class="control-btn locate-user" title="${projectText.map.locateMe}">
+            <button class="control-btn locate-user" title="${projectText.map.locateMe[language] || projectText.map.locateMe.en}">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <polygon points="3 11 22 2 13 21 11 13 3 11"></polygon>
               </svg>
@@ -387,6 +387,7 @@ const ProjectGeoViewer = ({ isOpen, onClose, language = 'en' }) => {
         projectText.map.zoomIn,
         projectText.map.zoomOut,
         projectText.map.locateMe,
+        language,
     ]);
 
     // 创建项目弹窗内容（深色主题）
@@ -468,7 +469,7 @@ const ProjectGeoViewer = ({ isOpen, onClose, language = 'en' }) => {
                 border: 1px solid ${themeColors.primary}40;
                 transition: all 0.3s ease;
               " onmouseover="this.style.background='${themeColors.primary}30'; this.style.borderColor='${themeColors.primary}60';" onmouseout="this.style.background='linear-gradient(45deg, ${themeColors.primary}20, transparent)'; this.style.borderColor='${themeColors.primary}40';">
-                ${language === 'en' ? projectText.learnMore : projectText.learnMore}
+                ${projectText.learnMore[language] || projectText.learnMore.en}
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-left: 6px;">
                   <path d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
@@ -867,7 +868,7 @@ const ProjectGeoViewer = ({ isOpen, onClose, language = 'en' }) => {
             - hover时红色提示退出操作 */}
                 <CornerCloseButton
                     onClick={onClose}
-                    ariaLabel={projectText.map.closeMap}
+                    ariaLabel={projectText.map.closeMap[language] || projectText.map.closeMap.en}
                     // 地图界面配置 - 保持与ProjectDetail视觉一致性
                     iconSize="w-16 h-16" // 与ProjectDetail相同的图标大小
                     iconColor="text-white" // 纯白色图标
@@ -884,12 +885,12 @@ const ProjectGeoViewer = ({ isOpen, onClose, language = 'en' }) => {
 
                 {/* 左下角标题 - 使用地图高对比度样式 */}
                 <div className="absolute bottom-8 left-4 z-10 map-info-panel">
-                    <h2 className="text-sm font-bold">{projectText.map.title}</h2>
+                    <h2 className="text-sm font-bold">{projectText.map.title[language] || projectText.map.title.en}</h2>
                 </div>
 
                 {/* 图例 - 使用地图高对比度样式 */}
                 <div className="absolute bottom-4 right-4 map-legend-panel">
-                    <h4 className="text-sm font-semibold mb-2">{projectText.map.categories}</h4>
+                    <h4 className="text-sm font-semibold mb-2">{projectText.map.categories[language] || projectText.map.categories.en}</h4>
                     <div className="space-y-1">
                         {Object.entries(typeColors).map(([type, color]) => (
                             <div key={type} className="flex items-center gap-2">
