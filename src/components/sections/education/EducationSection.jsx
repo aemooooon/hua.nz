@@ -37,11 +37,10 @@ const Calendar = ({ className = 'w-4 h-4' }) => (
 Calendar.propTypes = { className: PropTypes.string };
 
 const EducationSection = ({ language }) => {
-    const { getContent } = useAppStore();
+    const { getEducationData } = useAppStore();
     const [hoveredProject, setHoveredProject] = useState(null);
 
-    const content = getContent();
-    const educationData = content.education;
+    const educationData = getEducationData();
 
     // 获取成绩颜色的函数
     const getGradeColor = grade => {
@@ -96,13 +95,13 @@ const EducationSection = ({ language }) => {
                                         level={3}
                                         className="text-2xl xl:text-3xl text-theme-section-title font-bold leading-tight"
                                     >
-                                        {degree.degree}
+                                        {degree.degree[language] || degree.degree.en}
                                     </ThemeTitle>
                                     {degree.degreeHonor && (
                                         <div className="flex justify-start">
                                             <span className="glass-card inline-flex items-center gap-2 px-3 py-2 text-theme-primary text-sm font-bold">
                                                 <span className="text-theme-primary">🏆</span>
-                                                <span>{educationData.labels.withDistinction}</span>
+                                                <span>{educationData.labels.withDistinction[language] || educationData.labels.withDistinction.en}</span>
                                             </span>
                                         </div>
                                     )}
@@ -112,11 +111,11 @@ const EducationSection = ({ language }) => {
                                 <div className="space-y-4">
                                     <div className="flex items-center text-theme-text-white-70 text-base xl:text-lg">
                                         <MapPin className="w-5 h-5 xl:w-6 xl:h-6 mr-3 text-theme-primary flex-shrink-0" />
-                                        <span>{degree.location}</span>
+                                        <span>{degree.location[language] || degree.location.en}</span>
                                     </div>
                                     <div className="flex items-center text-theme-text-white-70 text-base xl:text-lg">
                                         <Calendar className="w-5 h-5 xl:w-6 xl:h-6 mr-3 text-theme-primary flex-shrink-0" />
-                                        <span>{degree.period}</span>
+                                        <span>{degree.period[language] || degree.period.en}</span>
                                     </div>
                                 </div>
                             </div>
@@ -129,7 +128,7 @@ const EducationSection = ({ language }) => {
                                         level={4}
                                         className="text-lg xl:text-xl text-theme-text-white-90 font-semibold leading-tight"
                                     >
-                                        {degree.institution}
+                                        {degree.institution[language] || degree.institution.en}
                                     </ThemeTitle>
                                 </div>
 
@@ -137,7 +136,7 @@ const EducationSection = ({ language }) => {
                                 <div className="rounded-xl p-4 self-end">
                                     <OptimizedImage
                                         src={degree.logo}
-                                        alt={`${degree.institution} Logo`}
+                                        alt={`${degree.institution[language] || degree.institution.en} Logo`}
                                         className="w-32 h-32 xl:w-40 xl:h-40 object-contain opacity-90 hover:opacity-100 transition-opacity duration-300"
                                     />
                                 </div>
@@ -152,13 +151,13 @@ const EducationSection = ({ language }) => {
                                     level={3}
                                     className="text-xl sm:text-2xl text-theme-section-title font-bold leading-tight"
                                 >
-                                    {degree.degree}
+                                    {degree.degree[language] || degree.degree.en}
                                 </ThemeTitle>
                                 {degree.degreeHonor && (
                                     <div className="flex justify-center">
                                         <span className="glass-card inline-flex items-center gap-2 px-3 py-2 text-theme-primary text-sm font-bold">
                                             <span className="text-theme-primary">🏆</span>
-                                            <span>{educationData.labels.withDistinction}</span>
+                                            <span>{educationData.labels.withDistinction[language] || educationData.labels.withDistinction.en}</span>
                                         </span>
                                     </div>
                                 )}
@@ -169,7 +168,7 @@ const EducationSection = ({ language }) => {
                                 <div className="rounded-xl p-4">
                                     <OptimizedImage
                                         src={degree.logo}
-                                        alt={`${degree.institution} Logo`}
+                                        alt={`${degree.institution[language] || degree.institution.en} Logo`}
                                         className="w-24 h-24 sm:w-32 sm:h-32 object-contain opacity-90 hover:opacity-100 transition-opacity duration-300"
                                     />
                                 </div>
@@ -182,16 +181,16 @@ const EducationSection = ({ language }) => {
                                         level={4}
                                         className="text-base sm:text-lg text-theme-text-white-90 font-semibold leading-tight"
                                     >
-                                        {degree.institution}
+                                        {degree.institution[language] || degree.institution.en}
                                     </ThemeTitle>
                                 </div>
                                 <div className="flex items-center justify-center sm:justify-start text-theme-text-white-70 text-sm sm:text-base">
                                     <MapPin className="w-4 h-4 sm:w-5 sm:h-5 mr-2 text-theme-primary flex-shrink-0" />
-                                    <span>{degree.location}</span>
+                                    <span>{degree.location[language] || degree.location.en}</span>
                                 </div>
                                 <div className="flex items-center justify-center sm:justify-start text-theme-text-white-70 text-sm sm:text-base">
                                     <Calendar className="w-4 h-4 sm:w-5 sm:h-5 mr-2 text-theme-primary flex-shrink-0" />
-                                    <span>{degree.period}</span>
+                                    <span>{degree.period[language] || degree.period.en}</span>
                                 </div>
                             </div>
                         </div>
@@ -205,7 +204,7 @@ const EducationSection = ({ language }) => {
                                 className="text-xl sm:text-2xl font-bold mb-6 flex items-center text-theme-text-white-90"
                             >
                                 <span className="w-2 h-6 bg-theme-primary rounded-full mr-3"></span>
-                                {educationData.labels.academicRecords}
+                                {educationData.labels.academicRecords[language] || educationData.labels.academicRecords.en}
                             </ThemeTitle>
 
                             {/* 总体统计 */}
@@ -215,15 +214,15 @@ const EducationSection = ({ language }) => {
                                         {degree.totalCredits}
                                     </div>
                                     <div className="text-theme-text-white-70 text-sm">
-                                        {educationData.labels.totalCredits}
+                                        {educationData.labels.totalCredits[language] || educationData.labels.totalCredits.en}
                                     </div>
                                 </div>
                                 <div className="glass-card p-4 text-center">
                                     <div className="text-2xl font-bold text-theme-secondary">
-                                        {degree.gpa}
+                                        {degree.gpa[language] || degree.gpa.en}
                                     </div>
                                     <div className="text-theme-text-white-70 text-sm">
-                                        {educationData.labels.gpa}
+                                        {educationData.labels.gpa[language] || educationData.labels.gpa.en}
                                     </div>
                                 </div>
                                 <div className="glass-card p-4 text-center">
@@ -234,7 +233,7 @@ const EducationSection = ({ language }) => {
                                         )}
                                     </div>
                                     <div className="text-theme-text-white-70 text-sm">
-                                        {educationData.labels.totalCourses}
+                                        {educationData.labels.totalCourses[language] || educationData.labels.totalCourses.en}
                                     </div>
                                 </div>
                             </div>
@@ -248,7 +247,7 @@ const EducationSection = ({ language }) => {
                                     >
                                         <h5 className="text-lg font-bold mb-4 flex items-center text-theme-text-white-90">
                                             <span className="text-2xl mr-2">📚</span>
-                                            {semester.year} - {semester.semester}
+                                            {semester.year} - {typeof semester.semester === 'string' ? semester.semester : (semester.semester[language] || semester.semester.en)}
                                         </h5>
                                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
                                             {semester.courses.map((course, courseIdx) => (
@@ -258,12 +257,12 @@ const EducationSection = ({ language }) => {
                                                 >
                                                     <div className="flex-1">
                                                         <div className="font-medium text-sm leading-tight text-theme-text-white-90">
-                                                            {course.code} - {course.name}
+                                                            {course.code} - {typeof course.name === 'string' ? course.name : (course.name[language] || course.name.en)}
                                                         </div>
                                                         <div className="text-xs mt-1 text-theme-text-white-70">
                                                             {language === 'en'
-                                                                ? `${educationData.labels.level} ${course.level} • ${course.credits} ${educationData.labels.credits}`
-                                                                : `${educationData.labels.level} ${course.level} • ${course.credits} ${educationData.labels.credits}`}
+                                                                ? `${educationData.labels.level[language] || educationData.labels.level.en} ${course.level} • ${course.credits} ${educationData.labels.credits[language] || educationData.labels.credits.en}`
+                                                                : `${educationData.labels.level[language] || educationData.labels.level.en} ${course.level} • ${course.credits} ${educationData.labels.credits[language] || educationData.labels.credits.en}`}
                                                         </div>
                                                     </div>
                                                     <div
@@ -287,7 +286,7 @@ const EducationSection = ({ language }) => {
                             className="text-xl sm:text-2xl font-bold text-theme-text-white-90 mb-6 flex items-center"
                         >
                             <span className="w-2 h-6 bg-theme-primary rounded-full mr-3"></span>
-                            {educationData.labels.capstoneProjects}
+                            {educationData.labels.capstoneProjects[language] || educationData.labels.capstoneProjects.en}
                         </ThemeTitle>
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
                             {degree.capstoneProjects &&
@@ -320,7 +319,7 @@ const EducationSection = ({ language }) => {
                                             {/* 项目图片 */}
                                             <OptimizedImage
                                                 src={project.image}
-                                                alt={project.name}
+                                                alt={typeof project.name === 'string' ? project.name : (project.name[language] || project.name.en)}
                                                 className="w-full h-full object-cover"
                                             />
 
@@ -330,7 +329,7 @@ const EducationSection = ({ language }) => {
                                             {/* 项目名称 */}
                                             <div className="absolute bottom-3 left-3 right-3">
                                                 <h5 className="text-theme-text-white-100 font-bold text-sm sm:text-base drop-shadow-lg">
-                                                    {project.name}
+                                                    {typeof project.name === 'string' ? project.name : (project.name[language] || project.name.en)}
                                                 </h5>
                                             </div>
 
@@ -358,7 +357,7 @@ const EducationSection = ({ language }) => {
                                             <div className="absolute inset-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
                                                 <div className="glass-card text-center px-4 py-2 w-full h-full flex items-center justify-center">
                                                     <p className="text-theme-text-white-90 text-sm leading-relaxed">
-                                                        {project.description}
+                                                        {typeof project.description === 'string' ? project.description : (project.description[language] || project.description.en)}
                                                     </p>
                                                 </div>
                                             </div>
@@ -376,7 +375,7 @@ const EducationSection = ({ language }) => {
                                 className="text-xl sm:text-2xl font-bold text-theme-text-white-90 mb-6 flex items-center"
                             >
                                 <span className="w-2 h-6 bg-theme-primary rounded-full mr-3"></span>
-                                {educationData.labels.academicAwards}
+                                {educationData.labels.academicAwards[language] || educationData.labels.academicAwards.en}
                             </ThemeTitle>
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                                 {degree.awards &&
@@ -398,7 +397,7 @@ const EducationSection = ({ language }) => {
                                                 {/* 奖项图片 */}
                                                 <OptimizedImage
                                                     src={award.image}
-                                                    alt={award.title}
+                                                    alt={typeof award.title === 'string' ? award.title : (award.title[language] || award.title.en)}
                                                     className="w-full h-full object-cover"
                                                 />
 
@@ -415,7 +414,7 @@ const EducationSection = ({ language }) => {
                                                 {/* 奖项名称 */}
                                                 <div className="absolute bottom-3 left-3 right-3">
                                                     <h5 className="text-theme-text-white-100 font-bold text-sm sm:text-base drop-shadow-lg">
-                                                        {award.title}
+                                                        {typeof award.title === 'string' ? award.title : (award.title[language] || award.title.en)}
                                                     </h5>
                                                 </div>
 
@@ -426,7 +425,7 @@ const EducationSection = ({ language }) => {
                                                             🏆
                                                         </div>
                                                         <h5 className="text-theme-primary font-bold text-lg mb-2">
-                                                            {award.title}
+                                                            {typeof award.title === 'string' ? award.title : (award.title[language] || award.title.en)}
                                                         </h5>
                                                         <p className="text-theme-text-white-70 text-sm">
                                                             {award.year}
@@ -434,7 +433,8 @@ const EducationSection = ({ language }) => {
                                                         <div className="mt-3 text-xs text-theme-text-white-80">
                                                             {
                                                                 educationData.labels
-                                                                    .academicExcellenceAward
+                                                                    .academicExcellenceAward[language] || educationData.labels
+                                                                    .academicExcellenceAward.en
                                                             }
                                                         </div>
                                                     </div>
@@ -461,10 +461,10 @@ const EducationSection = ({ language }) => {
                             level={1}
                             className="text-5xl md:text-6xl lg:text-7xl font-bold font-montserrat text-theme-section-title mb-3"
                         >
-                            {educationData.title}
+                            {educationData.title[language] || educationData.title.en}
                         </ThemeTitle>
                         <ThemeSubtitle className="text-xl md:text-2xl font-light italic">
-                            {educationData.subtitle}
+                            {educationData.subtitle[language] || educationData.subtitle.en}
                         </ThemeSubtitle>
                     </div>
                 </div>

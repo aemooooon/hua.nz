@@ -1,6 +1,14 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { sectionsData, contentData, projectsData, footprintsData, galleryData } from './index.js';
+import {
+    sectionsData,
+    contentData,
+    newContentData,
+    educationData,
+    projectsData,
+    footprintsData,
+    galleryData,
+} from './index.js';
 
 export const useAppStore = create(
     persist(
@@ -120,6 +128,56 @@ export const useAppStore = create(
             getContent: () => {
                 const { language } = get();
                 return contentData[language];
+            },
+
+            // 新的内容访问方法 - 支持标准化多语言结构
+            getNewContent: () => {
+                const { language } = get();
+                return newContentData;
+            },
+
+            // 获取标准化多语言文本
+            getText: path => {
+                const { language } = get();
+                const pathArray = path.split('.');
+                let current = newContentData;
+
+                for (const key of pathArray) {
+                    if (current && current[key]) {
+                        current = current[key];
+                    } else {
+                        return '';
+                    }
+                }
+
+                // 如果最终结果是多语言对象，返回当前语言的文本
+                if (current && typeof current === 'object' && current[language]) {
+                    return current[language];
+                }
+
+                // 如果没有当前语言，尝试英文
+                if (current && typeof current === 'object' && current.en) {
+                    return current.en;
+                }
+
+                return current || '';
+            },
+
+            // 获取教育数据
+            getEducationData: () => {
+                // 从 content-new.js 获取界面文本
+                const educationTexts = newContentData.education;
+
+                // 从 education.js 获取学历数据
+                const degrees = educationData;
+
+                // 合并数据
+                return {
+                    title: educationTexts.title,
+                    subtitle: educationTexts.subtitle,
+                    labels: educationTexts.labels,
+                    degrees: degrees
+                };
             },
 
             // 获取当前语言的项目文本

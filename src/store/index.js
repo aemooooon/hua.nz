@@ -7,6 +7,10 @@ export { sectionsData } from './sections.js';
 
 // 国际化内容数据
 export { contentData } from './content.js';
+export { contentData as newContentData } from './content-new.js';
+
+// 教育数据 (独立)
+export { educationData } from './education.js';
 
 // 国际化数据
 export { projectsData } from './projects.js';
