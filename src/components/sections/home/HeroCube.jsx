@@ -24,8 +24,8 @@ const HeroCube = ({ enableOpeningAnimation = false, onAnimationComplete, onReady
     const hasBeenDraggedRef = useRef(false); // 跟踪是否已被用户拖拽过
     const preloadedTexturesRef = useRef(null); // 存储预加载的纹理结果
 
-    const { getContent, getSectionsData } = useAppStore();
-    const content = getContent();
+    const { getNewContent, getSectionsData } = useAppStore();
+    const content = getNewContent();
     const { getThemeColors } = useTheme();
     const themeColors = getThemeColors();
 

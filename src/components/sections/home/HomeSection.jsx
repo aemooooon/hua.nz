@@ -14,8 +14,8 @@ const HomeSection = ({
     // 开场动画相关属性
     enableOpeningAnimation = false,
 }) => {
-    const { getContent, toggleLanguage } = useAppStore();
-    const content = getContent();
+    const { getNewContent, toggleLanguage } = useAppStore();
+    const content = getNewContent();
     const { toggleTheme, getCurrentTheme } = useTheme();
     const currentThemeConfig = getCurrentTheme();
     const [showToggleButtons, setShowToggleButtons] = useState(false);
@@ -86,7 +86,7 @@ const HomeSection = ({
                             enableOpeningAnimation ? 'shimmer-text' : ''
                         }`}
                     >
-                        {content.home.name}
+                        {content.home.name[language] || content.home.name.en}
                     </ThemeTitle>
                     {/* Title - 绝对定位强制居中 */}
                     <ThemeSubtitle
@@ -101,7 +101,7 @@ const HomeSection = ({
                             whiteSpace: 'nowrap',
                         }}
                     >
-                        {content.home.title}
+                        {content.home.title[language] || content.home.title.en}
                     </ThemeSubtitle>
                 </div>
             </div>
@@ -123,7 +123,7 @@ const HomeSection = ({
             >
                 <div className="text-center">
                     <p className="text-base sm:text-lg md:text-xl lg:text-2xl font-light text-theme-primary tracking-wider leading-relaxed transition-colors duration-300">
-                        {content.home.slogan}
+                        {content.home.slogan[language] || content.home.slogan.en}
                     </p>
                 </div>
             </div>
@@ -160,7 +160,7 @@ const HomeSection = ({
                             <button
                                 onClick={toggleLanguage}
                                 className="w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300 group hover:scale-110"
-                                title={`${content.ui.language}: ${language === 'en' ? 'English' : '中文'}`}
+                                title={`${content.ui.language[language] || content.ui.language.en}: ${language === 'en' ? 'English' : '中文'}`}
                             >
                                 <FaGlobe className="text-theme-primary text-xl group-hover:rotate-180 transition-transform duration-300" />
                             </button>
@@ -185,7 +185,7 @@ const HomeSection = ({
                             <button
                                 onClick={toggleTheme}
                                 className="w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300 group hover:scale-110"
-                                title={`${content.ui.toggleTheme}: ${currentThemeConfig.name[language] || currentThemeConfig.name.en}`}
+                                title={`${content.ui.toggleTheme[language] || content.ui.toggleTheme.en}: ${currentThemeConfig.name[language] || currentThemeConfig.name.en}`}
                             >
                                 <FaPalette className="text-theme-primary text-xl group-hover:rotate-180 transition-transform duration-300" />
                             </button>
@@ -202,7 +202,7 @@ const HomeSection = ({
                         }}
                     >
                         <p className="text-white/70 text-sm font-medium whitespace-nowrap animate-pulse">
-                            {content.ui.mobileScrollHint}
+                            {content.ui.mobileScrollHint[language] || content.ui.mobileScrollHint.en}
                         </p>
                     </div>
                 </>
