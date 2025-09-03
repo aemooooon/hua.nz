@@ -215,20 +215,36 @@
     animation-delay: 7s;
 }
 
-/* ========================================
-   LCP优化和字体加载优化
-   ======================================== */
-
-/* 确保标题在字体加载前可见，避免FOIT (Flash of Invisible Text) */
+/* LCP优化：确保标题立即可见，移除阻塞动画 */
 .font-beauRivage {
     font-display: swap;
 }
 
-/* 为LCP元素提供初始可见状态 */
+/* LCP关键元素：确保H1立即可见，无阻塞动画 */
 h1.text-theme-text-primary {
     visibility: visible !important;
     opacity: 1 !important;
+    transform: none !important;
+    filter: none !important;
 }
+
+/* 延迟shimmer效果避免阻塞首次绘制 */
+.shimmer-text {
+    animation: textShimmer 3s ease-in-out infinite;
+    animation-delay: 2s; /* 从7s减少到2s，但仍避免阻塞LCP */
+}
+
+/* 立即显示的标题样式 - 无动画版本 */
+.lcp-optimized-title {
+    visibility: visible;
+    opacity: 1;
+    transform: translateX(-50%) translateY(0) scale(1);
+    filter: none;
+}
+
+/* ========================================
+   非阻塞动画 - 仅在LCP完成后应用
+   ======================================== */
 
 /* ========================================
    标准模式动画 - 缺失的关键帧定义

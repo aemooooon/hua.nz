@@ -76,11 +76,11 @@ const CircularLoadingIndicator = ({
                         left: -40, // ⬅️ 向左偏移以居中
                         borderRadius: '50%', // 🔵 确保完美圆形
                         // 🌈 4层径向渐变：透明 → 0.25 → 0.15 → 0.08 → 透明
-                        background: `radial-gradient(circle, 
-                            transparent 60%, 
-                            rgba(var(--theme-primary-rgb), 0.25) 75%, 
-                            rgba(var(--theme-primary-rgb), 0.15) 85%, 
-                            rgba(var(--theme-primary-rgb), 0.08) 92%, 
+                        background: `radial-gradient(circle,
+                            transparent 60%,
+                            rgba(var(--theme-primary-rgb), 0.25) 75%,
+                            rgba(var(--theme-primary-rgb), 0.15) 85%,
+                            rgba(var(--theme-primary-rgb), 0.08) 92%,
                             transparent 100%
                         )`,
                         // ✨ 3层box-shadow创造立体光晕效果
@@ -155,7 +155,7 @@ const CircularLoadingIndicator = ({
                         zIndex: 20,
                     }}
                 >
-                    {/* 简化文字，只显示Loading */}
+                    {/* Loading文字保持原有样式和呼吸效果 */}
                     <span className="text-white/90 text-lg font-medium drop-shadow-md">
                         Loading...
                     </span>

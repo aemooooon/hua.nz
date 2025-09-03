@@ -26,7 +26,7 @@ const HomeSection = ({
     const [cubeReady, setCubeReady] = useState(false);
 
     useEffect(() => {
-        // 400ms后开始预加载Cube，600ms后显示
+        // 恢复Cube加载逻辑，但保持文字立即显示
         const preloadTimer = setTimeout(() => {
             setCubeLoading(true);
         }, 400);
@@ -38,7 +38,7 @@ const HomeSection = ({
         // Show toggle buttons after a delay
         const toggleButtonTimer = setTimeout(() => {
             setShowToggleButtons(true);
-        }, 2000); // Show after 2 seconds
+        }, 2000);
 
         return () => {
             clearTimeout(preloadTimer);
@@ -64,41 +64,36 @@ const HomeSection = ({
                 minHeight: '100dvh', // 动态视口高度确保在移动端正确显示
             }}
         >
-            {/* 主内容优先渲染 */}
-            <div
-                className={`absolute top-8 left-1/2 transform -translate-x-1/2 text-center text-white z-50 w-full px-4 ${
-                    enableOpeningAnimation ? 'grand-title-entrance' : ''
-                }`}
-                style={
-                    !enableOpeningAnimation
-                        ? {
-                              animation: 'movieTitleEntrance 2s ease-out forwards 0.3s', // 缩短动画时间和延迟
-                              animationFillMode: 'both',
-                          }
-                        : {}
-                }
-            >
+            {/* 主内容优先渲染 - 完全移除动画 */}
+            <div className="absolute top-8 left-1/2 transform -translate-x-1/2 text-center text-white z-50 w-full px-4">
                 <div className="flex flex-col items-center justify-center w-full relative">
-                    {/* 姓名 */}
+                    {/* 姓名 - LCP优化：完全静态，立即可见 */}
                     <ThemeTitle
                         level={1}
-                        className={`text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold font-beauRivage hover:text-theme-primary transition-colors duration-300 mb-2 sm:mb-4 leading-tight text-center w-full mt-12 ${
-                            enableOpeningAnimation ? 'shimmer-text' : ''
-                        }`}
+                        className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold font-beauRivage mb-2 sm:mb-4 leading-tight text-center w-full mt-12"
+                        style={{
+                            // LCP优化：确保立即可见，无任何动画或变换
+                            visibility: 'visible',
+                            opacity: 1,
+                            transform: 'none',
+                            filter: 'none',
+                            transition: 'none'
+                        }}
                     >
                         {content.home.name[language] || content.home.name.en}
                     </ThemeTitle>
-                    {/* Title - 绝对定位强制居中 */}
+                    {/* 副标题 - 移除所有动画和变换 */}
                     <ThemeSubtitle
-                        className={`text-lg sm:text-xl md:text-2xl lg:text-3xl font-mono text-theme-accent mt-48 ${
-                            enableOpeningAnimation ? 'grand-subtitle-entrance' : ''
-                        }`}
+                        className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-mono text-theme-accent mt-48"
                         style={{
                             position: 'absolute',
                             left: '50%',
                             transform: 'translateX(-50%)',
                             width: 'max-content',
                             whiteSpace: 'nowrap',
+                            visibility: 'visible',
+                            opacity: 1,
+                            transition: 'none'
                         }}
                     >
                         {content.home.title[language] || content.home.title.en}
@@ -106,23 +101,18 @@ const HomeSection = ({
                 </div>
             </div>
 
-            {/* Slogan - 屏幕下方 */}
+            {/* 口号 - 移除所有动画 */}
             <div
-                className={`absolute left-1/2 transform -translate-x-1/2 text-center z-50 w-full px-4 ${
-                    enableOpeningAnimation ? 'grand-slogan-entrance' : ''
-                }`}
+                className="absolute left-1/2 transform -translate-x-1/2 text-center z-50 w-full px-4"
                 style={{
-                    bottom: 'max(4rem, env(safe-area-inset-bottom) + 3rem)', // 使用安全区域，确保在所有设备上都可见
-                    ...(!enableOpeningAnimation
-                        ? {
-                              animation: 'sloganEntrance 1.5s ease-out forwards 2s', // 缩短动画时间和延迟
-                              animationFillMode: 'both',
-                          }
-                        : {}),
+                    bottom: 'max(4rem, env(safe-area-inset-bottom) + 3rem)',
+                    visibility: 'visible',
+                    opacity: 1,
+                    transition: 'none'
                 }}
             >
                 <div className="text-center">
-                    <p className="text-base sm:text-lg md:text-xl lg:text-2xl font-light text-theme-primary tracking-wider leading-relaxed transition-colors duration-300">
+                    <p className="text-base sm:text-lg md:text-xl lg:text-2xl font-light text-theme-primary tracking-wider leading-relaxed">
                         {content.home.slogan[language] || content.home.slogan.en}
                     </p>
                 </div>
@@ -133,7 +123,7 @@ const HomeSection = ({
                 <CircularLoadingIndicator size={160} strokeWidth={12} showMask={true} />
             )}
 
-            {/* Cube延迟加载 */}
+            {/* Cube延迟加载 - 保留核心展示内容 */}
             {showCube && (
                 <HeroCube
                     enableOpeningAnimation={enableOpeningAnimation}

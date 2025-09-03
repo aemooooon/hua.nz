@@ -5,24 +5,64 @@
     <link rel="icon" type="image/svg+xml" href="/favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <title>Hua Wang</title>
+    <!-- LCP优化：关键资源提示 -->
+    <link rel="dns-prefetch" href="//fonts.googleapis.com">
+    <link rel="dns-prefetch" href="//fonts.gstatic.com">
+    <!-- LCP优化：内联关键CSS避免FOUC -->
+    <style>
+      /* 确保主标题立即可见，无布局偏移 */
+      h1.text-theme-text-primary {
+        visibility: visible !important;
+        opacity: 1 !important;
+        transform: none !important;
+        filter: none !important;
+        font-display: swap;
+        /* 只对文字移除过渡动画 */
+        transition: none !important;
+        animation: none !important;
+      }
+      /* 副标题和口号也移除动画 */
+      .text-theme-accent,
+      .text-theme-primary {
+        transition: none !important;
+        animation: none !important;
+      }
+      /* 回退字体栈确保文本立即可见 */
+      .font-beauRivage {
+        font-family: 'Beau Rivage', cursive, 'Times New Roman', serif;
+        font-display: swap;
+      }
+      /* 确保容器立即可见，但保留其他动画 */
+      #root {
+        animation: none !important;
+      }
+      /* 特别保护 Loading 组件的呼吸动画 */
+      .breathing-glow,
+      [style*="breathing-glow"],
+      [style*="avatar-glow"] {
+        animation: unset !important; /* 重置为CSS中定义的动画 */
+      }
+    </style>
     <link href="https://cdn.jsdelivr.net/npm/remixicon@4.5.0/fonts/remixicon.css" rel="stylesheet" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <!-- 优化：使用 font-display: swap 和 preload 关键字体 -->
-    <link href="https://fonts.googleapis.com/css2?family=Beau+Rivage&display=swap" rel="preload" as="style" onload="this.onload=null;this.rel='stylesheet'">
-    <noscript><link href="https://fonts.googleapis.com/css2?family=Beau+Rivage&display=swap" rel="stylesheet"></noscript>
-    <link href="https://fonts.googleapis.com/css2?family=Audiowide&family=Figtree:ital,wght@0,300..900;1,300..900&family=Fredoka+One&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&family=Montserrat:ital,wght@0,100..900;1,100..900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+    <!-- LCP优化：优先加载关键字体 Beau Rivage -->
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Beau+Rivage&display=swap" as="style">
+    <link href="https://fonts.googleapis.com/css2?family=Beau+Rivage&display=swap" rel="stylesheet">
+    <!-- 其他字体延迟加载 -->
+    <link href="https://fonts.googleapis.com/css2?family=Audiowide&family=Figtree:ital,wght@0,300..900;1,300..900&family=Fredoka+One&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&family=Montserrat:ital,wght@0,100..900;1,100..900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+    <noscript><link href="https://fonts.googleapis.com/css2?family=Audiowide&family=Figtree:ital,wght@0,300..900;1,300..900&family=Fredoka+One&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&family=Montserrat:ital,wght@0,100..900;1,100..900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet"></noscript>
     <meta name="description" content="Hua Wang's portfolio - Full Stack Developer specializing in React, Node.js, and modern web technologies" />
     <meta name="keywords" content="Full Stack Developer, React, Node.js, JavaScript, Portfolio, Hua Wang" />
     <meta name="author" content="Hua Wang" />
-    
+
     <!-- Open Graph Meta Tags -->
     <meta property="og:title" content="Hua Wang - Full Stack Developer" />
     <meta property="og:description" content="Portfolio showcasing projects and skills in modern web development" />
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://aemooooon.github.io/hua.nz" />
     <meta property="og:image" content="/hua.jpeg" />
-    
+
     <!-- Twitter Card Meta Tags -->
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="Hua Wang - Full Stack Developer" />
