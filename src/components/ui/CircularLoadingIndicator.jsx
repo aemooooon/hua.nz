@@ -1,47 +1,42 @@
 import PropTypes from 'prop-types';
+import { useAppStore } from '../../store/useAppStore';
 
 /**
- * 统一的圆环加载指示器组件
+ * 雷达扫描加载指示器组件
  *
  * 🎨 视觉特点：
- * - 完整圆环设计，不显示进度百分比
- * - 单层呼吸光晕效果，从内到外渐变
+ * - 渐变环设计，从深到浅的同心圆
+ * - 双重雷达扫描效果，正反旋转
  * - 主题色适配，支持动态主题切换
- * - 简洁的"Loading..."文字显示
+ * - 国际化支持的Loading文字显示
  *
  * 🔧 技术特点：
- * - 基于SVG的高质量圆环渲染
+ * - 基于CSS渐变的高质量圆环渲染
  * - CSS变量支持主题色动态切换
- * - 多层box-shadow创造丰富光晕效果
- * - 呼吸动画(breathing-glow) 3秒周期
+ * - 多层雷达扫描线创造丰富动画效果
+ * - 呼吸动画(breathing-glow) 多重周期
  *
  * 📱 使用场景：
  * - 页面/组件加载状态
  * - 异步操作等待提示
  * - 资源加载进度显示
  *
- * @param {number} size - 圆环大小，默认120px
- * @param {number} strokeWidth - 圆环宽度，默认8px
+ * @param {number} size - 雷达大小，默认80px
  * @param {boolean} showMask - 是否显示毛玻璃遮罩，默认true
  * @param {string} maskColor - 遮罩颜色类型，默认'black-glass'
  * @param {string} className - 额外的CSS类名
  * @param {function} onMaskClick - 点击遮罩的回调函数
  */
 const CircularLoadingIndicator = ({
-    size = 120, // 圆环大小
-    strokeWidth = 8, // 圆环宽度
+    size = 80, // 雷达大小
     showMask = true, // 是否显示毛玻璃遮罩
     maskColor = 'black-glass', // 遮罩颜色：'black-glass' | 'black-solid' | 'default'
     className = '',
     onMaskClick = null, // 点击遮罩的回调
 }) => {
-    // 🔢 计算SVG圆环的基础参数
-    const radius = (size - strokeWidth) / 2;
-    const circumference = 2 * Math.PI * radius;
-    const strokeDasharray = circumference;
-    // 🔄 始终显示完整圆环，strokeDashoffset=0表示无间隙
-    const strokeDashoffset = 0;
-
+    // 🌐 获取国际化文本
+    const { getText } = useAppStore();
+    const loadingText = getText('ui.loading');
     // 🎭 根据maskColor参数选择不同的遮罩样式
     const getMaskStyles = () => {
         switch (maskColor) {
@@ -55,118 +50,120 @@ const CircularLoadingIndicator = ({
         }
     };
 
-    // 🎨 SVG圆环组件 - 包含光晕效果和圆环本体
-    const CircularProgress = ({ className: circleClassName = '' }) => {
+    // 🎨 雷达扫描组件 - 包含渐变环和扫描线
+    const RadarLoading = ({ className: radarClassName = '' }) => {
         return (
             <div
-                className={`relative ${circleClassName}`}
+                className={`relative ${radarClassName}`}
                 style={{
-                    width: size, // 🏠 主容器保持原始尺寸
+                    width: size,
                     height: size,
-                    overflow: 'visible', // 🌟 允许光晕效果溢出容器边界
                 }}
             >
-                {/* 💫 单层呼吸光晕效果 - 从内到外4层渐变，营造自然光晕 */}
+                {/* 单一渐变圆 - 从中心到外围的平滑过渡，增大光晕 */}
                 <div
-                    className="absolute pointer-events-none"
+                    className="absolute inset-0 rounded-full"
                     style={{
-                        width: size + 80, // 📏 适中的光晕范围，向外扩展40px
-                        height: size + 80,
-                        top: -40, // ⬆️ 向上偏移以居中
-                        left: -40, // ⬅️ 向左偏移以居中
-                        borderRadius: '50%', // 🔵 确保完美圆形
-                        // 🌈 4层径向渐变：透明 → 0.25 → 0.15 → 0.08 → 透明
-                        background: `radial-gradient(circle,
-                            transparent 60%,
-                            rgba(var(--theme-primary-rgb), 0.25) 75%,
-                            rgba(var(--theme-primary-rgb), 0.15) 85%,
-                            rgba(var(--theme-primary-rgb), 0.08) 92%,
+                        background: `radial-gradient(circle, 
+                            rgba(var(--theme-primary-rgb), 0.9) 0%,
+                            rgba(var(--theme-primary-rgb), 0.7) 15%, 
+                            rgba(var(--theme-primary-rgb), 0.5) 35%,
+                            rgba(var(--theme-primary-rgb), 0.3) 55%,
+                            rgba(var(--theme-primary-rgb), 0.15) 75%,
+                            rgba(var(--theme-primary-rgb), 0.05) 90%,
                             transparent 100%
                         )`,
-                        // ✨ 3层box-shadow创造立体光晕效果
                         boxShadow: `
-                            0 0 ${Math.max(size * 0.1, 15)}px rgba(var(--theme-primary-rgb), 0.4),
-                            0 0 ${Math.max(size * 0.2, 25)}px rgba(var(--theme-primary-rgb), 0.2),
-                            inset 0 0 ${Math.max(size * 0.05, 6)}px rgba(var(--theme-primary-rgb), 0.15)
+                            0 0 ${size * 0.5}px rgba(var(--theme-primary-rgb), 0.6),
+                            0 0 ${size * 0.8}px rgba(var(--theme-primary-rgb), 0.4),
+                            0 0 ${size * 1.2}px rgba(var(--theme-primary-rgb), 0.2)
                         `,
-                        // 💨 呼吸动画：3秒周期，opacity+scale+blur三重变化
-                        animation: 'breathing-glow 3s ease-in-out infinite',
-                        zIndex: 2,
+                        animation: 'breathing-glow 2.5s ease-in-out infinite'
                     }}
-                />
+                ></div>
 
-                {/* SVG圆环 - 保持在中心，添加圆环专用光效 */}
+                {/* 雷达扫描线 - 主扫描 */}
                 <div
-                    className="absolute"
+                    className="absolute inset-0 rounded-full pointer-events-none"
                     style={{
-                        width: size,
-                        height: size,
-                        borderRadius: '50%',
-                        // 使用box-shadow为SVG圆环添加光效
-                        boxShadow: `
-                            0 0 ${Math.max(size * 0.03, 4)}px var(--theme-primary),
-                            0 0 ${Math.max(size * 0.06, 8)}px rgba(var(--theme-primary-rgb), 0.6),
-                            0 0 ${Math.max(size * 0.09, 12)}px rgba(var(--theme-primary-rgb), 0.4),
-                            inset 0 0 ${Math.max(size * 0.02, 3)}px rgba(var(--theme-primary-rgb), 0.2)
-                        `,
-                        animation: 'avatar-glow 3s ease-in-out infinite',
-                        zIndex: 9,
+                        background: `conic-gradient(
+                            from 0deg,
+                            transparent 0deg,
+                            rgba(var(--theme-primary-rgb), 0.1) 15deg,
+                            rgba(var(--theme-primary-rgb), 0.4) 35deg,
+                            rgba(var(--theme-primary-rgb), 0.8) 45deg,
+                            rgba(var(--theme-primary-rgb), 0.6) 55deg,
+                            rgba(var(--theme-primary-rgb), 0.2) 75deg,
+                            transparent 90deg,
+                            transparent 360deg
+                        )`,
+                        animation: 'rotate-glow 3s linear infinite',
+                        filter: 'blur(1px)',
+                        mixBlendMode: 'screen'
                     }}
-                />
-                <svg
-                    width={size}
-                    height={size}
-                    className="transform -rotate-90 relative"
+                ></div>
+
+                {/* 雷达扫描线 - 反向扫描 */}
+                <div
+                    className="absolute inset-0 rounded-full pointer-events-none"
                     style={{
-                        zIndex: 10,
+                        background: `conic-gradient(
+                            from 180deg,
+                            transparent 0deg,
+                            rgba(var(--theme-primary-rgb), 0.15) 25deg,
+                            rgba(var(--theme-primary-rgb), 0.3) 50deg,
+                            rgba(var(--theme-primary-rgb), 0.15) 75deg,
+                            transparent 100deg,
+                            transparent 360deg
+                        )`,
+                        animation: 'rotate-glow 4s linear infinite reverse',
+                        filter: 'blur(2px)',
+                        mixBlendMode: 'screen'
+                    }}
+                ></div>
+
+                {/* 中心点 */}
+                <div
+                    className="absolute rounded-full transform -translate-x-1/2 -translate-y-1/2"
+                    style={{
+                        width: size * 0.08,
+                        height: size * 0.08,
+                        top: '50%',
+                        left: '50%',
+                        backgroundColor: 'var(--theme-primary)',
+                        boxShadow: `
+                            0 0 ${size * 0.08}px rgba(var(--theme-primary-rgb), 0.8),
+                            0 0 ${size * 0.15}px rgba(var(--theme-primary-rgb), 0.4)
+                        `,
+                        animation: 'breathing-glow 1.8s ease-in-out infinite'
+                    }}
+                ></div>
+
+                {/* 中心Loading文字 - 居中显示 */}
+                <div
+                    className="absolute inset-0 flex items-center justify-center pointer-events-none"
+                    style={{
+                        zIndex: 30,
                     }}
                 >
-                    {/* 背景圆环 - 透明白色，去除阴影 */}
-                    <circle
-                        cx={size / 2}
-                        cy={size / 2}
-                        r={radius}
-                        fill="none"
-                        stroke="rgba(255, 255, 255, 0.2)"
-                        strokeWidth={strokeWidth}
-                    />
-                    {/* 进度圆环 - 显示完整圆环，去除旋转动画 */}
-                    <circle
-                        cx={size / 2}
-                        cy={size / 2}
-                        r={radius}
-                        fill="none"
-                        stroke="var(--theme-primary)"
-                        strokeWidth={strokeWidth}
-                        strokeLinecap="round"
-                        strokeDasharray={strokeDasharray}
-                        strokeDashoffset={strokeDashoffset}
-                        className="transition-all duration-300 ease-out"
+                    <span
+                        className="text-lg font-medium"
                         style={{
-                            transformOrigin: 'center',
+                            color: 'white',
+                            textShadow: '0 0 10px rgba(255, 255, 255, 0.8), 0 0 20px rgba(255, 255, 255, 0.4)',
+                            animation: 'breathing-glow 2s ease-in-out infinite'
                         }}
-                    />
-                </svg>
-
-                {/* 中心内容 - 直接定位在容器中心 */}
-                <div
-                    className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none"
-                    style={{
-                        zIndex: 20,
-                    }}
-                >
-                    {/* Loading文字保持原有样式和呼吸效果 */}
-                    <span className="text-white/90 text-lg font-medium drop-shadow-md">
-                        Loading...
+                    >
+                        {loadingText}
                     </span>
                 </div>
             </div>
         );
     };
 
-    // 如果不显示遮罩，直接返回圆环
+    // 如果不显示遮罩，直接返回雷达
     if (!showMask) {
-        return <CircularProgress className={className} />;
+        return <RadarLoading className={className} />;
     }
 
     // 带遮罩的完整组件
@@ -179,9 +176,9 @@ const CircularLoadingIndicator = ({
             {/* 毛玻璃遮罩层 */}
             <div className={getMaskStyles()} />
 
-            {/* 加载指示器 */}
-            <div className="relative z-10">
-                <CircularProgress />
+            {/* 雷达加载指示器 */}
+            <div className="relative z-10 flex flex-col items-center">
+                <RadarLoading />
             </div>
         </div>
     );
@@ -189,7 +186,6 @@ const CircularLoadingIndicator = ({
 
 CircularLoadingIndicator.propTypes = {
     size: PropTypes.number,
-    strokeWidth: PropTypes.number,
     showMask: PropTypes.bool,
     maskColor: PropTypes.oneOf(['black-glass', 'black-solid', 'default']),
     className: PropTypes.string,

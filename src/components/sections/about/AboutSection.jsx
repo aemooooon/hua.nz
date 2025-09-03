@@ -2,12 +2,15 @@ import { Suspense, lazy, useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import imageSrc from '../../../data/hua_icon_base64';
 import { useAppStore } from '../../../store/useAppStore';
+import { useTheme } from '../../../hooks/useTheme';
 
 const EffectAvatar = lazy(() => import('../../background/EffectAvatar'));
 
 const AboutSection = ({ language = 'en' }) => {
-    const { getNewContent } = useAppStore();
+    const { getNewContent, getText } = useAppStore();
+    const { getThemeColors } = useTheme();
     const content = getNewContent();
+    const themeColors = getThemeColors();
 
     // 直接访问 about 内容
     const paragraphs = content.about.paragraphs[language] || content.about.paragraphs.en || [];
@@ -245,24 +248,23 @@ const AboutSection = ({ language = 'en' }) => {
                                                                 href="/Hua_Wang_Full_Stack_Developer.pdf"
                                                                 target="_blank"
                                                                 rel="noopener noreferrer"
-                                                                className="inline-flex items-center text-cyan-400 hover:text-cyan-300 transition-all duration-300 group"
+                                                                className="inline-flex items-center transition-all duration-300 group"
                                                                 style={{
                                                                     fontFamily:
                                                                         'Figtree, sans-serif',
                                                                     fontWeight: '500',
                                                                     textDecoration: 'none',
+                                                                    color: themeColors.primary,
                                                                 }}
                                                             >
                                                                 <span className="relative">
-                                                                    {language === 'en'
-                                                                        ? 'Resume'
-                                                                        : '简历'}
+                                                                    {getText('about.resume')}
                                                                     {/* Hover下划线效果 */}
                                                                     <span
-                                                                        className="absolute bottom-0 left-0 w-0 h-0.5 bg-cyan-400 transition-all duration-300 group-hover:w-full"
+                                                                        className="absolute bottom-0 left-0 w-0 h-0.5 transition-all duration-300 group-hover:w-full"
                                                                         style={{
-                                                                            boxShadow:
-                                                                                '0 0 4px rgba(34, 211, 238, 0.6)',
+                                                                            backgroundColor: themeColors.primary,
+                                                                            boxShadow: `0 0 4px ${themeColors.primary}99`,
                                                                         }}
                                                                     ></span>
                                                                 </span>
@@ -270,7 +272,7 @@ const AboutSection = ({ language = 'en' }) => {
                                                                 <span
                                                                     className="ml-1 transition-all duration-300"
                                                                     style={{
-                                                                        filter: 'drop-shadow(0 0 3px rgba(34, 211, 238, 0.5))',
+                                                                        filter: `drop-shadow(0 0 3px ${themeColors.primary}80)`,
                                                                         fontSize: '0.9em',
                                                                     }}
                                                                 >

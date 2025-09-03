@@ -40,6 +40,7 @@
 import { useEffect, useState, useCallback, useRef } from 'react';
 import { useAppStore } from '../../store/useAppStore';
 import { useTheme } from '../../hooks/useTheme';
+import { isMobileDevice } from '../../utils/viewport';
 
 // 性能优化：将选择器定义移到组件外部，避免重复创建
 const CLICKABLE_SELECTORS = [
@@ -88,19 +89,27 @@ const SmartDirectionalCursor = () => {
 
     // ==================== 应用状态 ====================
 
-    /** 获取当前section和语言 */
-    const { currentSection, language } = useAppStore();
+    /** 获取当前section和国际化文本方法 */
+    const { currentSection, getText } = useAppStore();
 
     /** 检查是否在首页 */
     const isHomePage = currentSection === 0;
 
+    // ==================== 设备检测 ====================
+
+    /** 检测是否为移动设备 - 使用更完整的检测逻辑 */
+    const isMobile = useCallback(() => {
+        return (
+            isMobileDevice() ||
+            ('ontouchstart' in window) ||
+            (navigator.maxTouchPoints > 0) ||
+            window.innerWidth <= 768
+        );
+    }, []);
+
     /** 获取提示文本 */
     const getHintText = () => {
-        if (language === 'zh') {
-            return '向下滚动探索更多...';
-        } else {
-            return 'Scroll down to explore...';
-        }
+        return getText('home.desktopScrollHint');
     };
 
     // ==================== 状态管理 ====================
@@ -1194,6 +1203,9 @@ const SmartDirectionalCursor = () => {
 
     // ==================== 主渲染逻辑 ====================
 
+    // 如果是移动设备，直接不渲染组件
+    if (isMobile()) return null;
+
     if (!isVisible) return null;
 
     return (
@@ -1287,7 +1299,7 @@ const SmartDirectionalCursor = () => {
             </div>
 
             {/* 首页提示文本：仅在桌面端首页显示 */}
-            {isHomePage && direction === 'down' && (
+            {!isMobile() && isHomePage && direction === 'down' && (
                 <div
                     style={{
                         position: 'fixed',

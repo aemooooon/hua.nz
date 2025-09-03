@@ -10,10 +10,15 @@ export const contentData = {
             en: 'Order from Chaos. Innovation through Tradeoffs...',
             zh: '驭混沌而立秩序；执中庸以启新象。',
         },
+        // 首页滚动提示
+        mobileScrollHint: { en: 'Swipe down to explore more...', zh: '向下滑动探索更多...' },
+        desktopScrollHint: { en: 'Scroll down to explore...', zh: '向下滚动探索更多...' },
     },
 
     about: {
         greeting: { en: "Kia ora, I'm Hua Wang", zh: '你好，我是王华' },
+        // About页面Resume链接
+        resume: { en: 'Resume', zh: '简历' },
         paragraphs: {
             en: [
                 "I am a full-stack developer with over a decade of experience, from early work with PHP to today's modern React ecosystems. My journey spans enterprise websites, CMS platforms, internal systems, and data-driven apps, enriched by a passion for computer graphics, where I blend shaders, lighting, and generative effects into the web.",
@@ -213,10 +218,10 @@ export const contentData = {
     },
 
     ui: {
+        // 全局UI组件通用文本
         language: { en: 'Language', zh: '语言' },
         theme: { en: 'Theme', zh: '主题' },
-        loading: { en: 'Loading...', zh: '加载中...' },
         toggleTheme: { en: 'Toggle Theme', zh: '切换主题' },
-        mobileScrollHint: { en: 'Swipe down to explore more...', zh: '向下滑动探索更多...' },
+        loading: { en: 'Loading...', zh: '加载中...' },
     },
 };

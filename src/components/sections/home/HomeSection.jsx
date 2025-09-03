@@ -192,7 +192,7 @@ const HomeSection = ({
                         }}
                     >
                         <p className="text-white/70 text-sm font-medium whitespace-nowrap animate-pulse">
-                            {content.ui.mobileScrollHint[language] || content.ui.mobileScrollHint.en}
+                            {content.home.mobileScrollHint[language] || content.home.mobileScrollHint.en}
                         </p>
                     </div>
                 </>
