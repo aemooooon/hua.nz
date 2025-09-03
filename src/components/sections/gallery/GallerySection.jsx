@@ -1190,7 +1190,7 @@ const GallerySection = ({ language = 'en' }) => {
             const pillarPositions = [
                 { x: -5, z: 18, radius: 0.5 }, // 左侧青色柱子 (移动到房间中心6米)
                 { x: 5, z: 18, radius: 0.5 }, // 右侧红色柱子 (移动到房间中心6米)
-                { x: 0, z: -18, radius: 1.618 / 2 }, // 绿色黄金比例柱子（后方，保持不变）
+                { x: 0, z: -18, radius: 1.2 / 2 }, // 绿色黄金比例柱子（后方，保持不变）
             ];
 
             const safetyMargin = 0.5; // 0.5米安全距离

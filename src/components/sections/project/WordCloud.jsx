@@ -528,7 +528,16 @@ const extractTechKeywords = description => {
         text = description.join(' ').toLowerCase();
     } else if (typeof description === 'object') {
         // 如果是对象，提取所有值并连接
-        text = Object.values(description).flat().join(' ').toLowerCase();
+        try {
+            const values = Object.values(description);
+            // 兼容值为数组或字符串的情况
+            text = values
+                .map(v => (Array.isArray(v) ? v.join(' ') : String(v ?? '')))
+                .join(' ')
+                .toLowerCase();
+        } catch {
+            text = String(description).toLowerCase();
+        }
     } else if (typeof description === 'string') {
         text = description.toLowerCase();
     } else {
@@ -557,9 +566,33 @@ const extractTechKeywords = description => {
     return keywords.sort((a, b) => b.importance - a.importance);
 };
 
+// 统一将任意值转为可展示的字符串（支持多语言对象）
+const normalizeToString = (value, language) => {
+    if (value == null) return '';
+    if (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean')
+        return String(value);
+    if (Array.isArray(value)) return value.map(v => normalizeToString(v, language)).join(' ');
+    if (typeof value === 'object') {
+        // 按语言优先
+        if (language && value[language]) return normalizeToString(value[language], language);
+        if (value.en) return normalizeToString(value.en, language);
+        // 否则拼接所有值
+        try {
+            return Object.values(value)
+                .map(v => normalizeToString(v, language))
+                .join(' ');
+        } catch {
+            return JSON.stringify(value);
+        }
+    }
+    return String(value);
+};
+
 const WordCloud = ({
     project,
     getProjectDescription,
+    language,
+    descriptionText,
     width = 400,
     minHeight = 200, // 改名为 minHeight，更语义化
     maxHeight = 500, // 新增最大高度限制
@@ -607,7 +640,17 @@ const WordCloud = ({
             d3.select(svgRef.current).selectAll('*').remove();
 
             // 获取项目描述和提取关键词
-            const description = getProjectDescription(project);
+            let description = descriptionText;
+            if (!description && typeof getProjectDescription === 'function') {
+                try {
+                    // 允许传语言，若实现不支持则回退为单参
+                    description = getProjectDescription.length >= 2
+                        ? getProjectDescription(project, language)
+                        : getProjectDescription(project);
+                } catch {
+                    description = getProjectDescription(project);
+                }
+            }
             const techKeywords = extractTechKeywords(description);
 
             // 基础信息
@@ -620,24 +663,24 @@ const WordCloud = ({
                 });
             if (project.location)
                 basicInfo.push({
-                    word: project.location,
+                    word: normalizeToString(project.location, language),
                     category: 'Location',
                     importance: 2,
                 });
             if (project.company)
                 basicInfo.push({
-                    word: project.company,
+                    word: normalizeToString(project.company, language),
                     category: 'Company',
                     importance: 2,
                 });
 
             // 项目类型
-            const types =
-                project.tags && Array.isArray(project.tags) ? project.tags : [project.type];
+            const types = project.tags && Array.isArray(project.tags) ? project.tags : [project.type];
             types.forEach(type => {
-                if (type)
+                const t = normalizeToString(type, language);
+                if (t)
                     basicInfo.push({
-                        word: type,
+                        word: t,
                         category: 'Type',
                         importance: 3,
                     });
@@ -671,7 +714,7 @@ const WordCloud = ({
                 .size([actualWidth, optimalHeight])
                 .words(
                     allWords.map(d => ({
-                        text: d.word,
+                        text: String(d.word ?? ''),
                         size: Math.max(12, Math.min(32, (d.importance || 1) * 6)), // 字体大小范围 12-32px
                         category: d.category,
                         importance: d.importance || 1,
@@ -750,7 +793,7 @@ const WordCloud = ({
                 .style('font-size', '14px')
                 .text('无法生成词云，请稍后重试');
         }
-    }, [project, getProjectDescription, width, calculateOptimalHeight, minHeight]);
+    }, [project, getProjectDescription, language, descriptionText, width, calculateOptimalHeight, minHeight]);
 
     // 组件挂载和项目变化时生成词云
     useEffect(() => {
@@ -780,7 +823,9 @@ const WordCloud = ({
 
 WordCloud.propTypes = {
     project: PropTypes.object.isRequired,
-    getProjectDescription: PropTypes.func.isRequired,
+    getProjectDescription: PropTypes.func,
+    language: PropTypes.string,
+    descriptionText: PropTypes.oneOfType([PropTypes.string, PropTypes.array, PropTypes.object]),
     width: PropTypes.number,
     minHeight: PropTypes.number,
     maxHeight: PropTypes.number,

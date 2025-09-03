@@ -95,7 +95,7 @@ export class PillarLightSystem {
                     z: -18,
                     color: 0x00ff88, // si-green主题色（原绿色，现在给背后柱子）
                     textureBaseName: 'gallery-horizontal-11', // 只有这个有贴图
-                    radius: 1.618, // 直径2.2米，半径1.1米
+                    radius: 1.2,
                     rotationY: Math.PI / 1.5, // 柱子绕Y轴旋转180度
                 },
             ],

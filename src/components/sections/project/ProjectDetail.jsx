@@ -563,6 +563,21 @@ const ProjectDetailNew = ({ project = null, isOpen, onClose }) => {
                                 <WordCloud
                                     project={project}
                                     getProjectDescription={getProjectDescription}
+                                    language={language}
+                                    descriptionText={(() => {
+                                        try {
+                                            const d = getProjectDescription.length >= 2
+                                                ? getProjectDescription(project, language)
+                                                : getProjectDescription(project);
+                                            if (Array.isArray(d)) return d.join(' ');
+                                            if (typeof d === 'object' && d) {
+                                                return d[language] || d.en || Object.values(d).join(' ');
+                                            }
+                                            return d ?? '';
+                                        } catch {
+                                            return '';
+                                        }
+                                    })()}
                                     className="w-full"
                                 />
                             </div>
