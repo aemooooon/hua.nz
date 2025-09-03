@@ -13,11 +13,16 @@ const ErrorBoundaryBackground = () => {
 
         // 创建3D场景
         const scene = new THREE.Scene();
-        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const camera = new THREE.PerspectiveCamera(
+            75,
+            window.innerWidth / window.innerHeight,
+            0.1,
+            1000
+        );
         const renderer = new THREE.WebGLRenderer({
             canvas: canvasRef.current,
             alpha: true,
-            antialias: true
+            antialias: true,
         });
 
         renderer.setSize(window.innerWidth, window.innerHeight);
@@ -32,7 +37,7 @@ const ErrorBoundaryBackground = () => {
                 color: 0x3b82f6,
                 transparent: true,
                 opacity: 0.3,
-                side: THREE.DoubleSide
+                side: THREE.DoubleSide,
             });
 
             const ripple = new THREE.Mesh(geometry, material);
@@ -41,7 +46,7 @@ const ErrorBoundaryBackground = () => {
                 startTime: Date.now(),
                 initialScale: 0.1,
                 targetScale: 2,
-                duration: 3000
+                duration: 3000,
             };
 
             scene.add(ripple);
@@ -60,13 +65,14 @@ const ErrorBoundaryBackground = () => {
         const animate = () => {
             const currentTime = Date.now();
 
-            ripples.forEach((ripple) => {
+            ripples.forEach(ripple => {
                 const elapsed = currentTime - ripple.userData.startTime;
                 const progress = elapsed / ripple.userData.duration;
 
                 if (progress < 1) {
                     // 缩放动画
-                    const scale = ripple.userData.initialScale +
+                    const scale =
+                        ripple.userData.initialScale +
                         (ripple.userData.targetScale - ripple.userData.initialScale) * progress;
                     ripple.scale.set(scale, scale, 1);
 
@@ -139,7 +145,7 @@ const ErrorBoundaryUI = ({ error, resetError, hasError }) => {
             timestamp: new Date().toISOString(),
             url: window.location.href,
             userAgent: navigator.userAgent,
-            language: language
+            language: language,
         };
 
         const subject = encodeURIComponent(`Error Report from ${window.location.hostname}`);
@@ -164,12 +170,12 @@ Please describe what you were doing when this error occurred:
     const texts = {
         en: {
             title: 'Oops! Something went wrong',
-            subtitle: 'We encountered an unexpected error. Don\'t worry, we\'re here to help!',
+            subtitle: "We encountered an unexpected error. Don't worry, we're here to help!",
             refresh: 'Refresh Page',
             report: 'Report Error',
             details: 'Error Details',
             showDetails: 'Show Details',
-            hideDetails: 'Hide Details'
+            hideDetails: 'Hide Details',
         },
         zh: {
             title: '哎呀！出了点问题',
@@ -178,8 +184,8 @@ Please describe what you were doing when this error occurred:
             report: '报告错误',
             details: '错误详情',
             showDetails: '显示详情',
-            hideDetails: '隐藏详情'
-        }
+            hideDetails: '隐藏详情',
+        },
     };
 
     const t = texts[language] || texts.en;
@@ -189,21 +195,20 @@ Please describe what you were doing when this error occurred:
             {/* 3D波纹背景效果 */}
             <ErrorBoundaryBackground />
 
-            <div className="glass-card max-w-md w-full p-8 text-center relative" style={{ zIndex: 10 }}>
+            <div
+                className="glass-card max-w-md w-full p-8 text-center relative"
+                style={{ zIndex: 10 }}
+            >
                 {/* 错误图标 */}
                 <div className="mx-auto w-20 h-20 mb-6 rounded-full bg-gradient-to-br from-red-500 to-red-600 flex items-center justify-center text-white text-3xl shadow-lg animate-pulse">
                     ⚠️
                 </div>
 
                 {/* 标题 */}
-                <h2 className="text-2xl font-bold text-white mb-3">
-                    {t.title}
-                </h2>
+                <h2 className="text-2xl font-bold text-white mb-3">{t.title}</h2>
 
                 {/* 副标题 */}
-                <p className="text-gray-300 mb-8 leading-relaxed">
-                    {t.subtitle}
-                </p>
+                <p className="text-gray-300 mb-8 leading-relaxed">{t.subtitle}</p>
 
                 {/* 操作按钮 */}
                 <div className="flex flex-col sm:flex-row gap-4 mb-6">
@@ -229,13 +234,17 @@ Please describe what you were doing when this error occurred:
                             onClick={() => setShowDetails(!showDetails)}
                             className="text-sm text-gray-400 hover:text-white transition-colors duration-200 flex items-center justify-center gap-2 mx-auto"
                         >
-                            {showDetails ? '📄' : '📋'} {showDetails ? t.hideDetails : t.showDetails}
+                            {showDetails ? '📄' : '📋'}{' '}
+                            {showDetails ? t.hideDetails : t.showDetails}
                         </button>
 
                         {showDetails && (
                             <div className="mt-4 p-4 bg-black/30 rounded-lg text-left">
                                 <div className="text-xs text-gray-300 space-y-2">
-                                    <div><strong className="text-white">Message:</strong> {error?.message}</div>
+                                    <div>
+                                        <strong className="text-white">Message:</strong>{' '}
+                                        {error?.message}
+                                    </div>
                                     {error?.stack && (
                                         <details className="mt-3">
                                             <summary className="cursor-pointer text-blue-400 hover:text-blue-300">
@@ -259,7 +268,7 @@ Please describe what you were doing when this error occurred:
 ErrorBoundaryUI.propTypes = {
     error: PropTypes.object,
     resetError: PropTypes.func.isRequired,
-    hasError: PropTypes.bool.isRequired
+    hasError: PropTypes.bool.isRequired,
 };
 
 // 错误边界类组件
@@ -298,7 +307,7 @@ class ErrorBoundary extends React.Component {
 }
 
 ErrorBoundary.propTypes = {
-    children: PropTypes.node.isRequired
+    children: PropTypes.node.isRequired,
 };
 
 export default ErrorBoundary;

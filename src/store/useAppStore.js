@@ -174,7 +174,7 @@ export const useAppStore = create(
                     title: educationTexts.title,
                     subtitle: educationTexts.subtitle,
                     labels: educationTexts.labels,
-                    degrees: degrees
+                    degrees: degrees,
                 };
             },
 

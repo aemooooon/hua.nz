@@ -1,13 +1,13 @@
 import PropTypes from 'prop-types';
-import { useState, useEffect, useCallback } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { FaGlobe, FaPalette } from 'react-icons/fa';
-import { useAppStore } from '../../../store/useAppStore';
 import { useTheme } from '../../../hooks/useTheme';
-import HeroCube from './HeroCube';
-import CircularLoadingIndicator from '../../ui/CircularLoadingIndicator';
-import Tooltip from '../../ui/Tooltip';
-import { ThemeTitle, ThemeSubtitle } from '../../ui/ThemeComponents';
+import { useAppStore } from '../../../store/useAppStore';
 import '../../../styles/OpeningAnimations.css';
+import CircularLoadingIndicator from '../../ui/CircularLoadingIndicator';
+import { ThemeSubtitle, ThemeTitle } from '../../ui/ThemeComponents';
+import Tooltip from '../../ui/Tooltip';
+import HeroCube from './HeroCube';
 
 const HomeSection = ({
     language,
@@ -77,7 +77,7 @@ const HomeSection = ({
                             opacity: 1,
                             transform: 'none',
                             filter: 'none',
-                            transition: 'none'
+                            transition: 'none',
                         }}
                     >
                         {content.home.name[language] || content.home.name.en}
@@ -93,7 +93,7 @@ const HomeSection = ({
                             whiteSpace: 'nowrap',
                             visibility: 'visible',
                             opacity: 1,
-                            transition: 'none'
+                            transition: 'none',
                         }}
                     >
                         {content.home.title[language] || content.home.title.en}
@@ -108,7 +108,7 @@ const HomeSection = ({
                     bottom: 'max(4rem, env(safe-area-inset-bottom) + 3rem)',
                     visibility: 'visible',
                     opacity: 1,
-                    transition: 'none'
+                    transition: 'none',
                 }}
             >
                 <div className="text-center">
@@ -192,7 +192,8 @@ const HomeSection = ({
                         }}
                     >
                         <p className="text-white/70 text-sm font-medium whitespace-nowrap animate-pulse">
-                            {content.home.mobileScrollHint[language] || content.home.mobileScrollHint.en}
+                            {content.home.mobileScrollHint[language] ||
+                                content.home.mobileScrollHint.en}
                         </p>
                     </div>
                 </>

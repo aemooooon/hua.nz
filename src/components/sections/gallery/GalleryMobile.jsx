@@ -251,10 +251,12 @@ const GalleryMobile = ({ language = 'zh' }) => {
                                 </svg>
                             </div>
                             <div className="text-theme-text-secondary text-lg mb-2">
-                                {galleryText.mobile.noContent[language] || galleryText.mobile.noContent.en}
+                                {galleryText.mobile.noContent[language] ||
+                                    galleryText.mobile.noContent.en}
                             </div>
                             <div className="text-theme-text-secondary/60 text-sm">
-                                {galleryText.mobile.tryAgain[language] || galleryText.mobile.tryAgain.en}
+                                {galleryText.mobile.tryAgain[language] ||
+                                    galleryText.mobile.tryAgain.en}
                             </div>
                         </div>
                     )}

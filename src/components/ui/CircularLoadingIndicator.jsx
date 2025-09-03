@@ -64,9 +64,9 @@ const CircularLoadingIndicator = ({
                 <div
                     className="absolute inset-0 rounded-full"
                     style={{
-                        background: `radial-gradient(circle, 
+                        background: `radial-gradient(circle,
                             rgba(var(--theme-primary-rgb), 0.9) 0%,
-                            rgba(var(--theme-primary-rgb), 0.7) 15%, 
+                            rgba(var(--theme-primary-rgb), 0.7) 15%,
                             rgba(var(--theme-primary-rgb), 0.5) 35%,
                             rgba(var(--theme-primary-rgb), 0.3) 55%,
                             rgba(var(--theme-primary-rgb), 0.15) 75%,
@@ -78,7 +78,7 @@ const CircularLoadingIndicator = ({
                             0 0 ${size * 0.8}px rgba(var(--theme-primary-rgb), 0.4),
                             0 0 ${size * 1.2}px rgba(var(--theme-primary-rgb), 0.2)
                         `,
-                        animation: 'breathing-glow 2.5s ease-in-out infinite'
+                        animation: 'breathing-glow 2.5s ease-in-out infinite',
                     }}
                 ></div>
 
@@ -99,7 +99,7 @@ const CircularLoadingIndicator = ({
                         )`,
                         animation: 'rotate-glow 3s linear infinite',
                         filter: 'blur(1px)',
-                        mixBlendMode: 'screen'
+                        mixBlendMode: 'screen',
                     }}
                 ></div>
 
@@ -118,7 +118,7 @@ const CircularLoadingIndicator = ({
                         )`,
                         animation: 'rotate-glow 4s linear infinite reverse',
                         filter: 'blur(2px)',
-                        mixBlendMode: 'screen'
+                        mixBlendMode: 'screen',
                     }}
                 ></div>
 
@@ -135,7 +135,7 @@ const CircularLoadingIndicator = ({
                             0 0 ${size * 0.08}px rgba(var(--theme-primary-rgb), 0.8),
                             0 0 ${size * 0.15}px rgba(var(--theme-primary-rgb), 0.4)
                         `,
-                        animation: 'breathing-glow 1.8s ease-in-out infinite'
+                        animation: 'breathing-glow 1.8s ease-in-out infinite',
                     }}
                 ></div>
 
@@ -150,8 +150,9 @@ const CircularLoadingIndicator = ({
                         className="text-lg font-medium"
                         style={{
                             color: 'white',
-                            textShadow: '0 0 10px rgba(255, 255, 255, 0.8), 0 0 20px rgba(255, 255, 255, 0.4)',
-                            animation: 'breathing-glow 2s ease-in-out infinite'
+                            textShadow:
+                                '0 0 10px rgba(255, 255, 255, 0.8), 0 0 20px rgba(255, 255, 255, 0.4)',
+                            animation: 'breathing-glow 2s ease-in-out infinite',
                         }}
                     >
                         {loadingText}

@@ -1,8 +1,8 @@
-import { Suspense, lazy, useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
+import { Suspense, lazy, useEffect, useState } from 'react';
 import imageSrc from '../../../data/hua_icon_base64';
-import { useAppStore } from '../../../store/useAppStore';
 import { useTheme } from '../../../hooks/useTheme';
+import { useAppStore } from '../../../store/useAppStore';
 
 const EffectAvatar = lazy(() => import('../../background/EffectAvatar'));
 
@@ -263,7 +263,8 @@ const AboutSection = ({ language = 'en' }) => {
                                                                     <span
                                                                         className="absolute bottom-0 left-0 w-0 h-0.5 transition-all duration-300 group-hover:w-full"
                                                                         style={{
-                                                                            backgroundColor: themeColors.primary,
+                                                                            backgroundColor:
+                                                                                themeColors.primary,
                                                                             boxShadow: `0 0 4px ${themeColors.primary}99`,
                                                                         }}
                                                                     ></span>

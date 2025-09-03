@@ -356,7 +356,6 @@ const ProjectSection = ({ language }) => {
                                     >
                                         {getText(project.name, language)}
                                     </ThemeTitle>
-
                                 </div>
                             </div>
                         ))}

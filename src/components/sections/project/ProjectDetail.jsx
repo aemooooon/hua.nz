@@ -242,7 +242,8 @@ const ProjectDetailNew = ({ project = null, isOpen, onClose }) => {
                         />
                     </svg>
                     <h3 className="text-lg font-semibold text-theme-text-primary">
-                        {projectText.detail.technologyStack[language] || projectText.detail.technologyStack.en}
+                        {projectText.detail.technologyStack[language] ||
+                            projectText.detail.technologyStack.en}
                     </h3>
                 </div>
                 <div className="flex flex-wrap gap-2">
@@ -279,7 +280,8 @@ const ProjectDetailNew = ({ project = null, isOpen, onClose }) => {
                         />
                     </svg>
                     <h3 className="text-lg font-semibold text-theme-text-primary">
-                        {projectText.detail.projectStatistics[language] || projectText.detail.projectStatistics.en}
+                        {projectText.detail.projectStatistics[language] ||
+                            projectText.detail.projectStatistics.en}
                     </h3>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -308,7 +310,8 @@ const ProjectDetailNew = ({ project = null, isOpen, onClose }) => {
             <div className="mb-8">
                 <div className="flex items-center gap-2 mb-4">
                     <h3 className="text-lg font-semibold text-theme-text-primary">
-                        {projectText.detail.subProjects[language] || projectText.detail.subProjects.en}
+                        {projectText.detail.subProjects[language] ||
+                            projectText.detail.subProjects.en}
                     </h3>
                 </div>
                 <div className="space-y-4">
@@ -329,7 +332,10 @@ const ProjectDetailNew = ({ project = null, isOpen, onClose }) => {
                                             rel="noopener noreferrer"
                                             className="text-theme-primary hover:text-theme-secondary transition-colors"
                                             style={{ cursor: 'pointer' }}
-                                            title={projectText.liveDemo[language] || projectText.liveDemo.en}
+                                            title={
+                                                projectText.liveDemo[language] ||
+                                                projectText.liveDemo.en
+                                            }
                                         >
                                             <ExternalLink className="w-4 h-4" />
                                         </a>
@@ -366,7 +372,9 @@ const ProjectDetailNew = ({ project = null, isOpen, onClose }) => {
             {/* 项目详情页关闭按钮 - 使用通用CornerCloseButton组件 */}
             <CornerCloseButton
                 onClick={onClose}
-                ariaLabel={projectText.detail.closeModal[language] || projectText.detail.closeModal.en}
+                ariaLabel={
+                    projectText.detail.closeModal[language] || projectText.detail.closeModal.en
+                }
                 iconSize="w-16 h-16"
                 iconColor="text-white"
                 iconHoverColor="text-white"
@@ -566,12 +574,17 @@ const ProjectDetailNew = ({ project = null, isOpen, onClose }) => {
                                     language={language}
                                     descriptionText={(() => {
                                         try {
-                                            const d = getProjectDescription.length >= 2
-                                                ? getProjectDescription(project, language)
-                                                : getProjectDescription(project);
+                                            const d =
+                                                getProjectDescription.length >= 2
+                                                    ? getProjectDescription(project, language)
+                                                    : getProjectDescription(project);
                                             if (Array.isArray(d)) return d.join(' ');
                                             if (typeof d === 'object' && d) {
-                                                return d[language] || d.en || Object.values(d).join(' ');
+                                                return (
+                                                    d[language] ||
+                                                    d.en ||
+                                                    Object.values(d).join(' ')
+                                                );
                                             }
                                             return d ?? '';
                                         } catch {
@@ -617,7 +630,8 @@ const ProjectDetailNew = ({ project = null, isOpen, onClose }) => {
                                     >
                                         <ExternalLink className="w-5 h-5 group-hover:scale-110 transition-transform flex-shrink-0" />
                                         <span className="font-semibold">
-                                            {projectText.liveDemo[language] || projectText.liveDemo.en}
+                                            {projectText.liveDemo[language] ||
+                                                projectText.liveDemo.en}
                                         </span>
                                     </a>
                                 )}
@@ -633,7 +647,8 @@ const ProjectDetailNew = ({ project = null, isOpen, onClose }) => {
                                     >
                                         <ExternalLink className="w-5 h-5 group-hover:scale-110 transition-transform flex-shrink-0" />
                                         <span className="font-semibold">
-                                            {projectText.githubRepo[language] || projectText.githubRepo.en}
+                                            {projectText.githubRepo[language] ||
+                                                projectText.githubRepo.en}
                                         </span>
                                     </a>
                                 )}

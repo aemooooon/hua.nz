@@ -101,7 +101,11 @@ const EducationSection = ({ language }) => {
                                         <div className="flex justify-start">
                                             <span className="glass-card inline-flex items-center gap-2 px-3 py-2 text-theme-primary text-sm font-bold">
                                                 <span className="text-theme-primary">🏆</span>
-                                                <span>{educationData.labels.withDistinction[language] || educationData.labels.withDistinction.en}</span>
+                                                <span>
+                                                    {educationData.labels.withDistinction[
+                                                        language
+                                                    ] || educationData.labels.withDistinction.en}
+                                                </span>
                                             </span>
                                         </div>
                                     )}
@@ -111,7 +115,9 @@ const EducationSection = ({ language }) => {
                                 <div className="space-y-4">
                                     <div className="flex items-center text-theme-text-white-70 text-base xl:text-lg">
                                         <MapPin className="w-5 h-5 xl:w-6 xl:h-6 mr-3 text-theme-primary flex-shrink-0" />
-                                        <span>{degree.location[language] || degree.location.en}</span>
+                                        <span>
+                                            {degree.location[language] || degree.location.en}
+                                        </span>
                                     </div>
                                     <div className="flex items-center text-theme-text-white-70 text-base xl:text-lg">
                                         <Calendar className="w-5 h-5 xl:w-6 xl:h-6 mr-3 text-theme-primary flex-shrink-0" />
@@ -157,7 +163,10 @@ const EducationSection = ({ language }) => {
                                     <div className="flex justify-center">
                                         <span className="glass-card inline-flex items-center gap-2 px-3 py-2 text-theme-primary text-sm font-bold">
                                             <span className="text-theme-primary">🏆</span>
-                                            <span>{educationData.labels.withDistinction[language] || educationData.labels.withDistinction.en}</span>
+                                            <span>
+                                                {educationData.labels.withDistinction[language] ||
+                                                    educationData.labels.withDistinction.en}
+                                            </span>
                                         </span>
                                     </div>
                                 )}
@@ -204,7 +213,8 @@ const EducationSection = ({ language }) => {
                                 className="text-xl sm:text-2xl font-bold mb-6 flex items-center text-theme-text-white-90"
                             >
                                 <span className="w-2 h-6 bg-theme-primary rounded-full mr-3"></span>
-                                {educationData.labels.academicRecords[language] || educationData.labels.academicRecords.en}
+                                {educationData.labels.academicRecords[language] ||
+                                    educationData.labels.academicRecords.en}
                             </ThemeTitle>
 
                             {/* 总体统计 */}
@@ -214,7 +224,8 @@ const EducationSection = ({ language }) => {
                                         {degree.totalCredits}
                                     </div>
                                     <div className="text-theme-text-white-70 text-sm">
-                                        {educationData.labels.totalCredits[language] || educationData.labels.totalCredits.en}
+                                        {educationData.labels.totalCredits[language] ||
+                                            educationData.labels.totalCredits.en}
                                     </div>
                                 </div>
                                 <div className="glass-card p-4 text-center">
@@ -222,7 +233,8 @@ const EducationSection = ({ language }) => {
                                         {degree.gpa[language] || degree.gpa.en}
                                     </div>
                                     <div className="text-theme-text-white-70 text-sm">
-                                        {educationData.labels.gpa[language] || educationData.labels.gpa.en}
+                                        {educationData.labels.gpa[language] ||
+                                            educationData.labels.gpa.en}
                                     </div>
                                 </div>
                                 <div className="glass-card p-4 text-center">
@@ -233,7 +245,8 @@ const EducationSection = ({ language }) => {
                                         )}
                                     </div>
                                     <div className="text-theme-text-white-70 text-sm">
-                                        {educationData.labels.totalCourses[language] || educationData.labels.totalCourses.en}
+                                        {educationData.labels.totalCourses[language] ||
+                                            educationData.labels.totalCourses.en}
                                     </div>
                                 </div>
                             </div>
@@ -247,7 +260,11 @@ const EducationSection = ({ language }) => {
                                     >
                                         <h5 className="text-lg font-bold mb-4 flex items-center text-theme-text-white-90">
                                             <span className="text-2xl mr-2">📚</span>
-                                            {semester.year} - {typeof semester.semester === 'string' ? semester.semester : (semester.semester[language] || semester.semester.en)}
+                                            {semester.year} -{' '}
+                                            {typeof semester.semester === 'string'
+                                                ? semester.semester
+                                                : semester.semester[language] ||
+                                                  semester.semester.en}
                                         </h5>
                                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
                                             {semester.courses.map((course, courseIdx) => (
@@ -257,7 +274,11 @@ const EducationSection = ({ language }) => {
                                                 >
                                                     <div className="flex-1">
                                                         <div className="font-medium text-sm leading-tight text-theme-text-white-90">
-                                                            {course.code} - {typeof course.name === 'string' ? course.name : (course.name[language] || course.name.en)}
+                                                            {course.code} -{' '}
+                                                            {typeof course.name === 'string'
+                                                                ? course.name
+                                                                : course.name[language] ||
+                                                                  course.name.en}
                                                         </div>
                                                         <div className="text-xs mt-1 text-theme-text-white-70">
                                                             {language === 'en'
@@ -286,7 +307,8 @@ const EducationSection = ({ language }) => {
                             className="text-xl sm:text-2xl font-bold text-theme-text-white-90 mb-6 flex items-center"
                         >
                             <span className="w-2 h-6 bg-theme-primary rounded-full mr-3"></span>
-                            {educationData.labels.capstoneProjects[language] || educationData.labels.capstoneProjects.en}
+                            {educationData.labels.capstoneProjects[language] ||
+                                educationData.labels.capstoneProjects.en}
                         </ThemeTitle>
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
                             {degree.capstoneProjects &&
@@ -319,7 +341,11 @@ const EducationSection = ({ language }) => {
                                             {/* 项目图片 */}
                                             <OptimizedImage
                                                 src={project.image}
-                                                alt={typeof project.name === 'string' ? project.name : (project.name[language] || project.name.en)}
+                                                alt={
+                                                    typeof project.name === 'string'
+                                                        ? project.name
+                                                        : project.name[language] || project.name.en
+                                                }
                                                 className="w-full h-full object-cover"
                                             />
 
@@ -329,7 +355,9 @@ const EducationSection = ({ language }) => {
                                             {/* 项目名称 */}
                                             <div className="absolute bottom-3 left-3 right-3">
                                                 <h5 className="text-theme-text-white-100 font-bold text-sm sm:text-base drop-shadow-lg">
-                                                    {typeof project.name === 'string' ? project.name : (project.name[language] || project.name.en)}
+                                                    {typeof project.name === 'string'
+                                                        ? project.name
+                                                        : project.name[language] || project.name.en}
                                                 </h5>
                                             </div>
 
@@ -357,7 +385,10 @@ const EducationSection = ({ language }) => {
                                             <div className="absolute inset-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
                                                 <div className="glass-card text-center px-4 py-2 w-full h-full flex items-center justify-center">
                                                     <p className="text-theme-text-white-90 text-sm leading-relaxed">
-                                                        {typeof project.description === 'string' ? project.description : (project.description[language] || project.description.en)}
+                                                        {typeof project.description === 'string'
+                                                            ? project.description
+                                                            : project.description[language] ||
+                                                              project.description.en}
                                                     </p>
                                                 </div>
                                             </div>
@@ -375,7 +406,8 @@ const EducationSection = ({ language }) => {
                                 className="text-xl sm:text-2xl font-bold text-theme-text-white-90 mb-6 flex items-center"
                             >
                                 <span className="w-2 h-6 bg-theme-primary rounded-full mr-3"></span>
-                                {educationData.labels.academicAwards[language] || educationData.labels.academicAwards.en}
+                                {educationData.labels.academicAwards[language] ||
+                                    educationData.labels.academicAwards.en}
                             </ThemeTitle>
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                                 {degree.awards &&
@@ -397,7 +429,12 @@ const EducationSection = ({ language }) => {
                                                 {/* 奖项图片 */}
                                                 <OptimizedImage
                                                     src={award.image}
-                                                    alt={typeof award.title === 'string' ? award.title : (award.title[language] || award.title.en)}
+                                                    alt={
+                                                        typeof award.title === 'string'
+                                                            ? award.title
+                                                            : award.title[language] ||
+                                                              award.title.en
+                                                    }
                                                     className="w-full h-full object-cover"
                                                 />
 
@@ -414,7 +451,10 @@ const EducationSection = ({ language }) => {
                                                 {/* 奖项名称 */}
                                                 <div className="absolute bottom-3 left-3 right-3">
                                                     <h5 className="text-theme-text-white-100 font-bold text-sm sm:text-base drop-shadow-lg">
-                                                        {typeof award.title === 'string' ? award.title : (award.title[language] || award.title.en)}
+                                                        {typeof award.title === 'string'
+                                                            ? award.title
+                                                            : award.title[language] ||
+                                                              award.title.en}
                                                     </h5>
                                                 </div>
 
@@ -425,17 +465,21 @@ const EducationSection = ({ language }) => {
                                                             🏆
                                                         </div>
                                                         <h5 className="text-theme-primary font-bold text-lg mb-2">
-                                                            {typeof award.title === 'string' ? award.title : (award.title[language] || award.title.en)}
+                                                            {typeof award.title === 'string'
+                                                                ? award.title
+                                                                : award.title[language] ||
+                                                                  award.title.en}
                                                         </h5>
                                                         <p className="text-theme-text-white-70 text-sm">
                                                             {award.year}
                                                         </p>
                                                         <div className="mt-3 text-xs text-theme-text-white-80">
-                                                            {
+                                                            {educationData.labels
+                                                                .academicExcellenceAward[
+                                                                language
+                                                            ] ||
                                                                 educationData.labels
-                                                                    .academicExcellenceAward[language] || educationData.labels
-                                                                    .academicExcellenceAward.en
-                                                            }
+                                                                    .academicExcellenceAward.en}
                                                         </div>
                                                     </div>
                                                 </div>

@@ -885,12 +885,16 @@ const ProjectGeoViewer = ({ isOpen, onClose, language = 'en' }) => {
 
                 {/* 左下角标题 - 使用地图高对比度样式 */}
                 <div className="absolute bottom-8 left-4 z-10 map-info-panel">
-                    <h2 className="text-sm font-bold">{projectText.map.title[language] || projectText.map.title.en}</h2>
+                    <h2 className="text-sm font-bold">
+                        {projectText.map.title[language] || projectText.map.title.en}
+                    </h2>
                 </div>
 
                 {/* 图例 - 使用地图高对比度样式 */}
                 <div className="absolute bottom-4 right-4 map-legend-panel">
-                    <h4 className="text-sm font-semibold mb-2">{projectText.map.categories[language] || projectText.map.categories.en}</h4>
+                    <h4 className="text-sm font-semibold mb-2">
+                        {projectText.map.categories[language] || projectText.map.categories.en}
+                    </h4>
                     <div className="space-y-1">
                         {Object.entries(typeColors).map(([type, color]) => (
                             <div key={type} className="flex items-center gap-2">

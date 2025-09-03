@@ -37,9 +37,9 @@
  * • 动画帧优化（requestAnimationFrame）
  */
 
-import { useEffect, useState, useCallback, useRef } from 'react';
-import { useAppStore } from '../../store/useAppStore';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTheme } from '../../hooks/useTheme';
+import { useAppStore } from '../../store/useAppStore';
 import { isMobileDevice } from '../../utils/viewport';
 
 // 性能优化：将选择器定义移到组件外部，避免重复创建
@@ -101,8 +101,8 @@ const SmartDirectionalCursor = () => {
     const isMobile = useCallback(() => {
         return (
             isMobileDevice() ||
-            ('ontouchstart' in window) ||
-            (navigator.maxTouchPoints > 0) ||
+            'ontouchstart' in window ||
+            navigator.maxTouchPoints > 0 ||
             window.innerWidth <= 768
         );
     }, []);
@@ -1219,22 +1219,22 @@ const SmartDirectionalCursor = () => {
                     from { transform: rotate(0deg); }
                     to { transform: rotate(360deg); }
                 }
-                
+
                 @keyframes pulse {
                     0%, 100% { transform: scale(1); opacity: 0.8; }
                     50% { transform: scale(1.3); opacity: 1; }
                 }
-                
+
                 @keyframes float {
                     0%, 100% { transform: translateY(0px); }
                     50% { transform: translateY(-4px); }
                 }
-                
+
                 @keyframes gentle-pulse {
                     0%, 100% { opacity: 0.6; }
                     50% { opacity: 1; }
                 }
-                
+
                 .power-cursor {
                     position: fixed;
                     pointer-events: none; /* 不阻挡鼠标事件 */
@@ -1242,16 +1242,16 @@ const SmartDirectionalCursor = () => {
                     mix-blend-mode: screen; /* 视觉混合模式 */
                     ${isPointerLocked ? 'display: none !important;' : ''} /* 3D模式时隐藏 */
                 }
-                
+
                 .power-cursor.hovering {
                     filter: brightness(1.2) contrast(1.1); /* 悬停时增强效果 */
                 }
-                
+
                 .power-cursor.over-clickable {
                     opacity: 0.3; /* 在可点击元素上变淡 */
                     transform: translate3d(-50%, -50%, 0) scale(0.8); /* 缩小效果 */
                 }
-                
+
                 .clickable-hint {
                     position: fixed;
                     pointer-events: none;
@@ -1260,12 +1260,12 @@ const SmartDirectionalCursor = () => {
                     height: 1rem; /* 16px */
                     border-radius: 50%;
                     background: var(--theme-primary); /* 主题色 */
-                    opacity: 0.9; 
+                    opacity: 0.9;
                     box-shadow: 0 0 6px var(--theme-primary); /* 主题色光晕 */
                     transform: translate3d(-50%, -50%, 0);
                     ${isPointerLocked ? 'display: none !important;' : ''} /* 3D模式时隐藏 */
                 }
-                
+
                 /* 移动设备适配：在触摸设备上隐藏光标 */
                 @media (hover: none) and (pointer: coarse) {
                     .power-cursor, .clickable-hint {

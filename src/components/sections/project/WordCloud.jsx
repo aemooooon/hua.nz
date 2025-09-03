@@ -644,9 +644,10 @@ const WordCloud = ({
             if (!description && typeof getProjectDescription === 'function') {
                 try {
                     // 允许传语言，若实现不支持则回退为单参
-                    description = getProjectDescription.length >= 2
-                        ? getProjectDescription(project, language)
-                        : getProjectDescription(project);
+                    description =
+                        getProjectDescription.length >= 2
+                            ? getProjectDescription(project, language)
+                            : getProjectDescription(project);
                 } catch {
                     description = getProjectDescription(project);
                 }
@@ -675,7 +676,8 @@ const WordCloud = ({
                 });
 
             // 项目类型
-            const types = project.tags && Array.isArray(project.tags) ? project.tags : [project.type];
+            const types =
+                project.tags && Array.isArray(project.tags) ? project.tags : [project.type];
             types.forEach(type => {
                 const t = normalizeToString(type, language);
                 if (t)
@@ -793,7 +795,15 @@ const WordCloud = ({
                 .style('font-size', '14px')
                 .text('无法生成词云，请稍后重试');
         }
-    }, [project, getProjectDescription, language, descriptionText, width, calculateOptimalHeight, minHeight]);
+    }, [
+        project,
+        getProjectDescription,
+        language,
+        descriptionText,
+        width,
+        calculateOptimalHeight,
+        minHeight,
+    ]);
 
     // 组件挂载和项目变化时生成词云
     useEffect(() => {

@@ -13,18 +13,26 @@ const ContactSection = ({ language }) => {
     const contactInfo = [
         {
             icon: 'ri-phone-fill',
-            title: contactTexts.contactMethods.phone.title[language] || contactTexts.contactMethods.phone.title.en,
+            title:
+                contactTexts.contactMethods.phone.title[language] ||
+                contactTexts.contactMethods.phone.title.en,
             value: contactTexts.phone,
             href: `tel:${contactTexts.phone}`,
-            description: contactTexts.contactMethods.phone.description[language] || contactTexts.contactMethods.phone.description.en,
+            description:
+                contactTexts.contactMethods.phone.description[language] ||
+                contactTexts.contactMethods.phone.description.en,
             shineColor: 'shine-green',
         },
         {
             icon: 'ri-map-pin-fill',
-            title: contactTexts.contactMethods.location.title[language] || contactTexts.contactMethods.location.title.en,
+            title:
+                contactTexts.contactMethods.location.title[language] ||
+                contactTexts.contactMethods.location.title.en,
             value: contactTexts.location[language] || contactTexts.location.en,
             href: 'https://maps.google.com/?q=Christchurch,New Zealand',
-            description: contactTexts.contactMethods.location.description[language] || contactTexts.contactMethods.location.description.en,
+            description:
+                contactTexts.contactMethods.location.description[language] ||
+                contactTexts.contactMethods.location.description.en,
             shineColor: 'shine-purple',
         },
     ];
@@ -32,9 +40,13 @@ const ContactSection = ({ language }) => {
     // 微信信息单独处理
     const wechatInfo = {
         icon: 'ri-wechat-fill',
-        title: contactTexts.contactMethods.wechat.title[language] || contactTexts.contactMethods.wechat.title.en,
+        title:
+            contactTexts.contactMethods.wechat.title[language] ||
+            contactTexts.contactMethods.wechat.title.en,
         value: contactTexts.contactMethods.wechat.id,
-        description: contactTexts.contactMethods.wechat.description[language] || contactTexts.contactMethods.wechat.description.en,
+        description:
+            contactTexts.contactMethods.wechat.description[language] ||
+            contactTexts.contactMethods.wechat.description.en,
         qrCode: '/wechat.jpg',
         onClick: e => {
             e.preventDefault();
@@ -71,13 +83,16 @@ const ContactSection = ({ language }) => {
         {
             icon: 'ri-github-fill',
             url: contactTexts.social.github.url,
-            label: contactTexts.social.github.label[language] || contactTexts.social.github.label.en,
+            label:
+                contactTexts.social.github.label[language] || contactTexts.social.github.label.en,
             iconColor: 'text-theme-primary hover:text-theme-accent',
         },
         {
             icon: 'ri-linkedin-fill',
             url: contactTexts.social.linkedin.url,
-            label: contactTexts.social.linkedin.label[language] || contactTexts.social.linkedin.label.en,
+            label:
+                contactTexts.social.linkedin.label[language] ||
+                contactTexts.social.linkedin.label.en,
             iconColor: 'text-theme-primary hover:text-theme-accent',
         },
         {
@@ -321,7 +336,10 @@ const ContactSection = ({ language }) => {
                 <div className="mt-16 text-center">
                     <div className="inline-flex items-center space-x-2 text-theme-text-white-60">
                         <span className="w-8 h-px bg-gradient-to-r from-transparent to-theme-text-white-60 decorative-line"></span>
-                        <span className="text-sm">{contactTexts.lookingForward[language] || contactTexts.lookingForward.en}</span>
+                        <span className="text-sm">
+                            {contactTexts.lookingForward[language] ||
+                                contactTexts.lookingForward.en}
+                        </span>
                         <span className="w-8 h-px bg-gradient-to-l from-transparent to-theme-text-white-60 decorative-line"></span>
                     </div>
                 </div>

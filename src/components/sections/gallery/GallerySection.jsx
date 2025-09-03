@@ -2403,10 +2403,12 @@ const GallerySection = ({ language = 'en' }) => {
                                 />
                             </svg>
                             <h3 className="text-2xl font-bold text-white mb-2">
-                                {galleryText.mobile.mobileNotice.title[language] || galleryText.mobile.mobileNotice.title.en}
+                                {galleryText.mobile.mobileNotice.title[language] ||
+                                    galleryText.mobile.mobileNotice.title.en}
                             </h3>
                             <p className="text-white/80 leading-relaxed">
-                                {galleryText.mobile.mobileNotice.description[language] || galleryText.mobile.mobileNotice.description.en}
+                                {galleryText.mobile.mobileNotice.description[language] ||
+                                    galleryText.mobile.mobileNotice.description.en}
                             </p>
                         </div>
 
@@ -2418,11 +2420,13 @@ const GallerySection = ({ language = 'en' }) => {
                                 }}
                                 className="w-full bg-theme-primary/20 hover:bg-theme-primary/30 text-theme-primary border border-theme-primary/30 hover:border-theme-primary/50 py-3 px-6 rounded-lg transition-all duration-300"
                             >
-                                {galleryText.mobile.mobileNotice.viewGallery[language] || galleryText.mobile.mobileNotice.viewGallery.en}
+                                {galleryText.mobile.mobileNotice.viewGallery[language] ||
+                                    galleryText.mobile.mobileNotice.viewGallery.en}
                             </button>
 
                             <p className="text-white/60 text-sm">
-                                {galleryText.mobile.mobileNotice.desktopHint[language] || galleryText.mobile.mobileNotice.desktopHint.en}
+                                {galleryText.mobile.mobileNotice.desktopHint[language] ||
+                                    galleryText.mobile.mobileNotice.desktopHint.en}
                             </p>
                         </div>
                     </div>
@@ -2467,16 +2471,19 @@ const GallerySection = ({ language = 'en' }) => {
                         }`}
                     >
                         <p className="text-lg font-medium mb-3">
-                            {galleryText.gallery3D.instructions.howToPlay[language] || galleryText.gallery3D.instructions.howToPlay.en}
+                            {galleryText.gallery3D.instructions.howToPlay[language] ||
+                                galleryText.gallery3D.instructions.howToPlay.en}
                         </p>
                         <div className="space-y-3 text-sm">
                             <p className="flex items-center">
                                 <span className="w-2"></span>
-                                {galleryText.gallery3D.instructions.clickToEnter[language] || galleryText.gallery3D.instructions.clickToEnter.en}
+                                {galleryText.gallery3D.instructions.clickToEnter[language] ||
+                                    galleryText.gallery3D.instructions.clickToEnter.en}
                             </p>
                             <p className="flex items-center">
                                 <span className="w-2"></span>
-                                {galleryText.gallery3D.instructions.mouseControl[language] || galleryText.gallery3D.instructions.mouseControl.en}
+                                {galleryText.gallery3D.instructions.mouseControl[language] ||
+                                    galleryText.gallery3D.instructions.mouseControl.en}
                             </p>
                             <p className="flex items-center">
                                 <span className="w-2"></span>
@@ -2495,7 +2502,8 @@ const GallerySection = ({ language = 'en' }) => {
                                     </span>
                                 </span>
                                 <span>
-                                    {galleryText.gallery3D.instructions.keyboardControl[language] || galleryText.gallery3D.instructions.keyboardControl.en}
+                                    {galleryText.gallery3D.instructions.keyboardControl[language] ||
+                                        galleryText.gallery3D.instructions.keyboardControl.en}
                                 </span>
                             </p>
                             <p className="flex items-center">
@@ -2504,7 +2512,8 @@ const GallerySection = ({ language = 'en' }) => {
                                     ESC
                                 </span>
                                 <span>
-                                    {galleryText.gallery3D.instructions.escapeControl[language] || galleryText.gallery3D.instructions.escapeControl.en}
+                                    {galleryText.gallery3D.instructions.escapeControl[language] ||
+                                        galleryText.gallery3D.instructions.escapeControl.en}
                                 </span>
                             </p>
                         </div>
@@ -2553,10 +2562,12 @@ const GallerySection = ({ language = 'en' }) => {
                     >
                         <div className="bg-white/10 backdrop-blur-md rounded-2xl p-8 text-center transition-all duration-300 border border-white/20 hover:bg-white/20 hover:scale-105">
                             <h2 className="text-2xl font-bold text-white mb-4">
-                                {galleryText.gallery3D.title[language] || galleryText.gallery3D.title.en}
+                                {galleryText.gallery3D.title[language] ||
+                                    galleryText.gallery3D.title.en}
                             </h2>
                             <p className="text-white/80 mb-6">
-                                {galleryText.gallery3D.instructions.clickToStart[language] || galleryText.gallery3D.instructions.clickToStart.en}
+                                {galleryText.gallery3D.instructions.clickToStart[language] ||
+                                    galleryText.gallery3D.instructions.clickToStart.en}
                             </p>
                             <div className="animate-bounce">
                                 <svg
