@@ -37,11 +37,12 @@ const CircularLoadingIndicator = ({
     // 🌐 获取国际化文本
     const { getText } = useAppStore();
     const loadingText = getText('ui.loading');
-    
+
     // 🚀 性能优化：检测用户是否偏好减少动画
-    const prefersReducedMotion = typeof window !== 'undefined' 
-        ? window.matchMedia('(prefers-reduced-motion: reduce)').matches 
-        : false;
+    const prefersReducedMotion =
+        typeof window !== 'undefined'
+            ? window.matchMedia('(prefers-reduced-motion: reduce)').matches
+            : false;
     // 🎭 根据maskColor参数选择不同的遮罩样式
     const getMaskStyles = () => {
         switch (maskColor) {
@@ -83,7 +84,9 @@ const CircularLoadingIndicator = ({
                             0 0 ${size * 0.8}px rgba(var(--theme-primary-rgb), 0.4),
                             0 0 ${size * 1.2}px rgba(var(--theme-primary-rgb), 0.2)
                         `,
-                        animation: prefersReducedMotion ? 'none' : 'optimized-breathing-glow 2.5s ease-in-out infinite',
+                        animation: prefersReducedMotion
+                            ? 'none'
+                            : 'optimized-breathing-glow 2.5s ease-in-out infinite',
                     }}
                 ></div>
 
@@ -121,7 +124,9 @@ const CircularLoadingIndicator = ({
                             transparent 100deg,
                             transparent 360deg
                         )`,
-                        animation: prefersReducedMotion ? 'none' : 'rotate-glow 4s linear infinite reverse',
+                        animation: prefersReducedMotion
+                            ? 'none'
+                            : 'rotate-glow 4s linear infinite reverse',
                         filter: 'blur(1px)', // 反向扫描稍微更模糊，增加层次
                         mixBlendMode: 'screen',
                     }}
@@ -140,7 +145,9 @@ const CircularLoadingIndicator = ({
                             0 0 ${size * 0.08}px rgba(var(--theme-primary-rgb), 0.8),
                             0 0 ${size * 0.15}px rgba(var(--theme-primary-rgb), 0.4)
                         `,
-                        animation: prefersReducedMotion ? 'none' : 'breathing-glow 1.8s ease-in-out infinite',
+                        animation: prefersReducedMotion
+                            ? 'none'
+                            : 'breathing-glow 1.8s ease-in-out infinite',
                     }}
                 ></div>
 

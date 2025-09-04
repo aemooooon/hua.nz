@@ -1,14 +1,14 @@
-import { useState, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
+import { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
 import { PointerLockControls } from 'three-stdlib';
 import { useAppStore } from '../../../store/useAppStore';
+import textureSystem from '../../../utils/texture/index';
 import CircularLoadingIndicator from '../../ui/CircularLoadingIndicator';
 import GalleryMobile from './GalleryMobile';
-import RectAreaLightingSystem from './lighting/RectAreaLightingSystem.js';
-import { PillarLightSystem } from './lighting/PillarLightSystem.js';
 import { IESSpotlightSystem } from './lighting/IESSpotlightSystem.js';
-import textureSystem from '../../../utils/texture/index';
+import { PillarLightSystem } from './lighting/PillarLightSystem.js';
+import RectAreaLightingSystem from './lighting/RectAreaLightingSystem.js';
 
 /**
  * Interactive 3D Gallery Component - "Corridor of Light and Shadow"
@@ -2434,9 +2434,7 @@ const GallerySection = ({ language = 'en' }) => {
             )}
 
             {/* 移动端图片画廊 - 页面替换模式 */}
-            {isMobile && showMobileGallery && (
-                <GalleryMobile language={language} />
-            )}
+            {isMobile && showMobileGallery && <GalleryMobile language={language} />}
 
             {/* 桌面端3D画廊 */}
             {!isMobile && (

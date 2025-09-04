@@ -14,9 +14,9 @@
  */
 
 import PropTypes from 'prop-types';
-import { useRef, useMemo, useState, useEffect } from 'react';
-import { useAppStore } from '../../../store/useAppStore';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { usePhotoSwipe } from '../../../hooks/usePhotoSwipe';
+import { useAppStore } from '../../../store/useAppStore';
 import textureSystem from '../../../utils/texture';
 import CircularLoadingIndicator from '../../ui/CircularLoadingIndicator';
 
@@ -75,12 +75,12 @@ const GalleryMobile = ({ language = 'zh' }) => {
             }
 
             setIsLoadingImages(true);
-            
+
             try {
                 // 分批加载，优先加载前9张图片
                 const priorityItems = safeGalleryData.slice(0, 9);
                 const remainingItems = safeGalleryData.slice(9);
-                
+
                 // 优先加载前9张
                 const priorityOptimizations = new Map();
                 for (const item of priorityItems) {
@@ -94,11 +94,11 @@ const GalleryMobile = ({ language = 'zh' }) => {
                         thumbnail: optimizedThumbnail,
                     });
                 }
-                
+
                 // 更新优先图片，隐藏loading
                 setOptimizedImages(priorityOptimizations);
                 setIsLoadingImages(false);
-                
+
                 // 后台加载剩余图片
                 if (remainingItems.length > 0) {
                     const remainingOptimizations = new Map();
@@ -113,7 +113,7 @@ const GalleryMobile = ({ language = 'zh' }) => {
                             thumbnail: optimizedThumbnail,
                         });
                     }
-                    
+
                     // 合并所有优化图片
                     setOptimizedImages(prev => new Map([...prev, ...remainingOptimizations]));
                 }
@@ -149,11 +149,7 @@ const GalleryMobile = ({ language = 'zh' }) => {
             {isLoadingImages && (
                 <div className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center">
                     <div className="text-center">
-                        <CircularLoadingIndicator 
-                            size={120} 
-                            strokeWidth={8} 
-                            showMask={false}
-                        />
+                        <CircularLoadingIndicator size={120} strokeWidth={8} showMask={false} />
                         <p className="text-white/80 mt-4 text-sm">
                             {galleryText.mobile.loading?.[language] || 'Loading Gallery...'}
                         </p>
@@ -168,10 +164,10 @@ const GalleryMobile = ({ language = 'zh' }) => {
           position: relative;
           width: 100%;
           min-height: 100vh;
-          
+
           /* 与其他长内容页面保持一致的样式 */
           overflow: visible;
-          
+
           /* 背景和主题 */
           background: linear-gradient(135deg, #0f0f23 0%, #1a1a3a 50%, #0f0f23 100%);
 
@@ -195,10 +191,10 @@ const GalleryMobile = ({ language = 'zh' }) => {
           position: relative;
           cursor: pointer;
           transition: transform 0.2s ease-out, box-shadow 0.2s ease-out;
-          
+
           /* 提升触摸响应 */
           touch-action: manipulation;
-          
+
           /* 防止图片选择 */
           -webkit-user-select: none;
           user-select: none;
@@ -220,17 +216,17 @@ const GalleryMobile = ({ language = 'zh' }) => {
             padding-top: max(3rem, calc(env(safe-area-inset-top) + 2rem));
             padding-bottom: max(6rem, calc(env(safe-area-inset-bottom) + 4rem));
           }
-          
+
           /* 优化移动端图片性能 */
           .gallery-image-item img {
             will-change: auto;
             transform: translateZ(0);
-            
+
             /* 优化图片渲染 */
             image-rendering: -webkit-optimize-contrast;
             image-rendering: crisp-edges;
           }
-          
+
           /* 移动端触摸反馈优化 */
           .gallery-image-item:active {
             transform: scale(0.95);
