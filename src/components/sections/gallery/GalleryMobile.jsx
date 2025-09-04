@@ -8,6 +8,7 @@
  * - 集成PhotoSwipe全屏查看
  * - 移动设备优化的触控体验
  * - 响应式设计和安全区域支持
+ * - 作为长内容页面与SmartScrollManager集成
  *
  * @param {string} language - 界面语言 ('zh' | 'en')
  */
@@ -17,6 +18,7 @@ import { useRef, useMemo, useState, useEffect } from 'react';
 import { useAppStore } from '../../../store/useAppStore';
 import { usePhotoSwipe } from '../../../hooks/usePhotoSwipe';
 import textureSystem from '../../../utils/texture';
+import CircularLoadingIndicator from '../../ui/CircularLoadingIndicator';
 
 const GalleryMobile = ({ language = 'zh' }) => {
     const galleryData = useAppStore(state => state.getAllGalleryItems());
@@ -26,6 +28,7 @@ const GalleryMobile = ({ language = 'zh' }) => {
     const { openPhotoSwipe } = usePhotoSwipe();
     const containerRef = useRef(null);
     const [optimizedImages, setOptimizedImages] = useState(new Map());
+    const [isLoadingImages, setIsLoadingImages] = useState(true);
 
     // 数据过滤：移动端Gallery只显示图片，过滤掉视频类型
     const safeGalleryData = useMemo(() => {
@@ -63,35 +66,65 @@ const GalleryMobile = ({ language = 'zh' }) => {
         }
     };
 
-    // 预加载优化图片路径 - 加载所有图片
+    // 预加载优化图片路径 - 批量加载，显示loading状态
     useEffect(() => {
         const loadOptimizedPaths = async () => {
-            if (safeGalleryData.length === 0) return;
+            if (safeGalleryData.length === 0) {
+                setIsLoadingImages(false);
+                return;
+            }
 
-            // 一次性加载所有图片的优化路径
-            const newOptimizations = new Map();
-            for (const item of safeGalleryData) {
-                if (item.src && !optimizedImages.has(item.id)) {
+            setIsLoadingImages(true);
+            
+            try {
+                // 分批加载，优先加载前9张图片
+                const priorityItems = safeGalleryData.slice(0, 9);
+                const remainingItems = safeGalleryData.slice(9);
+                
+                // 优先加载前9张
+                const priorityOptimizations = new Map();
+                for (const item of priorityItems) {
                     const optimizedSrc = await getOptimalImageSrc(item.src);
                     const optimizedThumbnail = item.thumbnail
                         ? await getOptimalImageSrc(item.thumbnail)
                         : optimizedSrc;
 
-                    newOptimizations.set(item.id, {
+                    priorityOptimizations.set(item.id, {
                         src: optimizedSrc,
                         thumbnail: optimizedThumbnail,
                     });
                 }
-            }
+                
+                // 更新优先图片，隐藏loading
+                setOptimizedImages(priorityOptimizations);
+                setIsLoadingImages(false);
+                
+                // 后台加载剩余图片
+                if (remainingItems.length > 0) {
+                    const remainingOptimizations = new Map();
+                    for (const item of remainingItems) {
+                        const optimizedSrc = await getOptimalImageSrc(item.src);
+                        const optimizedThumbnail = item.thumbnail
+                            ? await getOptimalImageSrc(item.thumbnail)
+                            : optimizedSrc;
 
-            // 只有当有新的优化结果时才更新状态
-            if (newOptimizations.size > 0) {
-                setOptimizedImages(prev => new Map([...prev, ...newOptimizations]));
+                        remainingOptimizations.set(item.id, {
+                            src: optimizedSrc,
+                            thumbnail: optimizedThumbnail,
+                        });
+                    }
+                    
+                    // 合并所有优化图片
+                    setOptimizedImages(prev => new Map([...prev, ...remainingOptimizations]));
+                }
+            } catch (error) {
+                console.warn('图片优化加载失败:', error);
+                setIsLoadingImages(false);
             }
         };
 
         loadOptimizedPaths();
-    }, [safeGalleryData, optimizedImages]);
+    }, [safeGalleryData]);
 
     // 转换数据格式以适配PhotoSwipe，显示所有图片
     const galleryItems = safeGalleryData.map((item, index) => {
@@ -112,80 +145,118 @@ const GalleryMobile = ({ language = 'zh' }) => {
 
     return (
         <>
-            {/* 移动端安全区域和滚动样式 */}
+            {/* 全屏Loading状态 */}
+            {isLoadingImages && (
+                <div className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center">
+                    <div className="text-center">
+                        <CircularLoadingIndicator 
+                            size={120} 
+                            strokeWidth={8} 
+                            showMask={false}
+                        />
+                        <p className="text-white/80 mt-4 text-sm">
+                            {galleryText.mobile.loading?.[language] || 'Loading Gallery...'}
+                        </p>
+                    </div>
+                </div>
+            )}
+
+            {/* 移动端安全区域和长内容页面样式 */}
             <style>{`
         .gallery-mobile-container {
+          /* 作为长内容页面，让SmartScrollManager控制滚动 */
+          position: relative;
+          width: 100%;
           min-height: 100vh;
-          max-height: 100vh;
-          overflow-y: auto;
-          overflow-x: hidden;
-          overscroll-behavior: none;
+          
+          /* 与其他长内容页面保持一致的样式 */
+          overflow: visible;
+          
+          /* 背景和主题 */
+          background: linear-gradient(135deg, #0f0f23 0%, #1a1a3a 50%, #0f0f23 100%);
 
-          /* iOS 安全区域支持 - 优化移动端布局 */
-          padding-top: max(1rem, env(safe-area-inset-top));
-          padding-bottom: max(2rem, env(safe-area-inset-bottom));
-          padding-left: env(safe-area-inset-left);
-          padding-right: env(safe-area-inset-right);
-
-          /* 确保在iOS上平滑滚动 */
-          -webkit-overflow-scrolling: touch;
+          /* 移动端安全区域支持 */
+          padding-top: max(2rem, env(safe-area-inset-top));
+          padding-bottom: max(4rem, env(safe-area-inset-bottom));
+          padding-left: max(1rem, env(safe-area-inset-left));
+          padding-right: max(1rem, env(safe-area-inset-right));
 
           /* 防止选择文本 */
           -webkit-user-select: none;
           user-select: none;
 
-          /* 确保触摸滚动正常工作 */
-          touch-action: pan-y;
+          /* 优化触摸交互 - 让SmartScrollManager处理滚动 */
+          touch-action: manipulation;
         }
 
-        /* 自定义滚动条样式 */
-        .gallery-mobile-container::-webkit-scrollbar {
-          width: 4px;
+        /* 图片项目优化 */
+        .gallery-image-item {
+          /* 优化图片容器 */
+          position: relative;
+          cursor: pointer;
+          transition: transform 0.2s ease-out, box-shadow 0.2s ease-out;
+          
+          /* 提升触摸响应 */
+          touch-action: manipulation;
+          
+          /* 防止图片选择 */
+          -webkit-user-select: none;
+          user-select: none;
         }
-        .gallery-mobile-container::-webkit-scrollbar-track {
-          background: transparent;
+
+        .gallery-image-item:hover {
+          transform: scale(1.02);
+          box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
         }
-        .gallery-mobile-container::-webkit-scrollbar-thumb {
-          background: rgba(255, 255, 255, 0.2);
-          border-radius: 2px;
-        }
-        .gallery-mobile-container::-webkit-scrollbar-thumb:hover {
-          background: rgba(255, 255, 255, 0.3);
+
+        .gallery-image-item:active {
+          transform: scale(0.98);
         }
 
         /* 移动端特殊处理 */
         @media (max-width: 768px) {
           .gallery-mobile-container {
-            /* 在移动设备上隐藏滚动条 */
-            scrollbar-width: none;
-            -ms-overflow-style: none;
+            /* 移动端增加更多安全区域 */
+            padding-top: max(3rem, calc(env(safe-area-inset-top) + 2rem));
+            padding-bottom: max(6rem, calc(env(safe-area-inset-bottom) + 4rem));
           }
-
-          .gallery-mobile-container::-webkit-scrollbar {
-            display: none;
+          
+          /* 优化移动端图片性能 */
+          .gallery-image-item img {
+            will-change: auto;
+            transform: translateZ(0);
+            
+            /* 优化图片渲染 */
+            image-rendering: -webkit-optimize-contrast;
+            image-rendering: crisp-edges;
           }
-
-          /* 确保图片点击区域可用 */
-          .gallery-image-item {
-            touch-action: manipulation;
+          
+          /* 移动端触摸反馈优化 */
+          .gallery-image-item:active {
+            transform: scale(0.95);
+            transition: transform 0.1s ease-out;
           }
         }
       `}</style>
 
-            <div ref={containerRef} className="gallery-mobile-container w-full">
+            <div ref={containerRef} className="gallery-mobile-container w-full relative">
                 {/* 标题部分 - 使用store中的i18n文案 */}
-                <div className="text-center mb-8 px-4">
-                    <h2 className="text-3xl md:text-4xl font-bold text-theme-text-primary mb-4">
+                <div className="text-center mb-12 px-4">
+                    <h2 className="text-4xl md:text-5xl font-bold text-white mb-6 tracking-wide">
                         {galleryText.mobile.title[language] || galleryText.mobile.title.en}
                     </h2>
-                    <p className="text-theme-text-secondary max-w-2xl mx-auto leading-relaxed">
+                    <p className="text-white/70 max-w-2xl mx-auto leading-relaxed text-lg">
                         {galleryText.mobile.subtitle[language] || galleryText.mobile.subtitle.en}
                     </p>
+                    {/* 装饰线 */}
+                    <div className="mt-8 flex justify-center">
+                        <div className="w-24 h-0.5 bg-gradient-to-r from-transparent via-white/50 to-transparent"></div>
+                    </div>
                 </div>
 
-                <div className="max-w-6xl mx-auto px-4">
-                    {/* 九宫格网格 - 保持格子大小一致，支持滚动 */}
-                    <div className="grid grid-cols-3 gap-2 sm:gap-3 md:gap-4 pb-16">
+                <div className="max-w-4xl mx-auto px-4">
+                    {/* 九宫格网格 - 优化移动端长内容页面布局 */}
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4 md:gap-6 pb-20">
                         {galleryItems.map((item, index) => {
                             // 获取优化后的图片路径，如果没有则显示加载状态
                             const optimized = optimizedImages.get(item.id);
@@ -195,15 +266,15 @@ const GalleryMobile = ({ language = 'zh' }) => {
                                 <div
                                     key={item.id}
                                     onClick={() => handleImageClick(index)}
-                                    className="group project-card cursor-pointer transform transition-all duration-300 active:scale-95"
+                                    className="gallery-image-item group project-card cursor-pointer"
                                 >
                                     {/* 正方形图片容器 - 使用object-fit处理不同比例 */}
-                                    <div className="relative aspect-square rounded-lg overflow-hidden bg-theme-surface/10">
+                                    <div className="relative aspect-square rounded-xl overflow-hidden bg-white/5 shadow-lg hover:shadow-2xl transition-all duration-300 border border-white/10">
                                         {imageSrc ? (
                                             <img
                                                 src={imageSrc}
                                                 alt={`Gallery item ${index + 1}`}
-                                                className="w-full h-full object-cover"
+                                                className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
                                                 loading="lazy"
                                                 onError={e => {
                                                     // 如果优化图片加载失败，回退到原始图片
@@ -215,8 +286,8 @@ const GalleryMobile = ({ language = 'zh' }) => {
                                             />
                                         ) : (
                                             // 显示加载状态
-                                            <div className="w-full h-full flex items-center justify-center bg-theme-surface/20">
-                                                <div className="w-8 h-8 border-2 border-theme-text-secondary/30 border-t-theme-text-secondary rounded-full animate-spin"></div>
+                                            <div className="w-full h-full flex items-center justify-center bg-white/5">
+                                                <div className="w-8 h-8 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
                                             </div>
                                         )}
 
@@ -250,11 +321,11 @@ const GalleryMobile = ({ language = 'zh' }) => {
                                     />
                                 </svg>
                             </div>
-                            <div className="text-theme-text-secondary text-lg mb-2">
+                            <div className="text-white/70 text-lg mb-2">
                                 {galleryText.mobile.noContent[language] ||
                                     galleryText.mobile.noContent.en}
                             </div>
-                            <div className="text-theme-text-secondary/60 text-sm">
+                            <div className="text-white/50 text-sm">
                                 {galleryText.mobile.tryAgain[language] ||
                                     galleryText.mobile.tryAgain.en}
                             </div>
@@ -264,7 +335,7 @@ const GalleryMobile = ({ language = 'zh' }) => {
                     {/* 移动端专用安全距离 */}
                     <div
                         className="pb-safe-area-inset-bottom"
-                        style={{ paddingBottom: 'max(2rem, env(safe-area-inset-bottom))' }}
+                        style={{ paddingBottom: 'max(4rem, env(safe-area-inset-bottom))' }}
                     ></div>
                 </div>
             </div>

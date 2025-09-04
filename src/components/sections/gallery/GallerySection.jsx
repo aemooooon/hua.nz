@@ -2384,8 +2384,8 @@ const GallerySection = ({ language = 'en' }) => {
 
     return (
         <>
-            {/* 移动端警告提示 */}
-            {isMobile && showMobileWarning && (
+            {/* 移动端警告提示 - 只在未显示画廊时显示 */}
+            {isMobile && showMobileWarning && !showMobileGallery && (
                 <div className="fixed inset-0 z-[99999] bg-black/90 backdrop-blur-sm flex items-center justify-center p-4">
                     <div className="bg-white/10 backdrop-blur-md rounded-2xl p-8 text-center max-w-md border border-white/20">
                         <div className="mb-6">
@@ -2433,8 +2433,10 @@ const GallerySection = ({ language = 'en' }) => {
                 </div>
             )}
 
-            {/* 移动端图片画廊 */}
-            {isMobile && showMobileGallery && <GalleryMobile language={language} />}
+            {/* 移动端图片画廊 - 页面替换模式 */}
+            {isMobile && showMobileGallery && (
+                <GalleryMobile language={language} />
+            )}
 
             {/* 桌面端3D画廊 */}
             {!isMobile && (
