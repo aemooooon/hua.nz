@@ -37,6 +37,11 @@ const CircularLoadingIndicator = ({
     // 🌐 获取国际化文本
     const { getText } = useAppStore();
     const loadingText = getText('ui.loading');
+    
+    // 🚀 性能优化：检测用户是否偏好减少动画
+    const prefersReducedMotion = typeof window !== 'undefined' 
+        ? window.matchMedia('(prefers-reduced-motion: reduce)').matches 
+        : false;
     // 🎭 根据maskColor参数选择不同的遮罩样式
     const getMaskStyles = () => {
         switch (maskColor) {
@@ -78,7 +83,7 @@ const CircularLoadingIndicator = ({
                             0 0 ${size * 0.8}px rgba(var(--theme-primary-rgb), 0.4),
                             0 0 ${size * 1.2}px rgba(var(--theme-primary-rgb), 0.2)
                         `,
-                        animation: 'breathing-glow 2.5s ease-in-out infinite',
+                        animation: prefersReducedMotion ? 'none' : 'optimized-breathing-glow 2.5s ease-in-out infinite',
                     }}
                 ></div>
 
@@ -97,8 +102,8 @@ const CircularLoadingIndicator = ({
                             transparent 90deg,
                             transparent 360deg
                         )`,
-                        animation: 'rotate-glow 3s linear infinite',
-                        filter: 'blur(1px)',
+                        animation: prefersReducedMotion ? 'none' : 'rotate-glow 3s linear infinite',
+                        filter: 'blur(0.5px)', // 轻量blur，保持柔和效果
                         mixBlendMode: 'screen',
                     }}
                 ></div>
@@ -116,8 +121,8 @@ const CircularLoadingIndicator = ({
                             transparent 100deg,
                             transparent 360deg
                         )`,
-                        animation: 'rotate-glow 4s linear infinite reverse',
-                        filter: 'blur(2px)',
+                        animation: prefersReducedMotion ? 'none' : 'rotate-glow 4s linear infinite reverse',
+                        filter: 'blur(1px)', // 反向扫描稍微更模糊，增加层次
                         mixBlendMode: 'screen',
                     }}
                 ></div>
@@ -135,7 +140,7 @@ const CircularLoadingIndicator = ({
                             0 0 ${size * 0.08}px rgba(var(--theme-primary-rgb), 0.8),
                             0 0 ${size * 0.15}px rgba(var(--theme-primary-rgb), 0.4)
                         `,
-                        animation: 'breathing-glow 1.8s ease-in-out infinite',
+                        animation: prefersReducedMotion ? 'none' : 'breathing-glow 1.8s ease-in-out infinite',
                     }}
                 ></div>
 
@@ -150,9 +155,7 @@ const CircularLoadingIndicator = ({
                         className="text-lg font-medium"
                         style={{
                             color: 'white',
-                            textShadow:
-                                '0 0 10px rgba(255, 255, 255, 0.8), 0 0 20px rgba(255, 255, 255, 0.4)',
-                            animation: 'breathing-glow 2s ease-in-out infinite',
+                            textShadow: '0 0 8px rgba(255, 255, 255, 0.6)', // 简化为单层阴影，减少渲染负担
                         }}
                     >
                         {loadingText}
