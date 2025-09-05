@@ -1,21 +1,13 @@
 /**
- * 移动端Gallery组件 - 简化版本
- *
- * 设计理念：
- * - 针对移动端的简单高效加载策略
- * - 适合小规模图片集合（约20多张）的一次性加载
- * - 固定3列网格布局，充分利用移动设备屏幕空间
- * - 与SmartScrollManager完美集成，确保滚动高度计算准确
+ * 移动端Gallery组件 - 修复版本
  *
  * 功能特点：
- * 1. 🎯 简化加载：一次性加载所有缩略图，避免复杂的分阶段加载
- * 2. 📱 移动优化：固定3列布局，间距适配不同屏幕尺寸
- * 3. 🚀 性能优先：图片格式自动优化（AVIF → WebP → JPG）
- * 4. 🔍 全屏查看：集成PhotoSwipe，支持缩放、滑动浏览
- * 5. 📊 加载反馈：实时进度条显示，用户体验友好
- *
- * 加载流程：
- * 路径优化 → 一次性预加载所有缩略图 → 显示画廊内容
+ * - 九宫格布局展示画廊图片
+ * - 智能图片格式优化 (AVIF > WebP > JPG)
+ * - 全局加载状态管理，确保滚动体验
+ * - 集成PhotoSwipe全屏查看
+ * - 移动设备优化的触控体验
+ * - 作为长内容页面与SmartScrollManager集成
  *
  * @param {string} language - 界面语言 ('zh' | 'en')
  */
@@ -35,39 +27,20 @@ const GalleryMobile = ({ language = 'zh' }) => {
     const { openPhotoSwipe } = usePhotoSwipe();
     const containerRef = useRef(null);
 
-    // ═══════════════════════════════════════════════════════════════
-    // 🎯 状态管理 - 简化版本
-    // ═══════════════════════════════════════════════════════════════
-
-    // 图片路径优化缓存
+    // 状态管理
     const [optimizedImages, setOptimizedImages] = useState(new Map());
+    const [isLoadingImages, setIsLoadingImages] = useState(true);
+    const [isGlobalLoading, setIsGlobalLoading] = useState(true);
+    const [loadedImagesCount, setLoadedImagesCount] = useState(0);
+    const [totalImagesCount, setTotalImagesCount] = useState(0);
 
-    // 加载状态管理
-    const [isLoading, setIsLoading] = useState(true); // 主加载状态
-    const [loadedCount, setLoadedCount] = useState(0); // 已加载图片数量
-    const [totalCount, setTotalCount] = useState(0); // 总图片数量
-
-    // ═══════════════════════════════════════════════════════════════
-    // 📊 数据预处理
-    // ═══════════════════════════════════════════════════════════════
-
-    // 数据安全过滤：移动端Gallery只显示图片，过滤视频类型
+    // 数据过滤：移动端Gallery只显示图片，过滤掉视频类型
     const safeGalleryData = useMemo(() => {
         if (!Array.isArray(galleryData)) return [];
         return galleryData.filter(item => item.type !== 'video');
     }, [galleryData]);
 
-    // ═══════════════════════════════════════════════════════════════
-    // 🖼️ 图片路径优化系统
-    // ═══════════════════════════════════════════════════════════════
-
-    /**
-     * 获取最优图片路径
-     * 优先级：AVIF → WebP → 原始格式
-     *
-     * @param {string} originalSrc - 原始图片路径
-     * @returns {Promise<string>} 优化后的图片路径
-     */
+    // 获取最优图片路径的函数
     const getOptimalImageSrc = async originalSrc => {
         try {
             if (!originalSrc) return originalSrc;
@@ -95,15 +68,7 @@ const GalleryMobile = ({ language = 'zh' }) => {
         }
     };
 
-    // ═══════════════════════════════════════════════════════════════
-    // 🚀 图片加载系统 - 简化策略
-    // ═══════════════════════════════════════════════════════════════
-
-    /**
-     * 单张图片预加载函数
-     * @param {string} src - 图片URL
-     * @returns {Promise} 加载Promise
-     */
+    // 真实图片加载检测函数
     const preloadImage = src => {
         return new Promise((resolve, reject) => {
             const img = new Image();
@@ -113,61 +78,42 @@ const GalleryMobile = ({ language = 'zh' }) => {
         });
     };
 
-    /**
-     * 一次性批量加载所有图片
-     *
-     * 策略说明：
-     * - 适用于小规模图片集合（~20张）
-     * - 并行加载提高效率
-     * - 实时更新加载进度
-     * - 容错处理，单张失败不影响整体
-     *
-     * @param {string[]} imageUrls - 图片URL数组
-     */
-    const loadAllImages = useCallback(async imageUrls => {
-        setTotalCount(imageUrls.length);
-        setLoadedCount(0);
+    // 批量预加载图片并跟踪进度
+    const preloadAllImages = useCallback(async imageUrls => {
+        const totalImages = imageUrls.length;
+        setTotalImagesCount(totalImages);
+        setLoadedImagesCount(0);
 
         const loadPromises = imageUrls.map(async src => {
             try {
                 await preloadImage(src);
-                setLoadedCount(prev => prev + 1);
+                setLoadedImagesCount(prev => prev + 1);
                 return src;
             } catch (error) {
                 console.warn(`图片加载失败: ${src}`, error);
-                setLoadedCount(prev => prev + 1); // 即使失败也更新计数
+                setLoadedImagesCount(prev => prev + 1);
                 return null;
             }
         });
 
-        await Promise.allSettled(loadPromises);
-        setIsLoading(false);
+        return Promise.allSettled(loadPromises);
     }, []);
 
-    // ═══════════════════════════════════════════════════════════════
-    // 🎬 主加载流程 - 简化版本
-    // ═══════════════════════════════════════════════════════════════
-
-    /**
-     * 画廊加载主流程
-     *
-     * 流程步骤：
-     * 1. 🔍 路径优化：获取所有图片的最优格式路径
-     * 2. 🚀 批量加载：一次性加载所有缩略图
-     * 3. ✅ 完成显示：隐藏加载状态，显示画廊内容
-     */
+    // 预加载优化图片路径 - 全局加载状态管理
     useEffect(() => {
-        const loadGallery = async () => {
+        const loadOptimizedPaths = async () => {
             if (safeGalleryData.length === 0) {
-                setIsLoading(false);
+                setIsLoadingImages(false);
+                setIsGlobalLoading(false);
                 return;
             }
 
-            console.log('📱 开始加载移动端画廊...');
+            setIsLoadingImages(true);
+            setIsGlobalLoading(true);
 
             try {
-                // 🔍 步骤1：路径优化 - 获取所有图片的最优格式路径
-                console.log('🔍 正在优化图片路径...');
+                // 第一步：获取所有优化后的图片路径
+                console.log('📱 开始优化图片路径...');
                 const optimizationsMap = new Map();
                 for (const item of safeGalleryData) {
                     const optimizedSrc = await getOptimalImageSrc(item.src);
@@ -181,30 +127,32 @@ const GalleryMobile = ({ language = 'zh' }) => {
                     });
                 }
 
+                // 更新优化图片Map
                 setOptimizedImages(optimizationsMap);
+                setIsLoadingImages(false);
 
-                // 🚀 步骤2：批量加载 - 一次性加载所有缩略图
-                console.log('🚀 开始批量加载图片...');
-                const allImageUrls = Array.from(optimizationsMap.values()).map(
-                    opt => opt.thumbnail
-                );
+                // 第二步：预加载关键图片（前12张缩略图）确保滚动体验
+                console.log('📱 开始预加载关键图片...');
+                const keyImageUrls = Array.from(optimizationsMap.values())
+                    .slice(0, 12)
+                    .map(opt => opt.thumbnail);
 
-                await loadAllImages(allImageUrls);
-                console.log('✅ 所有图片加载完成！');
+                await preloadAllImages(keyImageUrls);
+
+                // 第三步：所有关键图片加载完成，隐藏全局loading
+                console.log('📱 关键图片加载完成，显示画廊内容');
+                setIsGlobalLoading(false);
             } catch (error) {
-                console.warn('❌ 画廊加载失败:', error);
-                setIsLoading(false);
+                console.warn('图片优化加载失败:', error);
+                setIsLoadingImages(false);
+                setIsGlobalLoading(false);
             }
         };
 
-        loadGallery();
-    }, [safeGalleryData, loadAllImages]);
+        loadOptimizedPaths();
+    }, [safeGalleryData, preloadAllImages]);
 
-    // ═══════════════════════════════════════════════════════════════
-    // 🔄 数据转换 - PhotoSwipe适配
-    // ═══════════════════════════════════════════════════════════════
-
-    // 转换数据格式以适配PhotoSwipe全屏查看器
+    // 转换数据格式以适配PhotoSwipe，显示所有图片
     const galleryItems = safeGalleryData.map((item, index) => {
         const optimized = optimizedImages.get(item.id);
         return {
@@ -216,28 +164,14 @@ const GalleryMobile = ({ language = 'zh' }) => {
         };
     });
 
-    // ═══════════════════════════════════════════════════════════════
-    // 🖱️ 交互事件处理
-    // ═══════════════════════════════════════════════════════════════
-
-    /**
-     * 处理图片点击事件
-     * 打开PhotoSwipe全屏查看器
-     *
-     * @param {number} index - 点击的图片索引
-     */
     const handleImageClick = index => {
         openPhotoSwipe(galleryItems, index);
     };
 
-    // ═══════════════════════════════════════════════════════════════
-    // 🎨 渲染组件
-    // ═══════════════════════════════════════════════════════════════
-
     return (
         <>
-            {/* 🔄 全局Loading状态 - 简化版本 */}
-            {isLoading && (
+            {/* 全局Loading状态 - 包含图片优化和实际加载进度 */}
+            {(isLoadingImages || isGlobalLoading) && (
                 <div className="fixed inset-0 bg-black/95 z-50 flex items-center justify-center">
                     <div className="text-center max-w-sm mx-auto px-6">
                         <CircularLoadingIndicator size={140} strokeWidth={10} showMask={false} />
@@ -245,39 +179,42 @@ const GalleryMobile = ({ language = 'zh' }) => {
                         {/* 加载阶段提示 */}
                         <div className="mt-6 space-y-3">
                             <h3 className="text-white text-lg font-medium">
-                                {galleryText.mobile.loading?.[language] || '加载画廊图片...'}
+                                {isLoadingImages
+                                    ? galleryText.mobile.optimizing?.[language] ||
+                                      'Optimizing Images...'
+                                    : galleryText.mobile.loading?.[language] ||
+                                      'Loading Gallery...'}
                             </h3>
 
                             {/* 显示加载进度 */}
-                            {totalCount > 0 && (
+                            {isGlobalLoading && totalImagesCount > 0 && (
                                 <div className="space-y-2">
                                     <div className="w-full bg-white/20 rounded-full h-2">
                                         <div
                                             className="bg-gradient-to-r from-blue-400 to-purple-400 h-2 rounded-full transition-all duration-300"
                                             style={{
-                                                width: `${(loadedCount / totalCount) * 100}%`,
+                                                width: `${(loadedImagesCount / totalImagesCount) * 100}%`,
                                             }}
                                         />
                                     </div>
                                     <p className="text-white/70 text-sm">
-                                        {loadedCount} / {totalCount} 张图片已加载
+                                        {loadedImagesCount} / {totalImagesCount} 张图片已加载
                                     </p>
                                 </div>
                             )}
 
                             <p className="text-white/60 text-xs leading-relaxed">
-                                一次性加载所有图片以确保流畅体验
+                                首次加载需要预加载图片以确保流畅的滚动体验
                             </p>
                         </div>
                     </div>
                 </div>
             )}
 
-            {/* 📱 移动端样式定义 */}
+            {/* 移动端安全区域和长内容页面样式 */}
             <style>{`
-                /* 🌐 Gallery容器 - 与SmartScrollManager集成 */
                 .gallery-mobile-container {
-                    /* 作为长内容页面，配合SmartScrollManager正确计算滚动高度 */
+                    /* 作为长内容页面，让SmartScrollManager控制滚动 */
                     position: relative;
                     width: 100%;
                     min-height: 100vh;
@@ -287,21 +224,20 @@ const GalleryMobile = ({ language = 'zh' }) => {
                     background: linear-gradient(135deg, #0f0f23 0%, #1a1a3a 50%, #0f0f23 100%);
 
                     /* 移动端安全区域支持 */
-                    /* 🛡️ 移动端安全区域适配 */
                     padding-top: max(2rem, env(safe-area-inset-top));
                     padding-bottom: max(4rem, env(safe-area-inset-bottom));
                     padding-left: max(1rem, env(safe-area-inset-left));
                     padding-right: max(1rem, env(safe-area-inset-right));
 
-                    /* 🚫 防止意外选择 */
+                    /* 防止选择文本 */
                     -webkit-user-select: none;
                     user-select: none;
 
-                    /* ✋ 优化触摸交互 */
+                    /* 优化触摸交互 */
                     touch-action: manipulation;
                 }
 
-                /* 🖼️ 图片项目交互优化 */
+                /* 图片项目优化 */
                 .gallery-image-item {
                     position: relative;
                     cursor: pointer;
@@ -311,18 +247,16 @@ const GalleryMobile = ({ language = 'zh' }) => {
                     user-select: none;
                 }
 
-                /* 🎯 悬停效果（主要针对桌面端预览） */
                 .gallery-image-item:hover {
                     transform: scale(1.02);
                     box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
                 }
 
-                /* 📱 触摸反馈 */
                 .gallery-image-item:active {
                     transform: scale(0.98);
                 }
 
-                /* 🎮 移动端特殊优化 */
+                /* 移动端特殊处理 */
                 @media (max-width: 768px) {
                     .gallery-mobile-container {
                         padding-top: max(3rem, calc(env(safe-area-inset-top) + 2rem));
@@ -336,7 +270,6 @@ const GalleryMobile = ({ language = 'zh' }) => {
                         image-rendering: crisp-edges;
                     }
 
-                    /* 📱 移动端触摸反馈更明显 */
                     .gallery-image-item:active {
                         transform: scale(0.95);
                         transition: transform 0.1s ease-out;
@@ -344,10 +277,10 @@ const GalleryMobile = ({ language = 'zh' }) => {
                 }
             `}</style>
 
-            {/* 🎨 画廊主体内容 - 只在所有图片加载完成后显示 */}
-            {!isLoading && (
+            {/* 画廊内容 - 只在全局加载完成后显示 */}
+            {!isGlobalLoading && (
                 <div ref={containerRef} className="gallery-mobile-container w-full relative">
-                    {/* 📋 标题区域 */}
+                    {/* 标题部分 */}
                     <div className="text-center mb-12 px-4">
                         <h2 className="text-4xl md:text-5xl font-bold text-white mb-6 tracking-wide">
                             {galleryText.mobile.title[language] || galleryText.mobile.title.en}
@@ -363,8 +296,8 @@ const GalleryMobile = ({ language = 'zh' }) => {
                     </div>
 
                     <div className="max-w-4xl mx-auto px-4">
-                        {/* 🎯 3列网格布局 - 移动端固定3列显示 */}
-                        <div className="grid grid-cols-3 gap-2 sm:gap-3 md:gap-4 pb-20">
+                        {/* 九宫格网格 - 优化移动端长内容页面布局 */}
+                        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4 md:gap-6 pb-20">
                             {galleryItems.map((item, index) => {
                                 const optimized = optimizedImages.get(item.id);
                                 const imageSrc = optimized?.thumbnail || optimized?.src;
@@ -375,7 +308,6 @@ const GalleryMobile = ({ language = 'zh' }) => {
                                         onClick={() => handleImageClick(index)}
                                         className="gallery-image-item group project-card cursor-pointer"
                                     >
-                                        {/* 🖼️ 图片容器 - 正方形比例 */}
                                         <div className="relative aspect-square rounded-xl overflow-hidden bg-white/5 shadow-lg hover:shadow-2xl transition-all duration-300 border border-white/10">
                                             {imageSrc ? (
                                                 <img
@@ -391,7 +323,6 @@ const GalleryMobile = ({ language = 'zh' }) => {
                                                     }}
                                                 />
                                             ) : (
-                                                /* 🔄 图片加载占位符 */
                                                 <div className="w-full h-full flex items-center justify-center bg-white/5">
                                                     <div className="w-8 h-8 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
                                                 </div>
@@ -443,12 +374,8 @@ const GalleryMobile = ({ language = 'zh' }) => {
     );
 };
 
-// ═══════════════════════════════════════════════════════════════
-// 🔧 组件配置
-// ═══════════════════════════════════════════════════════════════
-
 GalleryMobile.propTypes = {
-    language: PropTypes.string, // 界面语言设置
+    language: PropTypes.string,
 };
 
 export default GalleryMobile;
