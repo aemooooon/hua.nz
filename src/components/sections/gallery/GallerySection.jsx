@@ -2560,7 +2560,7 @@ const GallerySection = ({ language = 'en' }) => {
                             }
                         }}
                     >
-                        <div className="bg-white/10 backdrop-blur-md rounded-2xl p-8 text-center transition-all duration-300 border border-white/20 hover:bg-white/20 hover:scale-105">
+                        <div className="glass-card p-8 text-center cursor-pointer">
                             <h2 className="text-2xl font-bold text-white mb-4">
                                 {galleryText.gallery3D.title[language] ||
                                     galleryText.gallery3D.title.en}
