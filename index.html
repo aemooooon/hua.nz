@@ -7,45 +7,50 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 
     <!-- 基本SEO标签 -->
-    <title>Hua Wang - Full Stack Developer | React & Node.js Specialist</title>
+    <title>Hua Wang - Full Stack Developer</title>
     <meta name="description"
         content="Hua Wang's portfolio - Full Stack Developer specializing in React, Node.js, Three.js, and modern web technologies. View my projects and technical expertise." />
     <meta name="keywords"
         content="Full Stack Developer, React, Node.js, JavaScript, Three.js, Portfolio, Hua Wang, Web Development, Frontend, Backend" />
     <meta name="author" content="Hua Wang" />
     <meta name="robots" content="index, follow" />
-    <link rel="canonical" href="https://aemooooon.github.io/hua.nz" />
+    <link rel="canonical" href="https://www.hua.nz" />
 
-    <!-- 语言和地区 -->
+    <!-- 语言和地区设置 -->
     <meta name="language" content="en" />
     <meta name="geo.region" content="NZ" />
     <meta name="geo.country" content="New Zealand" />
-    <!-- LCP优化：关键资源提示 -->
+
+    <!-- =================== 性能优化区域 =================== -->
     <link rel="dns-prefetch" href="//fonts.googleapis.com">
     <link rel="dns-prefetch" href="//fonts.gstatic.com">
-    <!-- LCP优化：字体预加载和回退 -->
+
     <style>
-        /* 回退字体栈确保文本立即可见 */
+        /* 字体回退策略：确保文本立即可见 */
         .font-beauRivage {
             font-family: 'Beau Rivage', cursive, 'Times New Roman', serif;
             font-display: swap;
+            /* 使用系统字体直到自定义字体加载完成 */
         }
 
-        /* 特别保护 Loading 组件的呼吸动画 */
+        /* 动画保护：防止关键动画被覆盖 */
         .breathing-glow,
         [style*="breathing-glow"],
         [style*="avatar-glow"] {
             animation: revert !important;
-            /* 保持CSS中定义的动画 */
         }
     </style>
+
+    <!-- 外部资源加载 -->
     <link href="https://cdn.jsdelivr.net/npm/remixicon@4.5.0/fonts/remixicon.css" rel="stylesheet" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <!-- LCP优化：优先加载关键字体 Beau Rivage -->
+
+    <!-- 关键字体优先加载：Beau Rivage (用于品牌标题) -->
     <link rel="preload" href="https://fonts.googleapis.com/css2?family=Beau+Rivage&display=swap" as="style">
     <link href="https://fonts.googleapis.com/css2?family=Beau+Rivage&display=swap" rel="stylesheet">
-    <!-- 其他字体延迟加载 -->
+
+    <!-- 次要字体延迟加载：减少首屏阻塞 -->
     <link
         href="https://fonts.googleapis.com/css2?family=Audiowide&family=Figtree:ital,wght@0,300..900;1,300..900&family=Fredoka+One&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&family=Montserrat:ital,wght@0,100..900;1,100..900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
         rel="stylesheet" media="print" onload="this.media='all'">
@@ -55,38 +60,23 @@
             rel="stylesheet">
     </noscript>
 
-    <!-- 安全和性能 -->
+    <!-- =================== 安全和浏览器设置 =================== -->
     <meta http-equiv="X-Content-Type-Options" content="nosniff" />
     <meta name="referrer" content="strict-origin-when-cross-origin" />
-    <meta name="robots" content="index, follow" />
-    <link rel="canonical" href="https://aemooooon.github.io/hua.nz" />
-
-    <!-- PWA相关 -->
     <meta name="theme-color" content="#000000" />
     <meta name="color-scheme" content="light dark" />
 
-    <!-- 改进的SEO -->
-    <meta name="description"
-        content="Hua Wang's portfolio - Full Stack Developer specializing in React, Node.js, Three.js, and modern web technologies. View my projects and technical expertise." />
-    <meta name="keywords"
-        content="Full Stack Developer, React, Node.js, JavaScript, Three.js, Portfolio, Hua Wang, Web Development, Frontend, Backend" />
-    <meta name="author" content="Hua Wang" />
-    <meta name="language" content="en" />
-    <meta name="geo.region" content="NZ" />
-    <meta name="geo.country" content="New Zealand" />
-
-    <!-- 改进的Open Graph Meta Tags -->
+    <!-- =================== 社交媒体优化 =================== -->
     <meta property="og:title" content="Hua Wang - Full Stack Developer" />
     <meta property="og:description"
         content="Portfolio showcasing modern web development projects with React, Node.js, and Three.js" />
     <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://aemooooon.github.io/hua.nz" />
+    <meta property="og:url" content="https://www.hua.nz" />
     <meta property="og:image" content="https://aemooooon.github.io/hua.nz/hua_hover.jpg" />
-    <meta property="og:image:alt" content="Hua Wang - Full Stack Developer Portfolio" />
+    <meta property="og:image:alt" content="Hua Wang - Full Stack Developer" />
     <meta property="og:site_name" content="Hua Wang Portfolio" />
     <meta property="og:locale" content="en_US" />
 
-    <!-- 改进的Twitter Card Meta Tags -->
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="Hua Wang - Full Stack Developer" />
     <meta name="twitter:description"
@@ -94,7 +84,7 @@
     <meta name="twitter:image" content="https://aemooooon.github.io/hua.nz/hua_hover.jpg" />
     <meta name="twitter:image:alt" content="Hua Wang Portfolio" />
 
-    <!-- 结构化数据 (JSON-LD) -->
+    <!-- =================== SEO结构化数据 =================== -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
@@ -113,7 +103,7 @@
       ]
     }
     </script>
-  <script type="module" crossorigin src="/assets/index-BCeODarI.js"></script>
+  <script type="module" crossorigin src="/assets/index-DuGq4AUX.js"></script>
   <link rel="modulepreload" crossorigin href="/assets/d3-BbFmVfHF.js">
   <link rel="modulepreload" crossorigin href="/assets/vendor-RxfllKF0.js">
   <link rel="modulepreload" crossorigin href="/assets/react-N-_5-tx-.js">
@@ -125,11 +115,11 @@
   <link rel="modulepreload" crossorigin href="/assets/home-BF6scM_5.js">
   <link rel="stylesheet" crossorigin href="/assets/vendor-DSulWsr7.css">
   <link rel="stylesheet" crossorigin href="/assets/home-CGmMaHBT.css">
-  <link rel="stylesheet" crossorigin href="/assets/index-YzB3z5hq.css">
+  <link rel="stylesheet" crossorigin href="/assets/index-DiZMtA6N.css">
 </head>
 
 <body>
-    <div id="root" class="animate-zoomIn"></div>
+    <div id="root"></div>
 </body>
 
 </html>
