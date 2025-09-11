@@ -97,20 +97,53 @@ const SmartDirectionalCursor = () => {
 
     // ==================== 设备检测 ====================
 
-    /** 检测是否为移动设备 - 使用更完整的检测逻辑 */
+    /** 检测是否为移动设备 - 使用更精确和可靠的检测逻辑 */
     const isMobile = useCallback(() => {
-        return (
-            isMobileDevice() ||
-            'ontouchstart' in window ||
-            navigator.maxTouchPoints > 0 ||
-            window.innerWidth <= 768
-        );
+        // 首先检查窗口宽度 - 最可靠的判断方式
+        if (window.innerWidth <= 768) {
+            return true;
+        }
+        
+        // 检查用户代理字符串中的移动设备标识
+        const userAgent = navigator.userAgent.toLowerCase();
+        const mobileKeywords = ['mobile', 'android', 'iphone', 'ipad', 'ipod', 'blackberry', 'opera mini', 'iemobile'];
+        if (mobileKeywords.some(keyword => userAgent.includes(keyword))) {
+            return true;
+        }
+        
+        // 检查触摸支持（但要排除Windows触摸屏设备）
+        const hasTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+        if (hasTouch && window.innerWidth <= 1024) { // 只有小屏幕设备才认为是移动端
+            return true;
+        }
+        
+        // 最后检查viewport库的判断
+        return isMobileDevice();
     }, []);
 
     /** 获取提示文本 */
     const getHintText = () => {
         return getText('home.desktopScrollHint');
     };
+
+    // ==================== 环境检测和调试 ====================
+
+    /** Windows兼容性调试 */
+    useEffect(() => {
+        const isWindows = navigator.platform.toLowerCase().includes('win') || 
+                         navigator.userAgent.toLowerCase().includes('windows');
+        
+        if (isWindows) {
+            console.log('🖱️ SmartDirectionalCursor: Windows设备检测');
+            console.log('📱 isMobile():', isMobile());
+            console.log('🖥️ 窗口尺寸:', window.innerWidth, 'x', window.innerHeight);
+            console.log('🎯 媒体查询 hover支持:', window.matchMedia('(hover: hover)').matches);
+            console.log('🎯 媒体查询 pointer精细:', window.matchMedia('(pointer: fine)').matches);
+            console.log('🎯 媒体查询 hover无:', window.matchMedia('(hover: none)').matches);
+            console.log('🎯 媒体查询 pointer粗糙:', window.matchMedia('(pointer: coarse)').matches);
+            console.log('🔍 用户代理:', navigator.userAgent);
+        }
+    }, [isMobile]);
 
     // ==================== 状态管理 ====================
 
@@ -1203,10 +1236,17 @@ const SmartDirectionalCursor = () => {
 
     // ==================== 主渲染逻辑 ====================
 
+    // Windows兼容性检查：检测Windows系统并强制显示光标
+    const isWindows = navigator.platform.toLowerCase().includes('win') || 
+                     navigator.userAgent.toLowerCase().includes('windows');
+
     // 如果是移动设备，直接不渲染组件
     if (isMobile()) return null;
 
-    if (!isVisible) return null;
+    // Windows系统的特殊处理：即使isVisible为false也要显示，避免Windows媒体查询问题
+    const shouldRender = isVisible || (isWindows && !isMobile());
+
+    if (!shouldRender) return null;
 
     return (
         <>
@@ -1266,18 +1306,38 @@ const SmartDirectionalCursor = () => {
                     ${isPointerLocked ? 'display: none !important;' : ''} /* 3D模式时隐藏 */
                 }
 
-                /* 移动设备适配：在触摸设备上隐藏光标 */
-                @media (hover: none) and (pointer: coarse) {
+                /* 移动设备适配：更精确的触摸设备检测 */
+                @media (hover: none) and (pointer: coarse) and (max-width: 768px) {
                     .power-cursor, .clickable-hint {
                         display: none !important;
                     }
+                }
+                
+                /* Windows兼容性：确保桌面设备始终显示光标 */
+                @media (min-width: 769px) and (hover: hover) and (pointer: fine) {
+                    .power-cursor, .clickable-hint {
+                        display: block !important;
+                    }
+                }
+                
+                /* 强制显示：为Windows和其他桌面系统提供后备方案 */
+                @media (min-width: 1024px) {
+                    .power-cursor, .clickable-hint {
+                        display: block !important;
+                    }
+                }
+                
+                /* 调试：强制显示在所有非移动环境 */
+                .power-cursor.force-show,
+                .clickable-hint.force-show {
+                    display: block !important;
                 }
             `}</style>
 
             {/* 可点击元素提示点 */}
             {isOverClickable && (
                 <div
-                    className="clickable-hint"
+                    className={`clickable-hint ${isWindows ? 'force-show' : ''}`}
                     style={{
                         left: cursorPosition.x,
                         top: cursorPosition.y,
@@ -1287,7 +1347,7 @@ const SmartDirectionalCursor = () => {
 
             {/* 主光标容器：跟随鼠标的智能光标 */}
             <div
-                className={`power-cursor ${isHovering ? 'hovering' : ''} ${isOverClickable ? 'over-clickable' : ''}`}
+                className={`power-cursor ${isHovering ? 'hovering' : ''} ${isOverClickable ? 'over-clickable' : ''} ${isWindows ? 'force-show' : ''}`}
                 style={{
                     left: cursorPosition.x,
                     top: cursorPosition.y,
