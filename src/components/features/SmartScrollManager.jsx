@@ -23,11 +23,11 @@
  * - WebGL 资源的智能清理
  */
 
-import { useEffect, useCallback, useRef, useState, useMemo } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useAppStore } from '../../store/useAppStore';
-import BackgroundCanvas from '../background/BackgroundCanvas';
-import webglResourceManager from '../../utils/WebGLResourceManager';
 import '../../styles/SmartScroll.css';
+import webglResourceManager from '../../utils/WebGLResourceManager';
+import BackgroundCanvas from '../background/BackgroundCanvas';
 
 import { lazy, Suspense } from 'react';
 const HomeSection = lazy(() => import('../sections/home/HomeSection'));
@@ -172,8 +172,42 @@ const SmartScrollManager = () => {
         const containerRect = container.getBoundingClientRect();
         const isOverflowing = container.scrollHeight > containerRect.height + 10;
 
+        // 检测是否为Windows系统
+        const isWindows =
+            navigator.platform.toLowerCase().includes('win') ||
+            navigator.userAgent.toLowerCase().includes('windows');
+
         // 移动端长内容页面的特殊处理
         const isMobile = window.innerWidth < 768;
+
+        // Windows桌面端的特殊处理：解决首次进入时高度检测问题
+        if (isWindows && !isMobile && isLongContentSection && !isOverflowing) {
+            // Windows系统使用requestAnimationFrame+setTimeout组合，确保在浏览器重绘后检测
+            requestAnimationFrame(() => {
+                setTimeout(() => {
+                    if (contentRef.current) {
+                        const updatedRect = contentRef.current.getBoundingClientRect();
+                        const updatedOverflowing =
+                            contentRef.current.scrollHeight > updatedRect.height + 10;
+
+                        console.log('🪟 Windows延迟检测结果:', {
+                            scrollHeight: contentRef.current.scrollHeight,
+                            containerHeight: updatedRect.height,
+                            isOverflowing: updatedOverflowing,
+                        });
+
+                        setIsContentOverflowing(updatedOverflowing);
+                        const updatedMode = isHomePage
+                            ? 'slide'
+                            : updatedOverflowing
+                              ? 'content'
+                              : 'slide';
+                        setScrollMode(updatedMode);
+                    }
+                }, 200); // Windows下使用较短的延迟
+            });
+        }
+
         if (isMobile && isLongContentSection && !isOverflowing) {
             // 延迟再次检测，确保内容完全渲染
             setTimeout(() => {
@@ -193,11 +227,23 @@ const SmartScrollManager = () => {
             }, 500);
         }
 
+        // 添加初始检测的调试日志
+        if (isLongContentSection) {
+            console.log('📏 内容溢出检测:', {
+                section: currentSectionData?.id,
+                scrollHeight: container.scrollHeight,
+                containerHeight: containerRect.height,
+                isOverflowing: isOverflowing,
+                isWindows: isWindows,
+                isMobile: isMobile,
+            });
+        }
+
         // 更新状态
         setIsContentOverflowing(isOverflowing);
         const newMode = isHomePage ? 'slide' : isOverflowing ? 'content' : 'slide';
         setScrollMode(newMode);
-    }, [isHomePage, isLongContentSection]);
+    }, [isHomePage, isLongContentSection, currentSectionData?.id]);
 
     // ========================================================================================
     // 动画效果 - iOS风格回弹和预览
@@ -798,6 +844,9 @@ const SmartScrollManager = () => {
         checkContentOverflow();
 
         const isMobile = window.innerWidth < 768;
+        const isWindows =
+            navigator.platform.toLowerCase().includes('win') ||
+            navigator.userAgent.toLowerCase().includes('windows');
 
         if (isMobile && isLongContentSection) {
             // 移动端长内容页面使用密集检测
@@ -839,6 +888,50 @@ const SmartScrollManager = () => {
                     });
                 }
             };
+        } else if (isWindows && isLongContentSection) {
+            // Windows桌面端长内容页面使用增强检测策略
+            console.log('🪟 Windows检测策略激活，section:', currentSectionData?.id);
+
+            const checkTimers = [25, 50, 100, 200, 300, 500, 800].map(delay =>
+                setTimeout(() => {
+                    console.log(`🪟 Windows检测 ${delay}ms`);
+                    checkContentOverflow();
+                }, delay)
+            );
+
+            const clearTimers = () => checkTimers.forEach(timer => clearTimeout(timer));
+
+            // 图片加载监听 - Windows也需要
+            const handleImageLoad = () => {
+                setTimeout(() => {
+                    console.log('🪟 Windows图片加载完成，重新检测');
+                    checkContentOverflow();
+                }, 50);
+            };
+
+            const currentContentRef = contentRef.current;
+            if (currentContentRef) {
+                const images = currentContentRef.querySelectorAll('img');
+                images.forEach(img => {
+                    if (img.complete) {
+                        handleImageLoad();
+                    } else {
+                        img.addEventListener('load', handleImageLoad, { once: true });
+                        img.addEventListener('error', handleImageLoad, { once: true });
+                    }
+                });
+            }
+
+            return () => {
+                clearTimers();
+                if (currentContentRef) {
+                    const images = currentContentRef.querySelectorAll('img');
+                    images.forEach(img => {
+                        img.removeEventListener('load', handleImageLoad);
+                        img.removeEventListener('error', handleImageLoad);
+                    });
+                }
+            };
         } else {
             // 标准检测策略
             const checkTimer1 = setTimeout(() => checkContentOverflow(), 50);
@@ -851,7 +944,7 @@ const SmartScrollManager = () => {
                 clearTimeout(checkTimer3);
             };
         }
-    }, [currentSection, checkContentOverflow, isLongContentSection]);
+    }, [currentSection, checkContentOverflow, isLongContentSection, currentSectionData?.id]);
 
     // 事件监听器注册
     useEffect(() => {
@@ -875,6 +968,20 @@ const SmartScrollManager = () => {
             document.addEventListener('keydown', handleKeyDown);
             window.addEventListener('resize', handleResize);
 
+            // 添加ResizeObserver用于更精确的内容变化检测（特别是Windows系统）
+            let resizeObserver;
+            if (window.ResizeObserver && contentRef.current) {
+                resizeObserver = new ResizeObserver(() => {
+                    // 延迟检测，避免频繁触发
+                    setTimeout(() => {
+                        console.log('📐 ResizeObserver检测到内容变化');
+                        checkContentOverflow();
+                    }, 100);
+                });
+
+                resizeObserver.observe(contentRef.current);
+            }
+
             return () => {
                 container.removeEventListener('wheel', handleWheel);
                 container.removeEventListener('touchstart', handleTouchStart);
@@ -882,6 +989,10 @@ const SmartScrollManager = () => {
                 container.removeEventListener('touchend', handleTouchEnd);
                 document.removeEventListener('keydown', handleKeyDown);
                 window.removeEventListener('resize', handleResize);
+
+                if (resizeObserver) {
+                    resizeObserver.disconnect();
+                }
 
                 if (bounceTimerRef.current) {
                     clearTimeout(bounceTimerRef.current);

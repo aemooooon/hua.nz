@@ -175,7 +175,10 @@ const AboutSection = ({ language = 'en' }) => {
                                             >
                                                 <span
                                                     style={{
-                                                        fontFamily: 'Fredoka One, cursive',
+                                                        fontFamily:
+                                                            language === 'zh'
+                                                                ? "'Microsoft YaHei', '微软雅黑', 'PingFang SC', 'Hiragino Sans GB', 'Arial Unicode MS', sans-serif"
+                                                                : 'Fredoka One, cursive',
                                                         fontSize: '2.5rem',
                                                         background:
                                                             'linear-gradient(135deg, var(--theme-gradient-from), var(--theme-gradient-via), var(--theme-gradient-to))',
@@ -183,7 +186,8 @@ const AboutSection = ({ language = 'en' }) => {
                                                         WebkitTextFillColor: 'transparent',
                                                         backgroundClip: 'text',
                                                         display: 'inline-block',
-                                                        fontWeight: '400',
+                                                        fontWeight:
+                                                            language === 'zh' ? '500' : '400',
                                                         verticalAlign: 'baseline',
                                                         filter: 'drop-shadow(0 0 8px var(--theme-primary))',
                                                     }}
@@ -192,10 +196,14 @@ const AboutSection = ({ language = 'en' }) => {
                                                 </span>
                                                 <span
                                                     style={{
-                                                        fontFamily: 'Figtree, sans-serif',
+                                                        fontFamily:
+                                                            language === 'zh'
+                                                                ? "'Microsoft YaHei', '微软雅黑', 'PingFang SC', 'Hiragino Sans GB', 'Arial Unicode MS', sans-serif"
+                                                                : 'Figtree, sans-serif',
                                                         fontSize: '1.8rem',
                                                         color: '#FFFFFF', // 改为纯白色，保持高对比度
-                                                        fontWeight: '300',
+                                                        fontWeight:
+                                                            language === 'zh' ? '400' : '300',
                                                         display: 'inline-block',
                                                         marginLeft: '0.75rem',
                                                         verticalAlign: 'baseline',
@@ -205,11 +213,15 @@ const AboutSection = ({ language = 'en' }) => {
                                                 </span>
                                                 <span
                                                     style={{
-                                                        fontFamily: 'Beau Rivage, cursive',
+                                                        fontFamily:
+                                                            language === 'zh'
+                                                                ? "'Microsoft YaHei', '微软雅黑', 'PingFang SC', 'Hiragino Sans GB', 'Arial Unicode MS', sans-serif"
+                                                                : 'Beau Rivage, cursive',
                                                         fontSize: '3rem',
                                                         color: '#FFFFFF', // 改为纯白色
                                                         display: 'inline-block',
-                                                        fontWeight: '400',
+                                                        fontWeight:
+                                                            language === 'zh' ? '600' : '400',
                                                         marginLeft: '0.75rem',
                                                         verticalAlign: 'baseline',
                                                         textShadow:
@@ -233,12 +245,22 @@ const AboutSection = ({ language = 'en' }) => {
                                                 return (
                                                     <p
                                                         key={index}
+                                                        lang={language}
                                                         className="text-base lg:text-lg leading-relaxed programmer-text-white"
                                                         style={{
                                                             textAlign: 'justify',
                                                             textJustify: 'inter-word',
                                                             hyphens: 'auto',
                                                             wordBreak: 'break-word',
+                                                            // 为中文提供更好的字体支持
+                                                            fontFamily:
+                                                                language === 'zh'
+                                                                    ? "'Microsoft YaHei', '微软雅黑', 'SimSun', '宋体', 'PingFang SC', 'Hiragino Sans GB', 'Arial Unicode MS', sans-serif"
+                                                                    : "'JetBrains Mono', Consolas, 'Courier New', monospace",
+                                                            letterSpacing:
+                                                                language === 'zh'
+                                                                    ? '0.015em'
+                                                                    : '0.025em',
                                                         }}
                                                     >
                                                         {parts[0]}trade-off.{' '}
@@ -288,12 +310,22 @@ const AboutSection = ({ language = 'en' }) => {
                                                 return (
                                                     <p
                                                         key={index}
+                                                        lang={language}
                                                         className="text-base lg:text-lg leading-relaxed programmer-text-white"
                                                         style={{
                                                             textAlign: 'justify',
                                                             textJustify: 'inter-word',
                                                             hyphens: 'auto',
                                                             wordBreak: 'break-word',
+                                                            // 为中文提供更好的字体支持
+                                                            fontFamily:
+                                                                language === 'zh'
+                                                                    ? "'Microsoft YaHei', '微软雅黑', 'SimSun', '宋体', 'PingFang SC', 'Hiragino Sans GB', 'Arial Unicode MS', sans-serif"
+                                                                    : "'JetBrains Mono', Consolas, 'Courier New', monospace",
+                                                            letterSpacing:
+                                                                language === 'zh'
+                                                                    ? '0.015em'
+                                                                    : '0.025em',
                                                         }}
                                                     >
                                                         {paragraph}

@@ -16,6 +16,20 @@
     font-family: 'Poppins', sans-serif;
 }
 
+/* 针对中文内容的字体优化 */
+:lang(zh) {
+    font-family:
+        'Microsoft YaHei', '微软雅黑', 'PingFang SC', 'Hiragino Sans GB', 'Source Han Sans SC',
+        'Noto Sans CJK SC', 'WenQuanYi Micro Hei', 'Arial Unicode MS', sans-serif;
+}
+
+/* Windows系统中文字体优化 */
+@media screen and (-ms-high-contrast: active), (-ms-high-contrast: none) {
+    :lang(zh) {
+        font-family: 'Microsoft YaHei', '微软雅黑', 'SimSun', '宋体', sans-serif;
+    }
+}
+
 /* 数字使用格鲁吉亚字体 */
 .numeric {
     font-family: Georgia, serif;
@@ -1725,6 +1739,15 @@ body {
     display: block !important;
 }
 
+/* 程序员字体中文支持 */
+.programmer-text:lang(zh),
+.programmer-text[lang='zh'] {
+    font-family:
+        'Microsoft YaHei', '微软雅黑', 'SimSun', '宋体', 'PingFang SC', 'Hiragino Sans GB',
+        'Arial Unicode MS', sans-serif !important;
+    letter-spacing: 0.015em !important;
+}
+
 /* 白色程序员字体样式 - About页面专用 */
 .programmer-text-white {
     font-family: 'JetBrains Mono', Consolas, 'Courier New', monospace !important;
@@ -1734,6 +1757,14 @@ body {
     font-weight: 400 !important;
     color: #ffffff !important;
     display: block !important;
+}
+
+/* Windows中文字体支持 - 当包含中文字符时使用更合适的字体 */
+.programmer-text-white:lang(zh),
+.programmer-text-white[lang='zh'] {
+    font-family:
+        'Microsoft YaHei', '微软雅黑', 'SimSun', '宋体', 'Arial Unicode MS', sans-serif !important;
+    letter-spacing: 0.015em !important; /* 中文字符间距调整 */
 }
 
 @media (max-width: 768px) {
