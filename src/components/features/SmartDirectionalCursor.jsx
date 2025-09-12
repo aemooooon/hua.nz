@@ -103,20 +103,30 @@ const SmartDirectionalCursor = () => {
         if (window.innerWidth <= 768) {
             return true;
         }
-        
+
         // 检查用户代理字符串中的移动设备标识
         const userAgent = navigator.userAgent.toLowerCase();
-        const mobileKeywords = ['mobile', 'android', 'iphone', 'ipad', 'ipod', 'blackberry', 'opera mini', 'iemobile'];
+        const mobileKeywords = [
+            'mobile',
+            'android',
+            'iphone',
+            'ipad',
+            'ipod',
+            'blackberry',
+            'opera mini',
+            'iemobile',
+        ];
         if (mobileKeywords.some(keyword => userAgent.includes(keyword))) {
             return true;
         }
-        
+
         // 检查触摸支持（但要排除Windows触摸屏设备）
         const hasTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
-        if (hasTouch && window.innerWidth <= 1024) { // 只有小屏幕设备才认为是移动端
+        if (hasTouch && window.innerWidth <= 1024) {
+            // 只有小屏幕设备才认为是移动端
             return true;
         }
-        
+
         // 最后检查viewport库的判断
         return isMobileDevice();
     }, []);
@@ -130,9 +140,10 @@ const SmartDirectionalCursor = () => {
 
     /** Windows兼容性调试 */
     useEffect(() => {
-        const isWindows = navigator.platform.toLowerCase().includes('win') || 
-                         navigator.userAgent.toLowerCase().includes('windows');
-        
+        const isWindows =
+            navigator.platform.toLowerCase().includes('win') ||
+            navigator.userAgent.toLowerCase().includes('windows');
+
         if (isWindows) {
             console.log('🖱️ SmartDirectionalCursor: Windows设备检测');
             console.log('📱 isMobile():', isMobile());
@@ -1237,8 +1248,9 @@ const SmartDirectionalCursor = () => {
     // ==================== 主渲染逻辑 ====================
 
     // Windows兼容性检查：检测Windows系统并强制显示光标
-    const isWindows = navigator.platform.toLowerCase().includes('win') || 
-                     navigator.userAgent.toLowerCase().includes('windows');
+    const isWindows =
+        navigator.platform.toLowerCase().includes('win') ||
+        navigator.userAgent.toLowerCase().includes('windows');
 
     // 如果是移动设备，直接不渲染组件
     if (isMobile()) return null;
@@ -1312,21 +1324,21 @@ const SmartDirectionalCursor = () => {
                         display: none !important;
                     }
                 }
-                
+
                 /* Windows兼容性：确保桌面设备始终显示光标 */
                 @media (min-width: 769px) and (hover: hover) and (pointer: fine) {
                     .power-cursor, .clickable-hint {
                         display: block !important;
                     }
                 }
-                
+
                 /* 强制显示：为Windows和其他桌面系统提供后备方案 */
                 @media (min-width: 1024px) {
                     .power-cursor, .clickable-hint {
                         display: block !important;
                     }
                 }
-                
+
                 /* 调试：强制显示在所有非移动环境 */
                 .power-cursor.force-show,
                 .clickable-hint.force-show {
