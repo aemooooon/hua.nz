@@ -1,77 +1,202 @@
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
-import tailwindcss from 'tailwindcss';
+import react from '@vitejs/plugin-react';
 import autoprefixer from 'autoprefixer';
+import tailwindcss from 'tailwindcss';
+import { defineConfig } from 'vite';
+import { VitePWA } from 'vite-plugin-pwa';
 
 // https://vite.dev/config/
 export default defineConfig({
-    define: {
-    },
+    define: {},
     publicDir: 'public',
-    plugins: [react()],
-    assetsInclude: ['**/*.jpeg/**', '**/*.json/**', '**/*.jpg/**', '**/*.png/**', '**/*.svg/**', '**/*.webp/**'],
+    plugins: [
+        react(),
+        VitePWA({
+            registerType: 'autoUpdate',
+            includeAssets: ['favicon.ico', '**/*.{png,jpg,jpeg,svg,webp,avif,mp4,pdf}'],
+            manifest: {
+                name: 'Hua Wang',
+                short_name: 'Hua',
+                description:
+                    'Full Stack Developer specializing in modern web technologies, showcasing innovative projects and professional expertise',
+                theme_color: '#000000',
+                background_color: '#000000',
+                display: 'standalone',
+                orientation: 'portrait-primary',
+                scope: '/',
+                start_url: '/',
+                icons: [
+                    {
+                        src: '/icon-192.png',
+                        sizes: '192x192',
+                        type: 'image/png',
+                        purpose: 'any maskable',
+                    },
+                    {
+                        src: '/icon-512.png',
+                        sizes: '512x512',
+                        type: 'image/png',
+                        purpose: 'any maskable',
+                    },
+                ],
+            },
+            workbox: {
+                // 预缓存核心文件（js, css, html）和小图标
+                globPatterns: ['**/*.{js,css,html,ico,svg,json}'],
+                // 排除大文件和媒体资源 - 通过运行时缓存按需加载
+                globIgnores: [
+                    '**/ui-test.mp4',
+                    '**/video.mp4',
+                    '**/citanz/**',
+                    '**/citanz-webp/**',
+                    '**/citanz-avif/**',
+                    '**/gallery/**',
+                    '**/gallery-webp/**',
+                    '**/gallery-avif/**',
+                    '**/*-webp/**',
+                    '**/*-avif/**',
+                    '**/assets/**',
+                ],
+                runtimeCaching: [
+                    {
+                        urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
+                        handler: 'CacheFirst',
+                        options: {
+                            cacheName: 'google-fonts-cache',
+                            expiration: {
+                                maxEntries: 10,
+                                maxAgeSeconds: 60 * 60 * 24 * 365, // 1 year
+                            },
+                            cacheableResponse: {
+                                statuses: [0, 200],
+                            },
+                        },
+                    },
+                    {
+                        urlPattern: /^https:\/\/fonts\.gstatic\.com\/.*/i,
+                        handler: 'CacheFirst',
+                        options: {
+                            cacheName: 'gstatic-fonts-cache',
+                            expiration: {
+                                maxEntries: 10,
+                                maxAgeSeconds: 60 * 60 * 24 * 365, // 1 year
+                            },
+                            cacheableResponse: {
+                                statuses: [0, 200],
+                            },
+                        },
+                    },
+                    {
+                        // 图片运行时缓存
+                        urlPattern: /\.(webp|avif|jpg|jpeg|png)$/i,
+                        handler: 'CacheFirst',
+                        options: {
+                            cacheName: 'images-cache',
+                            expiration: {
+                                maxEntries: 200,
+                                maxAgeSeconds: 60 * 60 * 24 * 30, // 30 days
+                            },
+                            cacheableResponse: {
+                                statuses: [0, 200],
+                            },
+                        },
+                    },
+                    {
+                        urlPattern: /\.mp4$/i,
+                        handler: 'CacheFirst',
+                        options: {
+                            cacheName: 'videos-cache',
+                            expiration: {
+                                maxEntries: 20,
+                                maxAgeSeconds: 60 * 60 * 24 * 30, // 30 days
+                            },
+                            rangeRequests: true,
+                            cacheableResponse: {
+                                statuses: [0, 200],
+                            },
+                        },
+                    },
+                    {
+                        urlPattern: /\.pdf$/i,
+                        handler: 'CacheFirst',
+                        options: {
+                            cacheName: 'pdf-cache',
+                            expiration: {
+                                maxEntries: 10,
+                                maxAgeSeconds: 60 * 60 * 24 * 30, // 30 days
+                            },
+                        },
+                    },
+                ],
+            },
+            devOptions: {
+                enabled: false,
+            },
+        }),
+    ],
+    assetsInclude: [
+        '**/*.jpeg/**',
+        '**/*.json/**',
+        '**/*.jpg/**',
+        '**/*.png/**',
+        '**/*.svg/**',
+        '**/*.webp/**',
+    ],
     css: {
         postcss: {
-            plugins: [
-                tailwindcss,
-                autoprefixer,
-            ],
+            plugins: [tailwindcss, autoprefixer],
         },
     },
     build: {
-        chunkSizeWarningLimit: 2000, // 为Three.js提升到2MB
+        chunkSizeWarningLimit: 2000,
         rollupOptions: {
-            // 外部化最大的依赖（如果适用）
-            // external: ['three'], // 如果你想通过CDN加载Three.js，可以取消注释
             output: {
                 manualChunks(id) {
-                    // 处理node_modules中的大型库
-                    if (id.includes("node_modules")) {
-                        // Three.js单独分块（最大的库）
-                        if (id.includes("three")) return "three";
+                    if (id.includes('node_modules')) {
+                        // Three.js 独立分块
+                        if (id.includes('three')) return 'three';
 
-                        // React生态系统
-                        if (id.includes("react") || id.includes("@react")) return "react";
+                        // React 生态系统
+                        if (id.includes('react') || id.includes('@react')) return 'react';
 
-                        // 地图相关库
-                        if (id.includes("leaflet")) return "leaflet";
+                        // 地图库
+                        if (id.includes('leaflet')) return 'leaflet';
 
                         // 动画库
-                        if (id.includes("gsap")) return "gsap";
+                        if (id.includes('gsap')) return 'gsap';
 
-                        // D3相关库
-                        if (id.includes("d3")) return "d3";
+                        // D3 可视化
+                        if (id.includes('d3')) return 'd3';
 
-                        // 其他vendor库
-                        return "vendor";
+                        // 其他第三方库
+                        return 'vendor';
                     }
 
-                    // 应用代码分块
-                    // Gallery相关代码单独分块（包含大量Three.js使用）
-                    if (id.includes("/gallery/") || id.includes("Gallery")) {
-                        return "gallery";
+                    // Gallery 相关代码
+                    if (id.includes('/gallery/') || id.includes('Gallery')) {
+                        return 'gallery';
                     }
 
-                    // 纹理系统单独分块
-                    if (id.includes("/texture/") || id.includes("Texture")) {
-                        return "texture-system";
+                    // 纹理系统
+                    if (id.includes('/texture/') || id.includes('Texture')) {
+                        return 'texture-system';
                     }
 
-                    // 项目详情页面（包含大量D3代码）
-                    if (id.includes("ProjectSection") || id.includes("project/")) {
-                        return "projects";
+                    // 项目详情页面
+                    if (id.includes('ProjectSection') || id.includes('project/')) {
+                        return 'projects';
                     }
 
-                    // 其他页面组件
-                    if (id.includes("HomeSection") || id.includes("/home/")) {
-                        return "home";
+                    // 首页
+                    if (id.includes('HomeSection') || id.includes('/home/')) {
+                        return 'home';
                     }
 
-                    if (id.includes("AboutSection") || id.includes("/about/")) {
-                        return "about";
+                    // 关于页面
+                    if (id.includes('AboutSection') || id.includes('/about/')) {
+                        return 'about';
                     }
                 },
             },
         },
     },
-})
+});

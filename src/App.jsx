@@ -1,10 +1,11 @@
-import SmartScrollManager from './components/features/SmartScrollManager';
 import SmartDirectionalCursor from './components/features/SmartDirectionalCursor';
-import NetworkStatus from './components/ui/NetworkStatus';
-import SectionProgressBar from './components/ui/SectionProgressBar';
-import ErrorBoundary from './components/ui/ErrorBoundary';
+import SmartScrollManager from './components/features/SmartScrollManager';
 import DeveloperPanel from './components/performancepanel/DeveloperPanel';
+import PWAPrompt from './components/PWAPrompt';
+import ErrorBoundary from './components/ui/ErrorBoundary';
+import NetworkStatus from './components/ui/NetworkStatus';
 import { PhotoSwipeProvider } from './components/ui/PhotoSwipe';
+import SectionProgressBar from './components/ui/SectionProgressBar';
 import { useDeveloperPanel } from './hooks/useDeveloperPanel';
 import { useTheme } from './hooks/useTheme';
 import { useAppStore } from './store/useAppStore';
@@ -25,6 +26,9 @@ const App = () => {
 
                     {/* 网络状态检测 */}
                     <NetworkStatus language={language} />
+
+                    {/* PWA 安装提示和更新通知 */}
+                    <PWAPrompt />
 
                     {/* 智能方向光标 */}
                     <SmartDirectionalCursor />

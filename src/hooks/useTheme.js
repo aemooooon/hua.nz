@@ -193,7 +193,7 @@ export const useTheme = () => {
             root.style.setProperty(`--theme-${key}`, value);
 
             // 如果是颜色值，也设置对应的RGB变量
-            if (key === 'primary' || key === 'secondary') {
+            if (key === 'primary' || key === 'secondary' || key === 'accent') {
                 const rgbValue = hexToRgb(value);
                 if (rgbValue) {
                     root.style.setProperty(

@@ -243,6 +243,7 @@ body {
     --theme-secondary: #0080ff; /* 蓝色 - 次要强调色 */
     --theme-secondary-rgb: 0, 128, 255;
     --theme-accent: #4dd0e1; /* 浅蓝 - 装饰色 */
+    --theme-accent-rgb: 77, 208, 225; /* 装饰色RGB值 */
     --theme-background: #0a0a0f; /* 深蓝黑背景 */
     --theme-surface: rgba(224, 224, 224, 0.05); /* 浅灰白表面 */
     --theme-surface-elevated: rgba(224, 224, 224, 0.1);
@@ -290,6 +291,7 @@ body {
     --theme-secondary: #10b981; /* 翠绿 - 次要强调色 */
     --theme-secondary-rgb: 16, 185, 129;
     --theme-accent: #34d399; /* 浅绿 - 装饰色 */
+    --theme-accent-rgb: 52, 211, 153; /* 装饰色RGB值 */
     --theme-background: #0a0f0d; /* 深绿黑背景 */
     --theme-surface: rgba(224, 224, 224, 0.05); /* 浅灰白表面 */
     --theme-surface-elevated: rgba(224, 224, 224, 0.1);
@@ -2100,4 +2102,55 @@ body {
 
 .custom-scrollbar:hover::-webkit-scrollbar-thumb {
     animation: scrollbar-glow 2s ease-in-out infinite;
+}
+
+/* ========================================
+   PWA Animations
+   ======================================== */
+
+/* Slide up animation for PWA prompts */
+@keyframes slide-up {
+    from {
+        transform: translateY(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.animate-slide-up {
+    animation: slide-up 0.3s ease-out;
+}
+
+/* Slow spin animation for update icon */
+@keyframes spin-slow {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.animate-spin-slow {
+    animation: spin-slow 3s linear infinite;
+}
+
+/* Glow pulse animation for PWA card borders (optional) */
+@keyframes glow-pulse {
+    0%,
+    100% {
+        filter: brightness(1);
+        opacity: 1;
+    }
+    50% {
+        filter: brightness(1.2);
+        opacity: 0.95;
+    }
+}
+
+.animate-glow-pulse {
+    animation: glow-pulse 2s ease-in-out infinite;
 }
