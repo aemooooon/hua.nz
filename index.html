@@ -1,140 +1,168 @@
 <!doctype html>
 <html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <link rel="icon" type="image/svg+xml" href="/favicon.ico" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 
-<head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.ico" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+        <!-- PWA Support -->
+        <link rel="manifest" href="/manifest.webmanifest" />
+        <meta name="theme-color" content="#000000" />
+        <link rel="apple-touch-icon" href="/icon-192.png" />
 
-    <!-- PWA Support -->
-    <link rel="manifest" href="/manifest.webmanifest">
-    <meta name="theme-color" content="#000000">
-    <link rel="apple-touch-icon" href="/icon-192.png">
+        <!-- Google Analytics -->
+        <script async src="https://www.googletagmanager.com/gtag/js?id=G-61HHSGWW4V"></script>
+        <script>
+            window.dataLayer = window.dataLayer || [];
+            function gtag() {
+                dataLayer.push(arguments);
+            }
+            gtag('js', new Date());
 
-    <!-- Google Analytics -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-61HHSGWW4V"></script>
-    <script>
-        window.dataLayer = window.dataLayer || [];
-        function gtag() { dataLayer.push(arguments); }
-        gtag('js', new Date());
+            gtag('config', 'G-61HHSGWW4V');
+        </script>
 
-        gtag('config', 'G-61HHSGWW4V');
-    </script>
+        <!-- Basic SEO tags collection -->
+        <title>Hua Wang - Full Stack Developer</title>
+        <meta
+            name="description"
+            content="Hua Wang's portfolio - Full Stack Developer specializing in React, Node.js, Three.js, and modern web technologies. View my projects and technical expertise."
+        />
+        <meta
+            name="keywords"
+            content="Full Stack Developer, React, Node.js, JavaScript, Three.js, Portfolio, Hua Wang, Web Development, Frontend, Backend"
+        />
+        <meta name="author" content="Hua Wang" />
+        <meta name="robots" content="index, follow" />
+        <link rel="canonical" href="https://www.hua.nz" />
 
-    <!-- 基本SEO标签 -->
-    <title>Hua Wang - Full Stack Developer</title>
-    <meta name="description"
-        content="Hua Wang's portfolio - Full Stack Developer specializing in React, Node.js, Three.js, and modern web technologies. View my projects and technical expertise." />
-    <meta name="keywords"
-        content="Full Stack Developer, React, Node.js, JavaScript, Three.js, Portfolio, Hua Wang, Web Development, Frontend, Backend" />
-    <meta name="author" content="Hua Wang" />
-    <meta name="robots" content="index, follow" />
-    <link rel="canonical" href="https://www.hua.nz" />
+        <!-- 语言和地区设置 -->
+        <meta name="language" content="en" />
+        <meta name="geo.region" content="NZ" />
+        <meta name="geo.country" content="New Zealand" />
 
-    <!-- 语言和地区设置 -->
-    <meta name="language" content="en" />
-    <meta name="geo.region" content="NZ" />
-    <meta name="geo.country" content="New Zealand" />
+        <!-- =================== 性能优化区域 =================== -->
+        <link rel="dns-prefetch" href="//fonts.googleapis.com" />
+        <link rel="dns-prefetch" href="//fonts.gstatic.com" />
 
-    <!-- =================== 性能优化区域 =================== -->
-    <link rel="dns-prefetch" href="//fonts.googleapis.com">
-    <link rel="dns-prefetch" href="//fonts.gstatic.com">
+        <style>
+            /* 字体回退策略：确保文本立即可见 */
+            .font-beauRivage {
+                font-family: 'Beau Rivage', cursive, 'Times New Roman', serif;
+                font-display: swap;
+                /* 使用系统字体直到自定义字体加载完成 */
+            }
 
-    <style>
-        /* 字体回退策略：确保文本立即可见 */
-        .font-beauRivage {
-            font-family: 'Beau Rivage', cursive, 'Times New Roman', serif;
-            font-display: swap;
-            /* 使用系统字体直到自定义字体加载完成 */
-        }
+            /* 动画保护：防止关键动画被覆盖 */
+            .breathing-glow,
+            [style*='breathing-glow'],
+            [style*='avatar-glow'] {
+                animation: revert !important;
+            }
+        </style>
 
-        /* 动画保护：防止关键动画被覆盖 */
-        .breathing-glow,
-        [style*="breathing-glow"],
-        [style*="avatar-glow"] {
-            animation: revert !important;
-        }
-    </style>
+        <!-- 外部资源加载 -->
+        <link
+            href="https://cdn.jsdelivr.net/npm/remixicon@4.5.0/fonts/remixicon.css"
+            rel="stylesheet"
+        />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 
-    <!-- 外部资源加载 -->
-    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.5.0/fonts/remixicon.css" rel="stylesheet" />
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <!-- 关键字体优先加载：Beau Rivage (用于品牌标题) -->
+        <link
+            rel="preload"
+            href="https://fonts.googleapis.com/css2?family=Beau+Rivage&display=swap"
+            as="style"
+        />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Beau+Rivage&display=swap"
+            rel="stylesheet"
+        />
 
-    <!-- 关键字体优先加载：Beau Rivage (用于品牌标题) -->
-    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Beau+Rivage&display=swap" as="style">
-    <link href="https://fonts.googleapis.com/css2?family=Beau+Rivage&display=swap" rel="stylesheet">
-
-    <!-- 次要字体延迟加载：减少首屏阻塞 -->
-    <link
-        href="https://fonts.googleapis.com/css2?family=Audiowide&family=Figtree:ital,wght@0,300..900;1,300..900&family=Fredoka+One&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&family=Montserrat:ital,wght@0,100..900;1,100..900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
-        rel="stylesheet" media="print" onload="this.media='all'">
-    <noscript>
+        <!-- 次要字体延迟加载：减少首屏阻塞 -->
         <link
             href="https://fonts.googleapis.com/css2?family=Audiowide&family=Figtree:ital,wght@0,300..900;1,300..900&family=Fredoka+One&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&family=Montserrat:ital,wght@0,100..900;1,100..900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
-            rel="stylesheet">
-    </noscript>
+            rel="stylesheet"
+            media="print"
+            onload="this.media='all'"
+        />
+        <noscript>
+            <link
+                href="https://fonts.googleapis.com/css2?family=Audiowide&family=Figtree:ital,wght@0,300..900;1,300..900&family=Fredoka+One&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&family=Montserrat:ital,wght@0,100..900;1,100..900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
+                rel="stylesheet"
+            />
+        </noscript>
 
-    <!-- =================== 安全和浏览器设置 =================== -->
-    <meta http-equiv="X-Content-Type-Options" content="nosniff" />
-    <meta name="referrer" content="strict-origin-when-cross-origin" />
-    <meta name="theme-color" content="#000000" />
-    <meta name="color-scheme" content="light dark" />
+        <!-- =================== 安全和浏览器设置 =================== -->
+        <meta http-equiv="X-Content-Type-Options" content="nosniff" />
+        <meta name="referrer" content="strict-origin-when-cross-origin" />
+        <meta name="theme-color" content="#000000" />
+        <meta name="color-scheme" content="light dark" />
 
-    <!-- =================== 社交媒体优化 =================== -->
-    <meta property="og:title" content="Hua Wang - Full Stack Developer" />
-    <meta property="og:description"
-        content="Portfolio showcasing modern web development projects with React, Node.js, and Three.js" />
-    <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://www.hua.nz" />
-    <meta property="og:image" content="https://aemooooon.github.io/hua.nz/hua_hover.jpg" />
-    <meta property="og:image:alt" content="Hua Wang - Full Stack Developer" />
-    <meta property="og:site_name" content="Hua Wang Portfolio" />
-    <meta property="og:locale" content="en_US" />
+        <!-- =================== 社交媒体优化 =================== -->
+        <meta property="og:title" content="Hua Wang - Full Stack Developer" />
+        <meta
+            property="og:description"
+            content="Portfolio showcasing modern web development projects with React, Node.js, and Three.js"
+        />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://www.hua.nz" />
+        <meta property="og:image" content="https://aemooooon.github.io/hua.nz/hua_hover.jpg" />
+        <meta property="og:image:alt" content="Hua Wang - Full Stack Developer" />
+        <meta property="og:site_name" content="Hua Wang Portfolio" />
+        <meta property="og:locale" content="en_US" />
 
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="Hua Wang - Full Stack Developer" />
-    <meta name="twitter:description"
-        content="Portfolio showcasing modern web development projects with React, Node.js, and Three.js" />
-    <meta name="twitter:image" content="https://aemooooon.github.io/hua.nz/hua_hover.jpg" />
-    <meta name="twitter:image:alt" content="Hua Wang Portfolio" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="Hua Wang - Full Stack Developer" />
+        <meta
+            name="twitter:description"
+            content="Portfolio showcasing modern web development projects with React, Node.js, and Three.js"
+        />
+        <meta name="twitter:image" content="https://aemooooon.github.io/hua.nz/hua_hover.jpg" />
+        <meta name="twitter:image:alt" content="Hua Wang Portfolio" />
 
-    <!-- =================== SEO结构化数据 =================== -->
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "Person",
-      "name": "Hua Wang",
-      "jobTitle": "Full Stack Developer",
-      "description": "Full Stack Developer specializing in React, Node.js, and modern web technologies",
-      "url": "https://aemooooon.github.io/hua.nz",
-      "image": "https://aemooooon.github.io/hua.nz/hua_hover.jpg",
-      "sameAs": [
-        "https://github.com/aemooooon"
-      ],
-      "knowsAbout": [
-        "React", "Node.js", "JavaScript", "Three.js", "Web Development",
-        "Frontend Development", "Backend Development", "Full Stack Development"
-      ]
-    }
-    </script>
-  <script type="module" crossorigin src="/assets/index-BtPMKKGX.js"></script>
-  <link rel="modulepreload" crossorigin href="/assets/d3-BbFmVfHF.js">
-  <link rel="modulepreload" crossorigin href="/assets/vendor-Bn9U8WJN.js">
-  <link rel="modulepreload" crossorigin href="/assets/react-n2EiWjuo.js">
-  <link rel="modulepreload" crossorigin href="/assets/about-B57KrMgB.js">
-  <link rel="modulepreload" crossorigin href="/assets/three-Bc0g6PSw.js">
-  <link rel="modulepreload" crossorigin href="/assets/texture-system-IP6rrmUB.js">
-  <link rel="modulepreload" crossorigin href="/assets/gallery-Dl2mUwXU.js">
-  <link rel="modulepreload" crossorigin href="/assets/gsap-CH_iu5NA.js">
-  <link rel="modulepreload" crossorigin href="/assets/home-yz33qs0t.js">
-  <link rel="stylesheet" crossorigin href="/assets/vendor-DSulWsr7.css">
-  <link rel="stylesheet" crossorigin href="/assets/home-CGmMaHBT.css">
-  <link rel="stylesheet" crossorigin href="/assets/index-BBInozgR.css">
-<link rel="manifest" href="/manifest.webmanifest"></head>
+        <!-- =================== SEO结构化数据 =================== -->
+        <script type="application/ld+json">
+            {
+                "@context": "https://schema.org",
+                "@type": "Person",
+                "name": "Hua Wang",
+                "jobTitle": "Full Stack Developer",
+                "description": "Full Stack Developer specializing in React, Node.js, and modern web technologies",
+                "url": "https://aemooooon.github.io/hua.nz",
+                "image": "https://aemooooon.github.io/hua.nz/hua_hover.jpg",
+                "sameAs": ["https://github.com/aemooooon"],
+                "knowsAbout": [
+                    "React",
+                    "Node.js",
+                    "JavaScript",
+                    "Three.js",
+                    "Web Development",
+                    "Frontend Development",
+                    "Backend Development",
+                    "Full Stack Development"
+                ]
+            }
+        </script>
+      <script type="module" crossorigin src="/assets/index-BGwwpVhx.js"></script>
+      <link rel="modulepreload" crossorigin href="/assets/vendor-DFPT3U6w.js">
+      <link rel="modulepreload" crossorigin href="/assets/react-DPlU210h.js">
+      <link rel="modulepreload" crossorigin href="/assets/three-BWRBGDf2.js">
+      <link rel="modulepreload" crossorigin href="/assets/gsap-CH_iu5NA.js">
+      <link rel="modulepreload" crossorigin href="/assets/texture-system-ByB1LV00.js">
+      <link rel="modulepreload" crossorigin href="/assets/home-jKzHVUMs.js">
+      <link rel="modulepreload" crossorigin href="/assets/leaflet-sq9jUChD.js">
+      <link rel="modulepreload" crossorigin href="/assets/d3-iUjZZrhe.js">
+      <link rel="modulepreload" crossorigin href="/assets/projects-B3Zzd6oL.js">
+      <link rel="stylesheet" crossorigin href="/assets/vendor-DSulWsr7.css">
+      <link rel="stylesheet" crossorigin href="/assets/home-CGmMaHBT.css">
+      <link rel="stylesheet" crossorigin href="/assets/leaflet-BTrKGrB8.css">
+      <link rel="stylesheet" crossorigin href="/assets/projects-B3BEbutr.css">
+      <link rel="stylesheet" crossorigin href="/assets/index-BBInozgR.css">
+    <link rel="manifest" href="/manifest.webmanifest"></head>
 
-<body>
-    <div id="root"></div>
-</body>
-
+    <body>
+        <div id="root"></div>
+    </body>
 </html>
