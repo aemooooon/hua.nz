@@ -3,6 +3,22 @@
 // ========================================================================================
 
 export const contentData = {
+    sectionNav: {
+        ariaLabel: { en: 'Section navigation', zh: '栏目导航' },
+        projectHint: {
+            en: 'My Projects',
+            zh: '我的项目',
+        },
+        labels: {
+            home: { en: 'Home', zh: '首页' },
+            about: { en: 'About', zh: '关于' },
+            projects: { en: 'Projects', zh: '作品' },
+            gallery: { en: 'Gallery', zh: '画廊' },
+            education: { en: 'Education', zh: '教育' },
+            contact: { en: 'Contact', zh: '联系' },
+        },
+    },
+
     home: {
         name: { en: 'Hua Wang', zh: '王华' },
         title: { en: 'Full Stack Developer', zh: '全栈工程师' },

@@ -1,5 +1,6 @@
 import SmartDirectionalCursor from './components/features/SmartDirectionalCursor';
 import SmartScrollManager from './components/features/SmartScrollManager';
+import SectionNav from './components/features/SectionNav';
 import DeveloperPanel from './components/performancepanel/DeveloperPanel';
 import PWAPrompt from './components/PWAPrompt';
 import ErrorBoundary from './components/ui/ErrorBoundary';
@@ -23,6 +24,9 @@ const App = () => {
                 <div className="App min-h-screen">
                     {/* Section进度条 */}
                     <SectionProgressBar />
+
+                    {/* 极简Section导航 */}
+                    <SectionNav />
 
                     {/* 网络状态检测 */}
                     <NetworkStatus language={language} />

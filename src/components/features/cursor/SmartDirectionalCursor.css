@@ -1,0 +1,187 @@
+.power-cursor,
+.clickable-hint,
+.cursor-home-hint {
+    --cursor-x: 0px;
+    --cursor-y: 0px;
+}
+
+@keyframes gentle-pulse {
+    0%,
+    100% {
+        opacity: 0.6;
+    }
+    50% {
+        opacity: 1;
+    }
+}
+
+.power-cursor {
+    position: fixed;
+    left: 0;
+    top: 0;
+    pointer-events: none;
+    z-index: 9999;
+    mix-blend-mode: screen;
+    transform: translate3d(var(--cursor-x), var(--cursor-y), 0) translate3d(-50%, -50%, 0)
+        scale(var(--cursor-scale, 1));
+    will-change: transform;
+}
+
+.power-cursor.hovering {
+    filter: brightness(1.2) contrast(1.1);
+}
+
+.power-cursor.over-clickable {
+    --cursor-scale: 0.8;
+    opacity: 1;
+}
+
+.power-cursor.over-clickable .power-cursor-indicator {
+    opacity: 0;
+}
+
+.power-cursor.is-pointer-locked,
+.clickable-hint.is-pointer-locked {
+    display: none !important;
+}
+
+.clickable-hint {
+    position: fixed;
+    left: 0;
+    top: 0;
+    pointer-events: none;
+    z-index: 9998;
+    width: 1.35rem;
+    height: 1.35rem;
+    border-radius: 50%;
+    background: var(--theme-primary);
+    opacity: 0.95;
+    box-shadow:
+        0 0 8px var(--theme-primary),
+        0 0 20px rgba(var(--theme-primary-rgb), 0.32);
+    transform: translate3d(var(--cursor-x), var(--cursor-y), 0) translate3d(-50%, -50%, 0);
+}
+
+.power-cursor-indicator {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transform: translate3d(0, 0, 0);
+    will-change: transform;
+}
+
+.power-cursor-ring {
+    position: absolute;
+    transition: transform 0.2s ease-out;
+}
+
+.power-cursor-progress {
+    transition: stroke-dashoffset 0.05s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    will-change: stroke-dashoffset;
+}
+
+.power-cursor-value {
+    position: absolute;
+    z-index: 15;
+    display: flex;
+    min-width: 32px;
+    align-items: center;
+    justify-content: center;
+    font-family: Monaco, 'SF Mono', Consolas, monospace;
+    font-size: 11px;
+    font-weight: 600;
+    opacity: 0.95;
+    text-align: center;
+    will-change: opacity, transform;
+}
+
+.scroll-value {
+    transition: transform 0.15s ease-out;
+}
+
+.power-cursor-arrow {
+    position: absolute;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transform: translate3d(0, 0, 0);
+    will-change: opacity;
+}
+
+.power-cursor-arrow svg {
+    shape-rendering: geometricprecision;
+}
+
+.power-cursor-arrow path {
+    transition: stroke 0.1s ease-out;
+    vector-effect: non-scaling-stroke;
+    will-change: stroke;
+}
+
+.power-cursor-none-dot,
+.power-cursor-center-dot {
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    transform: translate3d(0, 0, 0);
+}
+
+.power-cursor-none-dot {
+    opacity: 0.8;
+}
+
+.power-cursor-center-dot {
+    z-index: 20;
+    background-color: var(--theme-primary);
+    box-shadow: 0 0 6px var(--theme-primary);
+    opacity: 0.9;
+    will-change: transform;
+}
+
+.cursor-home-hint {
+    position: fixed;
+    left: 0;
+    top: 0;
+    z-index: 9998;
+    color: var(--theme-primary);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    opacity: 0.8;
+    pointer-events: none;
+    text-shadow: 0 0 8px rgba(var(--theme-primary-rgb), 0.25);
+    transform: translate3d(var(--cursor-x), calc(var(--cursor-y) - 120px), 0)
+        translate3d(-50%, -50%, 0);
+    user-select: none;
+    white-space: nowrap;
+    animation: gentle-pulse 2s ease-in-out infinite;
+}
+
+@media (hover: none) and (pointer: coarse) and (max-width: 768px) {
+    .power-cursor,
+    .clickable-hint {
+        display: none !important;
+    }
+}
+
+@media (min-width: 769px) and (hover: hover) and (pointer: fine) {
+    .power-cursor,
+    .clickable-hint {
+        display: block !important;
+    }
+}
+
+@media (min-width: 1024px) {
+    .power-cursor,
+    .clickable-hint {
+        display: block !important;
+    }
+}
+
+.power-cursor.force-show,
+.clickable-hint.force-show {
+    display: block !important;
+}
